@@ -81,8 +81,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "disposeVersion")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public void disposeVersion(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="version") String version)  throws ServiceExceptions.ServiceCallException {
         m_service.get().disposeVersion(projectId, version);    
@@ -94,8 +93,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "executeWorkflowCommand")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public CommandResultEnt executeWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="workflowCommand") WorkflowCommandEnt workflowCommand)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().executeWorkflowCommand(projectId, workflowId, workflowCommand);    
@@ -107,12 +105,9 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "getUpdatableLinkedComponents")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600)
     })
     public java.util.List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
         return m_service.get().getUpdatableLinkedComponents(projectId, workflowId);    
@@ -124,10 +119,8 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "getWorkflow")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600)
     })
     public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="includeInteractionInfo") Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
         return m_service.get().getWorkflow(projectId, workflowId, versionId, includeInteractionInfo);    
@@ -148,8 +141,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "redoWorkflowCommand")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public void redoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException {
         m_service.get().redoWorkflowCommand(projectId, workflowId);    
@@ -161,8 +153,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "undoWorkflowCommand")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public void undoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException {
         m_service.get().undoWorkflowCommand(projectId, workflowId);    

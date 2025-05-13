@@ -80,8 +80,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "createSpace")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public SpaceEnt createSpace(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceGroupName") String spaceGroupName)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().createSpace(spaceProviderId, spaceGroupName);    
@@ -93,8 +92,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "createWorkflow")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public SpaceItemEnt createWorkflow(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="itemName") String itemName)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().createWorkflow(spaceId, spaceProviderId, itemId, itemName);    
@@ -106,8 +104,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "createWorkflowGroup")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public SpaceItemEnt createWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().createWorkflowGroup(spaceId, spaceProviderId, itemId);    
@@ -119,8 +116,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "deleteItems")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public void deleteItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemIds") java.util.List<String> itemIds, @JsonRpcParam(value="softDelete") Boolean softDelete)  throws ServiceExceptions.ServiceCallException {
         m_service.get().deleteItems(spaceId, spaceProviderId, itemIds, softDelete);    
@@ -132,8 +128,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "deleteJobsForWorkflow")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public void deleteJobsForWorkflow(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="jobId") String jobId)  throws ServiceExceptions.ServiceCallException {
         m_service.get().deleteJobsForWorkflow(spaceId, spaceProviderId, itemId, jobId);    
@@ -145,8 +140,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "deleteSchedulesForWorkflow")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public void deleteSchedulesForWorkflow(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="scheduleId") String scheduleId)  throws ServiceExceptions.ServiceCallException {
         m_service.get().deleteSchedulesForWorkflow(spaceId, spaceProviderId, itemId, scheduleId);    
@@ -158,10 +152,8 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "getSpaceGroups")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
-            data = "NetworkException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600)
     })
     public java.util.List<SpaceGroupEnt> getSpaceGroups(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException {
         return m_service.get().getSpaceGroups(spaceProviderId);    
@@ -173,8 +165,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "listJobsForWorkflow")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public java.util.List<Object> listJobsForWorkflow(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().listJobsForWorkflow(spaceId, spaceProviderId, itemId);    
@@ -186,8 +177,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "listSchedulesForWorkflow")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public java.util.List<Object> listSchedulesForWorkflow(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().listSchedulesForWorkflow(spaceId, spaceProviderId, itemId);    
@@ -199,10 +189,8 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "listWorkflowGroup")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
-            data = "NetworkException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600)
     })
     public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException {
         return m_service.get().listWorkflowGroup(spaceId, spaceProviderId, itemId);    
@@ -214,10 +202,8 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "moveOrCopyItems")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.CollisionException.class, code = -32600,
-            data = "CollisionException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600),
+        @JsonRpcError(exception = ServiceExceptions.CollisionException.class, code = -32600)
     })
     public void moveOrCopyItems(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemIds") java.util.List<String> itemIds, @JsonRpcParam(value="destSpaceId") String destSpaceId, @JsonRpcParam(value="destWorkflowGroupItemId") String destWorkflowGroupItemId, @JsonRpcParam(value="copy") Boolean copy, @JsonRpcParam(value="collisionHandling") String collisionHandling)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.CollisionException {
         m_service.get().moveOrCopyItems(spaceId, spaceProviderId, itemIds, destSpaceId, destWorkflowGroupItemId, copy, collisionHandling);    
@@ -229,8 +215,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "renameItem")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public SpaceItemEnt renameItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="itemName") String itemName)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().renameItem(spaceProviderId, spaceId, itemId, itemName);    
@@ -242,8 +227,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "renameSpace")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
     public SpaceEnt renameSpace(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceName") String spaceName)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().renameSpace(spaceProviderId, spaceId, spaceName);    
