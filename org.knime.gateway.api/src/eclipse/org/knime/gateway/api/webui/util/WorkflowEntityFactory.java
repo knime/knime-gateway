@@ -584,28 +584,48 @@ public final class WorkflowEntityFactory {
             .setExecutionInfo(buildNodeExecutionInfoEnt(snc)) //
             .setIsLocked(CoreUtil.isLocked(snc).orElse(null)) //
             .setInputContentVersion(inputContentVersion) //
-            .setHasView(hasNodeView(snc))//
+            .setHasView(hasNodeView(snc, 0))//
             .build();
     }
 
-    private static Boolean hasNodeView(final SubNodeContainer snc) {
+
+    /**
+     * Determines if a component node has a view to show
+     *
+     * @param snc The component node container for which it should be determined if it has a view to show
+     * @param currentDepth current depth of recursion while trying to determine if the component node has a view
+     * @return <code>true</code> if the component node has a view,
+     *         <code>false</code> if the component node has no view or max recursion depth has been reached.
+     */
+    private static Boolean hasNodeView(final SubNodeContainer snc, final int currentDepth) {
+        var maxDepth = 10;
+        if (currentDepth > maxDepth) {
+            LOGGER.info("Could not determine if component node has a view, as max recursion depth has been reached. "
+                + "Potential reasons: deeply nested components or cyclical dependency of nested components.");
+            return false;
+        }
         var childNcs = snc.getWorkflowManager().getNodeContainers();
-        return childNcs.stream().anyMatch(childNc -> hasNodeView(childNc));
+        return childNcs.stream().anyMatch(childNc -> hasNodeView(childNc, currentDepth));
     }
 
-    // this function calls itself recursively if a ComponentNode (=SubNodeContainer) contains another component node
-    // this may lead to performance issues for deeply nested components. If that is a concern a maxDepth parameter
-    // could be introduced
-    private static Boolean hasNodeView(final NodeContainer nc) {
+    /**
+     * Determines if a node has a view to show, is called recursively for component nodes
+     *
+     * @param nc the node container for which it should be determined if it has a view to show
+     * @param currentDepth current depth of recursion while trying to determine if component node has a view
+     * @return <code>true</code> if the node has a view,
+     *         <code>false</code> if the node has no view or max recursion depth has been reached for a component node.
+     */
+    private static Boolean hasNodeView(final NodeContainer nc, final int currentDepth) {
         if (nc instanceof NativeNodeContainer nnc) {
             return NodeViewManager.hasNodeView(nnc);
         } else if (nc instanceof WorkflowManager) {
             return false;
         } else if (nc instanceof SubNodeContainer snc) {
-            return hasNodeView(snc);
+            return hasNodeView(snc, currentDepth + 1);
         } else {
             throw new IllegalArgumentException(
-                "Node container " + nc.getClass().getName() + " cannot be mapped to a node entity.");
+                "Could not determine if node container " + nc.getClass().getName() + " has a view.");
         }
     }
 
