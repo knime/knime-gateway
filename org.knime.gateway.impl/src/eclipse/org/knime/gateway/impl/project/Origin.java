@@ -90,19 +90,6 @@ public record Origin(//
     }
 
     /**
-     * -
-     *
-     * @param originalOrigin -
-     * @param versionId -
-     *
-     * @return A new instance with same property values and updated 'versionId' property.
-     */
-    public static Origin updateVersionId(final Origin originalOrigin, final VersionId versionId) {
-        return new Origin(originalOrigin.providerId, originalOrigin.spaceId, originalOrigin.itemId,
-            originalOrigin.projectType, Optional.ofNullable(versionId), originalOrigin.itemVersion);
-    }
-
-    /**
      * @return {@code true} if the space provider is local
      */
     public boolean isLocal() {

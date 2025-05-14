@@ -303,7 +303,8 @@ public final class AppStateEntityFactory {
         return projectManager.getProjectIds().stream() //
             .filter(projectFilter) //
             .flatMap(id -> projectManager.getProject(id).stream()) //
-            .map(wp -> buildProjectEnt(wp, isActiveProject, spaceProviders)) //
+            .map(project -> buildProjectEnt(project, isActiveProject, spaceProviders,
+                projectManager::getActiveVersionForProject)) //
             .toList();
     }
 
@@ -331,7 +332,7 @@ public final class AppStateEntityFactory {
     }
 
     private static ProjectEnt buildProjectEnt(final Project project, final Predicate<String> isActiveProject,
-        final SpaceProviders spaceProviders) {
+        final SpaceProviders spaceProviders, final Function<String, Optional<VersionId>> getActiveVersionForProject) {
         final var projectEntBuilder = builder(ProjectEntBuilder.class) //
             .setName(project.getName()) //
             .setProjectId(project.getID());
@@ -342,20 +343,21 @@ public final class AppStateEntityFactory {
         }
 
         project.getOrigin().ifPresent(origin -> {
-            var originEnt = buildSpaceItemReferenceEnt(origin, spaceProviders);
+            var activeVersion = getActiveVersionForProject.apply(project.getID());
+            var originEnt = buildSpaceItemReferenceEnt(origin, spaceProviders, activeVersion);
             projectEntBuilder.setOrigin(originEnt);
         });
         return projectEntBuilder.build();
     }
 
     private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Origin origin,
-        final SpaceProviders spaceProviders) {
+        final SpaceProviders spaceProviders, final Optional<VersionId> activeVersion) {
         return builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class) //
             .setProviderId(origin.providerId()) //
             .setSpaceId(origin.spaceId()) //
             .setItemId(origin.itemId()) //
             .setProjectType(origin.projectType().orElse(null)) //
-            .setVersionId(origin.versionId().map(VersionId::toString).orElse(null)) //
+            .setVersionId(activeVersion.map(VersionId::toString).orElse(null)) //
             .setVersion(origin.itemVersion().orElse(null)) //
             .setAncestorItemIds(getAncestorItemIds(origin, spaceProviders)) //
             .build();

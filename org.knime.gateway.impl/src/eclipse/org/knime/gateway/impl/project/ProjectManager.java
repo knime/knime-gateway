@@ -149,22 +149,17 @@ public final class ProjectManager {
      * @param versionId the version id to set as active
      */
     public void setProjectActive(final String projectId, final VersionId versionId) {
-        var project = m_projectsMap.get(projectId);
-        if (project == null) {
+        var projectInternal = m_projectsMap.get(projectId);
+        if (projectInternal == null) {
             m_activeProjectId = null;
             return; // No project active
         }
 
-        if (!project.hasUIConsumer) {
+        if (!projectInternal.hasUIConsumer) {
             throw new IllegalStateException("Projects hidden from the user can't be set active.");
         }
 
-        project.project.getOrigin().ifPresent(originalOrigin -> {
-            var newOrigin = Origin.updateVersionId(originalOrigin, versionId);
-            var updatedProject = Project.updateOrigin(project.project(), newOrigin);
-            addProject(updatedProject);
-        });
-
+        addProject(projectInternal.project, versionId);
         m_activeProjectId = projectId;
     }
 
@@ -199,9 +194,7 @@ public final class ProjectManager {
 
         var thisProject = m_activeProjectId;
         var thisVersion = Optional.ofNullable(m_projectsMap.get(m_activeProjectId)) //
-            .map(ProjectInternal::project) //
-            .flatMap(Project::getOrigin) //
-            .flatMap(Origin::versionId) //
+            .map(ProjectInternal::activeVersion) //
             .orElse(VersionId.currentState());
 
         return thisProject.equals(projectId) && thisVersion.equals(versionId);
@@ -232,7 +225,11 @@ public final class ProjectManager {
      * @param project the actual project to be added
      */
     public void addProject(final Project project) {
-        addProject(project, ProjectConsumerType.UI, true);
+        addProject(project, VersionId.currentState());
+    }
+
+    private void addProject(final Project project, final VersionId activeVersion) {
+        addProject(project, ProjectConsumerType.UI, true, activeVersion);
     }
 
     /**
@@ -243,6 +240,11 @@ public final class ProjectManager {
      * @param replace whether to replace the project or not in case there is another project with the same id already
      */
     void addProject(final Project project, final ProjectConsumerType consumerType, final boolean replace) {
+        addProject(project, consumerType, replace, VersionId.currentState());
+    }
+
+    private void addProject(final Project project, final ProjectConsumerType consumerType, final boolean replace,
+        final VersionId activeVersion) {
         var hasUIConsumer = consumerType.isUI();
         var numNonUIConsumer = consumerType.isUI() ? 0 : 1;
         var projectInternal = m_projectsMap.get(project.getID());
@@ -253,9 +255,10 @@ public final class ProjectManager {
         }
 
         if (projectInternal == null || replace) {
-            projectInternal = new ProjectInternal(project, hasUIConsumer, numNonUIConsumer);
+            projectInternal = new ProjectInternal(project, hasUIConsumer, numNonUIConsumer, activeVersion);
         } else {
-            projectInternal = new ProjectInternal(projectInternal.project, hasUIConsumer, numNonUIConsumer);
+            projectInternal =
+                new ProjectInternal(projectInternal.project, hasUIConsumer, numNonUIConsumer, activeVersion);
         }
 
         m_projectsMap.put(project.getID(), projectInternal);
@@ -283,14 +286,11 @@ public final class ProjectManager {
             return;
         }
 
-        if (consumerType.isUI()) {
-            projectInternal = new ProjectInternal(projectInternal.project, false, projectInternal.numNonUIConsumer);
-        } else {
-            projectInternal = new ProjectInternal(projectInternal.project, projectInternal.hasUIConsumer,
-                projectInternal.numNonUIConsumer - 1);
-        }
+        var updatedProjectInternal = consumerType.isUI() //
+            ? projectInternal.updateHasUIConsumer(false) //
+            : projectInternal.updateNumNonUIConsumer(projectInternal.numNonUIConsumer - 1);
 
-        if (!projectInternal.hasUIConsumer && projectInternal.numNonUIConsumer == 0) {
+        if (!updatedProjectInternal.hasUIConsumer && updatedProjectInternal.numNonUIConsumer == 0) {
             var removedProject = m_projectsMap.remove(projectId);
             if (removedProject != null) {
                 removedProject.project().dispose();
@@ -302,7 +302,7 @@ public final class ProjectManager {
                 m_activeProjectId = null; // To indicate there's no active project anymore
             }
         } else {
-            m_projectsMap.put(projectId, projectInternal);
+            m_projectsMap.put(projectId, updatedProjectInternal);
         }
     }
 
@@ -314,6 +314,16 @@ public final class ProjectManager {
      */
     public Optional<Project> getProject(final String projectId) {
         return Optional.ofNullable(m_projectsMap.get(projectId)).map(ProjectInternal::project);
+    }
+
+    /**
+     * Get the active version by project ID.
+     *
+     * @param projectId -
+     * @return the active version of the project or an empty optional if it doesn't exist
+     */
+    public Optional<VersionId> getActiveVersionForProject(final String projectId) {
+        return Optional.ofNullable(m_projectsMap.get(projectId)).map(ProjectInternal::activeVersion);
     }
 
     /**
@@ -399,8 +409,21 @@ public final class ProjectManager {
     /**
      * Wrapper around {@link Project} to additional track the {@link ProjectConsumerType}s it is associated with.
      */
-    private record ProjectInternal(Project project, boolean hasUIConsumer, int numNonUIConsumer) {
-        //
+    private record ProjectInternal(Project project, boolean hasUIConsumer, int numNonUIConsumer,
+        VersionId activeVersion) {
+
+        ProjectInternal updateHasUIConsumer(final boolean updatedHasUIConsumer) {
+            return new ProjectInternal(project, updatedHasUIConsumer, numNonUIConsumer, activeVersion);
+        }
+
+        ProjectInternal updateNumNonUIConsumer(final int updatedNumNonUIConsumer) {
+            return new ProjectInternal(project, hasUIConsumer, updatedNumNonUIConsumer, activeVersion);
+        }
+
+        ProjectInternal updateActiveVersion(final VersionId updatedActiveVersion) {
+            return new ProjectInternal(project, hasUIConsumer, numNonUIConsumer, updatedActiveVersion);
+        }
+
     }
 
     /**
