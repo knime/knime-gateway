@@ -321,6 +321,7 @@ public final class ProjectManager {
      *
      * @param projectId -
      * @return the active version of the project or an empty optional if it doesn't exist
+     * @since 5.5
      */
     public Optional<VersionId> getActiveVersionForProject(final String projectId) {
         return Optional.ofNullable(m_projectsMap.get(projectId)).map(ProjectInternal::activeVersion);
