@@ -56,6 +56,7 @@ import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
@@ -103,7 +104,8 @@ public class DeleteComponentPlaceholderCommandTestHelper extends WebUIGatewaySer
     public void testCancelAndRetryComponentLoadJob() throws Exception {
         var itemId = "test-item-id";
         var spaceId = "test-space-id";
-        var space = AddComponentCommandTestHelper.createSpace(spaceId, itemId, "component name", 1000);
+        var wasCancelled = new AtomicBoolean();
+        var space = AddComponentCommandTestHelper.createSpace(spaceId, itemId, "component name", 1000, wasCancelled);
         var spaceProvider = AddComponentCommandTestHelper.createSpaceProvider(space);
         var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
@@ -148,6 +150,7 @@ public class DeleteComponentPlaceholderCommandTestHelper extends WebUIGatewaySer
         ws().executeWorkflowCommand(projectId, getRootID(), command);
         var patch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders", events);
         assertThat(patch.getOp(), is(OpEnum.REMOVE));
+        assertThat(wasCancelled.get(), is(true));
         events.clear();
 
         // undo

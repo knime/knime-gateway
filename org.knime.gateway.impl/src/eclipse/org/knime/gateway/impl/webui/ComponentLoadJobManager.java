@@ -226,6 +226,14 @@ public final class ComponentLoadJobManager {
     }
 
     /**
+     * Cancels all load jobs and removes them.
+     */
+    public void cancelAndRemoveAllLoadJobs() {
+        m_loadJobs.values().stream().forEach(ComponentLoadJobManager::cancelLoadJob);
+        m_loadJobs.clear();
+    }
+
+    /**
      * Cancels the load operation for the given id (provided the job isn't done, yet).
      *
      * @param id the id of the load job to cancel

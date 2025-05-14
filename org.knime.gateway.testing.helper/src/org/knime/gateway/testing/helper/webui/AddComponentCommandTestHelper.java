@@ -53,19 +53,22 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import org.awaitility.Awaitility;
 import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Version;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
@@ -74,9 +77,11 @@ import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCom
 import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
+import org.knime.gateway.api.webui.entity.DeleteCommandEnt.DeleteCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
+import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -116,7 +121,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
     public void testAddComponentCommand() throws Exception {
         var itemId = "test-item-id";
         var spaceId = "test-space-id";
-        var space = createSpace(spaceId, itemId, "component name", 200);
+        var space = createSpace(spaceId, itemId, "component name", 200, null);
         var spaceProvider = createSpaceProvider(space);
         var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
@@ -169,6 +174,49 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
     }
 
     /**
+     * Makes sure that the component load job is cancelled when parent workflow is disposed.
+     *
+     * @throws Exception
+     */
+    public void testCancelComponentLoadJobOnWorkflowRemoval() throws Exception {
+        var itemId = "test-item-id";
+        var spaceId = "test-space-id";
+        var wasCancelled = new AtomicBoolean();
+        var space = createSpace(spaceId, itemId, "component name", 200, wasCancelled);
+        var spaceProvider = createSpaceProvider(space);
+        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
+        var events = Collections.synchronizedList(new ArrayList<Object>());
+        ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(ProjectManager.getInstance(), spaceProviderManager));
+
+        final String projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+        WorkflowCommandEnt command = builder(AddComponentCommandEntBuilder.class) //
+            .setKind(KindEnum.ADD_COMPONENT) //
+            .setPosition(builder(XYEntBuilder.class).setX(10).setY(20).build()) //
+            .setProviderId("local-testing") //
+            .setSpaceId(spaceId) //
+            .setItemId(itemId) //
+            .setName("component") //
+            .build();
+
+        // add component within metanode
+        var metanodeId = new NodeIDEnt(1);
+        ws().executeWorkflowCommand(projectId, metanodeId, command);
+
+        // delete the metanode
+        command = builder(DeleteCommandEntBuilder.class) //
+            .setKind(KindEnum.DELETE) //
+            .setNodeIds(List.of(metanodeId)) //
+            .build();
+        ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
+
+        // check
+        Awaitility.await().untilAsserted(() -> assertThat(wasCancelled.get(), is(true)));
+    }
+
+    /**
      * @param space the space to return on {@link SpaceProvider#getSpace(String)}
      */
     static SpaceProvider createSpaceProvider(final Space space) {
@@ -212,34 +260,47 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
     }
 
     /**
+     * Creates a mocked space with a component-item of the given id and name.
      *
-     * @param spaceId
-     * @param componentItemId
-     * @param componentName
-     * @param toKnimeUrlDelayInMs the time the {@link Space#toKnimeUrl(String)}-call should be delayed until it returns
-     *            - helps to mimic a longer component-loading operation
+     * @param spaceId -
+     * @param componentItemId -
+     * @param componentName -
+     * @param toLocalAbsolutePathDelayInMs the time the {@link Space#toLocalAbsolutePath(ExecutionMonitor, String)}-call
+     *            should be delayed until it returns - helps to mimic a longer component-loading operation
+     * @param toLocalAbsolutePathWasCancelled will be set to true a cancellation was triggered while in the
+     *            {@link Space#toLocalAbsolutePath(ExecutionMonitor, String)} method
      * @return a mocked space
      */
     static Space createSpace(final String spaceId, final String componentItemId, final String componentName,
-        final long toKnimeUrlDelayInMs) {
+        final long toLocalAbsolutePathDelayInMs, final AtomicBoolean toLocalAbsolutePathWasCancelled) {
         var spaceMock = Mockito.mock(Space.class);
         when(spaceMock.getId()).thenReturn(spaceId);
         when(spaceMock.getItemName(componentItemId)).thenReturn(componentName);
         try {
-            when(spaceMock.toKnimeUrl(componentItemId)).thenAnswer(i -> {
-                try {
-                    // ensures that 'component loading' takes a bit longer to make the test deterministic
-                    // (when checking for the placeholder state - which is 'loading' on the first event)
-                    Thread.sleep(toKnimeUrlDelayInMs);
-                } catch (InterruptedException ex) { // NOSONAR
-                    //
-                }
-                return new URI("knime://LOCAL/component/");
-            });
+            var uri = new URI("knime://LOCAL/component/");
+            when(spaceMock.toKnimeUrl(componentItemId)).thenReturn(uri);
             var componentPath = CoreUtil
                 .resolveToFile("/files/test_workspace_to_list/component", AddComponentCommandTestHelper.class).toPath();
-            when(spaceMock.toLocalAbsolutePath(any(), eq(componentItemId))).thenReturn(Optional.of(componentPath));
-        } catch (CanceledExecutionException | IOException ex) {
+            when(spaceMock.toLocalAbsolutePath(any(), any())).thenAnswer(i -> {
+                // ensures that 'component loading' takes a bit longer to make the test deterministic
+                // (when checking for the placeholder state - which is 'loading' on the first event)
+                // and also makes it 'cancellable'
+                var exec = (ExecutionMonitor)i.getArgument(0);
+                var start = System.currentTimeMillis();
+                while (System.currentTimeMillis() - start < toLocalAbsolutePathDelayInMs) {
+                    Thread.sleep(100);
+                    try {
+                        exec.checkCanceled();
+                    } catch (CanceledExecutionException ex) {
+                        if (toLocalAbsolutePathWasCancelled != null) {
+                            toLocalAbsolutePathWasCancelled.set(true);
+                        }
+                        throw ex;
+                    }
+                }
+                return Optional.of(componentPath);
+            });
+        } catch (IOException | URISyntaxException | CanceledExecutionException ex) {
             throw new AssertionError(ex);
         }
         return spaceMock;

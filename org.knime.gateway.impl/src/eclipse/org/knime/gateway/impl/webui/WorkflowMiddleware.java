@@ -450,7 +450,7 @@ public final class WorkflowMiddleware {
 
         private WorkflowChangesListener m_changesListenerForWorkflowMonitor;
 
-        private ComponentLoadJobManager m_componentLoader;
+        private ComponentLoadJobManager m_componentLoadJobManager;
 
         private WorkflowState(final WorkflowKey wfKey, final SpaceProviders spaceProviders) {
             m_spaceProviders = spaceProviders;
@@ -480,10 +480,10 @@ public final class WorkflowMiddleware {
         }
 
         ComponentLoadJobManager componentLoadJobManager() {
-            if (m_componentLoader == null) {
-                m_componentLoader = new ComponentLoadJobManager(m_wfm, changesListener(), m_spaceProviders);
+            if (m_componentLoadJobManager == null) {
+                m_componentLoadJobManager = new ComponentLoadJobManager(m_wfm, changesListener(), m_spaceProviders);
             }
-            return m_componentLoader;
+            return m_componentLoadJobManager;
         }
 
         void dispose() {
@@ -495,6 +495,9 @@ public final class WorkflowMiddleware {
             }
             if (m_changesListenerForWorkflowMonitor != null) {
                 m_changesListenerForWorkflowMonitor.close();
+            }
+            if (m_componentLoadJobManager != null) {
+                m_componentLoadJobManager.cancelAndRemoveAllLoadJobs();
             }
         }
 

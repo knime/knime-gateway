@@ -58,7 +58,9 @@ import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.awaitility.Awaitility;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
@@ -230,7 +232,8 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testCancelAndRetryComponentLoadJob() throws Exception {
         var itemId = "test-item-id";
         var spaceId = "test-space-id";
-        var space = AddComponentCommandTestHelper.createSpace(spaceId, itemId, "component name", 1000);
+        var wasCancelled = new AtomicBoolean();
+        var space = AddComponentCommandTestHelper.createSpace(spaceId, itemId, "component name", 1000, wasCancelled);
         var spaceProvider = AddComponentCommandTestHelper.createSpaceProvider(space);
         var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
@@ -273,17 +276,18 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(statePatch.getOp(), is(OpEnum.REPLACE));
         assertThat(statePatch.getValue(), is(StateEnum.ERROR));
         var messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
-        assertThat(messagePatch.getOp(), is(OpEnum.ADD));
+        assertThat(messagePatch.getOp(), is(OpEnum.REPLACE));
         assertThat(messagePatch.getValue(), is("Component loading cancelled"));
+        Awaitility.await().untilAsserted(() -> assertThat(wasCancelled.get(), is(true)));
         events.clear();
 
         // retry
         cs().cancelOrRetryComponentLoadJob(projectId, getRootID(), commandResult.getNewPlaceholderId(), "retry");
         statePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/state", events);
         assertThat(statePatch.getOp(), is(OpEnum.REPLACE));
-        assertThat(statePatch.getValue(), is(StateEnum.SUCCESS));
+        assertThat(statePatch.getValue(), is(StateEnum.LOADING));
         messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
-        assertThat(messagePatch.getOp(), is(OpEnum.REMOVE));
+        assertThat(messagePatch.getOp(), is(OpEnum.REPLACE));
     }
 
 }
