@@ -584,7 +584,7 @@ public final class WorkflowEntityFactory {
             .setExecutionInfo(buildNodeExecutionInfoEnt(snc)) //
             .setIsLocked(CoreUtil.isLocked(snc).orElse(null)) //
             .setInputContentVersion(inputContentVersion) //
-            .setHasView(hasNodeView(snc, 0))//
+            .setHasView(hasNodeView(snc, 0)) //
             .build();
     }
 
@@ -597,8 +597,8 @@ public final class WorkflowEntityFactory {
      * @return <code>true</code> if the component node has a view,
      *         <code>false</code> if the component node has no view or max recursion depth has been reached.
      */
-    private static Boolean hasNodeView(final SubNodeContainer snc, final int currentDepth) {
-        var maxDepth = 10;
+    private static boolean hasNodeView(final SubNodeContainer snc, final int currentDepth) {
+        var maxDepth = 50; // TODO: Is there a more direct way to determine 'hasView', s.t. we can avoid recursion?
         if (currentDepth > maxDepth) {
             LOGGER.info("Could not determine if component node has a view, as max recursion depth has been reached. "
                 + "Potential reasons: deeply nested components or cyclical dependency of nested components.");
@@ -616,7 +616,7 @@ public final class WorkflowEntityFactory {
      * @return <code>true</code> if the node has a view,
      *         <code>false</code> if the node has no view or max recursion depth has been reached for a component node.
      */
-    private static Boolean hasNodeView(final NodeContainer nc, final int currentDepth) {
+    private static boolean hasNodeView(final NodeContainer nc, final int currentDepth) {
         if (nc instanceof NativeNodeContainer nnc) {
             return NodeViewManager.hasNodeView(nnc);
         } else if (nc instanceof WorkflowManager) {
@@ -756,8 +756,8 @@ public final class WorkflowEntityFactory {
             .setLink(buildTemplateLinkEnt(wm, buildContext))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
-            .setIsLocked(CoreUtil.isLocked(wm).orElse(null)) //
-            .setDialogType(null) //
+            .setIsLocked(CoreUtil.isLocked(wm).orElse(null))//
+            .setDialogType(null)//
             .setHasView(false)//
             .build();
     }
