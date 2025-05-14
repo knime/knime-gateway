@@ -119,9 +119,12 @@ public class UIExtensionEnt<N extends NodeWrapper> {
             }
             m_nodeId = new NodeIDEnt(nc.getID(), isComponentProject).toString();
 
-            if (dataServiceManager != null
-                && dataServiceManager.getDataServiceOfType(nodeWrapper, InitialDataService.class).isPresent()) {
-                m_initialData = dataServiceManager.callInitialDataService(nodeWrapper);
+            if (dataServiceManager != null) {
+                if (dataServiceManager.getDataServiceOfType(nodeWrapper, InitialDataService.class).isPresent()) {
+                    m_initialData = dataServiceManager.callInitialDataService(nodeWrapper);
+                } else {
+                    m_initialData = null;
+                }
                 m_deactivationRequired = dataServiceManager.hasDeactivateRunnable(nodeWrapper);
             } else {
                 m_initialData = null;
