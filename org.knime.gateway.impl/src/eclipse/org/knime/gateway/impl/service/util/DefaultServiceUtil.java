@@ -103,6 +103,7 @@ public final class DefaultServiceUtil {
      * @return the node container
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no project for the id registered
+     * @since 5.5
      */
     public static NodeContainer getNodeContainer(final String projectId, final VersionId versionId,
         final NodeIDEnt nodeId) {

@@ -66,10 +66,12 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.util.PathUtils;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceItemPathAndTypeCache;
@@ -102,11 +104,12 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testGetAncestorItemIds() throws IOException {
+    public void testGetAncestorItemIds() throws IOException, GatewayException {
         var dir3 = Files.createDirectories(m_space.getRootPath().resolve("dir1/dir2/dir3"));
         createFile(m_space.getRootPath().resolve("dir1"), "test.txt");
         createFile(m_space.getRootPath().resolve("dir1/dir2"), "test2.txt");
-        createWorkflow(m_space, m_space.getRootPath().resolve("dir1/dir2/dir3"), m_space.getItemId(dir3), Space.DEFAULT_WORKFLOW_NAME);
+        createWorkflow(m_space, m_space.getRootPath().resolve("dir1/dir2/dir3"), m_space.getItemId(dir3),
+            Space.DEFAULT_WORKFLOW_NAME);
 
         var spaceItemsRoot = m_space.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
         assertThat(m_space.getAncestorItemIds(spaceItemsRoot.get(0).getId()),
@@ -122,7 +125,8 @@ public final class LocalSpaceTests {
 
         var spaceItemsDir3 = m_space.listWorkflowGroup(spaceItemsDir2.get(0).getId()).getItems();
         assertThat(m_space.getAncestorItemIds(spaceItemsDir3.get(0).getId()),
-            equalTo(List.of(spaceItemsDir2.get(0).getId(), spaceItemsDir1.get(0).getId(), spaceItemsRoot.get(0).getId())));
+            equalTo(
+                List.of(spaceItemsDir2.get(0).getId(), spaceItemsDir1.get(0).getId(), spaceItemsRoot.get(0).getId())));
     }
 
     /**
@@ -132,7 +136,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testMapCleanupOnDelete() throws IOException {
+    public void testMapCleanupOnDelete() throws IOException, GatewayException {
         // Add some items to the root
         var fileNotToBeDeleted = createFile(m_space.getRootPath(), "file_not_to_be_deleted.txt");
         var fileToBeDeleted = createFile(m_space.getRootPath(), "file_to_be_deleted.txt");
@@ -178,13 +182,15 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testMoveItemsUpdatesCache() throws IOException {
+    public void testMoveItemsUpdatesCache() throws IOException, GatewayException {
         // Add some items to the root
         var fileNotToBeMoved = createFile(m_space.getRootPath(), "file_not_to_be_moved.txt");
         var fileToBeMoved = createFile(m_space.getRootPath(), "file_to_be_moved.txt");
         var fileToBeMovedId = findItemId(m_space, Space.ROOT_ITEM_ID, fileNotToBeMoved.getFileName().toString());
-        var workflowInRoot = createWorkflow(m_space, m_space.getRootPath(), Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
-        var workflowInRootToBeMoved = createWorkflow(m_space, m_space.getRootPath(), Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME + "1");
+        var workflowInRoot =
+            createWorkflow(m_space, m_space.getRootPath(), Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
+        var workflowInRootToBeMoved =
+            createWorkflow(m_space, m_space.getRootPath(), Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME + "1");
         var workflowInRootToBeMovedId =
             findItemId(m_space, Space.ROOT_ITEM_ID, workflowInRootToBeMoved.getFileName().toString());
 
@@ -215,10 +221,11 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testToKnimeURl() throws IOException {
+    public void testToKnimeURl() throws IOException, GatewayException {
         createFile(m_space.getRootPath(), "test.txt");
         Files.createDirectories(m_space.getRootPath().resolve("dir"));
-        createWorkflow(m_space, m_space.getRootPath(), m_space.getItemId(m_space.getRootPath()), Space.DEFAULT_WORKFLOW_NAME);
+        createWorkflow(m_space, m_space.getRootPath(), m_space.getItemId(m_space.getRootPath()),
+            Space.DEFAULT_WORKFLOW_NAME);
 
         var items = m_space.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
         assertThat(m_space.toKnimeUrl(items.get(0).getId()).toString(), equalTo("knime://LOCAL/dir/"));
@@ -237,7 +244,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testImportFileUpdatesCache() throws IOException {
+    public void testImportFileUpdatesCache() throws IOException, GatewayException {
         var tmpFolder = PathUtils.createTempDir("tmp");
 
         var fileNameTxt = "test.txt";
@@ -255,8 +262,8 @@ public final class LocalSpaceTests {
         assertItemIsOfType(m_space, m_space.getRootPath().resolve(fileNameCsv), TypeEnum.DATA);
 
         m_space.importFile(tmpCsvPath, Space.ROOT_ITEM_ID, NameCollisionHandling.AUTORENAME, null);
-        assertIdAndTypeMapContain(m_space, m_space.getRootPath().resolve(fileNameTxt), m_space.getRootPath().resolve(fileNameCsv),
-            m_space.getRootPath().resolve("collisions(1).csv"));
+        assertIdAndTypeMapContain(m_space, m_space.getRootPath().resolve(fileNameTxt),
+            m_space.getRootPath().resolve(fileNameCsv), m_space.getRootPath().resolve("collisions(1).csv"));
         assertItemIsOfType(m_space, m_space.getRootPath().resolve("collisions(1).csv"), TypeEnum.DATA);
     }
 
@@ -267,7 +274,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testImportWorkflowUpdatesCache() throws IOException {
+    public void testImportWorkflowUpdatesCache() throws GatewayException {
         runTestImportWorkflowOrWorkflowGroupUpdatesCache("simple.knwf", "simple", TypeEnum.WORKFLOW);
     }
 
@@ -278,7 +285,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testImportWorkflowGroupUpdatesCache() throws IOException {
+    public void testImportWorkflowGroupUpdatesCache() throws GatewayException {
         runTestImportWorkflowOrWorkflowGroupUpdatesCache("group.knar", "group", TypeEnum.WORKFLOWGROUP);
     }
 
@@ -288,9 +295,10 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testGetProjectType() throws IOException {
+    public void testGetProjectType() throws IOException, GatewayException {
         createFile(m_space.getRootPath(), "data.txt");
-        createWorkflow(m_space, m_space.getRootPath(), m_space.getItemId(m_space.getRootPath()), Space.DEFAULT_WORKFLOW_NAME);
+        createWorkflow(m_space, m_space.getRootPath(), m_space.getItemId(m_space.getRootPath()),
+            Space.DEFAULT_WORKFLOW_NAME);
         var spaceItems = m_space.listWorkflowGroup(Space.ROOT_ITEM_ID).getItems();
 
         var workflowItem =
@@ -310,7 +318,7 @@ public final class LocalSpaceTests {
      * @throws OperationNotAllowedException
      */
     @Test
-    public void testRenameChangingItemCasing() throws IOException, OperationNotAllowedException {
+    public void testRenameChangingItemCasing() throws IOException, GatewayException {
         final var spaceRootPath = m_space.getRootPath();
         final var spaceRootId = m_space.getItemId(spaceRootPath);
 
@@ -335,7 +343,7 @@ public final class LocalSpaceTests {
     }
 
     private void runTestImportWorkflowOrWorkflowGroupUpdatesCache(final String archiveName,
-        final String itemName, final TypeEnum itemType) throws IOException {
+        final String itemName, final TypeEnum itemType) throws GatewayException {
         Consumer<Path> createMetaInfoFileFor = path -> {
             // Do nothing
         };
@@ -359,7 +367,7 @@ public final class LocalSpaceTests {
     }
 
     private static void deleteAndCheckMaps(final LocalSpace workspace, final List<Path> itemsToDelete,
-        final List<Path> itemsToKeep) throws IOException {
+        final List<Path> itemsToKeep) throws GatewayException {
         var idsToDelete =
             workspace.m_spaceItemPathAndTypeCache.entrySet().stream().filter(e -> itemsToDelete.contains(e.getValue()))
                 .map(e -> e.getKey()).map(i -> "" + i).collect(Collectors.toList());
@@ -368,13 +376,13 @@ public final class LocalSpaceTests {
     }
 
     private static String findItemId(final LocalSpace workspace, final String groupId, final String name)
-        throws IOException {
+        throws ServiceCallException {
         return workspace.listWorkflowGroup(groupId).getItems().stream().filter(i -> name.equals(i.getName()))
             .findFirst().get().getId();
     }
 
     private static Path createWorkflow(final LocalSpace workspace, final Path groupFolder, final String groupId,
-        final String workflowName) throws IOException {
+        final String workflowName) throws ServiceCallException {
         return groupFolder.resolve(workspace.createWorkflow(groupId, workflowName).getName());
     }
 

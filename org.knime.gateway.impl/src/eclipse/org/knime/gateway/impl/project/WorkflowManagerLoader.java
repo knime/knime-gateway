@@ -61,6 +61,9 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.LockFailedException;
 import org.knime.core.util.ProgressMonitorAdapter;
 import org.knime.gateway.api.util.VersionId;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -125,13 +128,11 @@ public interface WorkflowManagerLoader {
      */
     static Optional<Path> fetch(final Origin origin, final VersionId version, final SpaceProviders spaceProviders,
         final ExecutionMonitor monitor) { // NOSONAR false positive
-        var space = spaceProviders.getSpace(origin.providerId(), origin.spaceId());
         try {
+            var space = spaceProviders.getSpace(origin.providerId(), origin.spaceId());
             return space.toLocalAbsolutePath(monitor, origin.itemId(), version);
-        } catch (CanceledExecutionException e) { // NOSONAR
+        } catch (CanceledExecutionException | NetworkException | LoggedOutException | ServiceCallException e) { // TODO
             return Optional.empty();
         }
-
     }
-
 }

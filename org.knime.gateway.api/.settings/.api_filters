@@ -897,6 +897,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/util/ServiceExceptions.java" type="org.knime.gateway.api.webui.service.util.ServiceExceptions">
+        <filter id="338886760">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException"/>
+                <message_argument value="org.knime.gateway.api_5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/service/util/ServiceExceptions.java" type="org.knime.gateway.api.webui.service.util.ServiceExceptions$CollisionException">
         <filter id="1143996420">
             <message_arguments>
@@ -904,17 +912,17 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/service/util/ServiceExceptions.java" type="org.knime.gateway.api.webui.service.util.ServiceExceptions$IOException">
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="IOException(Map&lt;String,String&gt;)"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/service/util/ServiceExceptions.java" type="org.knime.gateway.api.webui.service.util.ServiceExceptions$InvalidRequestException">
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="InvalidRequestException(Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/util/ServiceExceptions.java" type="org.knime.gateway.api.webui.service.util.ServiceExceptions$LoggedOutException">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="LoggedOutException"/>
             </message_arguments>
         </filter>
     </resource>
