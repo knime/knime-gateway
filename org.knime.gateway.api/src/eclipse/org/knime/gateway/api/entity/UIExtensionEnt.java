@@ -119,13 +119,12 @@ public class UIExtensionEnt<N extends NodeWrapper> {
             }
             m_nodeId = new NodeIDEnt(nc.getID(), isComponentProject).toString();
 
+            m_deactivationRequired = true; // TODO properly fixed with UIEXT-2741
             if (dataServiceManager != null
                 && dataServiceManager.getDataServiceOfType(nodeWrapper, InitialDataService.class).isPresent()) {
                 m_initialData = dataServiceManager.callInitialDataService(nodeWrapper);
-                m_deactivationRequired = dataServiceManager.hasDeactivateRunnable(nodeWrapper);
             } else {
                 m_initialData = null;
-                m_deactivationRequired = false;
             }
         } else {
             // dialogs in the remote workflow editor
