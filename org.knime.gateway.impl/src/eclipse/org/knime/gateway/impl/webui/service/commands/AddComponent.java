@@ -86,9 +86,6 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         m_workflowMiddleware = workflowMiddleware;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean executeWithWorkflowContext() throws ServiceCallException {
         var componentLoader = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey());

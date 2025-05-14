@@ -62,6 +62,9 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.LockFailedException;
 import org.knime.core.util.ProgressMonitorAdapter;
 import org.knime.gateway.api.util.VersionId;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -69,7 +72,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  * <p>
  * "Loading" here means loading it from file representation on disk to provide an initialized and usable
  * {@link WorkflowManager} instance. However, this method may also include fetching the files from a remote location.
- * 
+ *
  * @since 5.5
  */
 @FunctionalInterface
@@ -92,7 +95,7 @@ public interface WorkflowManagerLoader {
 
     /**
      * Utility to load a {@code WorkflowManager} instance from a given path.
-     * 
+     *
      * @param loadHelper -
      * @param path -
      * @param monitor -
@@ -117,7 +120,7 @@ public interface WorkflowManagerLoader {
     /**
      * Obtain the path of the on-disk representation of the {@link WorkflowManager} identified by {@link Origin} and
      * {@link VersionId}, using the given {@link SpaceProviders}.
-     * 
+     *
      * @param origin -
      * @param version -
      * @param spaceProviders -
@@ -125,18 +128,16 @@ public interface WorkflowManagerLoader {
      * @return -
      */
     static Optional<Path> fetch(final Origin origin, final VersionId version, final SpaceProviders spaceProviders,
-        final IProgressMonitor monitor) { // NOSONAR false positive
-        var space = spaceProviders.getSpace(origin.providerId(), origin.spaceId());
+        final IProgressMonitor monitor) {
         try {
+            var space = spaceProviders.getSpace(origin.providerId(), origin.spaceId());
             return space.toLocalAbsolutePath( //
                 new ExecutionMonitor(new ProgressMonitorAdapter(monitor)), //
                 origin.itemId(), //
                 version //
             );
-        } catch (CanceledExecutionException e) { // NOSONAR
+        } catch (CanceledExecutionException | NetworkException | LoggedOutException | ServiceCallException e) { // NOSONAR
             return Optional.empty();
         }
-
     }
-
 }
