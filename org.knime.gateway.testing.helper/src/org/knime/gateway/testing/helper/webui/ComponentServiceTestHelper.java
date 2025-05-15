@@ -268,6 +268,10 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(placeholder.getId(), is(commandResult.getNewPlaceholderId()));
         assertThat(placeholder.getName(), is("component name"));
         assertThat(placeholder.getState(), is(StateEnum.LOADING));
+        // wait for the 'Downloading...' message
+        var messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
+        assertThat(messagePatch.getOp(), is(OpEnum.ADD));
+        assertThat(messagePatch.getValue(), is("Downloading..."));
         events.clear();
 
         // the actual test -> cancel
@@ -275,7 +279,7 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var statePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/state", events);
         assertThat(statePatch.getOp(), is(OpEnum.REPLACE));
         assertThat(statePatch.getValue(), is(StateEnum.ERROR));
-        var messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
+        messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
         assertThat(messagePatch.getOp(), is(OpEnum.REPLACE));
         assertThat(messagePatch.getValue(), is("Component loading cancelled"));
         Awaitility.await().untilAsserted(() -> assertThat(wasCancelled.get(), is(true)));
