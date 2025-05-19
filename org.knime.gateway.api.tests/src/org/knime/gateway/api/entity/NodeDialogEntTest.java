@@ -55,6 +55,7 @@ import static org.knime.testing.node.ui.NodeDialogTestUtil.createNodeSettingsSer
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -62,12 +63,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.dialog.NodeAndVariableSettingsRO;
+import org.knime.core.webui.node.dialog.NodeAndVariableSettingsWO;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
@@ -155,7 +159,22 @@ class NodeDialogEntTest {
 
             @Override
             public NodeSettingsService getNodeSettingsService() {
-                return null;
+                return new NodeSettingsService() {
+
+                    @Override
+                    public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
+                        final PortObjectSpec[] specs) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public void toNodeSettings(final String textSettings,
+                        final Map<SettingsType, NodeAndVariableSettingsRO> previousSettings,
+                        final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                };
             }
 
             @Override
