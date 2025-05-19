@@ -238,6 +238,14 @@ public final class Project {
         return this.m_generateReport.apply(format);
     }
 
+    /**
+     * TODO NXT-3607 Projects can be immutable
+     * @param loader -
+     */
+    public void setWfmLoader(final WorkflowManagerLoader loader) {
+        m_projectWfmCache.setLoader(loader);
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder() //
