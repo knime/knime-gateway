@@ -253,7 +253,8 @@ public class DirectAccessTablePortViewFactoryTest {
                         "rowLabel":"Rows",
                         "showColumnCount": true
                       },
-                      "columnDomainValues" : { }
+                      "columnDomainValues" : { },
+                      "enableWillChangeOnContainer": false
                     }
                                 """;
 
