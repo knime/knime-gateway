@@ -114,6 +114,14 @@ class ProjectWfmCache {
     }
 
     /**
+     * TODO NXT-3607 can be immutable
+     * @param loader -
+     */
+    public void setLoader(final WorkflowManagerLoader loader) {
+        m_wfmLoader = loader;
+    }
+
+    /**
      * Get an instance, loading it using the given loader if not yet cached.
      *
      * @param version -
