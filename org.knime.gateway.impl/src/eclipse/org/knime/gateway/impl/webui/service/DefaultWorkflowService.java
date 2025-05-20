@@ -50,18 +50,26 @@ package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.ui.component.CheckForComponentUpdatesUtil;
+import org.knime.core.util.LockFailedException;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.NodeIdAndIsExecutedEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.TaskIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
@@ -74,6 +82,7 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -170,6 +179,35 @@ public final class DefaultWorkflowService implements WorkflowService {
         } catch (IllegalStateException | InterruptedException e) { // NOSONAR
             throw new InvalidRequestException("Could not determine updatable node IDs", e);
         }
+    }
+
+    @Override
+    public TaskIDEnt createVersion(final String projectId, final String title, final String description,
+                                   final Boolean doSave, final String svg) throws ServiceCallException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+
+
+        if (doSave) {  // TODO rename `isBrowser`
+            // "headless" saving for browser environment until we can provide proper UI
+            // in desktop environment, `doSave` is always false and the legacy Desktop-API save logic is called
+            var wfm = WorkflowManagerResolver.get(projectId);
+            if (wfm.isComponentProjectWFM()) {
+                throw new ServiceCallException("Not supported for component projects");
+            }
+            var localWorkflowPath = wfm.getContextV2().getExecutorInfo().getLocalWorkflowPath();
+            try {
+                wfm.save(localWorkflowPath.toFile(), new ExecutionMonitor(), true);
+            } catch (IOException | CanceledExecutionException | LockFailedException e) {
+                throw new ServiceCallException("Could not save workflow", e);
+            }
+            try {
+                Files.writeString(localWorkflowPath.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE), svg,
+                    StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new ServiceCallException("Could not save workflow SVG", e);
+            }
+        }
+
     }
 
     @Override

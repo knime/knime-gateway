@@ -58,12 +58,14 @@ import org.knime.gateway.api.webui.entity.EventTypeEnt;
 import org.knime.gateway.api.webui.entity.NodeRepositoryLoadingProgressEventTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemChangedEventTypeEnt;
+import org.knime.gateway.api.webui.entity.TaskStatusEventTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.service.util.progress.TaskManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
@@ -78,6 +80,7 @@ import org.knime.gateway.impl.webui.service.events.EventSource;
 import org.knime.gateway.impl.webui.service.events.NodeRepositoryLoadingProgressEventSource;
 import org.knime.gateway.impl.webui.service.events.ProjectDisposedEventSource;
 import org.knime.gateway.impl.webui.service.events.SpaceItemChangedEventSource;
+import org.knime.gateway.impl.webui.service.events.TaskEventSource;
 import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource;
@@ -121,6 +124,8 @@ public final class DefaultEventService implements EventService {
         ServiceDependencies.getServiceDependency(NodeCollections.class, false);
 
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
+
+    private final TaskManager m_taskManager = ServiceDependencies.getServiceDependency(TaskManager.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -180,7 +185,10 @@ public final class DefaultEventService implements EventService {
                     m_workflowMiddleware));
         } else if (eventTypeEnt instanceof SpaceItemChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
-                t -> new SpaceItemChangedEventSource(m_eventConsumer, m_spaceProvidersManager));
+                    t -> new SpaceItemChangedEventSource(m_eventConsumer, m_spaceProvidersManager));
+        } else if (eventTypeEnt instanceof TaskStatusEventTypeEnt) {
+            eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
+                    t -> new TaskEventSource(m_eventConsumer, m_taskManager));
         } else {
             throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }

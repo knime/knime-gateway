@@ -55,6 +55,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.VersionId;
+import org.knime.gateway.impl.service.util.progress.Tasks;
+import org.knime.gateway.impl.util.Lazy;
 
 /**
  * A workflow or component project.
@@ -78,6 +80,8 @@ public final class Project {
     private final Function<String, byte[]> m_generateReport;
 
     private final ProjectWfmCache m_projectWfmCache;
+
+    private final Lazy.Init<Tasks> m_tasks = new Lazy.Init<>(Tasks::new);
 
     private Project(final Builder builder) {
         this( //
@@ -202,8 +206,10 @@ public final class Project {
      *
      * @param version -
      */
+    // todo should not be public? project disposed only through ProjectManager?
     public void dispose() {
         m_projectWfmCache.dispose();
+        this.tasks().dispose();
     }
 
     /**
@@ -260,6 +266,10 @@ public final class Project {
             .append(m_name, otherProject.getName()) //
             .append(m_origin, otherProject.getOrigin().orElse(null)) //
             .build();
+    }
+
+    public Tasks tasks() {
+        return m_tasks.get();
     }
 
     /**

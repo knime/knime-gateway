@@ -67,11 +67,12 @@ import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.api.webui.service.TaskService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 
 /**
- * Provides the default service implementations for gateway services and utility methods to
- * dispose the service instances.
+ * Provides the default service implementations for gateway services and utility methods to dispose the service
+ * instances.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
@@ -88,11 +89,13 @@ public final class ServiceInstances {
         NodeRepositoryService.class, DefaultNodeRepositoryService.class, //
         SpaceService.class, DefaultSpaceService.class, //
         KaiService.class, DefaultKaiService.class, //
-        ComponentService.class, DefaultComponentService.class) //
+        ComponentService.class, DefaultComponentService.class, //
+        TaskService.class, DefaultTaskService.class //
+    ) //
     );
 
     private static final Map<Class<? extends GatewayService>, LazyInitializer<? extends GatewayService>> SERVICE_INITIALIZERS =
-            synchronizedMap(new HashMap<>());
+        synchronizedMap(new HashMap<>());
 
     private ServiceInstances() {
         // Utility class

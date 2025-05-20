@@ -16,13 +16,15 @@ Require-Bundle: org.knime.core;bundle-version="[5.5.0,6.0.0)",
  org.apache.httpcomponents.httpclient;bundle-version="[4.5.13,5.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.13.2,3.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.13.2,3.0.0)",
- jakarta.annotation-api;bundle-version="[2.1.1,3.0.0)"
+ jakarta.annotation-api;bundle-version="[2.1.1,3.0.0)",
+ org.eclipse.equinox.common
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Export-Package: org.knime.gateway.impl,
  org.knime.gateway.impl.node.port.table,
  org.knime.gateway.impl.project,
  org.knime.gateway.impl.service.util,
+ org.knime.gateway.impl.service.util.progress,
  org.knime.gateway.impl.webui,
  org.knime.gateway.impl.webui.entity,
  org.knime.gateway.impl.webui.featureflags,

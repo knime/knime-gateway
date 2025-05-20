@@ -55,6 +55,7 @@ import java.util.Map;
 
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.service.util.progress.TaskManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
@@ -157,6 +158,7 @@ public final class ServiceDependencies {
      * @param nodeCollections
      * @param nodeCategoryExtensions
      * @param selectionEventBus
+     * @param taskManager
      * @since 5.5
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
@@ -173,7 +175,8 @@ public final class ServiceDependencies {
         final CodeKaiHandler codeKaiHandler, //
         final NodeCollections nodeCollections, //
         final NodeCategoryExtensions nodeCategoryExtensions, //
-        final SelectionEventBus selectionEventBus) {
+        final SelectionEventBus selectionEventBus, //
+        final TaskManager taskManager) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -189,6 +192,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(NodeRepository.class, nodeRepo);
             ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, nodeCategoryExtensions);
             ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
+            ServiceDependencies.setServiceDependency(TaskManager.class, taskManager);
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "

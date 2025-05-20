@@ -83,6 +83,7 @@ public final class ProjectManager {
 
     private final ResortableMap<String, ProjectInternal> m_projectsMap = new ResortableMap<>();
 
+    // todo could be `Listeners`
     private final List<Consumer<String>> m_projectRemovedListeners = new ArrayList<>();
 
     // Note: We want to support multiple active projects in the future.
