@@ -159,6 +159,19 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "saveProject")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+    })
+    public void saveProject(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowPreviewSvg") String workflowPreviewSvg)  throws ServiceExceptions.ServiceCallException {
+        m_service.get().saveProject(projectId, workflowPreviewSvg);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "undoWorkflowCommand")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,

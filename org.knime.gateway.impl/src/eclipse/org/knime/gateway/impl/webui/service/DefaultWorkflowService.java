@@ -50,12 +50,24 @@ package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.ui.component.CheckForComponentUpdatesUtil;
+import org.knime.core.util.LockFailedException;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
@@ -74,6 +86,7 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -121,7 +134,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         final var wfm = ServiceUtilities.assertProjectIdAndGetWorkflowManager(wfKey);
         final var buildContext = WorkflowBuildContext.builder();
         buildContext.setVersion(version);
-        // TODO NXT-3605 remove `includeInteractionInfo`
+        // TODO NXT-3605 remove `includeInteractionInfo` (NOSONAR)
         if (Boolean.TRUE.equals(includeInteractionInfo) && version.isCurrentState()) {
             Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null //
                 ? Map.of() //
@@ -173,6 +186,24 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
+    public void saveProject(final String projectId, final String workflowPreviewSvg) throws ServiceCallException {
+        if (DefaultServiceContext.getProjectId().isEmpty()) {
+            // only to be called from browser environment and this value is only set in browser environment
+            NodeLogger.getLogger(DefaultWorkflowService.class)
+                .warn("Called 'saveProject' without project id, indicating usage from Desktop environment.");
+            return;
+        }
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        final var wfm = SaveProjectHelper.assertIsWorkflowProjectAndNotExecting(projectId);
+        if (!wfm.isDirty()) {
+            return; // Nothing to do if the workflow is not dirty
+        }
+        final var context = SaveProjectHelper.saveToDisk(wfm, workflowPreviewSvg);
+        SaveProjectHelper.uploadToHub(context, m_spaceProvidersManager);
+    }
+
+    @Override
+
     public void disposeVersion(final String projectId, final String versionParameter) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         m_projectManager.getProject(projectId)
@@ -216,6 +247,81 @@ public final class DefaultWorkflowService implements WorkflowService {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         return m_workflowMiddleware
             .buildWorkflowMonitorStateSnapshotEnt(new WorkflowKey(projectId, NodeIDEnt.getRootID()));
+    }
+
+    /**
+     * This temporary helper class will become obsolete with NXT-3634
+     */
+    private static final class SaveProjectHelper {
+
+        private static WorkflowManager assertIsWorkflowProjectAndNotExecting(final String projectId)
+            throws ServiceCallException {
+            var wfm = WorkflowManagerResolver.get(projectId);
+            if (wfm.isComponentProjectWFM()) {
+                throw new ServiceCallException("Not supported for component projects");
+            }
+
+            var isExecutionInProgress = wfm.getNodeContainerState().isExecutionInProgress()
+                || wfm.getNodeContainerState().isExecutingRemotely();
+            if (isExecutionInProgress) {
+                throw new ServiceCallException("Workflow is currently executing");
+            }
+
+            return wfm;
+        }
+
+        /**
+         * TODO NXT-3634: Headless save until we can provide proper UI; de-duplicate from SaveProject (NOSONAR)
+         */
+        private static WorkflowContextV2 saveToDisk(final WorkflowManager wfm, final String workflowPreviewSvg)
+            throws ServiceCallException {
+            final var context = wfm.getContextV2();
+            var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
+
+            try {
+                wfm.save(localWorkflowPath.toFile(), new ExecutionMonitor(), true);
+            } catch (IOException | CanceledExecutionException | LockFailedException e) {
+                throw new ServiceCallException("Could not save workflow", e);
+            }
+            try {
+                Files.writeString(localWorkflowPath.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE), workflowPreviewSvg,
+                    StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new ServiceCallException("Could not save workflow SVG", e);
+            }
+
+            return context;
+        }
+
+        /**
+         * TODO NXT-3634: Headless upload until we can provide proper UI; de-duplicate from 'SaveProject' (NOSONAR)
+         */
+        private static void uploadToHub(final WorkflowContextV2 context, final SpaceProvidersManager spaceProvidersManager)
+            throws ServiceCallException {
+            final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
+            final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
+                .map(mgr -> mgr.getSpaceProviders(key)) //
+                .orElseThrow();
+            final var spaceProvider = spaceProviders.getAllSpaceProviders().stream().findFirst().orElseThrow();
+
+            // (a) In Desktop AP, the provider would be identified by the mountpoint URI saved in the workflow context.
+            // (b) In Browser, this info is not given (because ultimately the context is constructed off a
+            //     HubJobExecutorInfo and not a AnalyticsPlatformExecutorInfo)
+            if (context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo) {
+                final var space = spaceProvider.getSpace(hubInfo.getSpaceItemId());
+                try {
+                    final var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
+                    final var spaceKnimeUrl = space.toPathBasedKnimeUrl(hubInfo.getWorkflowItemId());
+                    space.saveBackTo(localWorkflowPath, spaceKnimeUrl, false, new NullProgressMonitor());
+                } catch (IOException e) {
+                    NodeLogger.getLogger(DefaultWorkflowService.class).error("Could not upload workflow", e);
+                    throw new ServiceCallException("Could not upload workflow", e);
+                }
+            } else {
+                throw new ServiceCallException("Unsupported location type: " + context.getLocationType());
+            }
+        }
+
     }
 
 }
