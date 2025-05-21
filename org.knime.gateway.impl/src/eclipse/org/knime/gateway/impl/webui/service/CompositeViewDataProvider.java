@@ -113,6 +113,16 @@ public interface CompositeViewDataProvider {
         final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
 
     /**
+     * Set the view values as new default values for the component.
+     * Will re-execute if needed.
+     *
+     * @param snc the container of the component
+     * @param viewValues the view values to set as new default values
+     * @throws IOException if the view values cannot be set as new default values
+     */
+    void setViewValuesAsNewDefault(final SubNodeContainer snc, final Map<String, String> viewValues) throws IOException;
+
+    /**
      * Query the current page while reexecuting
      *
      * @param snc the container of the component to reexecute
