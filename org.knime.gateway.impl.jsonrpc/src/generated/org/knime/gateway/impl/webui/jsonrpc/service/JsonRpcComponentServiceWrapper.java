@@ -140,6 +140,19 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "setViewValuesAsNewDefault")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+    })
+    public void setViewValuesAsNewDefault(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="viewValues") java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException {
+        m_service.get().setViewValuesAsNewDefault(projectId, workflowId, nodeId, viewValues);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "triggerCompleteComponentReexecution")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,

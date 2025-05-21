@@ -122,6 +122,19 @@ public interface ComponentService extends GatewayService {
     Object pollComponentReexecutionStatus(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String resetNodeIdSuffix)  throws ServiceExceptions.ServiceCallException;
         
     /**
+     * Applies viewValues as new default.  First the viewValues will be validated, then applied and when necessary the component will be executed.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     * @param viewValues 
+     *
+     * 
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     */
+    void setViewValuesAsNewDefault(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException;
+        
+    /**
      * Triggers the re-execution process (and updates the viewValues) for the whole component, i.e.,  every containing node will be re-executed. If a specific node has triggered the re-execution process use  &#39;trigger-reexecution/{resetNodeIdSuffix}&#39; to only re-execute that node together  with every down-stream node of it.
      *
      * @param projectId ID of the workflow-project.
