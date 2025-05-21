@@ -94,11 +94,10 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         var beforeBoolean = beforeJson.at(widgetBooleanPath);
         var scatterPlotBefore = m_mapper.readTree(beforeJson.at(scatterPlotInitialDataPath).asText());
 
-        assertThat("yAxisLabel should _not_ have value 'test'", scatterPlotBefore.at(scatterPlotYAxisLabelPath).asText(),
-            not(is("test")));
+        assertThat("yAxisLabel should _not_ have value 'test'",
+            scatterPlotBefore.at(scatterPlotYAxisLabelPath).asText(), not(is("test")));
 
-        cs.triggerComponentReexecution(projectId,
-            NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4", Map
+        cs.triggerComponentReexecution(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4", Map
             .of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
         var reexecutionStatus =
             cs.pollComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4");
@@ -114,6 +113,41 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         assertThat("Boolean value should have changed after re-execution", afterBoolean, not(is(beforeBoolean)));
         assertThat("yAxisLabel should have value 'test'", scatterPlotAfter.at(scatterPlotYAxisLabelPath).asText(),
             is("test"));
+    }
+
+    /**
+     * Makes sure that {@link ComponentService#setViewValuesAsNewDefault(String, NodeIDEnt, NodeIDEnt, String, Map)}
+     * works
+     *
+     * @throws Exception
+     */
+    @Test
+    public void setViewValuesAsNewDefault() throws Exception {
+        var projectId = "wf_id";
+        var wfm = loadWorkflow(TestWorkflowCollection.COMPONENT_REEXECUTION, projectId);
+        var cs = new DefaultComponentService();
+
+        var widgetBooleanPath = "/webNodes/3:0:4/viewRepresentation/currentValue/boolean";
+
+        wfm.executeAllAndWaitUntilDone();
+
+        var compositeViewPage =
+            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
+        var beforeJson = m_mapper.readTree(compositeViewPage);
+        var beforeBooleanDefault = beforeJson.at("/webNodes/3:0:4/viewRepresentation/defaultValue");
+
+        cs.setViewValuesAsNewDefault(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), Map.of("3:0:4",
+            "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
+
+        wfm.executeAllAndWaitUntilDone();
+
+        var compositeViewPageAfterReexecution =
+            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
+        var afterJson = m_mapper.readTree(compositeViewPageAfterReexecution);
+        var afterBooleanDefault = afterJson.at(widgetBooleanPath);
+
+        assertThat("Boolean value should have changed after re-execution", beforeBooleanDefault,
+            not(is(afterBooleanDefault)));
     }
 
 }
