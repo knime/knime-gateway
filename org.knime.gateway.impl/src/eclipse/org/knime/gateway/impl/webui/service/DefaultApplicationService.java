@@ -72,6 +72,8 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
  */
 public final class DefaultApplicationService implements ApplicationService {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultApplicationService.class);
+
     private final AppStateUpdater m_appStateUpdater =
         ServiceDependencies.getServiceDependency(AppStateUpdater.class, false);
 
@@ -126,6 +128,11 @@ public final class DefaultApplicationService implements ApplicationService {
             m_appStateUpdater.setLastAppState(appState);
         }
         return appState;
+    }
+
+    @Override
+    public void log(final String message, final String sourceLocation) {
+        // TODO: Move logging logic from CEFUtil here 
     }
 
 }
