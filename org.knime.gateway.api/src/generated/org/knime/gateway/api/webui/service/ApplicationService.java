@@ -65,4 +65,14 @@ public interface ApplicationService extends GatewayService {
      */
     AppStateEnt getState() ;
         
+    /**
+     * Pushes a line to the application log.
+     *
+     * @param loglevel Numeric log level
+     * @param logline The content to be logged
+     *
+     * 
+     */
+    void log(Integer loglevel, String logline) ;
+        
 }
