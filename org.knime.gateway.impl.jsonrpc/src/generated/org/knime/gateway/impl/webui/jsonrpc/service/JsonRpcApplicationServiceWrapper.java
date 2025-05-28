@@ -80,4 +80,13 @@ public class JsonRpcApplicationServiceWrapper implements ApplicationService {
         return m_service.get().getState();    
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "log")
+    public void log(@JsonRpcParam(value="loglevel") String loglevel, @JsonRpcParam(value="logline") String logline)  {
+        m_service.get().log(loglevel, logline);    
+    }
+
 }

@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.service;
 
 import java.util.function.Predicate;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -71,6 +72,8 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
  * @author Kai Franze, KNIME GmbH
  */
 public final class DefaultApplicationService implements ApplicationService {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultApplicationService.class);
 
     private final AppStateUpdater m_appStateUpdater =
         ServiceDependencies.getServiceDependency(AppStateUpdater.class, false);
@@ -126,6 +129,24 @@ public final class DefaultApplicationService implements ApplicationService {
             m_appStateUpdater.setLastAppState(appState);
         }
         return appState;
+    }
+
+    @Override
+    public void log(final String loglevel, final String logline) {
+        switch (loglevel) {
+            case "error":
+                LOGGER.errorWithFormat("knime-ui :: %s", logline);
+                break;
+            case "warn":
+                LOGGER.warnWithFormat("knime-ui :: %s", logline);
+                break;
+            case "info":
+                LOGGER.infoWithFormat("knime-ui :: %s", logline);
+                break;
+            case "debug":
+                LOGGER.debugWithFormat("knime-ui :: %s", logline);
+                break;
+        }
     }
 
 }
