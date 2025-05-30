@@ -88,6 +88,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.CollisionException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
@@ -428,7 +429,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public List<SpaceGroupEnt> toEntity() throws NetworkException, LoggedOutException, ServiceCallException {
+            public List<SpaceGroupEnt> toEntity()
+                throws NetworkException, LoggedOutException, ContextfulServiceCallException {
                 return List.of(getLocalSpaceGroupForTesting(spaces).toEntity());
             }
 
@@ -475,7 +477,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public List<SpaceGroupEnt> toEntity() throws NetworkException, LoggedOutException, ServiceCallException {
+            public List<SpaceGroupEnt> toEntity()
+                throws NetworkException, LoggedOutException, ContextfulServiceCallException {
                 return List.of(getLocalSpaceGroupForTesting(localWorkspace).toEntity());
             }
 
@@ -514,7 +517,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public SpaceGroupEnt toEntity() throws NetworkException, LoggedOutException, ServiceCallException {
+            public SpaceGroupEnt toEntity()
+                throws NetworkException, LoggedOutException, ContextfulServiceCallException {
                 final List<SpaceEnt> spaceEnts = new ArrayList<>();
                 for (final var space : spaces) {
                     spaceEnts.add(space.toEntity());

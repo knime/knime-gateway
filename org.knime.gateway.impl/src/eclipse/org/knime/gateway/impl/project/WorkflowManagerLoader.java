@@ -61,9 +61,10 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.LockFailedException;
 import org.knime.core.util.ProgressMonitorAdapter;
 import org.knime.gateway.api.util.VersionId;
+import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -126,12 +127,12 @@ public interface WorkflowManagerLoader {
      * @param monitor Will receive updates on the progress of the task
      * @return -
      */
-    static Optional<Path> fetch(final Origin origin, final VersionId version, final SpaceProviders spaceProviders,
+    static Optional<Path> fetch(final Origin origin, final VersionId version, final Space space,
         final ExecutionMonitor monitor) { // NOSONAR false positive
         try {
-            var space = spaceProviders.getSpace(origin.providerId(), origin.spaceId());
             return space.toLocalAbsolutePath(monitor, origin.itemId(), version);
-        } catch (CanceledExecutionException | NetworkException | LoggedOutException | ServiceCallException e) { // TODO
+        } catch (CanceledExecutionException | NetworkException | LoggedOutException // TODO
+                | ContextfulServiceCallException e) {
             return Optional.empty();
         }
     }

@@ -138,9 +138,11 @@ public interface WorkflowService extends GatewayService {
      * @param workflowPreviewSvg The workflow SVG to save with the workflow
      *
      * 
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void saveProject(String projectId, String workflowPreviewSvg)  throws ServiceExceptions.ServiceCallException;
+    void saveProject(String projectId, String workflowPreviewSvg)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException;
         
     /**
      * Un-does the last command from the undo-stack.

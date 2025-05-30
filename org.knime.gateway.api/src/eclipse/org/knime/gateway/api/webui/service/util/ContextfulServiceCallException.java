@@ -44,89 +44,56 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   3 May 2024 (baqueroj): created
+ *   26 May 2025 (leonard.woerteler): created
  */
-package org.knime.gateway.impl.webui.spaces;
+package org.knime.gateway.api.webui.service.util;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
-import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
-import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
- * Represents a space group which can be a user or a team inside a provider
  *
- * @author Juan Baquero
- * @param <S> The concrete type of spaces contained in this group
+ * @author leonard.woerteler
+ * @since 5.5
  */
-public interface SpaceGroup<S extends Space> {
+@SuppressWarnings("serial")
+public class ContextfulServiceCallException extends Exception {
 
-    /**
-     * Describe the type of this group
-     */
-    enum SpaceGroupType {
+    private String m_title;
 
-            /** User group */
-            USER,
+    private final Deque<String> m_details = new ArrayDeque<>();
 
-            /** Team group */
-            TEAM;
-
-        public SpaceGroupEnt.TypeEnum toEntity() {
-            return switch (this) {
-                case USER -> SpaceGroupEnt.TypeEnum.USER;
-                case TEAM -> SpaceGroupEnt.TypeEnum.TEAM;
-            };
-        }
-
-        public static SpaceGroupType fromEntity(final SpaceGroupEnt.TypeEnum typeEnum) {
-            return switch (typeEnum) {
-                case USER -> USER;
-                case TEAM -> TEAM;
-            };
-        }
+    public ContextfulServiceCallException(final String message) {
+        super(message);
+        m_title = message;
     }
 
-    /**
-     * @return name of this group
-     */
-    String getName();
-
-    /**
-     * @return group type
-     */
-    SpaceGroupType getType();
-
-    /**
-     * @return the spaces contained within this group
-     */
-    List<S> getSpaces();
-
-    /**
-     * Creates a new private space inside this space group, it will use an automatically generated unique name
-     *
-     * @return the newly created {@link Space}
-     * @throws OperationNotAllowedException
-     * @throws LoggedOutException
-     * @throws NetworkException
-     * @throws ContextfulServiceCallException
-     */
-    default Space createSpace()
-        throws NetworkException, LoggedOutException, OperationNotAllowedException, ContextfulServiceCallException {
-        throw new UnsupportedOperationException("Creation of spaces is not supported in this provider");
+    public ContextfulServiceCallException(final String message, final Throwable cause) {
+        super(message, cause);
+        m_title = message;
     }
 
-    /**
-     * Creates a {@link SpaceGroupEnt} for this space group.
-     *
-     * @return space group entity for this group
-     * @throws LoggedOutException
-     * @throws NetworkException
-     * @throws ContextfulServiceCallException
-     */
-    SpaceGroupEnt toEntity() throws NetworkException, LoggedOutException, ContextfulServiceCallException;
+    public ContextfulServiceCallException(final String message, final List<String> details, final Throwable cause) {
+        super(message, cause);
+        pushContext(null, details);
+    }
 
+    public ContextfulServiceCallException pushContext(final String newTitle, final List<String> detailsLines) {
+        if (newTitle != null) {
+            m_title = newTitle;
+        }
+        if (detailsLines != null) {
+            for (int i = detailsLines.size() - 1; i >= 0; i--) {
+                m_details.addFirst(detailsLines.get(i));
+            }
+        }
+        return this;
+    }
+
+    public ServiceCallException toGatewayException() {
+        return new ServiceCallException(m_title, getCause()); // TODO
+    }
 }

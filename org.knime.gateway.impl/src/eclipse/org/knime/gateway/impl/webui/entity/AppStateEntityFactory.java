@@ -79,9 +79,9 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ConnectionModeEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
+import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
@@ -377,11 +377,13 @@ public final class AppStateEntityFactory {
             try {
                 var localSpace = (LocalSpace)spaceProviders.getSpace(origin.providerId(), origin.spaceId());
                 return localSpace.getAncestorItemIds(origin.itemId());
-            } catch (final ServiceCallException | NetworkException | LoggedOutException e) { // TODO
+            } catch (final NetworkException | LoggedOutException e) { // TODO
                 throw new IllegalStateException(e);
+            } catch (final ContextfulServiceCallException e) { // NOSONAR
+                throw new IllegalStateException(e.toGatewayException());
             }
         } else {
-            return null; // NOSONAR null return value is reasonable (want to sent entity property to null)
+            return null; // NOSONAR null return value is reasonable (want to set entity property to null)
         }
     }
 

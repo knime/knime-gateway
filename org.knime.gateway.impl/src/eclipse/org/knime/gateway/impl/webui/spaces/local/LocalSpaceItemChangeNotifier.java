@@ -60,7 +60,7 @@ import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.knime.core.node.NodeLogger;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
 import org.knime.gateway.impl.service.util.CallThrottle;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceAndItemId;
@@ -228,8 +228,8 @@ final class LocalSpaceItemChangeNotifier implements SpaceProvider.SpaceItemChang
         File targetPath;
         try {
             targetPath = m_spaceProvider.getSpace(item.spaceId()).getAbsolutePath(item.itemId()).toFile();
-        } catch (final ServiceCallException ex) {
-            throw new IllegalStateException(ex); // TODO
+        } catch (final ContextfulServiceCallException ex) {
+            throw new IllegalStateException(ex.toGatewayException()); // TODO
         }
         var isSibling = createFilter(file -> {
             // Avoid reporting changes in subdirectories.

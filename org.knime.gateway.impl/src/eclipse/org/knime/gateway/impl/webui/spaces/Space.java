@@ -70,6 +70,7 @@ import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
+import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
@@ -157,10 +158,10 @@ public interface Space {
      * @throws NoSuchElementException if the given workflow group item id doesn't refer to a workflow group
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
     WorkflowGroupContentEnt listWorkflowGroup(String workflowGroupItemId)
-        throws NetworkException, LoggedOutException, ServiceCallException;
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Lists the jobs for a workflow for the given id.
@@ -217,12 +218,12 @@ public interface Space {
      * @param workflowId ID of workflow from which the schedule originated
      * @param scheduleId ID of the scheduled job to edit
      * @return the ID of the scheduled job if it was changed or {@code null} if nothing was changed
-     * @throws ServiceCallException if an exception occured while saving the edited job
+     * @throws ContextfulServiceCallException if an exception occured while saving the edited job
      * @throws LoggedOutException
      * @throws NetworkException
      */
     default String editScheduleInfo(final String workflowId, final String scheduleId)
-        throws ServiceCallException, NetworkException, LoggedOutException {
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException {
         throw new UnsupportedOperationException("Editing schedules is not supported.");
     }
 
@@ -247,11 +248,11 @@ public interface Space {
      * @throws LoggedOutException
      * @throws NetworkException
      * @throws OperationNotAllowedException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws NoSuchElementException If the given workflow group item id doesn't refer to a workflow group
      */
     SpaceItemEnt createWorkflow(String workflowGroupItemId, String workflowName)
-        throws NetworkException, LoggedOutException, OperationNotAllowedException, ServiceCallException;
+        throws NetworkException, LoggedOutException, OperationNotAllowedException, ContextfulServiceCallException;
 
     /**
      * Creates a new workflow group within a given workflow group.
@@ -260,12 +261,12 @@ public interface Space {
      * @return the newly created space item
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws OperationNotAllowedException
      * @throws NoSuchElementException If the given workflow group item id doesn't refer to a workflow group
      */
     SpaceItemEnt createWorkflowGroup(String workflowGroupItemId)
-        throws NetworkException, LoggedOutException, OperationNotAllowedException, ServiceCallException;
+        throws NetworkException, LoggedOutException, OperationNotAllowedException, ContextfulServiceCallException;
 
     /**
      * Rename a space item
@@ -276,10 +277,10 @@ public interface Space {
      * @throws OperationNotAllowedException
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
     SpaceItemEnt renameItem(String itemId, String newName)
-        throws OperationNotAllowedException, NetworkException, LoggedOutException, ServiceCallException;
+        throws OperationNotAllowedException, NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Rename this space
@@ -289,10 +290,10 @@ public interface Space {
      * @throws OperationNotAllowedException
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
     default SpaceEnt renameSpace(final String newName)
-        throws OperationNotAllowedException, NetworkException, LoggedOutException, ServiceCallException {
+        throws OperationNotAllowedException, NetworkException, LoggedOutException, ContextfulServiceCallException {
         throw new OperationNotAllowedException("Renaming of spaces is not supported in this provider");
     }
 
@@ -307,10 +308,10 @@ public interface Space {
      * @throws CanceledExecutionException if the operation was cancelled
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
     Optional<Path> toLocalAbsolutePath(ExecutionMonitor monitor, String itemId, final VersionId version)
-        throws CanceledExecutionException, NetworkException, LoggedOutException, ServiceCallException;
+        throws CanceledExecutionException, NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * @param monitor to report progress, progress messages and for cancellation
@@ -320,11 +321,11 @@ public interface Space {
      * @throws CanceledExecutionException
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @see this#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
      */
     default Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId)
-        throws CanceledExecutionException, NetworkException, LoggedOutException, ServiceCallException {
+        throws CanceledExecutionException, NetworkException, LoggedOutException, ContextfulServiceCallException {
         return toLocalAbsolutePath(monitor, itemId, VersionId.currentState());
     }
 
@@ -334,11 +335,11 @@ public interface Space {
      *         download) has been cancelled
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @see this#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
      */
     default Optional<Path> toLocalAbsolutePath(final String itemId)
-        throws NetworkException, LoggedOutException, ServiceCallException {
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException {
         try {
             return toLocalAbsolutePath(new ExecutionMonitor(), itemId, VersionId.currentState());
         } catch (CanceledExecutionException ex) {
@@ -352,10 +353,10 @@ public interface Space {
      * @return the location info for the given item
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
     default LocationInfo getLocationInfo(final String itemId)
-        throws NetworkException, LoggedOutException, ServiceCallException {
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException {
         return getLocationInfo(itemId, VersionId.currentState());
     }
 
@@ -365,11 +366,11 @@ public interface Space {
      * @return the location info for the given item
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @since 5.5
      */
     LocationInfo getLocationInfo(String itemId, final VersionId version)
-        throws NetworkException, LoggedOutException, ServiceCallException;
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Gets the space item ID given a URI
@@ -378,9 +379,10 @@ public interface Space {
      * @return item ID for the given URI or {@link Optional#empty()} if URI could not be resolved to an item ID
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
-    Optional<String> getItemIdByURI(final URI uri) throws NetworkException, LoggedOutException, ServiceCallException;
+    Optional<String> getItemIdByURI(final URI uri)
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Creates a mountpoint-absolute KNIME URL for the given space item. The URL may be either path- or ID-based.
@@ -399,24 +401,24 @@ public interface Space {
      * @return A browser-viewable URL corresponding to the item
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @since 5.5
      */
     default Optional<URI> getItemUrl(final String itemId)
-        throws NetworkException, LoggedOutException, ServiceCallException {
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException {
         return Optional.empty();
     }
 
     /**
      * @param itemId
      * @return A browser-viewable URL corresponding to the API definition of the item
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws LoggedOutException
      * @throws NetworkException
      * @since 5.5
      */
     default Optional<URI> getAPIDefinitionUrl(final String itemId)
-        throws NetworkException, LoggedOutException, ServiceCallException {
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException {
         return Optional.empty();
     }
 
@@ -428,10 +430,10 @@ public interface Space {
      * @return path-based KNIME URL
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
     default URI toPathBasedKnimeUrl(final String itemId)
-        throws NetworkException, LoggedOutException, ServiceCallException {
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException {
         return toKnimeUrl(itemId);
     }
 
@@ -443,12 +445,12 @@ public interface Space {
      *            deleted.
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws OperationNotAllowedException
      * @throws NoSuchElementException If one of the given item IDs does not exist
      */
     void deleteItems(List<String> itemIds, boolean softDelete)
-        throws NetworkException, LoggedOutException, OperationNotAllowedException, ServiceCallException;
+        throws NetworkException, LoggedOutException, OperationNotAllowedException, ContextfulServiceCallException;
 
     /**
      * Moves or copies the items to the new location within the space.
@@ -460,13 +462,13 @@ public interface Space {
      * @throws LoggedOutException
      * @throws NetworkException
      * @throws OperationNotAllowedException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws NoSuchElementException If one of the given item IDs does not exist
      * @throws IllegalArgumentException
      */
     void moveOrCopyItems(List<String> itemIds, String destWorkflowGroupItemId,
         Space.NameCollisionHandling collisionHandling, boolean copy)
-        throws NetworkException, LoggedOutException, OperationNotAllowedException, ServiceCallException;
+        throws NetworkException, LoggedOutException, OperationNotAllowedException, ContextfulServiceCallException;
 
     /**
      * Imports a data file to a workflow group.
@@ -479,12 +481,12 @@ public interface Space {
      * @throws LoggedOutException
      * @throws NetworkException
      * @throws OperationNotAllowedException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws CanceledExecutionException
      */
     SpaceItemEnt importFile(Path srcPath, String workflowGroupItemId, Space.NameCollisionHandling collisionHandling,
         IProgressMonitor progressMonitor) throws NetworkException, LoggedOutException, OperationNotAllowedException,
-        ServiceCallException, CanceledExecutionException;
+        ContextfulServiceCallException, CanceledExecutionException;
 
     /**
      * Imports a workflow (group) to the specified workflow group.
@@ -498,13 +500,13 @@ public interface Space {
      * @throws LoggedOutException
      * @throws NetworkException
      * @throws OperationNotAllowedException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws CanceledExecutionException
      */
     SpaceItemEnt importWorkflowOrWorkflowGroup(Path srcPath, String workflowGroupItemId,
         Consumer<Path> createMetaInfoFileFor, Space.NameCollisionHandling collisionHandling,
         IProgressMonitor progressMonitor) throws NetworkException, LoggedOutException, OperationNotAllowedException,
-        ServiceCallException, CanceledExecutionException;
+        ContextfulServiceCallException, CanceledExecutionException;
 
     /**
      * @param itemId the id of the item to get the ancestors for
@@ -512,9 +514,10 @@ public interface Space {
      *         parent of the parent etc. Returns an empty list if the item is at root-level.
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
-    List<String> getAncestorItemIds(String itemId) throws NetworkException, LoggedOutException, ServiceCallException;
+    List<String> getAncestorItemIds(String itemId)
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Determines the item id for the given name for a item within a certain workflow group (or the space root).
@@ -522,13 +525,13 @@ public interface Space {
      * @param workflowGroupItemId The workflow group item ID
      * @param itemName The item name to check
      * @return the item id if there is an item for the given name, empty otherwise
-     * @throws ServiceCallException If there is no workflow group for the given id.
+     * @throws ContextfulServiceCallException If there is no workflow group for the given id.
      * @throws LoggedOutException
      * @throws NetworkException
      * @since 5.5
      */
     Optional<String> getItemIdForName(String workflowGroupItemId, String itemName)
-        throws ServiceCallException, NetworkException, LoggedOutException;
+        throws ContextfulServiceCallException, NetworkException, LoggedOutException;
 
     /**
      * Checks whether a certain workflow group (or the workspace root) already contains an item with the given name.
@@ -539,10 +542,10 @@ public interface Space {
      * @throws NoSuchElementException If there is no workflow group for the given id.
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
     default boolean containsItemWithName(final String workflowGroupItemId, final String itemName)
-        throws NoSuchElementException, NetworkException, LoggedOutException, ServiceCallException {
+        throws NoSuchElementException, NetworkException, LoggedOutException, ContextfulServiceCallException {
         return getItemIdForName(workflowGroupItemId, itemName).isPresent();
     }
 
@@ -553,10 +556,10 @@ public interface Space {
      * @return The space item's name
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws NoSuchElementException If no such item is present
      */
-    String getItemName(String itemId) throws NetworkException, LoggedOutException, ServiceCallException;
+    String getItemName(String itemId) throws NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Returns the type of a space item.
@@ -565,10 +568,11 @@ public interface Space {
      * @return The space item's type
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws NoSuchElementException If no such item is present
      */
-    SpaceItemEnt.TypeEnum getItemType(String itemId) throws NetworkException, LoggedOutException, ServiceCallException;
+    SpaceItemEnt.TypeEnum getItemType(String itemId)
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Returns the project type of a space item if it is a project.
@@ -577,11 +581,11 @@ public interface Space {
      * @return The optional project type of the space item, if it is a project.
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws NoSuchElementException If no such item is present
      */
     Optional<ProjectTypeEnum> getProjectType(final String itemId)
-        throws NetworkException, LoggedOutException, ServiceCallException;
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Creates a {@link SpaceEnt} for this space.
@@ -589,9 +593,9 @@ public interface Space {
      * @return space entity for this space
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
-    SpaceEnt toEntity() throws NetworkException, LoggedOutException, ServiceCallException;
+    SpaceEnt toEntity() throws NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Opens the permission dialog for Server items only.
@@ -679,14 +683,14 @@ public interface Space {
      * @param progressMonitor progress monitor
      * @return {@code true} if the upload succeeded, {@code false} if it was canceled
      * @throws UnsupportedOperationException if invoked on a something other than a Hub or Server space
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      * @throws LoggedOutException
      * @throws NetworkException
      * @since 5.5
      */
     default boolean saveBackTo(final Path localWorkflow, final URI targetURI, final boolean excludeDataInWorkflows,
         final IProgressMonitor progressMonitor)
-        throws UnsupportedOperationException, NetworkException, LoggedOutException, ServiceCallException {
+        throws UnsupportedOperationException, NetworkException, LoggedOutException, ContextfulServiceCallException {
         throw new UnsupportedOperationException("Cannot call this method on spaces other than Hub spaces.");
     }
 

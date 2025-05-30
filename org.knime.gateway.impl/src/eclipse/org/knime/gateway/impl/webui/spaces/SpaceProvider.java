@@ -60,9 +60,9 @@ import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
+import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Represents an entity that holds spaces. E.g. a Hub instance.
@@ -107,9 +107,9 @@ public interface SpaceProvider {
      * @return space with the given ID
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
-    Space getSpace(String spaceId) throws NetworkException, LoggedOutException, ServiceCallException;
+    Space getSpace(String spaceId) throws NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Returns the space groups of this provider.
@@ -118,12 +118,12 @@ public interface SpaceProvider {
      * @return spaceGroup The associated space group
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
      * @throws NoSuchElementException
+     * @throws ContextfulServiceCallException
      */
     @SuppressWarnings("java:S1452") // wildcard is needed so `HubSpaceGroup implements SpaceGroup<HubSpace>` works here
     SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName)
-        throws NetworkException, LoggedOutException, NoSuchElementException, ServiceCallException;
+        throws NetworkException, LoggedOutException, NoSuchElementException, ContextfulServiceCallException;
 
     /**
      * Returns the server address of the current space provider
@@ -140,9 +140,9 @@ public interface SpaceProvider {
      * @return entity representing this space provider
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
-    List<SpaceGroupEnt> toEntity() throws NetworkException, LoggedOutException, ServiceCallException;
+    List<SpaceGroupEnt> toEntity() throws NetworkException, LoggedOutException, ContextfulServiceCallException;
 
     /**
      * Uploads a workflow to the location represented by the given KNIME URL.
@@ -152,14 +152,14 @@ public interface SpaceProvider {
      * @param deleteSource flag indicating that the operation is a move instead of a copy operation
      * @param excludeDataInWorkflows data exclusion flag
      * @param progressMonitor monitor for aborting or receiving progress updates
-     * @throws ServiceCallException
      * @throws NetworkException
      * @throws LoggedOutException
+     * @throws ContextfulServiceCallException
      * @throws UnsupportedOperationException for local space providers
      */
     default void syncUploadWorkflow(final Path localWorkflow, final URI targetUri, final boolean deleteSource,
         final boolean excludeDataInWorkflows, final IProgressMonitor progressMonitor)
-        throws NetworkException, ServiceCallException, LoggedOutException {
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException {
         throw new UnsupportedOperationException();
     }
 
@@ -170,13 +170,14 @@ public interface SpaceProvider {
      * @param targetUri target KNIME URL
      * @param deleteSource flag indicating that the operation is a move instead of a copy operation
      * @param progressMonitor monitor for aborting or receiving progress updates
-     * @throws ServiceCallException
      * @throws NetworkException
      * @throws LoggedOutException
+     * @throws ContextfulServiceCallException
      * @throws UnsupportedOperationException for local space providers
      */
     default void syncDownloadWorkflow(final URI sourceUri, final URI targetUri, final boolean deleteSource,
-        final IProgressMonitor progressMonitor) throws NetworkException, ServiceCallException, LoggedOutException {
+        final IProgressMonitor progressMonitor)
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException {
         throw new UnsupportedOperationException();
     }
 
@@ -269,10 +270,10 @@ public interface SpaceProvider {
      * @return resolved item or {@link Optional#empty()} if item could not be resolved by this space provider
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws ServiceCallException
+     * @throws ContextfulServiceCallException
      */
     default Optional<SpaceAndItemId> resolveSpaceAndItemId(final URI uri)
-        throws NetworkException, LoggedOutException, ServiceCallException {
+        throws NetworkException, LoggedOutException, ContextfulServiceCallException {
         return Optional.empty();
     }
 

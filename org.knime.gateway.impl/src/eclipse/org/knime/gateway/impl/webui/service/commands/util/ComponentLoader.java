@@ -79,10 +79,9 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.LoadResultEntry;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -118,8 +117,10 @@ public final class ComponentLoader {
             uri = space.toKnimeUrl(commandEnt.getItemId());
             exec.setMessage("Downloading...");
             localPath = space.toLocalAbsolutePath(exec, commandEnt.getItemId()).orElseThrow();
-        } catch (NetworkException | LoggedOutException | ServiceCallException ex) {
+        } catch (GatewayException ex) {
             throw new IllegalStateException(ex); // TODO
+        } catch (final ContextfulServiceCallException ex) {
+            throw new IllegalStateException(ex.toGatewayException()); // TODO
         }
 
         var componentName = commandEnt.getName();

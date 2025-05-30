@@ -62,6 +62,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.CollisionException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
@@ -119,6 +120,8 @@ public class DefaultSpaceService implements SpaceService {
             return spaceProvider.toEntity();
         } catch (NoSuchElementException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -132,6 +135,8 @@ public class DefaultSpaceService implements SpaceService {
             return space.listWorkflowGroup(workflowGroupId);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -143,15 +148,21 @@ public class DefaultSpaceService implements SpaceService {
                 .listJobsForWorkflow(workflowId);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Problem fetching jobs", e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
     @Override
     public void deleteJobsForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
         final String jobId) throws ServiceCallException, LoggedOutException, NetworkException {
-        final var space =
-            m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId).getSpace(spaceId);
-        space.deleteJobsForWorkflow(itemId, List.of(jobId));
+        try {
+            final var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId)
+                .getSpace(spaceId);
+            space.deleteJobsForWorkflow(itemId, List.of(jobId));
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
+        }
     }
 
     @Override
@@ -162,14 +173,20 @@ public class DefaultSpaceService implements SpaceService {
                 .listSchedulesForWorkflow(workflowId);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Problem fetching jobs", e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
     @Override
     public void deleteSchedulesForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
         final String scheduleId) throws ServiceCallException, LoggedOutException, NetworkException {
-        final var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId);
-        space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
+        try {
+            final var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId);
+            space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
+        }
     }
 
     @Override
@@ -183,6 +200,8 @@ public class DefaultSpaceService implements SpaceService {
                 .toEntity();
         } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -202,6 +221,8 @@ public class DefaultSpaceService implements SpaceService {
             return item;
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Problem fetching space items", e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -214,6 +235,8 @@ public class DefaultSpaceService implements SpaceService {
                 .deleteItems(spaceItemIds, softDelete);
         } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -225,6 +248,8 @@ public class DefaultSpaceService implements SpaceService {
                 .createWorkflowGroup(itemId);
         } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -264,6 +289,8 @@ public class DefaultSpaceService implements SpaceService {
         } catch (NoSuchElementException | IllegalArgumentException e) {
             // should never happen
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -277,6 +304,8 @@ public class DefaultSpaceService implements SpaceService {
             throw new ServiceCallException("Could not access space", e);
         } catch (OperationNotAllowedException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -290,6 +319,8 @@ public class DefaultSpaceService implements SpaceService {
             throw new ServiceCallException("Could not access space", e);
         } catch (OperationNotAllowedException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -297,13 +328,17 @@ public class DefaultSpaceService implements SpaceService {
         final Space destinationSpace, final String destWorkflowGroupItemId)
         throws CollisionException, NoSuchElementException, NetworkException, LoggedOutException, ServiceCallException {
         for (var itemId : itemIds) {
-            var itemName = sourceSpace.getItemName(itemId);
-            var destinationItemId = destinationSpace.getItemIdForName(destWorkflowGroupItemId, itemName);
-            if (destinationItemId.isPresent()) {
-                checkForDestinationContainingSource(itemId, sourceSpace, destinationItemId.get(), destinationSpace,
-                    itemName);
-                throw new CollisionException(
-                    "An item with name '%s' already exists at the target location".formatted(itemName));
+            try {
+                var itemName = sourceSpace.getItemName(itemId);
+                var destinationItemId = destinationSpace.getItemIdForName(destWorkflowGroupItemId, itemName);
+                if (destinationItemId.isPresent()) {
+                    checkForDestinationContainingSource(itemId, sourceSpace, destinationItemId.get(), destinationSpace,
+                        itemName);
+                    throw new CollisionException(
+                        "An item with name '%s' already exists at the target location".formatted(itemName));
+                }
+            } catch (ContextfulServiceCallException e) { // NOSONAR
+                throw e.toGatewayException();
             }
         }
     }
@@ -315,11 +350,15 @@ public class DefaultSpaceService implements SpaceService {
             return; // Different spaces, no collision
         }
 
-        var anchestorItemIds = sourceSpace.getAncestorItemIds(sourceItemId);
-        if (anchestorItemIds.contains(destinationItemId)) {
-            throw new ServiceCallException(
-                "The item with name '%s' can't overwrite itself (the destination item contains the source item)."
-                    .formatted(itemName));
+        try {
+            var anchestorItemIds = sourceSpace.getAncestorItemIds(sourceItemId);
+            if (anchestorItemIds.contains(destinationItemId)) {
+                throw new ServiceCallException(
+                    "The item with name '%s' can't overwrite itself (the destination item contains the source item)."
+                        .formatted(itemName));
+            }
+        } catch (ContextfulServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -341,9 +380,13 @@ public class DefaultSpaceService implements SpaceService {
         final List<String> itemIds, final LocalSpace localSpace) throws ServiceCallException {
         final List<String> toClose = new ArrayList<>();
         for (final String workflowId : (Iterable<String>)openWorkflowIds::iterator) {
-            if (itemIds.contains(workflowId)
-                || localSpace.getAncestorItemIds(workflowId).stream().anyMatch(itemIds::contains)) {
-                toClose.add(workflowId);
+            try {
+                if (itemIds.contains(workflowId)
+                    || localSpace.getAncestorItemIds(workflowId).stream().anyMatch(itemIds::contains)) {
+                    toClose.add(workflowId);
+                }
+            } catch (ContextfulServiceCallException e) { // NOSONAR
+                throw e.toGatewayException();
             }
         }
         return toClose;

@@ -66,12 +66,10 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.util.PathUtils;
-import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceItemPathAndTypeCache;
@@ -104,7 +102,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testGetAncestorItemIds() throws IOException, GatewayException {
+    public void testGetAncestorItemIds() throws Exception {
         var dir3 = Files.createDirectories(m_space.getRootPath().resolve("dir1/dir2/dir3"));
         createFile(m_space.getRootPath().resolve("dir1"), "test.txt");
         createFile(m_space.getRootPath().resolve("dir1/dir2"), "test2.txt");
@@ -136,7 +134,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testMapCleanupOnDelete() throws IOException, GatewayException {
+    public void testMapCleanupOnDelete() throws Exception {
         // Add some items to the root
         var fileNotToBeDeleted = createFile(m_space.getRootPath(), "file_not_to_be_deleted.txt");
         var fileToBeDeleted = createFile(m_space.getRootPath(), "file_to_be_deleted.txt");
@@ -182,7 +180,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testMoveItemsUpdatesCache() throws IOException, GatewayException {
+    public void testMoveItemsUpdatesCache() throws Exception {
         // Add some items to the root
         var fileNotToBeMoved = createFile(m_space.getRootPath(), "file_not_to_be_moved.txt");
         var fileToBeMoved = createFile(m_space.getRootPath(), "file_to_be_moved.txt");
@@ -221,7 +219,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testToKnimeURl() throws IOException, GatewayException {
+    public void testToKnimeURl() throws Exception {
         createFile(m_space.getRootPath(), "test.txt");
         Files.createDirectories(m_space.getRootPath().resolve("dir"));
         createWorkflow(m_space, m_space.getRootPath(), m_space.getItemId(m_space.getRootPath()),
@@ -244,7 +242,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testImportFileUpdatesCache() throws IOException, GatewayException {
+    public void testImportFileUpdatesCache() throws Exception {
         var tmpFolder = PathUtils.createTempDir("tmp");
 
         var fileNameTxt = "test.txt";
@@ -274,7 +272,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testImportWorkflowUpdatesCache() throws GatewayException {
+    public void testImportWorkflowUpdatesCache() throws Exception {
         runTestImportWorkflowOrWorkflowGroupUpdatesCache("simple.knwf", "simple", TypeEnum.WORKFLOW);
     }
 
@@ -285,7 +283,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testImportWorkflowGroupUpdatesCache() throws GatewayException {
+    public void testImportWorkflowGroupUpdatesCache() throws Exception {
         runTestImportWorkflowOrWorkflowGroupUpdatesCache("group.knar", "group", TypeEnum.WORKFLOWGROUP);
     }
 
@@ -295,7 +293,7 @@ public final class LocalSpaceTests {
      * @throws IOException
      */
     @Test
-    public void testGetProjectType() throws IOException, GatewayException {
+    public void testGetProjectType() throws Exception {
         createFile(m_space.getRootPath(), "data.txt");
         createWorkflow(m_space, m_space.getRootPath(), m_space.getItemId(m_space.getRootPath()),
             Space.DEFAULT_WORKFLOW_NAME);
@@ -318,7 +316,7 @@ public final class LocalSpaceTests {
      * @throws OperationNotAllowedException
      */
     @Test
-    public void testRenameChangingItemCasing() throws IOException, GatewayException {
+    public void testRenameChangingItemCasing() throws Exception {
         final var spaceRootPath = m_space.getRootPath();
         final var spaceRootId = m_space.getItemId(spaceRootPath);
 
@@ -343,7 +341,7 @@ public final class LocalSpaceTests {
     }
 
     private void runTestImportWorkflowOrWorkflowGroupUpdatesCache(final String archiveName,
-        final String itemName, final TypeEnum itemType) throws GatewayException {
+        final String itemName, final TypeEnum itemType) throws Exception {
         Consumer<Path> createMetaInfoFileFor = path -> {
             // Do nothing
         };
@@ -367,7 +365,7 @@ public final class LocalSpaceTests {
     }
 
     private static void deleteAndCheckMaps(final LocalSpace workspace, final List<Path> itemsToDelete,
-        final List<Path> itemsToKeep) throws GatewayException {
+        final List<Path> itemsToKeep) throws Exception {
         var idsToDelete =
             workspace.m_spaceItemPathAndTypeCache.entrySet().stream().filter(e -> itemsToDelete.contains(e.getValue()))
                 .map(e -> e.getKey()).map(i -> "" + i).collect(Collectors.toList());
@@ -376,13 +374,13 @@ public final class LocalSpaceTests {
     }
 
     private static String findItemId(final LocalSpace workspace, final String groupId, final String name)
-        throws ServiceCallException {
+        throws Exception {
         return workspace.listWorkflowGroup(groupId).getItems().stream().filter(i -> name.equals(i.getName()))
             .findFirst().get().getId();
     }
 
     private static Path createWorkflow(final LocalSpace workspace, final Path groupFolder, final String groupId,
-        final String workflowName) throws ServiceCallException {
+        final String workflowName) throws Exception {
         return groupFolder.resolve(workspace.createWorkflow(groupId, workflowName).getName());
     }
 

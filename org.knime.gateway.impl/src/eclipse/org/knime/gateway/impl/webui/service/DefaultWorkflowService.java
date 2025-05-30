@@ -78,7 +78,10 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -186,7 +189,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public void saveProject(final String projectId, final String workflowPreviewSvg) throws ServiceCallException {
+    public void saveProject(final String projectId, final String workflowPreviewSvg)
+        throws ServiceCallException, NetworkException, LoggedOutException {
         if (DefaultServiceContext.getProjectId().isEmpty()) {
             // only to be called from browser environment and this value is only set in browser environment
             NodeLogger.getLogger(DefaultWorkflowService.class)
@@ -295,30 +299,32 @@ public final class DefaultWorkflowService implements WorkflowService {
 
         /**
          * TODO NXT-3634: Headless upload until we can provide proper UI; de-duplicate from 'SaveProject' (NOSONAR)
+         * @throws LoggedOutException
+         * @throws NetworkException
          */
-        private static void uploadToHub(final WorkflowContextV2 context, final SpaceProvidersManager spaceProvidersManager)
-            throws ServiceCallException {
-            final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
-            final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
-                .map(mgr -> mgr.getSpaceProviders(key)) //
-                .orElseThrow();
-            final var spaceProvider = spaceProviders.getAllSpaceProviders().stream().findFirst().orElseThrow();
+        private static void uploadToHub(final WorkflowContextV2 context,
+            final SpaceProvidersManager spaceProvidersManager)
+            throws ServiceCallException, NetworkException, LoggedOutException {
 
             // (a) In Desktop AP, the provider would be identified by the mountpoint URI saved in the workflow context.
             // (b) In Browser, this info is not given (because ultimately the context is constructed off a
             //     HubJobExecutorInfo and not a AnalyticsPlatformExecutorInfo)
-            if (context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo) {
-                final var space = spaceProvider.getSpace(hubInfo.getSpaceItemId());
-                try {
-                    final var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
-                    final var spaceKnimeUrl = space.toPathBasedKnimeUrl(hubInfo.getWorkflowItemId());
-                    space.saveBackTo(localWorkflowPath, spaceKnimeUrl, false, new NullProgressMonitor());
-                } catch (IOException e) {
-                    NodeLogger.getLogger(DefaultWorkflowService.class).error("Could not upload workflow", e);
-                    throw new ServiceCallException("Could not upload workflow", e);
-                }
-            } else {
+            if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
                 throw new ServiceCallException("Unsupported location type: " + context.getLocationType());
+            }
+
+            final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
+            final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
+                    .map(mgr -> mgr.getSpaceProviders(key)) //
+                    .orElseThrow();
+            final var spaceProvider = spaceProviders.getAllSpaceProviders().stream().findFirst().orElseThrow();
+            try {
+                final var space = spaceProvider.getSpace(hubInfo.getSpaceItemId());
+                final var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
+                final var spaceKnimeUrl = space.toPathBasedKnimeUrl(hubInfo.getWorkflowItemId());
+                space.saveBackTo(localWorkflowPath, spaceKnimeUrl, false, new NullProgressMonitor());
+            } catch (ContextfulServiceCallException ex) { // NOSONAR exception is rethrown
+                throw ex.toGatewayException();
             }
         }
 

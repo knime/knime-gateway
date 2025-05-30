@@ -68,6 +68,7 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.service.util.ContextfulServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -179,7 +180,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         try {
             var space = m_spaceProviders.getSpace(spaceProviderId, spaceId);
             return space.toPathBasedKnimeUrl(itemId).toURL();
-        } catch (MalformedURLException | NetworkException | LoggedOutException | ServiceCallException ex) {
+        } catch (MalformedURLException | NetworkException | LoggedOutException | ContextfulServiceCallException ex) {
             NodeLogger.getLogger(AddNode.class).warn("Failed to resolve item ID " + itemId
                 + " to URL in " + spaceProviderId, ex);
             return null;
