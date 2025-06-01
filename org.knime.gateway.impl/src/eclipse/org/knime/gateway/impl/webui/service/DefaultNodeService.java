@@ -293,17 +293,17 @@ public final class DefaultNodeService implements NodeService {
         throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
-        var nnc = getNC(projectId, workflowId, version, nodeId, NativeNodeContainer.class);
+        var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
         final var dataServiceManager = getDataServiceManager(extensionType);
-        var nncWrapper = NodeWrapper.of(nnc);
-        
+        var sncWrapper = NodeWrapper.of(snc);
+
         return DataServiceDependencies.runWithDependencies(createDialogDataServiceDependencies(projectId), () -> {
             if ("initial_data".equals(serviceType)) {
-                return dataServiceManager.callInitialDataService(nncWrapper);
+                return dataServiceManager.callInitialDataService(sncWrapper);
             } else if ("data".equals(serviceType)) {
-                return dataServiceManager.callRpcDataService(nncWrapper, request);
+                return dataServiceManager.callRpcDataService(sncWrapper, request);
             } else if ("apply_data".equals(serviceType)) {
-                return dataServiceManager.callApplyDataService(nncWrapper, request);
+                return dataServiceManager.callApplyDataService(sncWrapper, request);
             } else {
                 throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
             }
