@@ -51,7 +51,8 @@ package org.knime.gateway.impl.webui.spaces.local;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.spy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,10 +66,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
@@ -93,7 +96,7 @@ public final class LocalSpaceTests {
 
     @Before
     public void setUpLocalWorkspace() throws IOException {
-        m_space = spy(new LocalSpace(PathUtils.createTempDir("workspace")));
+        m_space = new LocalSpace(PathUtils.createTempDir("workspace"));
     }
 
     /**
@@ -326,11 +329,72 @@ public final class LocalSpaceTests {
 
             // rename the item, which should (1) not fail and (2) actually rename the item on disk and in the space
             final String newItemName = itemName.toUpperCase();
-            assertThat(m_space.renameItem(itemId, newItemName).getName(), equalTo(newItemName));
+            final var renamed = m_space.renameItem(itemId, newItemName);
+            assertThat(renamed.getName(), equalTo(newItemName));
 
             final var newPath = m_space.toLocalAbsolutePath(itemId).orElseThrow().toRealPath();
             assertThat(newPath.getFileName().toString(), equalTo(newItemName));
             assertThat(m_space.getItemName(itemId), equalTo(newItemName));
+        }
+    }
+
+    @Test
+    public void testNoOpRenameItem() throws OperationNotAllowedException, IOException {
+        final var spaceRootPath = m_space.getRootPath();
+        final var spaceRootId = m_space.getItemId(spaceRootPath);
+
+        // test a directory, a data file and a workflow
+        final var group = spaceRootPath.resolve(m_space.createWorkflowGroup(spaceRootId).getName());
+        final var dataItem = createFile(spaceRootPath, "data.txt");
+        final var wf = createWorkflow(m_space, spaceRootPath, spaceRootId, "workflow");
+        final List<String> itemIds = List.of(group, dataItem, wf).stream() //
+                .map(m_space::getItemId).collect(Collectors.toList());
+
+        for (final var itemId : itemIds) {
+            // rename item to itself --> no-op and should not fail
+            final var existingFile = m_space.toLocalAbsolutePath(itemId).orElseThrow();
+            final var itemName = m_space.getItemName(itemId);
+            final var renamedNoOp = m_space.renameItem(itemId, itemName);
+            assertThat(renamedNoOp.getName(), equalTo(itemName));
+            final var renamedNoOpFile = m_space.toLocalAbsolutePath(itemId).orElseThrow();
+            // depending on the OS/FileSystem implementation
+            // Path#equals might not be true even if they point to the same file
+            assertTrue(Files.isSameFile(existingFile, renamedNoOpFile),
+                "Expected paths to point to same file after no-op rename");
+            assertEquals(existingFile, renamedNoOpFile, "Expected paths to be equal after no-op rename");
+        }
+    }
+
+    @Test
+    public void testRenameItemCollision() throws OperationNotAllowedException, IOException {
+        final var spaceRootPath = m_space.getRootPath();
+        final var spaceRootId = m_space.getItemId(spaceRootPath);
+
+        // test a directory, a data file and a workflow with a type name to be referenced in the error message
+        final var group = Pair.create(spaceRootPath.resolve(m_space.createWorkflowGroup(spaceRootId).getName()),
+            "workflow group");
+        final var dataItem = Pair.create(createFile(spaceRootPath, "data.txt"), "data file");
+        final var wf = Pair.create(createWorkflow(m_space, spaceRootPath, spaceRootId, "workflow"), "workflow");
+        final List<Pair<String, String>> itemIds = List.of(group, dataItem, wf).stream() //
+                .map(p -> Pair.create(m_space.getItemId(p.getFirst()), p.getSecond())).toList();
+
+        for (int i = 0; i < itemIds.size(); i++) {
+            final var itemIdAndType = itemIds.get(i);
+            final var itemId = itemIdAndType.getFirst();
+
+            final var existingItemIdAndType = itemIds.get((i + 1) % itemIds.size());
+            final var existingItemId = existingItemIdAndType.getFirst();
+            // what we expect in the error message
+            final var existingTypeName = existingItemIdAndType.getSecond();
+            final var existingItemName = m_space.getItemName(existingItemId);
+            try {
+                m_space.renameItem(itemId, existingItemName);
+            } catch (final ServiceExceptions.OperationNotAllowedException e) {
+                final var msg = e.getMessage();
+                assertThat("Expected exception message to contain the existing item type", msg,
+                    Matchers.containsString(existingTypeName));
+            }
+
         }
     }
 

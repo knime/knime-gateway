@@ -133,7 +133,7 @@ public final class LocalSpace implements Space {
 
     /**
      * -
-     * 
+     *
      * @param rootPath the path to the root of the local workspace
      */
     public LocalSpace(final Path rootPath) {
@@ -308,16 +308,27 @@ public final class LocalSpace implements Space {
         var sourcePath = toLocalAbsolutePath(itemId) //
             .orElseThrow(() -> new IOException("Unknown item ID: '%s'".formatted(itemId)));
         var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache((sourcePath));
-        var destinationPath = sourcePath.resolveSibling(newName);
         var oldName = sourcePath.getFileName().toString();
-        // Path#equals does not distinguish character case on some file systems...
-        if (sourcePath.equals(destinationPath)) {
-            // ...allow changing the case (upper/lower) in the name anyway
-            if (oldName.equals(newName)) {
-                return EntityFactory.Space.buildSpaceItemEnt(oldName, itemId, itemType);
-            }
-        } else if (Files.exists(destinationPath)) {
-            throw new ServiceExceptions.OperationNotAllowedException("There already exists a file of that name");
+        if (oldName.equals(newName)) {
+            // nothing to do
+            return EntityFactory.Space.buildSpaceItemEnt(oldName, itemId, itemType);
+        }
+        final var destinationPath = sourcePath.resolveSibling(newName);
+        // UnixPath (macOS) needs real path, because it's #equals uses string comparison, Windows would be fine without.
+        // Hence, on a case-insensitive filesystem, e.g. APFS in default configuration, the normal equals check without
+        // getting the real paths first, would fail
+        if (Files.exists(destinationPath) && !Files.isSameFile(sourcePath, destinationPath)) {
+            final var typeName = switch (m_spaceItemPathAndTypeCache.getSpaceItemType(destinationPath)) {
+                case COMPONENT -> "component";
+                case DATA -> "data file";
+                case WORKFLOW -> "workflow";
+                case WORKFLOWGROUP -> "workflow group";
+                case WORKFLOWTEMPLATE -> "workflow template";
+                default -> getNonKNIMEType(destinationPath);
+            };
+            // context message (e.g. 'rename of selected item to "foo" failed') comes from caller, so we omit it here
+            throw new ServiceExceptions.OperationNotAllowedException("There already exists a %s with that name."
+                .formatted(typeName));
         }
 
         try {
@@ -331,8 +342,12 @@ public final class LocalSpace implements Space {
         }
 
         m_spaceItemPathAndTypeCache.update(itemId, sourcePath, destinationPath);
-
         return EntityFactory.Space.buildSpaceItemEnt(newName, itemId, itemType);
+    }
+
+    private static String getNonKNIMEType(final Path path) {
+        final var symLinkOrFile = Files.isSymbolicLink(path) ? "symbolic link pointing to a different item" : "file";
+        return Files.isDirectory(path) ? "directory" : symLinkOrFile;
     }
 
     @Override
@@ -729,7 +744,7 @@ public final class LocalSpace implements Space {
 
     /**
      * Add a listener that is notified when an item has been successfully removed from the space
-     * 
+     *
      * @param listener Notified with the item ID of the removed item
      */
     public void addItemRemovedListener(final Consumer<String> listener) {
