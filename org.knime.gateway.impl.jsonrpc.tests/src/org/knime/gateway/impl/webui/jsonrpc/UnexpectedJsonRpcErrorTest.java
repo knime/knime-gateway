@@ -125,19 +125,14 @@ public class UnexpectedJsonRpcErrorTest {
             JsonNode error = response.get("error");
             assertThat("unexpected error code", error.get("code").asInt(), Matchers.is(-32601));
             JsonNode data = error.get("data");
-            String name = data.get("name").asText();
             assertNotNull("no stacktrace given", data.get("stackTrace"));
             String message = error.get("message").asText();
             assertThat("unexpected exception message", message, m_messageMatcher);
-            try {
-                @SuppressWarnings("unchecked")
-                Class<? extends Exception> cl = (Class<? extends Exception>)Class.forName(name);
-                Constructor<? extends Exception> cons = cl.getConstructor(String.class);
-                return cons.newInstance(message);
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-                    | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                throw new AssertionError("Exception couldn't be created from the json-rpc error", ex);
-            }
+            assertThat("unexpected title", data.get("title").asText(), m_messageMatcher);
+            assertThat("unexpected error code in data", data.get("code").asText(),
+                    Matchers.is("UnsupportedOperationException"));
+            assertThat("unexpected canCopy", data.get("canCopy").asBoolean(), Matchers.is(true));
+            return new UnsupportedOperationException(message);
         }
     }
 

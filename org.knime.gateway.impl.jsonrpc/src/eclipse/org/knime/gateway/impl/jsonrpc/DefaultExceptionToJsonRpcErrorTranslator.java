@@ -53,13 +53,12 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
 
 import org.knime.gateway.api.service.GatewayException;
+import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt;
 import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt.GatewayProblemDescriptionEntBuilder;
-import org.knime.gateway.json.util.ObjectMapperUtil;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.googlecode.jsonrpc4j.JsonRpcError;
 
 /**
@@ -107,17 +106,26 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
         return UNEXPECTED_EXCEPTION_ERROR_CODE;
     }
 
-    private static JsonNode getExceptionDetails(final Throwable t) {
-        ObjectNode details = ObjectMapperUtil.getInstance().getObjectMapper().createObjectNode();
-        details.put("name", t.getClass().getName());
-
+    private static GatewayProblemDescriptionEnt getExceptionDetails(final Throwable t) {
+        String stackTrace;
         try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
             t.printStackTrace(printWriter);
-            details.put("stackTrace", stringWriter.toString());
+            stackTrace = stringWriter.toString();
         } catch (IOException ex) {
             throw new IllegalStateException(ex);
         }
-        return details;
+
+        var additionalProperties = Map.of(
+            "message", t.getMessage(),
+            "stackTrace", stackTrace
+        );
+
+        return builder(GatewayProblemDescriptionEntBuilder.class) //
+        .setTitle(t.getMessage()) //
+        .setCode(t.getClass().getSimpleName()) //
+        .setCanCopy(true) //
+        .setAdditionalProperties(additionalProperties) //
+        .build();
     }
 
 }
