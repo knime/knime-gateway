@@ -88,6 +88,19 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "deactivateAllComponentDataServices")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+    })
+    public void deactivateAllComponentDataServices(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
+        m_service.get().deactivateAllComponentDataServices(projectId, workflowId, nodeId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getComponentDescription")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,

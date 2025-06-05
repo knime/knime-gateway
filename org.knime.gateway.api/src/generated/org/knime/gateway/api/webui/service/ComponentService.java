@@ -71,6 +71,18 @@ public interface ComponentService extends GatewayService {
     void cancelOrRetryComponentLoadJob(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String placeholderId, String action)  throws ServiceExceptions.ServiceCallException;
         
     /**
+     * Iterates over all data services of nodes in the component and deactivates them. If a component is nested in another component, the data services of the nested component are also recursively deactivated.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     *
+     * 
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     */
+    void deactivateAllComponentDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
+        
+    /**
      * Get a components description, will only work for component nodes.
      *
      * @param projectId ID of the workflow-project.
