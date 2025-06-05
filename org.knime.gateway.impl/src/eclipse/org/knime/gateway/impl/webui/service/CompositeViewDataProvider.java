@@ -149,6 +149,14 @@ public interface CompositeViewDataProvider {
     PageContainer pollCompleteComponentReexecutionStatus(final SubNodeContainer snc,
         final Function<NativeNodeContainer, NodeViewEnt> createNodeViewEnt) throws IOException;
 
+    /**
+     * De-activates data services recursively of all nodes in the component.
+     *
+     * @param snc the sub-node component container whose data services should be deactivated
+     * @throws IOException if deactivation fails
+     */
+    void deactivateAllComponentDataServices(final SubNodeContainer snc) throws IOException;
+
     // TODO(NXT-3423): Duplicated from org.knime.core.wizard.rpc.PageContainer. Needs deduplication
     /**
      * Object that contains the wizard page and some additional information.

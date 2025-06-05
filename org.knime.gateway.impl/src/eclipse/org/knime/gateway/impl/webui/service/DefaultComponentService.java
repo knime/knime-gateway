@@ -189,6 +189,17 @@ public class DefaultComponentService implements ComponentService {
         }
     }
 
+    @Override
+    public void deactivateAllComponentDataServices(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws ServiceCallException {
+        try {
+            SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, nodeId);
+            getViewDataProvider().deactivateAllComponentDataServices(snc);
+        } catch (IOException | NodeNotFoundException ex) {
+            throw new ServiceCallException("Could not deactivate all component data services. " + ex.getMessage(), ex);
+        }
+    }
+
     private static CompositeViewDataProvider getViewDataProvider() {
         if (m_cachedCompositeViewDataProvider == null) {
             List<CompositeViewDataProvider> dataProviders =
