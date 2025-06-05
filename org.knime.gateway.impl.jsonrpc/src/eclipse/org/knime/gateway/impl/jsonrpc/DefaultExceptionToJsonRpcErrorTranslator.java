@@ -50,11 +50,9 @@ package org.knime.gateway.impl.jsonrpc;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt;
 import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt.GatewayProblemDescriptionEntBuilder;
@@ -63,7 +61,7 @@ import com.googlecode.jsonrpc4j.JsonRpcError;
 
 /**
  * A default implementation of the exception to jsonrpc error translator.
- *
+ * <p>
  * The json-rpc error message contains the exception message itself. The json-rpc error data is a json object containg
  * the exception name and the entire stack trace.
  *
@@ -80,52 +78,47 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
      * {@inheritDoc}
      */
     @Override
-    public String getMessage(final Throwable t, final JsonRpcError errorAnnotation) {
-        return t.getMessage();
+    public String getMessage(final Throwable throwable, final JsonRpcError errorAnnotation) {
+        return throwable.getMessage();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Object getData(final Throwable t, final JsonRpcError errorAnnotation) {
-        if (t instanceof GatewayException ge && errorAnnotation != null) {
-            return builder(GatewayProblemDescriptionEntBuilder.class) //
-                .setTitle(t.getMessage()) //
-                .setCode(t.getClass().getSimpleName()) //
-                .setCanCopy(ge.isCanCopy()) //
-                .setAdditionalProperties(ge.getAdditionalProperties()) //
-                .build();
+    public Object getData(final Throwable throwable, final JsonRpcError errorAnnotation) {
+        if (throwable instanceof GatewayException gatewayException && errorAnnotation != null) {
+            return knownToEntity(gatewayException);
         } else {
-            return getExceptionDetails(t);
+            return unknownToEntity(throwable);
         }
     }
+
 
     @Override
     public int getUnexpectedExceptionErrorCode(final Throwable t) {
         return UNEXPECTED_EXCEPTION_ERROR_CODE;
     }
 
-    private static GatewayProblemDescriptionEnt getExceptionDetails(final Throwable t) {
-        String stackTrace;
-        try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
-            t.printStackTrace(printWriter);
-            stackTrace = stringWriter.toString();
-        } catch (IOException ex) {
-            throw new IllegalStateException(ex);
-        }
-
-        var additionalProperties = Map.of(
-            "message", t.getMessage(),
-            "stackTrace", stackTrace
-        );
-
+    private static GatewayProblemDescriptionEnt knownToEntity(final GatewayException gatewayException) {
         return builder(GatewayProblemDescriptionEntBuilder.class) //
-        .setTitle(t.getMessage()) //
-        .setCode(t.getClass().getSimpleName()) //
-        .setCanCopy(true) //
-        .setAdditionalProperties(additionalProperties) //
-        .build();
+                .setTitle(gatewayException.getMessage()) //
+                .setCode(gatewayException.getClass().getSimpleName()) //
+                .setCanCopy(gatewayException.isCanCopy()) //
+                .setAdditionalProperties(gatewayException.getAdditionalProperties()) //
+                .build();
+    }
+
+    private static GatewayProblemDescriptionEnt unknownToEntity(final Throwable throwable) {
+        return builder(GatewayProblemDescriptionEntBuilder.class) //
+            .setTitle(throwable.getMessage()) //
+            .setCode(throwable.getClass().getSimpleName()) //
+            .setCanCopy(true) //
+            .setAdditionalProperties(Map.of( //
+                "message", throwable.getMessage(), //
+                "stackTrace",  ExceptionUtils.getStackTrace(throwable)//
+            )) //
+            .build();
     }
 
 }

@@ -53,7 +53,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * common superclass of gateway api exceptions
+ * Describes <b>"known"/"expected" exceptions</b>. As a superset of checked exceptions, "known" exceptions represent
+ * these explicitly anticipated by the application logic. A known exception will have the application react in a
+ * graceful and coordinated manner. An example is the inability to carry out a user action such as renaming a file.
+ * <p>
+ * Any exception that does not implement this class is considered an <b>"unknown"/"unexpected"</b> exception. These are
+ * failure cases which should not occur during normal operation of the application. An example is a
+ * {@code NullPointerException} thrown by a faulty implementation. By its nature, the application can only react to such
+ * exceptions in a general manner.
  *
  * @author Franziska Obergfell, KNIME GmbH, Konstanz, Germany
  * @since 5.5
@@ -76,16 +83,14 @@ public abstract class GatewayException extends Exception {
     }
 
     /**
-     * New {@code GatewayException} to represent de-serialised GatewayPoblemDescription schema.
-     * For testing purposes only.
+     * New {@code GatewayException} to represent de-serialised GatewayPoblemDescription schema. For testing purposes
+     * only.
      *
-     * @param gatewayProblemDescription map of gateway problem description property names to property values.
+     * @param properties -
      */
-    protected GatewayException(final Map<String, String> gatewayProblemDescription) {
-        for (Map.Entry<String, String> entry : gatewayProblemDescription.entrySet()) {
-            m_properties.put(entry.getKey(), entry.getValue());
-        }
-        m_canCopy = Boolean.valueOf(m_properties.get("canCopy"));
+    protected GatewayException(final Map<String, String> properties) {
+        m_properties.putAll(properties);
+        m_canCopy = Boolean.parseBoolean(m_properties.get("canCopy"));
     }
 
     /**
