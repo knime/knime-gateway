@@ -201,7 +201,7 @@ public final class LocalSpace implements Space {
     public Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId,
         final VersionId version) {
         if (!version.isCurrentState()) {
-            return Optional.empty();  // currently not supported by this implementation
+            return Optional.empty(); // currently not supported by this implementation
         }
         return toLocalAbsolutePath(itemId);
     }
@@ -258,6 +258,10 @@ public final class LocalSpace implements Space {
         }
     }
 
+    /**
+     * -
+     * @return The base path in the local file system.
+     */
     public Path getRootPath() {
         return m_rootPath;
     }
@@ -308,27 +312,20 @@ public final class LocalSpace implements Space {
         var sourcePath = toLocalAbsolutePath(itemId) //
             .orElseThrow(() -> new IOException("Unknown item ID: '%s'".formatted(itemId)));
         var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache((sourcePath));
-        var oldName = sourcePath.getFileName().toString();
-        if (oldName.equals(newName)) {
-            // nothing to do
-            return EntityFactory.Space.buildSpaceItemEnt(oldName, itemId, itemType);
-        }
+
         final var destinationPath = sourcePath.resolveSibling(newName);
-        // UnixPath (macOS) needs real path, because it's #equals uses string comparison, Windows would be fine without.
-        // Hence, on a case-insensitive filesystem, e.g. APFS in default configuration, the normal equals check without
-        // getting the real paths first, would fail
-        if (Files.exists(destinationPath) && !Files.isSameFile(sourcePath, destinationPath)) {
-            final var typeName = switch (m_spaceItemPathAndTypeCache.getSpaceItemType(destinationPath)) {
-                case COMPONENT -> "component";
-                case DATA -> "data file";
-                case WORKFLOW -> "workflow";
-                case WORKFLOWGROUP -> "workflow group";
-                case WORKFLOWTEMPLATE -> "workflow template";
-                default -> getNonKNIMEType(destinationPath);
-            };
-            // context message (e.g. 'rename of selected item to "foo" failed') comes from caller, so we omit it here
-            throw new ServiceExceptions.OperationNotAllowedException("There already exists a %s with that name."
-                .formatted(typeName));
+
+        // Avoid String comparison or Path#equals (some implementations use String comparison) because these do not match
+        // the concept of "is same file" for case-insensitive file systems.
+
+        if (Files.exists(destinationPath) && Files.isSameFile(sourcePath, destinationPath)) {
+            return EntityFactory.Space.buildSpaceItemEnt(sourcePath.getFileName().toString(), itemId, itemType);
+        }
+
+        if (Files.exists(destinationPath)) {
+            throw new ServiceExceptions.OperationNotAllowedException(
+                "There already exists a %s with that name. Pick a different name or rename the other item first."
+                    .formatted(getReadableFileType(destinationPath)));
         }
 
         try {
@@ -345,9 +342,18 @@ public final class LocalSpace implements Space {
         return EntityFactory.Space.buildSpaceItemEnt(newName, itemId, itemType);
     }
 
-    private static String getNonKNIMEType(final Path path) {
-        final var symLinkOrFile = Files.isSymbolicLink(path) ? "symbolic link pointing to a different item" : "file";
-        return Files.isDirectory(path) ? "directory" : symLinkOrFile;
+    private String getReadableFileType(final Path destinationPath) {
+        return switch (m_spaceItemPathAndTypeCache.getSpaceItemType(destinationPath)) {
+            case COMPONENT -> "component";
+            case DATA -> "data file";
+            case WORKFLOW -> "workflow";
+            case WORKFLOWGROUP -> "workflow group";
+            case WORKFLOWTEMPLATE -> "workflow template";
+            default -> {
+                final var symLinkOrFile = Files.isSymbolicLink(destinationPath) ? "symbolic link" : "file";
+                yield Files.isDirectory(destinationPath) ? "directory" : symLinkOrFile;
+            }
+        };
     }
 
     @Override
@@ -373,10 +379,9 @@ public final class LocalSpace implements Space {
                 newItemIdToPathMap.put(itemId, Pair.create(srcPath, destPath)); // Keep the ones that actually moved
             }
         } finally { // Update map for all the items that were actually moved
-            newItemIdToPathMap.entrySet().forEach(e -> {
-                var itemId = e.getKey();
-                var oldPath = e.getValue().getFirst();
-                var newPath = e.getValue().getSecond();
+            newItemIdToPathMap.forEach((itemId, value) -> {
+                var oldPath = value.getFirst();
+                var newPath = value.getSecond();
                 m_spaceItemPathAndTypeCache.update(itemId, oldPath, newPath);
             });
         }
@@ -579,7 +584,7 @@ public final class LocalSpace implements Space {
      * @param path file or directory in the workspace
      * @return {@code true} if the item is a workspace item, {@code false} otherwise
      */
-    public static boolean isValidItem(final Path path) {
+    static boolean isValidItem(final Path path) {
         try {
             var filename = path.getFileName().toString();
             return !Files.isHidden(path) //
@@ -625,7 +630,7 @@ public final class LocalSpace implements Space {
         var unknownItemIds = itemIds.stream()//
             .filter(id -> !m_spaceItemPathAndTypeCache.containsKey(id))//
             .collect(Collectors.joining(", "));
-        if (unknownItemIds != null && !unknownItemIds.isEmpty()) {
+        if (!unknownItemIds.isEmpty()) {
             throw new NoSuchElementException(String.format("Unknown item ids: <%s>", unknownItemIds));
         }
     }
@@ -751,7 +756,7 @@ public final class LocalSpace implements Space {
         m_itemRemovedListeners.add(listener);
     }
 
-    private static record DeletedItem(String itemId, Path path) {
+    private record DeletedItem(String itemId, Path path) {
         //
     }
 
