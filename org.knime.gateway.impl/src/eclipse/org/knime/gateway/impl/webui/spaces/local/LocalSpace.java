@@ -584,7 +584,7 @@ public final class LocalSpace implements Space {
      * @param path file or directory in the workspace
      * @return {@code true} if the item is a workspace item, {@code false} otherwise
      */
-    static boolean isValidItem(final Path path) {
+    public static boolean isValidItem(final Path path) {
         try {
             var filename = path.getFileName().toString();
             return !Files.isHidden(path) //
