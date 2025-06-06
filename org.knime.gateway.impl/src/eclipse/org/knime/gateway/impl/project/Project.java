@@ -49,7 +49,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -77,7 +76,7 @@ public final class Project {
 
     private final Function<String, byte[]> m_generateReport;
 
-    private final ProjectWfmCache m_projectWfmCache;
+    private ProjectWfmCache m_projectWfmCache;
 
     private Project(final Builder builder) {
         this( //
@@ -114,7 +113,8 @@ public final class Project {
             originalProject.m_name, //
             newOrigin, //
             originalProject.m_projectWfmCache, //
-            Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {}), //
+            Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {
+            }), //
             originalProject.m_generateReport //
         );
     }
@@ -199,8 +199,6 @@ public final class Project {
 
     /**
      * Dispose the loaded {@link WorkflowManager} instance for the given version.
-     *
-     * @param version -
      */
     public void dispose() {
         m_projectWfmCache.dispose();
@@ -240,10 +238,22 @@ public final class Project {
 
     /**
      * TODO NXT-3607 Projects can be immutable
+     * 
      * @param loader -
      */
     public void setWfmLoader(final WorkflowManagerLoader loader) {
-        m_projectWfmCache.setLoader(loader);
+        var previousCache = m_projectWfmCache;
+        if (previousCache.contains(VersionId.currentState())) {
+            // for full generality one would have to carry over other instances too.
+            // However, this case (only current-version available) is the only circumstance in which this method is called.
+            // This is acceptable since this method will be removed with NXT-3607.
+            m_projectWfmCache = new ProjectWfmCache.FromLoader( //
+                previousCache.getWorkflowManager(VersionId.currentState()), //
+                loader //
+            );
+        } else {
+            m_projectWfmCache = new ProjectWfmCache.FromLoader(loader);
+        }
     }
 
     @Override
@@ -295,11 +305,8 @@ public final class Project {
         interface RequiresWorkflow {
             Optionals setWfm(final WorkflowManager wfm);
 
-            Optionals setWfmAndLoader(final WorkflowManager wfm, WorkflowManagerLoader wfmLoader);
-
             RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader);
 
-            RequiresName setWfmLoaderProvidingOnlyCurrentState(final Supplier<WorkflowManager> supplier);
         }
 
         /**
@@ -357,32 +364,14 @@ public final class Project {
             Objects.requireNonNull(wfm);
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
-            m_wfmCache = new ProjectWfmCache(wfm);
+            m_wfmCache = new ProjectWfmCache.CurrentStateOnly(wfm);
             return this;
         }
 
         @Override
         public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader) {
             Objects.requireNonNull(wfmLoader);
-            m_wfmCache = new ProjectWfmCache(wfmLoader);
-            return this;
-        }
-
-        @Override
-        public BuilderStage.Optionals setWfmAndLoader(final WorkflowManager wfm,
-            final WorkflowManagerLoader wfmLoader) {
-            Objects.requireNonNull(wfm);
-            m_name = wfm.getName();
-            m_id = getUniqueProjectId(m_name);
-            m_wfmCache = new ProjectWfmCache(wfm, wfmLoader);
-            return this;
-        }
-
-        @Override
-        public BuilderStage.RequiresName
-            setWfmLoaderProvidingOnlyCurrentState(final Supplier<WorkflowManager> currentStateLoader) {
-            Objects.requireNonNull(currentStateLoader);
-            m_wfmCache = new ProjectWfmCache(currentStateLoader);
+            m_wfmCache = new ProjectWfmCache.FromLoader(wfmLoader);
             return this;
         }
 

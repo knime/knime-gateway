@@ -75,11 +75,13 @@ import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.hamcrest.MatcherAssert;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
 import org.knime.core.util.Version;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
@@ -93,6 +95,7 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.project.WorkflowManagerLoader;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceGroup;
@@ -884,8 +887,16 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static Project createWorkflowProject(final String providerId, final String spaceId, final String itemId) {
+
+        var nullLoader = new WorkflowManagerLoader() {
+            @Override
+            public WorkflowManager load(VersionId version) {
+                return null;
+            }
+        };
+
         return Project.builder() //
-            .setWfmLoaderProvidingOnlyCurrentState(() -> null) //
+            .setWfmLoader(nullLoader) //
             .setName("some_name") //
             .setId("some_id") //
             .setOrigin(new Origin(providerId, spaceId, itemId, ProjectTypeEnum.WORKFLOW)) //
