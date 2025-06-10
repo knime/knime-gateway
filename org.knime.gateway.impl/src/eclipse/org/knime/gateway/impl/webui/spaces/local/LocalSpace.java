@@ -260,6 +260,7 @@ public final class LocalSpace implements Space {
 
     /**
      * -
+     * 
      * @return The base path in the local file system.
      */
     public Path getRootPath() {
@@ -306,28 +307,30 @@ public final class LocalSpace implements Space {
             throw new ServiceExceptions.OperationNotAllowedException("Can not rename root item");
         }
 
-        var newName = queriedName.trim();
-        assertValidItemNameOrThrow(newName);
-
-        var sourcePath = toLocalAbsolutePath(itemId) //
+        final var sourcePath = toLocalAbsolutePath(itemId) //
             .orElseThrow(() -> new IOException("Unknown item ID: '%s'".formatted(itemId)));
-        var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache((sourcePath));
+        final var originalName = sourcePath.getFileName().toString();
+        final var newName = queriedName.trim();
+        assertValidItemNameOrThrow(newName);
+        final var itemType = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache((sourcePath));
+        final var destinationPath = sourcePath.resolveSibling(newName); // with potentially different casing
 
-        final var destinationPath = sourcePath.resolveSibling(newName);
-
-        // Avoid String comparison or Path#equals (some implementations use String comparison) because these do not match
-        // the concept of "is same file" for case-insensitive file systems.
-
-        if (Files.exists(destinationPath) && Files.isSameFile(sourcePath, destinationPath)) {
-            return EntityFactory.Space.buildSpaceItemEnt(sourcePath.getFileName().toString(), itemId, itemType);
+        // If only case changes, we still want the rename operation to be carried out: it is possible to change case
+        // via rename e.g. on macOS, even though the file system is case-insensitive w.r.t. existence or equality checks.
+        if (originalName.equals(newName)) { // String comparison here is case-sensitive
+            return EntityFactory.Space.buildSpaceItemEnt(originalName, itemId, itemType);
         }
 
-        if (Files.exists(destinationPath)) {
+        // If these are the same file on the file system (potentially case-insensitive, as indicated by Files#isSameFile), then
+        // do not throw here and still carry out the rename: as per the above if-return we may be currently changing case of an existing file.
+        // If it is a different file but existing, then we indeed have a collision.
+        if (!Files.isSameFile(sourcePath, destinationPath) && Files.exists(destinationPath)) {
             throw new ServiceExceptions.OperationNotAllowedException(
                 "There already exists a %s with that name. Pick a different name or rename the other item first."
                     .formatted(getReadableFileType(destinationPath)));
         }
 
+        // Otherwise, we are either changing case or have no collision.
         try {
             if (!sourcePath.toFile().renameTo(destinationPath.toFile())) {
                 throw new IOException(
