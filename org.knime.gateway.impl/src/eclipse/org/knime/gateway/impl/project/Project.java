@@ -77,7 +77,7 @@ public final class Project {
 
     private final Function<String, byte[]> m_generateReport;
 
-    private final ProjectWfmCache m_projectWfmCache;
+    private ProjectWfmCache m_projectWfmCache;
 
     private Project(final Builder builder) {
         this( //
@@ -114,7 +114,8 @@ public final class Project {
             originalProject.m_name, //
             newOrigin, //
             originalProject.m_projectWfmCache, //
-            Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {}), //
+            Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {
+            }), //
             originalProject.m_generateReport //
         );
     }
@@ -199,8 +200,6 @@ public final class Project {
 
     /**
      * Dispose the loaded {@link WorkflowManager} instance for the given version.
-     *
-     * @param version -
      */
     public void dispose() {
         m_projectWfmCache.dispose();
@@ -239,11 +238,23 @@ public final class Project {
     }
 
     /**
-     * TODO NXT-3607 Projects can be immutable
+     * TODO NXT-3607 Projects can be immutable (NOSONAR)
+     * 
      * @param loader -
      */
     public void setWfmLoader(final WorkflowManagerLoader loader) {
-        m_projectWfmCache.setLoader(loader);
+        var previousCache = m_projectWfmCache;
+        if (previousCache.contains(VersionId.currentState())) {
+            // for full generality one would have to carry over other cached instances too.
+            // However, this case (only current-version available) is the only circumstance in which this method is called.
+            // This is acceptable since this method will be removed with NXT-3607.
+            m_projectWfmCache = new ProjectWfmCache( //
+                previousCache.getWorkflowManager(VersionId.currentState()), //
+                loader //
+            );
+        } else {
+            m_projectWfmCache = new ProjectWfmCache(loader);
+        }
     }
 
     @Override
@@ -285,6 +296,7 @@ public final class Project {
         /**
          * Builder stage requiring an id.
          */
+        @SuppressWarnings({"MissingJavadoc", "java:S1176"})
         interface RequiresId {
             Optionals setId(final String id);
         }
@@ -292,19 +304,18 @@ public final class Project {
         /**
          * Builder stage requiring a {@link WorkflowManager}.
          */
+        @SuppressWarnings({"MissingJavadoc", "java:S1176"})
         interface RequiresWorkflow {
             Optionals setWfm(final WorkflowManager wfm);
 
-            Optionals setWfmAndLoader(final WorkflowManager wfm, WorkflowManagerLoader wfmLoader);
-
             RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader);
 
-            RequiresName setWfmLoaderProvidingOnlyCurrentState(final Supplier<WorkflowManager> supplier);
         }
 
         /**
          * Builder stage requiring a name.
          */
+        @SuppressWarnings({"MissingJavadoc", "java:S1176"})
         interface RequiresName {
             RequiresId setName(final String name);
         }
@@ -312,7 +323,7 @@ public final class Project {
         /**
          * Builder stage offering optional properties.
          */
-        @SuppressWarnings("java:S1176") // javadoc
+        @SuppressWarnings({"MissingJavadoc", "java:S1176"})
         interface Optionals extends RequiresId, RequiresName {
             Optionals setOrigin(Origin origin);
 
@@ -357,7 +368,12 @@ public final class Project {
             Objects.requireNonNull(wfm);
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
-            m_wfmCache = new ProjectWfmCache(wfm);
+            m_wfmCache = new ProjectWfmCache((version) -> {
+                if (!version.isCurrentState()) {
+                    throw new IllegalArgumentException("Project only supports loading the current state of a workflow.");
+                }
+                return ((Supplier<WorkflowManager>) () -> wfm).get();
+            });
             return this;
         }
 
@@ -365,24 +381,6 @@ public final class Project {
         public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader) {
             Objects.requireNonNull(wfmLoader);
             m_wfmCache = new ProjectWfmCache(wfmLoader);
-            return this;
-        }
-
-        @Override
-        public BuilderStage.Optionals setWfmAndLoader(final WorkflowManager wfm,
-            final WorkflowManagerLoader wfmLoader) {
-            Objects.requireNonNull(wfm);
-            m_name = wfm.getName();
-            m_id = getUniqueProjectId(m_name);
-            m_wfmCache = new ProjectWfmCache(wfm, wfmLoader);
-            return this;
-        }
-
-        @Override
-        public BuilderStage.RequiresName
-            setWfmLoaderProvidingOnlyCurrentState(final Supplier<WorkflowManager> currentStateLoader) {
-            Objects.requireNonNull(currentStateLoader);
-            m_wfmCache = new ProjectWfmCache(currentStateLoader);
             return this;
         }
 

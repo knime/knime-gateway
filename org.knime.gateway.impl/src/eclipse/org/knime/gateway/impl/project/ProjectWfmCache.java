@@ -46,9 +46,6 @@
 
 package org.knime.gateway.impl.project;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.LRUCache;
@@ -56,17 +53,15 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.util.Lazy;
 
+import java.util.Objects;
+import java.util.Optional;
+
 /**
- * Caches loaded {@link WorkflowManager} instances associated with a project. There is at most one instance of this
- * class per project.
- * <p>
  * For fixed versions, we want an LRU cache. The current-state a.k.a. working area should be kept indefinitely.
- *
- * @see Project
  */
 class ProjectWfmCache {
 
-    private WorkflowManagerLoader m_wfmLoader;
+    private final WorkflowManagerLoader m_wfmLoader;
 
     private final Lazy.Init<WorkflowManager> m_currentState;
 
@@ -74,59 +69,22 @@ class ProjectWfmCache {
 
     private final LRUCache<VersionId.Fixed, WorkflowManager> m_fixedVersions;
 
-    /**
-     * -
-     *
-     * @param wfm -
-     */
-    ProjectWfmCache(final WorkflowManager wfm) {
-        this(null, new Lazy.Init<>(wfm));
-    }
-
-    /**
-     * -
-     *
-     * @param wfmSupplier -
-     */
-    ProjectWfmCache(final Supplier<WorkflowManager> wfmSupplier) {
-        this(null, new Lazy.Init<>(wfmSupplier));
-    }
-
-    /**
-     * -
-     *
-     * @param wfmLoader -
-     */
     ProjectWfmCache(final WorkflowManagerLoader wfmLoader) {
         this(wfmLoader, new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState())));
     }
 
     ProjectWfmCache(final WorkflowManager wfm, final WorkflowManagerLoader wfmLoader) {
-        this(wfmLoader, new Lazy.Init<>(wfm));
+        this(wfmLoader, new Lazy.Init<>(wfm, () -> wfmLoader.load(VersionId.currentState())));
     }
 
     private ProjectWfmCache(final WorkflowManagerLoader wfmLoader, final Lazy.Init<WorkflowManager> currentState) {
-        m_wfmLoader = wfmLoader;
-        m_currentState = currentState;
+        m_wfmLoader = Objects.requireNonNull(wfmLoader);
+        m_currentState = Objects.requireNonNull(currentState);
         m_fixedVersions = new LRUCache<>( //
-            VERSION_WFM_CACHE_MAX_SIZE, //
-            (removedVersion, removedWfm) -> disposeWorkflowManager(removedWfm));
+                VERSION_WFM_CACHE_MAX_SIZE, //
+                (removedVersion, removedWfm) -> disposeWorkflowManager(removedWfm));
     }
 
-    /**
-     * TODO NXT-3607 can be immutable
-     * @param loader -
-     */
-    public void setLoader(final WorkflowManagerLoader loader) {
-        m_wfmLoader = loader;
-    }
-
-    /**
-     * Get an instance, loading it using the given loader if not yet cached.
-     *
-     * @param version -
-     * @return -
-     */
     WorkflowManager getWorkflowManager(final VersionId version) {
         if (version instanceof VersionId.Fixed fixedVersion) {
             if (m_wfmLoader == null) {

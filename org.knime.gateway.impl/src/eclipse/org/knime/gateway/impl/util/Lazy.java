@@ -45,6 +45,7 @@
  */
 package org.knime.gateway.impl.util;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -75,7 +76,7 @@ public final class Lazy {
 
         private static final Object NO_INIT = new Object();
 
-        private Supplier<V> m_supplier;
+        private final Supplier<V> m_supplier;
 
         @SuppressWarnings("unchecked")
         private V m_value = (V)NO_INIT;
@@ -85,16 +86,18 @@ public final class Lazy {
          * @param supplier providing the value on initialisation
          */
         public Init(final Supplier<V> supplier) {
-            this.m_supplier = supplier;
+            this.m_supplier = Objects.requireNonNull(supplier );
         }
 
         /**
          * Create an instance in already-initialised state. This is useful for when sometimes a value is already
          * available, sometimes not.
          * @param value -
+         * @param supplier -
          */
-        public Init(final V value) {
+        public Init(final V value, final Supplier<V> supplier) {
             this.m_value = value;
+            this.m_supplier = Objects.requireNonNull(supplier);
         }
 
         /**
@@ -104,7 +107,7 @@ public final class Lazy {
          * @return the value
          */
         public V get() {
-            V result = this.m_value;
+            var result = this.m_value;
             if (m_value == NO_INIT) {
                 // only go into synchronisation if value has been observed to not yet be initialised
                 synchronized (this) {
@@ -168,7 +171,7 @@ public final class Lazy {
          * @param transformation the transformation to eventually apply to the value
          */
         public Transform(final V value, final UnaryOperator<V> transformation) {
-            this.m_transformation = transformation;
+            this.m_transformation = Objects.requireNonNull(transformation);
             this.m_value = value;
             this.m_transformed = new Init<>(() -> m_transformation.apply(m_value));
         }
