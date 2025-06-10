@@ -59,6 +59,7 @@ import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt.ProjectDis
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.project.WorkflowManagerLoader;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
@@ -80,7 +81,7 @@ public class ProjectDisposedEventSourceTest {
     public void testProjectDisposedEventSource() throws InvalidRequestException {
         var projectManager = ProjectManager.getInstance();
         var project = Project.builder() //
-            .setWfmLoaderProvidingOnlyCurrentState(() -> null) //
+            .setWfmLoader(WorkflowManagerLoader.providingOnlyCurrentState(() -> null)) //
             .setName("test name") //
             .setId("test id") //
             .build();

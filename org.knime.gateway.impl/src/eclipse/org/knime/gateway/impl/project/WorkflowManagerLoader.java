@@ -49,6 +49,7 @@ package org.knime.gateway.impl.project;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.CanceledExecutionException;
@@ -131,7 +132,21 @@ public interface WorkflowManagerLoader {
         } catch (CanceledExecutionException e) { // NOSONAR
             return Optional.empty();
         }
+    }
 
+    /**
+     *
+     * @param supplier Yielding a current-state workflow
+     * @return -
+     */
+    static WorkflowManagerLoader providingOnlyCurrentState(final Supplier<WorkflowManager> supplier) {
+        return version -> {
+            if (version.isCurrentState()) {
+                return supplier.get();
+            } else {
+                throw new IllegalArgumentException("Only configured to load current state");
+            }
+        };
     }
 
 }

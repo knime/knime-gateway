@@ -118,7 +118,7 @@ public class ProjectTest {
         assertBaseMethodsWork(project1);
 
         var project2 = Project.builder() //
-            .setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm) //
+            .setWfmLoader(WorkflowManagerLoader.providingOnlyCurrentState(() -> m_wfm)) //
             .setName("Test project") //
             .setId("Custom project ID") //
             .build();
@@ -175,9 +175,9 @@ public class ProjectTest {
     public void testBuilderThrows() {
         assertThrows(NullPointerException.class, () -> Project.builder().setWfm(null).build());
         assertThrows(NullPointerException.class, () -> Project.builder()
-            .setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName(null).setId("Custom project id").build());
+            .setWfmLoader(WorkflowManagerLoader.providingOnlyCurrentState(() -> m_wfm)).setName(null).setId("Custom project id").build());
         assertThrows(NullPointerException.class, () -> Project.builder()
-            .setWfmLoaderProvidingOnlyCurrentState(() -> m_wfm).setName("Test project").setId(null).build());
+            .setWfmLoader(WorkflowManagerLoader.providingOnlyCurrentState(() -> m_wfm)).setName("Test project").setId(null).build());
     }
 
     /**

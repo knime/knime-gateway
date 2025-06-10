@@ -306,8 +306,20 @@ public final class Project {
          */
         @SuppressWarnings({"MissingJavadoc", "java:S1176"})
         interface RequiresWorkflow {
+            /**
+             * Associate a single {@code WorkflowManager} instance with this project as current state.
+             * This means this project is not able to dynamically load any other kind of workflows, e.g.
+             * those of previous versions.
+             * @param wfm -
+             * @return -
+             */
             Optionals setWfm(final WorkflowManager wfm);
 
+            /**
+             * Define how the project can dynamically load workflows.
+             * @param wfmLoader -
+             * @return -
+             */
             RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader);
 
         }
@@ -368,12 +380,7 @@ public final class Project {
             Objects.requireNonNull(wfm);
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
-            m_wfmCache = new ProjectWfmCache((version) -> {
-                if (!version.isCurrentState()) {
-                    throw new IllegalArgumentException("Project only supports loading the current state of a workflow.");
-                }
-                return ((Supplier<WorkflowManager>) () -> wfm).get();
-            });
+            m_wfmCache = new ProjectWfmCache(WorkflowManagerLoader.providingOnlyCurrentState(() -> wfm));
             return this;
         }
 
