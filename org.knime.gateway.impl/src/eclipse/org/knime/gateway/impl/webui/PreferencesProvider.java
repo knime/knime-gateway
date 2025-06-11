@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui;
 
+import org.knime.gateway.api.webui.entity.AppStateEnt;
+
 import java.util.function.Predicate;
 
 /**
@@ -82,5 +84,11 @@ public interface PreferencesProvider {
      * @return whether node dialogs are embedded or detached
      */
     boolean useEmbeddedDialogs();
+
+    /**
+     * -
+     * @return -
+     */
+    AppStateEnt.CanvasRendererEnum canvasRenderer();
 
 }

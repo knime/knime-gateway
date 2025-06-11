@@ -113,6 +113,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     public Boolean isUseEmbeddedDialogs();
     
     @Override
+    @JsonProperty("canvasRenderer")
+    public CanvasRendererEnum getCanvasRenderer();
+    
+    @Override
     @JsonProperty("isKaiEnabled")
     public Boolean isKaiEnabled();
     
@@ -200,6 +204,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("useEmbeddedDialogs")
         public AppStateEntMixInBuilder setUseEmbeddedDialogs(final Boolean useEmbeddedDialogs);
+        
+        @Override
+        @JsonProperty("canvasRenderer")
+        public AppStateEntMixInBuilder setCanvasRenderer(final CanvasRendererEnum canvasRenderer);
         
         @Override
         @JsonProperty("isKaiEnabled")

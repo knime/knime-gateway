@@ -179,6 +179,7 @@ public final class AppStateEntityFactory {
             .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
             .setDevMode(WebUIUtil.isInDevMode()) //
             .setUseEmbeddedDialogs(dependencies.preferencesProvider().useEmbeddedDialogs()) //
+            .setCanvasRenderer(dependencies.preferencesProvider().canvasRenderer()) //
             .setIsKaiEnabled(kaiHandler == null ? Boolean.FALSE : kaiHandler.isKaiEnabled()) //
             .setFileExtensionToNodeTemplateId( //
                 dependencies.nodeFactoryProvider() == null //
@@ -281,6 +282,7 @@ public final class AppStateEntityFactory {
             setIfChanged(oldAppState, newAppState, AppStateEnt::isKaiEnabled, builder::setIsKaiEnabled);
             setIfChanged(oldAppState, newAppState, AppStateEnt::isNodeRepositoryLoaded,
                 builder::setNodeRepositoryLoaded);
+            setIfChanged(oldAppState, newAppState, AppStateEnt::getCanvasRenderer, builder::setCanvasRenderer);
             if (getAppModeEnum() == AppModeEnum.DEFAULT) {
                 setIfChanged(oldAppState, newAppState, AppStateEnt::getSpaceProviders, builder::setSpaceProviders);
             }

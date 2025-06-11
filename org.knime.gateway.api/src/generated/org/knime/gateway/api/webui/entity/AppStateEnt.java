@@ -88,6 +88,27 @@ public interface AppStateEnt extends GatewayEntity {
 
   }
 
+  /**
+   * Specify which renderer to use.
+   */
+  public enum CanvasRendererEnum {
+    WEBGL("webgl"),
+    
+    SVG("svg");
+
+    private String value;
+
+    CanvasRendererEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * The general mode the app is initialized with.  Control various aspects of the app  (ui elements being hidden/shown, whether a workflow can be edited, ...)
@@ -148,6 +169,12 @@ public interface AppStateEnt extends GatewayEntity {
    * @return useEmbeddedDialogs 
    **/
   public Boolean isUseEmbeddedDialogs();
+
+  /**
+   * Specify which renderer to use.
+   * @return canvasRenderer 
+   **/
+  public CanvasRendererEnum getCanvasRenderer();
 
   /**
    * Whether all K-AI-related features (chat sidebar, build mode, scripting assistance, etc.) are enabled.
@@ -218,6 +245,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("scrollToZoomEnabled", Pair.create(isScrollToZoomEnabled(), e.isScrollToZoomEnabled()));
       valueConsumer.accept("hasNodeCollectionActive", Pair.create(hasNodeCollectionActive(), e.hasNodeCollectionActive()));
       valueConsumer.accept("useEmbeddedDialogs", Pair.create(isUseEmbeddedDialogs(), e.isUseEmbeddedDialogs()));
+      valueConsumer.accept("canvasRenderer", Pair.create(getCanvasRenderer(), e.getCanvasRenderer()));
       valueConsumer.accept("isKaiEnabled", Pair.create(isKaiEnabled(), e.isKaiEnabled()));
       valueConsumer.accept("activeNodeCollection", Pair.create(getActiveNodeCollection(), e.getActiveNodeCollection()));
       valueConsumer.accept("confirmNodeConfigChanges", Pair.create(isConfirmNodeConfigChanges(), e.isConfirmNodeConfigChanges()));
@@ -313,6 +341,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setUseEmbeddedDialogs(Boolean useEmbeddedDialogs);
+        
+        /**
+         * Specify which renderer to use.
+         * 
+         * @param canvasRenderer the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setCanvasRenderer(CanvasRendererEnum canvasRenderer);
         
         /**
          * Whether all K-AI-related features (chat sidebar, build mode, scripting assistance, etc.) are enabled.

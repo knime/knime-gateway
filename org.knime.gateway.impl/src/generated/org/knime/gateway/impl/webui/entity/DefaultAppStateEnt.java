@@ -65,6 +65,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param scrollToZoomEnabled
  * @param hasNodeCollectionActive
  * @param useEmbeddedDialogs
+ * @param canvasRenderer
  * @param isKaiEnabled
  * @param activeNodeCollection
  * @param confirmNodeConfigChanges
@@ -89,6 +90,7 @@ public record DefaultAppStateEnt(
     Boolean scrollToZoomEnabled,
     Boolean hasNodeCollectionActive,
     Boolean useEmbeddedDialogs,
+    CanvasRendererEnum canvasRenderer,
     Boolean isKaiEnabled,
     String activeNodeCollection,
     Boolean confirmNodeConfigChanges,
@@ -161,6 +163,11 @@ public record DefaultAppStateEnt(
     }
     
     @Override
+    public CanvasRendererEnum getCanvasRenderer() {
+        return canvasRenderer;
+    }
+    
+    @Override
     public Boolean isKaiEnabled() {
         return isKaiEnabled;
     }
@@ -229,6 +236,8 @@ public record DefaultAppStateEnt(
         private Boolean m_hasNodeCollectionActive;
 
         private Boolean m_useEmbeddedDialogs;
+
+        private CanvasRendererEnum m_canvasRenderer;
 
         private Boolean m_isKaiEnabled;
 
@@ -309,6 +318,12 @@ public record DefaultAppStateEnt(
         }
 
         @Override
+        public DefaultAppStateEntBuilder setCanvasRenderer(CanvasRendererEnum canvasRenderer) {
+             m_canvasRenderer = canvasRenderer;
+             return this;
+        }
+
+        @Override
         public DefaultAppStateEntBuilder setIsKaiEnabled(Boolean isKaiEnabled) {
              m_isKaiEnabled = isKaiEnabled;
              return this;
@@ -375,6 +390,7 @@ public record DefaultAppStateEnt(
                 immutable(m_scrollToZoomEnabled),
                 immutable(m_hasNodeCollectionActive),
                 immutable(m_useEmbeddedDialogs),
+                immutable(m_canvasRenderer),
                 immutable(m_isKaiEnabled),
                 immutable(m_activeNodeCollection),
                 immutable(m_confirmNodeConfigChanges),
