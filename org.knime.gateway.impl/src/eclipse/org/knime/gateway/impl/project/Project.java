@@ -380,7 +380,7 @@ public final class Project {
             Objects.requireNonNull(wfm);
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
-            m_wfmCache = new ProjectWfmCache(WorkflowManagerLoader.providingOnlyCurrentState(() -> wfm));
+            m_wfmCache = new ProjectWfmCache(wfm, WorkflowManagerLoader.providingOnlyCurrentState(() -> wfm));
             return this;
         }
 
