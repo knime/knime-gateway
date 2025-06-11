@@ -172,7 +172,8 @@ public final class ComponentLoader {
         var loadPersistor = loadHelper.createTemplateLoadPersistor(parentFile, templateURI);
         loadPersistor.setNameOverwrite(componentName);
         var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + templateURI + "\"");
-        parentWFM.load(loadPersistor, loadResult, executionMonitor, false);
+        // NXT-3549 (workaround) - cancelation of component load has side effects/bug
+        parentWFM.load(loadPersistor, loadResult, executionMonitor.createNonCancelableSubProgress(), false);
 
         var snc = (SubNodeContainer)loadResult.getLoadedInstance();
         if (snc == null) {
