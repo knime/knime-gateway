@@ -178,17 +178,6 @@ public class DefaultComponentService implements ComponentService {
         }
     }
 
-    @Override
-    public void setViewValuesAsNewDefault(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final Map<String, String> viewValues) throws ServiceCallException {
-        try {
-            SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, nodeId);
-            getViewDataProvider().setViewValuesAsNewDefault(snc, viewValues);
-        } catch (IOException | NodeNotFoundException ex) {
-            throw new ServiceCallException("Could not set view values as new default. " + ex.getMessage(), ex);
-        }
-    }
-
     private static CompositeViewDataProvider getViewDataProvider() {
         if (m_cachedCompositeViewDataProvider == null) {
             List<CompositeViewDataProvider> dataProviders =
