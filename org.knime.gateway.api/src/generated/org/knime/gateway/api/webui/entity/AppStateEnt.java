@@ -92,9 +92,9 @@ public interface AppStateEnt extends GatewayEntity {
    * Specify which renderer to use.
    */
   public enum CanvasRendererEnum {
-    WEBGL("webgl"),
+    WEBGL("WebGL"),
     
-    SVG("svg");
+    SVG("SVG");
 
     private String value;
 
