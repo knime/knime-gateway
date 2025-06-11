@@ -3,7 +3,7 @@
 <schema targetNamespace="org.knime.gateway.impl" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.knime.gateway.impl" id="CompositeViewDataProvider" name="CompositeViewDataProvider"/>
+         <meta.schema plugin="org.knime.gateway.impl" id="CompositeViewServiceFactory" name="CompositeViewServiceFactory"/>
       </appinfo>
       <documentation>
          NON-PUBLIC API.
@@ -52,10 +52,10 @@
          <attribute name="impl" type="string" use="required">
             <annotation>
                <documentation>
-                  Implementation of the CompositeViewDataProvider
+                  Implementation of the CompositeViewServiceFactory
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.knime.gateway.impl.webui.service.CompositeViewDataProvider"/>
+                  <meta.attribute kind="java" basedOn=":org.knime.gateway.impl.webui.service.CompositeViewServiceFactory"/>
                </appinfo>
             </annotation>
          </attribute>

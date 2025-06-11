@@ -44,65 +44,29 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2020 (hornm): created
+ *   Jun 11, 2025 (kampmann): created
  */
-package org.knime.gateway.testing.helper;
+package org.knime.gateway.impl.webui.service;
 
+import java.util.function.Function;
+
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.CompositeViewService;
-import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.WorkflowService;
 
 /**
- * Provides implementations of all gateway services for the Web-UI.
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Kai Franze, KNIME GmbH
+ *  Interface for a factory that creates a CompositeViewService
+ * @since 5.5
  */
-public interface ServiceProvider {
+public interface CompositeViewServiceFactory {
 
     /**
-     * @return workflow service implementation
+     * Creates a new instance of {@link CompositeViewService}
+     *
+     * @param createNodeViewEntityFactory a factory function that creates a function that creates a NodeViewEnt
+     * @return a new instance of {@link ComponentService} that can be used to interact with components
      */
-    WorkflowService getWorkflowService();
-
-    /**
-     * @return node service implementation
-     */
-    NodeService getNodeService();
-
-    /**
-     * @return port service implementation
-     */
-    PortService getPortService();
-
-    /**
-     * @return event service implementation
-     */
-    EventService getEventService();
-
-    /**
-     * @return node repository service implementation
-     */
-    NodeRepositoryService getNodeRepositoryService();
-
-    /**
-     * @return space service implementation
-     */
-    SpaceService getSpaceService();
-
-    /**
-     * @return component service implementation
-     */
-    ComponentService getComponentService();
-
-    /**
-     * @return composite view service implementation
-     */
-    CompositeViewService getCompositeViewService();
-
+    CompositeViewService createCompositeViewService(
+        final Function<String, Function<NativeNodeContainer, NodeViewEnt>> createNodeViewEntityFactory);
 }

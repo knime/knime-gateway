@@ -78,7 +78,6 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflow;
@@ -104,54 +103,6 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public ComponentServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
         final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
         super(ComponentServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
-    }
-
-    /**
-     * Tests {@link ComponentService#getCompositeViewPage(String, NodeIDEnt, String, NodeIDEnt)}.
-     *
-     * @throws Exception
-     */
-    public void testCompositeViewPage() throws Exception {
-        var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
-        var compositeViewPage =
-            (String)cs().getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:11"));
-        var compositeViewPageTree = ObjectMapperUtil.getInstance().getObjectMapper().readTree(compositeViewPage);
-        var nodeView = compositeViewPageTree.get("nodeViews").get("11:0:10");
-        assertThat(nodeView.get("nodeInfo").get("nodeAnnotation").asText(), is("novel view-node"));
-        var webNode = compositeViewPageTree.get("webNodes").get("11:0:9");
-        assertThat(webNode.get("nodeInfo").get("nodeAnnotation").asText(), is("JS view-node"));
-    }
-
-    /**
-     * Tests {@link ComponentService#getCompositeViewPage(String, NodeIDEnt, String, NodeIDEnt)} with versions.
-     *
-     * @throws Exception
-     */
-    public void testCompositeViewPageWithVersions() throws Exception {
-        var testWorkflowWithVersion = TestWorkflow.WithVersion.of( //
-            TestWorkflowCollection.VERSIONS_EXTENDED_CURRENT_STATE, //
-            TestWorkflowCollection.VERSIONS_EXTENDED_EARLIER_VERSION::getWorkflowDir //
-        );
-        var projectId = loadWorkflow(testWorkflowWithVersion);
-        var nodeId = new NodeIDEnt("root:9"); // Component
-
-        // Current state
-        var currentStateCompositeViewPage = (String)cs().getCompositeViewPage(projectId, NodeIDEnt.getRootID(),
-            VersionId.currentState().toString(), nodeId);
-        var currentStateCompositeViewNode =
-            ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentStateCompositeViewPage);
-
-        var version = VersionId.parse("2");
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
-
-        // Earlier version
-        var versionCompositeViewPage =
-            (String)cs().getCompositeViewPage(projectId, NodeIDEnt.getRootID(), version.toString(), nodeId);
-        var versionCompositeViewNode =
-            ObjectMapperUtil.getInstance().getObjectMapper().readTree(versionCompositeViewPage);
-
-        // the views should be different
-        assertThat(currentStateCompositeViewNode.get("nodeViews"), is(not(versionCompositeViewNode.get("nodeViews"))));
     }
 
     /**
