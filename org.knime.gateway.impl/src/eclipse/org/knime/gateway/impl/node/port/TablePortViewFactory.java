@@ -71,6 +71,7 @@ import org.knime.core.webui.node.view.table.TableViewUtil;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
+import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -131,8 +132,14 @@ public final class TablePortViewFactory implements PortViewFactory<BufferedDataT
             settings.m_selectionMode = SelectionMode.EDIT;
             settings.m_title = "";
             settings.m_enablePagination = false;
-            settings.m_rowHeightMode = RowHeightMode.CUSTOM;
-            settings.m_customRowHeight = LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
+            var hasTextColumns = DataCellContentType.anyMatchAsDefault(spec, DataCellContentType.TXT,
+                DataCellContentType.MULTI_LINE_TXT);
+            if (hasTextColumns) {
+                settings.m_rowHeightMode = RowHeightMode.CUSTOM;
+                settings.m_customRowHeight = LEGACY_CUSTOM_ROW_HEIGHT_COMPACT;
+            } else {
+                settings.m_rowHeightMode = RowHeightMode.AUTO;
+            }
             settings.m_verticalPaddingMode = VerticalPaddingMode.COMPACT;
             settings.m_showRowIndices = true;
             settings.m_showOnlySelectedRowsConfigurable = true;
