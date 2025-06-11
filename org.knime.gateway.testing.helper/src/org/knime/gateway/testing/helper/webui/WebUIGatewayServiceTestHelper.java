@@ -77,6 +77,7 @@ import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
+import org.knime.gateway.api.webui.service.CompositeViewService;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
@@ -161,10 +162,10 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         /**
          * Canonical sorting of the connectedVia-list.
          */
-        objToString.addException(NodePortEnt.class, "connectedVia", (v, gen, e) ->
-            gen.writeString("[ " + (String)((List)v).stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString()))
-                .map(Object::toString).collect(Collectors.joining(", ")) + " ]")
-        );
+        objToString.addException(NodePortEnt.class, "connectedVia",
+            (v, gen, e) -> gen.writeString(
+                "[ " + (String)((List)v).stream().sorted((o1, o2) -> o1.toString().compareTo(o2.toString()))
+                    .map(Object::toString).collect(Collectors.joining(", ")) + " ]"));
 
         /**
          * Canonical sorting of the compatibleTypes-list.
@@ -175,15 +176,15 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         });
 
         /**
-         * Canonical sorting of the patch operations.
-         * And skip the values of patches that are non-deterministic (e.g. 'portContentVersion').
+         * Canonical sorting of the patch operations. And skip the values of patches that are non-deterministic (e.g.
+         * 'portContentVersion').
          */
         objToString.addException(PatchEnt.class, "ops", (v, gen, e) -> {
-            List<PatchOpEnt> l = ((List<PatchOpEnt>)v).stream()
-                .map(WebUIGatewayServiceTestHelper::replaceNonDeterministicPatchValues)//
-                .sorted(Comparator.<PatchOpEnt, String> comparing(o -> o.getOp().toString())
-                    .thenComparing(o -> String.valueOf(o.getFrom())).thenComparing(PatchOpEnt::getPath))//
-                .collect(Collectors.toList());
+            List<PatchOpEnt> l =
+                ((List<PatchOpEnt>)v).stream().map(WebUIGatewayServiceTestHelper::replaceNonDeterministicPatchValues)//
+                    .sorted(Comparator.<PatchOpEnt, String> comparing(o -> o.getOp().toString())
+                        .thenComparing(o -> String.valueOf(o.getFrom())).thenComparing(PatchOpEnt::getPath))//
+                    .collect(Collectors.toList());
             gen.writeRawValue(objToString.toString(l));
         });
 
@@ -197,7 +198,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
          * Non-deterministic field.
          */
         objToString.addException(NodeEnt.class, "inputContentVersion",
-                (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_VERSION"));
+            (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_VERSION"));
 
         /**
          * Non-deterministic field.
@@ -328,6 +329,7 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     /**
      * Shortcut to get the node repository service instance.
+     *
      * @return a node repository service instance
      */
     protected NodeRepositoryService nrs() {
@@ -350,6 +352,15 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      */
     protected ComponentService cs() {
         return m_serviceProvider.getComponentService();
+    }
+
+    /**
+     * Shortcut to get a composite view service instance.
+     *
+     * @return a component service instance
+     */
+    protected CompositeViewService cvs() {
+        return m_serviceProvider.getCompositeViewService();
     }
 
     /**

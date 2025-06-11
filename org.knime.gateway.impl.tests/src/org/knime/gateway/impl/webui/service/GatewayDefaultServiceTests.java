@@ -57,6 +57,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.knime.gateway.api.webui.service.ComponentService;
+import org.knime.gateway.api.webui.service.CompositeViewService;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.NodeService;
@@ -180,6 +181,11 @@ public class GatewayDefaultServiceTests {
             @Override
             public ComponentService getComponentService() {
                 return DefaultComponentService.getInstance();
+            }
+
+            @Override
+            public CompositeViewService getCompositeViewService() {
+                return DefaultCompositeViewService.getInstance();
             }
         };
         m_gatewayTestName = gatewayTestName;

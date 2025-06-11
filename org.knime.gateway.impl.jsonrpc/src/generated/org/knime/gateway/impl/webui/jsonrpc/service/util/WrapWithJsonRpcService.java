@@ -47,6 +47,8 @@ package org.knime.gateway.impl.webui.jsonrpc.service.util;
 
 import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcSpaceServiceWrapper;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcCompositeViewServiceWrapper;
+import org.knime.gateway.api.webui.service.CompositeViewService;
 import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcKaiServiceWrapper;
 import org.knime.gateway.api.webui.service.KaiService;
 import org.knime.gateway.impl.webui.jsonrpc.service.JsonRpcNodeServiceWrapper;
@@ -93,6 +95,9 @@ public class WrapWithJsonRpcService {
         try {
             if(serviceInterface == SpaceService.class) {
                 return (S)JsonRpcSpaceServiceWrapper.class.getConstructor(java.util.function.Supplier.class).newInstance(service);
+            }
+            if(serviceInterface == CompositeViewService.class) {
+                return (S)JsonRpcCompositeViewServiceWrapper.class.getConstructor(java.util.function.Supplier.class).newInstance(service);
             }
             if(serviceInterface == KaiService.class) {
                 return (S)JsonRpcKaiServiceWrapper.class.getConstructor(java.util.function.Supplier.class).newInstance(service);
