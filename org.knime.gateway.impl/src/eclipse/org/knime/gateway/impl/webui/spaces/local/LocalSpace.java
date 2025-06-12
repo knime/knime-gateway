@@ -324,7 +324,7 @@ public final class LocalSpace implements Space {
         // If these are the same file on the file system (potentially case-insensitive, as indicated by Files#isSameFile), then
         // do not throw here and still carry out the rename: as per the above if-return we may be currently changing case of an existing file.
         // If it is a different file but existing, then we indeed have a collision.
-        if (!Files.isSameFile(sourcePath, destinationPath) && Files.exists(destinationPath)) {
+        if (Files.exists(destinationPath) && !Files.isSameFile(sourcePath, destinationPath)) {
             throw new ServiceExceptions.OperationNotAllowedException(
                 "There already exists a %s with that name. Pick a different name or rename the other item first."
                     .formatted(getReadableFileType(destinationPath)));
