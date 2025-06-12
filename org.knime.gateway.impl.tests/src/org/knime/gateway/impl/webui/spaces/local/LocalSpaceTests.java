@@ -318,7 +318,7 @@ public final class LocalSpaceTests {
         final var spaceRootId = m_space.getItemId(spaceRootPath);
 
         // test a data file and a workflow
-        final List<String> itemIds = List.of(m_space.getItemId(createFile(spaceRootPath, "data.txt")),
+        final var itemIds = List.of(m_space.getItemId(createFile(spaceRootPath, "data.txt")),
             m_space.getItemId(createWorkflow(m_space, spaceRootPath, spaceRootId, "workflow")));
 
         for (final var itemId : itemIds) {
@@ -328,7 +328,7 @@ public final class LocalSpaceTests {
             assertThat(oldPath.getFileName().toString(), equalTo(itemName));
 
             // rename the item, which should (1) not fail and (2) actually rename the item on disk and in the space
-            final String newItemName = itemName.toUpperCase();
+            final var newItemName = itemName.toUpperCase();
             final var renamed = m_space.renameItem(itemId, newItemName);
             assertThat(renamed.getName(), equalTo(newItemName));
 
@@ -347,7 +347,7 @@ public final class LocalSpaceTests {
         final var group = spaceRootPath.resolve(m_space.createWorkflowGroup(spaceRootId).getName());
         final var dataItem = createFile(spaceRootPath, "data.txt");
         final var wf = createWorkflow(m_space, spaceRootPath, spaceRootId, "workflow");
-        final List<String> itemIds = List.of(group, dataItem, wf).stream() //
+        final var itemIds = List.of(group, dataItem, wf).stream() //
                 .map(m_space::getItemId).collect(Collectors.toList());
 
         for (final var itemId : itemIds) {
@@ -375,10 +375,10 @@ public final class LocalSpaceTests {
             "workflow group");
         final var dataItem = Pair.create(createFile(spaceRootPath, "data.txt"), "data file");
         final var wf = Pair.create(createWorkflow(m_space, spaceRootPath, spaceRootId, "workflow"), "workflow");
-        final List<Pair<String, String>> itemIds = List.of(group, dataItem, wf).stream() //
+        final var itemIds = List.of(group, dataItem, wf).stream() //
                 .map(p -> Pair.create(m_space.getItemId(p.getFirst()), p.getSecond())).toList();
 
-        for (int i = 0; i < itemIds.size(); i++) {
+        for (var i = 0; i < itemIds.size(); i++) {
             final var itemIdAndType = itemIds.get(i);
             final var itemId = itemIdAndType.getFirst();
 
@@ -426,7 +426,7 @@ public final class LocalSpaceTests {
         final List<Path> itemsToKeep) throws IOException {
         var idsToDelete =
             workspace.m_spaceItemPathAndTypeCache.entrySet().stream().filter(e -> itemsToDelete.contains(e.getValue()))
-                .map(e -> e.getKey()).map(i -> "" + i).collect(Collectors.toList());
+                .map(e -> e.getKey()).map(i -> i).collect(Collectors.toList());
         workspace.deleteItems(idsToDelete, false);
         assertIdAndTypeMapContain(workspace, itemsToKeep.toArray(Path[]::new));
     }
@@ -443,7 +443,7 @@ public final class LocalSpaceTests {
     }
 
     private static Path createFile(final Path parent, final String name) throws IOException {
-        Path path = parent.resolve(name);
+        var path = parent.resolve(name);
         Files.write(path, new byte[]{100, -100});
         return path;
     }
