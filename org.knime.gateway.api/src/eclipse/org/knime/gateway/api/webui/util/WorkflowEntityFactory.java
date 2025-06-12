@@ -1708,7 +1708,7 @@ public final class WorkflowEntityFactory {
         var hasLegacyJSNodeView = nc instanceof NativeNodeContainer && nc.getInteractiveWebViews().size() > 0;
         var hasSwingNodeView = nc.getNrNodeViews() > 0;
         if (hasNodeView || hasCompositeView || hasLegacyJSNodeView || hasSwingNodeView) {
-            return nc.getNodeContainerState().isExecuted();
+            return nc.getNodeContainerState().isExecuted() && !nc.isInactive();
         }
         return null; // NOSONAR
     }
