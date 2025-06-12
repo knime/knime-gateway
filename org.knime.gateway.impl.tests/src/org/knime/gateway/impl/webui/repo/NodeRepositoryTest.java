@@ -122,7 +122,7 @@ public class NodeRepositoryTest {
         nodeFromSearch = res.getNodes().get(0);
         nodeFromRepo = repo.getNodeTemplate(nodeFromSearch.getId(), true);
         assertThat("templates not equal", nodeFromRepo, is(nodeFromSearch));
-        assertThat("unexpected name", nodeFromRepo.getName(), is("Bar Chart (JavaScript)"));
+        assertThat("unexpected name", nodeFromRepo.getName(), is("Bar Chart (JavaScript) (legacy)"));
         assertThat(nodeFromRepo.getExtension().getVendor().getName(), is("KNIME AG, Zurich, Switzerland"));
         assertThat(nodeFromRepo.getExtension().getVendor().isKNIME(), is(true));
         assertThat(nodeFromRepo.getId(), is(nodeFromSearch.getId()));
