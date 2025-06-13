@@ -71,6 +71,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.swt.widgets.Display;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
@@ -103,6 +104,8 @@ import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeStateChangeListener;
+import org.knime.core.node.workflow.NodeStateEvent;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
@@ -769,6 +772,34 @@ public final class CoreUtil {
             return getNonMetanodeSelfOrParent(getWorkflowParent(wfm));
         }
         return wfm;
+    }
+
+    /**
+     *
+     * If the node is already executed, run the given task. If the node is not already executed, execute the workflow up
+     * to the node and attach a listener to run the given task once executed.
+     *
+     * @param nc -
+     * @param task -
+     */
+    public static void executeThenRun(NodeContainer nc, Runnable task) {
+        if (nc.getNodeContainerState().isExecuted()) {
+            task.run();
+            return;
+        }
+        nc.addNodeStateChangeListener(new NodeStateChangeListener() {
+            @Override
+            public void stateChanged(final NodeStateEvent event) {
+                var state = nc.getNodeContainerState();
+                if (event.getSource().equals(nc.getID()) && state.isExecuted()) {
+                    task.run();
+                }
+                if (!state.isExecutionInProgress()) {
+                    nc.removeNodeStateChangeListener(this);
+                }
+            }
+        });
+        nc.getParent().executeUpToHere(nc.getID());
     }
 
     /**
