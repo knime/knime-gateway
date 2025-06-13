@@ -58,6 +58,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.impl.webui.spaces.Space;
@@ -364,7 +365,7 @@ public final class ProjectManager {
     public Map<String, Boolean> getDirtyProjectsMap() {
         return projects().map(project -> {
             return project.getWorkflowManagerIfLoaded() //
-                .map(wfm -> Pair.create(project.getID(), wfm.isDirty())) //
+                .map(wfm -> Pair.create(project.getID(), CoreUtil.wfmDirtyEnough(wfm))) //
                 .orElseGet(() -> Pair.create(project.getID(), false));
         }).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }

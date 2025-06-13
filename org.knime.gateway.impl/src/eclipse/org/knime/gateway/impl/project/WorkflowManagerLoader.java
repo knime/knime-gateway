@@ -106,7 +106,9 @@ public interface WorkflowManagerLoader {
                 new ExecutionMonitor(new ProgressMonitorAdapter(monitor)), //
                 loadHelper //
             );
-            return loadResult.getWorkflowManager();
+            var wfm = loadResult.getWorkflowManager();
+            wfm.initChangesTracker();
+            return wfm;
         } catch (IOException | InvalidSettingsException | CanceledExecutionException
                 | UnsupportedWorkflowVersionException | LockFailedException e) {
             NodeLogger.getLogger(WorkflowManagerLoader.class).error(e);

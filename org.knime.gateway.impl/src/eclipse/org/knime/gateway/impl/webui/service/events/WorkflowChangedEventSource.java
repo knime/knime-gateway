@@ -58,6 +58,7 @@ import java.util.Optional;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.EntityBuilderManager;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
@@ -179,7 +180,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     private static CompositeEventEnt createCompositeEvent(final WorkflowKey wfKey, final WorkflowManager wfm,
         final WorkflowChangedEventEnt workflowChangedEvent) {
         var projectDirtyStateEvent = EntityBuilderManager.builder(ProjectDirtyStateEventEntBuilder.class)
-            .setDirtyProjectsMap(Map.of(wfKey.getProjectId(), wfm.isDirty())).build();
+            .setDirtyProjectsMap(Map.of(wfKey.getProjectId(), CoreUtil.wfmDirtyEnough(wfm))).build();
         return EntityBuilderManager.builder(CompositeEventEntBuilder.class)
             .setEvents(List.of(workflowChangedEvent, projectDirtyStateEvent)).build();
     }

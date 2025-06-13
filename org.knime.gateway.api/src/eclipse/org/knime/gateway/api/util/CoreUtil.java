@@ -937,7 +937,7 @@ public final class CoreUtil {
      * @return True if its dirty or it has a parent that is dirty, false otherwise
      */
     public static boolean isWorkflowDirtyOrHasDirtyParent(final WorkflowManager wfm) {
-        var isDirty = wfm.isDirty();
+        boolean isDirty = wfmDirtyEnough(wfm);
         if (!isDirty) {
             if (wfm.isProject()) {
                 return false;
@@ -956,6 +956,21 @@ public final class CoreUtil {
             return isWorkflowDirtyOrHasDirtyParent(parentWfm);
         }
         return true;
+    }
+
+    public static boolean wfmDirtyEnough(WorkflowManager wfm) {
+        var trackedChanges = getComponentSNC(wfm)
+                .filter(SubNodeContainer::isProject)
+                .flatMap(NodeContainer::getTrackedChanges);
+        if (trackedChanges.isPresent()) {
+            if (!trackedChanges.get().hasNodeStateChanges() && !trackedChanges.get().hasOtherChanges()) {
+                return false;
+            }
+            if (trackedChanges.get().hasNodeStateChanges() && !trackedChanges.get().hasOtherChanges()) {
+                return false;
+            }
+        }
+        return wfm.isDirty();
     }
 
     /**

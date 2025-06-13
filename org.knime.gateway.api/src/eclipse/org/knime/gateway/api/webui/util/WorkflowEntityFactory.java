@@ -392,6 +392,10 @@ public final class WorkflowEntityFactory {
                 wfm.getWorkflowAnnotations().stream().map(wa -> buildWorkflowAnnotationEnt(wa, buildContext)).toList();
             var metadata = getMetadata(wfm);
             var componentPlaceholders = buildContext.getComponentPlaceholders().stream().toList();
+            boolean workflowDirtyOrHasDirtyParent = CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm);
+            if (workflowDirtyOrHasDirtyParent) {
+                System.out.println("dirty");
+            }
             return builder(WorkflowEntBuilder.class) //
                 .setInfo(buildWorkflowInfoEnt(wfm, buildContext))//
                 .setNodes(nodes)//
@@ -405,7 +409,8 @@ public final class WorkflowEntityFactory {
                 .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
                 .setMetadata(metadata)//
                 .setComponentPlaceholders(componentPlaceholders.isEmpty() ? null : componentPlaceholders)//
-                .setDirty(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).build();
+                .setDirty(workflowDirtyOrHasDirtyParent) //
+                .build();
         }
     }
 
