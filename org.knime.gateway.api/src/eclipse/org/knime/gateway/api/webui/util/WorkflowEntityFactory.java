@@ -1683,9 +1683,11 @@ public final class WorkflowEntityFactory {
             && buildContext.getSpaceProviderType(uri.getAuthority()).orElse(null) == SpaceProviderEnt.TypeEnum.HUB;
     }
 
-    /*
+    /**
      * Returns null if the node has no node view; false, if there is a node view but there is nothing to display,
      * true, if there is a node view which also has something to display.
+     * <p>
+     * See org.knime.ui.java.api.NodeAPI#executeNodeAndOpenView
      */
     private static Boolean hasAndCanOpenNodeView(final NodeContainer nc) {
         var hasNodeView = NodeViewManager.hasNodeView(nc);
