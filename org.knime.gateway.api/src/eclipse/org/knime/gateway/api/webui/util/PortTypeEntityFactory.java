@@ -105,7 +105,7 @@ public final class PortTypeEntityFactory {
         return builder(PortTypeEntBuilder.class)//
             .setName(ptype.getName())//
             .setKind(kind)//
-            .setColor(EntityFactory.Workflow.hexStringColor(ptype.getColor()))//
+            .setColor(WorkflowEntityFactory.hexStringColor(ptype.getColor()))//
             .setCompatibleTypes(compatibleTypes.isEmpty() ? null : compatibleTypes)//
             .setHidden(ptype.isHidden() ? Boolean.TRUE : null)//
             .setViews(includeInteractionInfo ? buildPortViewsEnt(ptype) : null)//
