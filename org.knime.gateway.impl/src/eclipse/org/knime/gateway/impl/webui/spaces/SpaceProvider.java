@@ -245,6 +245,17 @@ public interface SpaceProvider {
         }
 
         /**
+         * The (remote) space provider's setting regarding resetting workflows before upload (potentially does a request
+         * to determine the 'reset-on-upload-mode').
+         *
+         * @return the setting
+         * @since 5.5
+         */
+        default ResetOnUploadEnum getResetOnUploadMode() {
+            return ResetOnUploadEnum.NO_PREFERENCE;
+        }
+
+        /**
          * Cuts the connection.
          */
         void disconnect();
@@ -259,16 +270,6 @@ public interface SpaceProvider {
      */
     default Optional<SpaceAndItemId> resolveSpaceAndItemId(final URI uri) {
         return Optional.empty();
-    }
-
-    /**
-     * The (remote) space provider's setting regarding resetting workflows before upload.
-     *
-     * @return the setting
-     * @since 5.5
-     */
-    default ResetOnUploadEnum getResetOnUploadMode() {
-        return ResetOnUploadEnum.NO_PREFERENCE;
     }
 
     /**

@@ -414,21 +414,15 @@ public final class AppStateEntityFactory {
         final var type = spaceProvider.getType();
         final var isLocalSpaceProvider = type == TypeEnum.LOCAL;
         final var connectionMode = ConnectionModeEnum.valueOf(isLocalSpaceProvider ? "AUTOMATIC" : "AUTHENTICATED");
-        final var username = getUsername(spaceProvider, doConnect); // To connect if necessary
+        final var optConnection = spaceProvider.getConnection(doConnect); // connect if necessary
+        final var username = optConnection //
+                .map(SpaceProviderConnection::getUsername) //
+                .filter(Predicate.not(String::isEmpty)) //
+                .orElse(null);
         return EntityFactory.Space.buildSpaceProviderEnt(spaceProvider.getId(), spaceProvider.getName(), type,
-            isLocalSpaceProvider || spaceProvider.getConnection(false).isPresent(), connectionMode,
+            isLocalSpaceProvider || optConnection.isPresent(), connectionMode,
             isLocalSpaceProvider ? null : spaceProvider.getServerAddress().orElse(null),
             isLocalSpaceProvider ? null : username,
-            spaceProvider.getResetOnUploadMode());
-    }
-
-    /**
-     * @return The user object node if connection present {@code null} otherwise.
-     */
-    private static String getUsername(final SpaceProvider spaceProvider, final boolean doConnect) {
-        return spaceProvider.getConnection(doConnect)//
-            .map(SpaceProviderConnection::getUsername)//
-            .filter(Predicate.not(String::isEmpty))//
-            .orElse(null);
+            optConnection.map(SpaceProviderConnection::getResetOnUploadMode).orElse(null));
     }
 }

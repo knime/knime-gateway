@@ -114,6 +114,7 @@ public final class ProjectManager {
      * @param itemId -
      * @param projectType -
      * @return the project and workflow-manager or null if none
+     * @since 5.5
      */
     public Optional<Project> getAndUpdateWorkflowServiceProject(final Space space, final String spaceProviderId,
         final String spaceId, final String itemId, final SpaceItemReferenceEnt.ProjectTypeEnum projectType) {
@@ -147,6 +148,7 @@ public final class ProjectManager {
      *
      * @param projectId the id to add or {@code null} to unset the active project
      * @param versionId the version id to set as active
+     * @since 5.5
      */
     public void setProjectActive(final String projectId, final VersionId versionId) {
         var projectInternal = m_projectsMap.get(projectId);
@@ -184,6 +186,7 @@ public final class ProjectManager {
      * @param projectId the id of the project to check
      * @param versionId the version id to check
      * @return Whether the project is active and the version is the active version.
+     * @since 5.5
      */
     public boolean isActiveProjectVersion(final String projectId, final VersionId versionId) {
         // If no active project is set, we assume the active version wasn't set. In that case we return 'true', since
@@ -268,6 +271,7 @@ public final class ProjectManager {
      * If a project for the given id exists it will be removed
      *
      * @param projectId id of the project to be removed
+     * @since 5.5
      */
     public void removeProject(final String projectId) {
         removeProject(projectId, ProjectConsumerType.UI);
@@ -334,6 +338,7 @@ public final class ProjectManager {
      * @param spaceId -
      * @param itemId -
      * @return A currently open project matching the given IDs in its {@link Origin}.
+     * @since 5.5
      */
     public Optional<Project> getProject(final String providerId, final String spaceId, final String itemId) {
         return projects().filter(project -> project.getOrigin() //
@@ -373,6 +378,7 @@ public final class ProjectManager {
      * The contained projects
      *
      * @return -
+     * @since 5.5
      */
     public Stream<Project> projects() {
         return m_projectsMap.values().stream().map(ProjectInternal::project);
@@ -380,6 +386,7 @@ public final class ProjectManager {
 
     /**
      * Dispose all projects
+     * @since 5.5
      */
     public void disposeAll() {
         getProjectIds().forEach(id -> {
@@ -393,6 +400,7 @@ public final class ProjectManager {
      *
      * @param projectIds Assumed to contain all currently open projects. The order of this list defines the new
      *            ordering.
+     * @since 5.5
      */
     public void updateOpenProjectsOrder(final List<String> projectIds) {
         m_projectsMap.resortKeys(projectIds);
