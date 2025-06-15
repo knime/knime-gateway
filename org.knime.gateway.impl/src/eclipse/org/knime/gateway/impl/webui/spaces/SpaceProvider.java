@@ -262,7 +262,8 @@ public interface SpaceProvider {
     }
 
     /**
-     * The (remote) space provider's setting regarding resetting workflows before upload.
+     * The (remote) space provider's setting regarding resetting workflows before upload (potentially does a request to
+     * determine the 'reset-on-upload-mode').
      *
      * @return the setting
      * @since 5.5
