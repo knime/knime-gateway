@@ -80,7 +80,6 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
@@ -128,7 +127,7 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final Boolean includeInteractionInfo) throws NotASubWorkflowException, NodeNotFoundException {
+        final Boolean includeInteractionInfo) throws NodeNotFoundException {
         final var version = VersionId.parse(versionId);
         final var wfKey = new WorkflowKey(projectId, workflowId, version);
         final var wfm = ServiceUtilities.assertProjectIdAndGetWorkflowManager(wfKey);
@@ -163,7 +162,7 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(final String projectId, final NodeIDEnt workflowId)
-        throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
+        throws NodeNotFoundException, InvalidRequestException, ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var wfKey = new WorkflowKey(projectId, workflowId);
         final var wfm = WorkflowUtil.getWorkflowManager(wfKey);

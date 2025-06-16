@@ -156,31 +156,6 @@ public final class ServiceExceptions {
     }
 
    /**
-    * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
-    */
-    public static class NotASubWorkflowException extends GatewayException {
-        
-        public NotASubWorkflowException(String message) {
-            super(false);
-            addProperty("message", message);
-        }
-
-        public NotASubWorkflowException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
-        }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public NotASubWorkflowException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
-    }
-
-   /**
     * If the request is invalid for a reason.
     */
     public static class InvalidRequestException extends GatewayException {
@@ -225,31 +200,6 @@ public final class ServiceExceptions {
         * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
         */
         public OperationNotAllowedException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
-    }
-
-   /**
-    * If there was an I/O error of some kind.
-    */
-    public static class IOException extends GatewayException {
-        
-        public IOException(String message) {
-            super(false);
-            addProperty("message", message);
-        }
-
-        public IOException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
-        }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public IOException(Map<String, String> gatewayProblemDescription) {
             super(gatewayProblemDescription);
         }
 
