@@ -50,7 +50,7 @@ package org.knime.gateway.impl.webui;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 
@@ -74,10 +74,10 @@ public final class WorkflowUtil {
      * @param wfKey
      * @return the workflow manager
      * @throws NodeNotFoundException if there is no metanode or component for the given workflow-id
-     * @throws NotASubWorkflowException if the workflow-id doesn't reference a metanode or a component
+     * @throws ServiceCallException if the workflow-id doesn't reference a metanode or a component
      */
     public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
+        throws NodeNotFoundException, ServiceCallException {
         WorkflowManager wfm;
         try {
             // No version needed, only current state
@@ -85,7 +85,7 @@ public final class WorkflowUtil {
         } catch (IllegalArgumentException ex) {
             throw new NodeNotFoundException(ex.getMessage(), ex);
         } catch (IllegalStateException ex) {
-            throw new NotASubWorkflowException(ex.getMessage(), ex);
+            throw new ServiceCallException("Not a sub-workflow. " + ex.getMessage(), ex);
         }
         return wfm;
     }
@@ -100,7 +100,7 @@ public final class WorkflowUtil {
      * @throws NotASubWorkflowException
      */
     public static void assertWorkflowExists(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
+        throws NodeNotFoundException, ServiceCallException {
         getWorkflowManager(wfKey);
     }
 

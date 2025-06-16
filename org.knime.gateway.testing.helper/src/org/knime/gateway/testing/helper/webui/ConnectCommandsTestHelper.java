@@ -506,7 +506,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private List<ConnectionEnt> getConnectionsFromWorkflow(final String projectId, final NodeIDEnt workflowId)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException {
+            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ServiceCallException {
         var workflow = ws().getWorkflow(projectId, workflowId, null, true).getWorkflow();
         return workflow.getConnections().entrySet().stream().map(Map.Entry::getValue).toList();
     }
