@@ -63,7 +63,6 @@ import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -107,7 +106,7 @@ public class DefaultComponentService implements ComponentService {
         try {
             var snc = getSubnodeContainer(projectId, workflowId, version, nodeId);
             return getViewDataProvider().getCompositeViewData(snc, getNodeViewCreator(projectId));
-        } catch (IOException | NodeNotFoundException ex) {
+        } catch (IOException ex) {
             throw new ServiceCallException("Could not create component view data. " + ex.getMessage(), ex);
         }
     }
@@ -120,7 +119,7 @@ public class DefaultComponentService implements ComponentService {
             var snc = getSubnodeContainer(projectId, workflowId, nodeId);
             return getViewDataProvider().triggerComponentReexecution(snc, resetNodeIdSuffix, viewValues,
                 getNodeViewCreator(projectId));
-        } catch (IOException | NodeNotFoundException ex) {
+        } catch (IOException ex) {
             throw new ServiceCallException("Could not reexecute component. " + ex.getMessage(), ex);
         }
     }
@@ -134,7 +133,7 @@ public class DefaultComponentService implements ComponentService {
             var snc = getSubnodeContainer(projectId, workflowId, nodeId);
             return getViewDataProvider().triggerCompleteComponentReexecution(snc, viewValues,
                 getNodeViewCreator(projectId));
-        } catch (IOException | NodeNotFoundException ex) {
+        } catch (IOException ex) {
             throw new ServiceCallException("Could not reexecute complete component. " + ex.getMessage(), ex);
         }
 
@@ -144,12 +143,8 @@ public class DefaultComponentService implements ComponentService {
     public ComponentNodeDescriptionEnt getComponentDescription(final String projectId, final NodeIDEnt workflowId,
         final String versionId, final NodeIDEnt nodeId) throws ServiceCallException {
         var version = VersionId.parse(versionId);
-        try {
-            SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, version, nodeId);
-            return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
-        } catch (NodeNotFoundException ex) {
-            throw new ServiceCallException("Could not get component description. " + ex.getMessage(), ex);
-        }
+        SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, version, nodeId);
+        return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
     }
 
     @Override
@@ -159,7 +154,7 @@ public class DefaultComponentService implements ComponentService {
             SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, nodeId);
             return getViewDataProvider().pollComponentReexecutionStatus(snc, nodeIdThatTriggered,
                 getNodeViewCreator(projectId));
-        } catch (NodeNotFoundException | IOException ex) {
+        } catch (IOException ex) {
             throw new ServiceCallException("Could not get reexecuting page. " + ex.getMessage(), ex);
         }
     }
@@ -173,7 +168,7 @@ public class DefaultComponentService implements ComponentService {
         try {
             SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, nodeId);
             return getViewDataProvider().pollCompleteComponentReexecutionStatus(snc, getNodeViewCreator(projectId));
-        } catch (NodeNotFoundException | IOException ex) {
+        } catch (IOException ex) {
             throw new ServiceCallException("Could not get reexecuting page. " + ex.getMessage(), ex);
         }
     }
@@ -184,7 +179,7 @@ public class DefaultComponentService implements ComponentService {
         try {
             SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, nodeId);
             getViewDataProvider().setViewValuesAsNewDefault(snc, viewValues);
-        } catch (IOException | NodeNotFoundException ex) {
+        } catch (IOException ex) {
             throw new ServiceCallException("Could not set view values as new default. " + ex.getMessage(), ex);
         }
     }
@@ -195,7 +190,7 @@ public class DefaultComponentService implements ComponentService {
         try {
             SubNodeContainer snc = getSubnodeContainer(projectId, workflowId, nodeId);
             getViewDataProvider().deactivateAllComponentDataServices(snc);
-        } catch (IOException | NodeNotFoundException ex) {
+        } catch (IOException ex) {
             throw new ServiceCallException("Could not deactivate all component data services. " + ex.getMessage(), ex);
         }
     }
@@ -214,12 +209,12 @@ public class DefaultComponentService implements ComponentService {
     }
 
     private static SubNodeContainer getSubnodeContainer(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
+        final NodeIDEnt nodeId) throws ServiceCallException {
         return getSubnodeContainer(projectId, workflowId, VersionId.currentState(), nodeId);
     }
 
     private static SubNodeContainer getSubnodeContainer(final String projectId, final NodeIDEnt workflowId,
-        final VersionId versionId, final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
+        final VersionId versionId, final NodeIDEnt nodeId) throws ServiceCallException {
         var nc = ServiceUtilities.assertProjectIdAndGetNodeContainer(projectId, workflowId, versionId, nodeId);
         if (nc instanceof SubNodeContainer snc) {
             return snc;

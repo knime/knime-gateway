@@ -64,7 +64,6 @@ import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBui
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.CallThrottle.CallState;
@@ -130,7 +129,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
         try {
             WorkflowUtil.assertWorkflowExists(workflowKey);
-        } catch (NodeNotFoundException | ServiceCallException ex) {
+        } catch (ServiceCallException ex) {
             throw new IllegalArgumentException(ex.getMessage(), ex);
         }
 

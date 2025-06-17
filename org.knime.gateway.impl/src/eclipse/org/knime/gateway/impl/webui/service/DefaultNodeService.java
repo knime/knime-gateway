@@ -83,7 +83,6 @@ import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
@@ -123,14 +122,14 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
-        final String action) throws NodeNotFoundException, OperationNotAllowedException {
+        final String action) throws ServiceCallException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
             DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
                 nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
         } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
+            throw new ServiceCallException(e.getMessage(), e);
         } catch (IllegalStateException e) {
             throw new OperationNotAllowedException(e.getMessage(), e);
         }
@@ -138,7 +137,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String action) throws NodeNotFoundException, OperationNotAllowedException {
+        final String action) throws ServiceCallException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
@@ -152,7 +151,7 @@ public final class DefaultNodeService implements NodeService {
             throw new OperationNotAllowedException("The action to change the loop state is not applicable for "
                 + nc.getNameWithID() + ". Not a loop end node.");
         } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
+            throw new ServiceCallException(e.getMessage(), e);
         }
     }
 
@@ -191,7 +190,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
+        final NodeIDEnt nodeId) throws ServiceCallException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
@@ -205,7 +204,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
+        final NodeIDEnt nodeId) throws ServiceCallException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var nnc = getNC(projectId, workflowId, version, nodeId, NativeNodeContainer.class);
@@ -272,12 +271,12 @@ public final class DefaultNodeService implements NodeService {
     }
 
     private static <T> T getNC(final String projectId, final NodeIDEnt workflowId, final VersionId versionId,
-        final NodeIDEnt nodeId, final Class<T> ncClass) throws NodeNotFoundException, InvalidRequestException {
+        final NodeIDEnt nodeId, final Class<T> ncClass) throws ServiceCallException, InvalidRequestException {
         NodeContainer nc;
         try {
             nc = getNodeContainer(projectId, workflowId, versionId, nodeId);
         } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
+            throw new ServiceCallException(e.getMessage(), e);
         }
 
         if (!ncClass.isAssignableFrom(nc.getClass())) {
@@ -291,7 +290,7 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final String extensionType, final String serviceType, final String request)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws ServiceCallException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
@@ -313,7 +312,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId, final String extensionType) throws NodeNotFoundException, InvalidRequestException {
+        final NodeIDEnt nodeId, final String extensionType) throws ServiceCallException, InvalidRequestException {
         var version = VersionId.parse(versionId);
         NodeContainer nc;
         try {
@@ -341,7 +340,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId, final String mode, final List<String> selection) throws NodeNotFoundException {
+        final NodeIDEnt nodeId, final String mode, final List<String> selection) throws ServiceCallException {
         var version = VersionId.parse(versionId);
         ServiceUtilities.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
             NodeWrapper::of);
@@ -349,7 +348,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public NativeNodeDescriptionEnt getNodeDescription(final NodeFactoryKeyEnt factoryKey)
-        throws NodeNotFoundException, ServiceCallException {
+        throws ServiceCallException {
         if (!m_nodeDescriptionCache.containsKey(factoryKey)) {
             NodeFactory<NodeModel> fac;
             try {
@@ -357,7 +356,7 @@ public final class DefaultNodeService implements NodeService {
             } catch (NoSuchElementException | IOException e) { // NOSONAR: exceptions are handled
                 var message = "Could not read node description";
                 NodeLogger.getLogger(this.getClass()).error(message + ": " + e.getMessage());
-                throw new NodeNotFoundException(message, e);
+                throw new ServiceCallException(message, e);
             }
 
             final var coreNode = CoreUtil.createNode(fac) // needed to init information on ports

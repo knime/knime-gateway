@@ -51,8 +51,6 @@ import java.util.function.Function;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowUtil;
 
@@ -92,11 +90,7 @@ abstract class CommandIfElse extends HigherOrderCommand {
     public Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
         throws ServiceExceptions.ServiceCallException {
         WorkflowManager wfm;
-        try {
-            wfm = WorkflowUtil.getWorkflowManager(wfKey);
-        } catch (NodeNotFoundException | ServiceCallException ex) {
-            throw new ServiceExceptions.ServiceCallException(ex.getMessage(), ex);
-        }
+        wfm = WorkflowUtil.getWorkflowManager(wfKey);
         var takeLeft = m_predicate.apply(wfm);
         m_activeCommand = Boolean.TRUE.equals(takeLeft) ? m_leftCommand : m_rightCommand;
         if (m_activeCommand instanceof WithResult withResult) {

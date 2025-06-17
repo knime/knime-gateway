@@ -68,8 +68,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -202,7 +201,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testGetWorkflowWithHiddenMetanode()
-        throws IOException, NotASubWorkflowException, NodeNotFoundException {
+        throws IOException, ServiceCallException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var metanode = wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "metanode");
         var project = Project.builder().setWfm(wfm).build();

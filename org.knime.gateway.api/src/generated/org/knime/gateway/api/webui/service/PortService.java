@@ -69,10 +69,10 @@ public interface PortService extends GatewayService {
      * @param dataServiceRequest 
      *
      * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    String callPortDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx, String serviceType, String dataServiceRequest)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    String callPortDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx, String serviceType, String dataServiceRequest)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException;
         
     /**
      * De-activates all data services associated with the port view.
@@ -85,10 +85,10 @@ public interface PortService extends GatewayService {
      * @param viewIdx The index of the specific port view to obtain
      *
      * 
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    void deactivatePortDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    void deactivatePortDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Returns all the information on a port data value view required to render it.
@@ -102,10 +102,10 @@ public interface PortService extends GatewayService {
      * @param colIdx The column index to be used.
      *
      * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    Object getDataValueView(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer rowIdx, Integer colIdx)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    Object getDataValueView(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer rowIdx, Integer colIdx)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Returns all the information on a port view required to render it.
@@ -118,10 +118,10 @@ public interface PortService extends GatewayService {
      * @param viewIdx The index of the specific port view to obtain
      *
      * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    Object getPortView(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    Object getPortView(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Updates the data point selection (aka hiliting) for a single port as specified.
@@ -136,8 +136,8 @@ public interface PortService extends GatewayService {
      * @param selection A list of strings that are translated to the row keys affected by the data point selection modification.
      *
      * 
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void updateDataPointSelection(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx, String mode, java.util.List<String> selection)  throws ServiceExceptions.NodeNotFoundException;
+    void updateDataPointSelection(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer viewIdx, String mode, java.util.List<String> selection)  throws ServiceExceptions.ServiceCallException;
         
 }

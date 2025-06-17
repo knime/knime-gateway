@@ -106,31 +106,6 @@ public final class ServiceExceptions {
     }
 
    /**
-    * The requested node was not found.
-    */
-    public static class NodeNotFoundException extends GatewayException {
-        
-        public NodeNotFoundException(String message) {
-            super(false);
-            addProperty("message", message);
-        }
-
-        public NodeNotFoundException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
-        }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public NodeNotFoundException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
-    }
-
-   /**
     * The requested element was not found.
     */
     public static class NoSuchElementException extends GatewayException {
