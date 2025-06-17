@@ -66,7 +66,6 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 
@@ -86,12 +85,10 @@ public class UnexpectedJsonRpcErrorTest {
     /**
      * Tests for the correct json-rpc error response if a gateway service throws an unexpected exception.
      *
-     * @throws NodeNotFoundException
      * @throws ServiceCallException
-     * @throws NotASubWorkflowException
      */
     @Test
-    public void testUnexpectedJsonRpcError() throws NodeNotFoundException, ServiceCallException {
+    public void testUnexpectedJsonRpcError() throws ServiceCallException {
         Map<Class<? extends GatewayService>, Supplier<? extends GatewayService>> serviceMocks = new HashMap<>();
         WorkflowService workflowServiceMock = mock(WorkflowService.class);
         when(workflowServiceMock.getWorkflow(any(), any(), any(), any()))

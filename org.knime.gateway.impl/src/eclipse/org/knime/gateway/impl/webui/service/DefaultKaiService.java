@@ -57,7 +57,6 @@ import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -103,7 +102,7 @@ public final class DefaultKaiService implements KaiService {
             try {
                 var wfm = WorkflowUtil.getWorkflowManager(m_workflowKey);
                 workflowAction.accept(wfm);
-            } catch (NodeNotFoundException | ServiceCallException ex) {
+            } catch (ServiceCallException ex) {
                 throw new IllegalStateException("Could not find workflow", ex);
             }
         }

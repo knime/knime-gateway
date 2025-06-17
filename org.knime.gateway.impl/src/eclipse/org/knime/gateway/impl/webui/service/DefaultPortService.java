@@ -71,7 +71,7 @@ import org.knime.gateway.api.entity.PortViewEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -100,7 +100,7 @@ public class DefaultPortService implements PortService {
     @Override
     public Object getPortView(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws ServiceCallException, InvalidRequestException {
         var version = VersionId.parse(versionId);
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
         var outPort = nc.getOutPort(portIdx);
@@ -136,7 +136,7 @@ public class DefaultPortService implements PortService {
     @Override
     public Object getDataValueView(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer rowIdx, final Integer colIdx)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws ServiceCallException, InvalidRequestException {
         var version = VersionId.parse(versionId);
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
         return new DataValueViewEnt(DataValueWrapper.of(nc, portIdx, rowIdx, colIdx),
@@ -154,7 +154,7 @@ public class DefaultPortService implements PortService {
     @Override
     public String callPortDataService(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx, final String serviceType,
-        final String body) throws NodeNotFoundException, InvalidRequestException {
+        final String body) throws ServiceCallException, InvalidRequestException {
         var version = VersionId.parse(versionId);
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
         var portViewManager = PortViewManager.getInstance();
@@ -173,7 +173,7 @@ public class DefaultPortService implements PortService {
     @Override
     public void deactivatePortDataServices(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws ServiceCallException, InvalidRequestException {
         var version = VersionId.parse(versionId);
         NodeContainer nc;
         try {
@@ -195,7 +195,7 @@ public class DefaultPortService implements PortService {
     @Override
     public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx, final String mode,
-        final List<String> selection) throws NodeNotFoundException {
+        final List<String> selection) throws ServiceCallException {
         var version = VersionId.parse(versionId);
         ServiceUtilities.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
             nc -> NodePortWrapper.of(nc, portIdx, viewIdx));

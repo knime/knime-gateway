@@ -82,7 +82,6 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -136,7 +135,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         });
 
         // test node not found exception
-        assertThrows(NodeNotFoundException.class, () -> {
+        assertThrows(ServiceCallException.class, () -> {
             ns().changeNodeStates(wfId, getRootID(), singletonList(new NodeIDEnt(83747273)), "execute");
         });
 
@@ -359,7 +358,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(getNativeNodeEnt(wfId, subWfId, subWfId.appendNodeID(2)).getLoopInfo(), is(nullValue()));
 
         // test node not found exception
-        assertThrows(NodeNotFoundException.class, () -> {
+        assertThrows(ServiceCallException.class, () -> {
             ns().changeLoopState(wfId, subWfId, new NodeIDEnt(83747273), "pause");
         });
 
@@ -375,7 +374,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private NativeNodeEnt getNativeNodeEnt(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws ServiceCallException, NodeNotFoundException {
+        throws ServiceCallException {
         return (NativeNodeEnt)ws().getWorkflow(projectId, workflowId, null, Boolean.TRUE).getWorkflow().getNodes()
             .get(nodeId.toString());
     }
@@ -387,7 +386,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @throws ServiceCallException
      * @throws NodeDescriptionNotAvailableException
      */
-    public void testGetNodeDescription() throws NodeNotFoundException, ServiceCallException {
+    public void testGetNodeDescription() throws ServiceCallException {
         // example for elements in 4.1 schema and rich formatting
         testNodeDescriptionSnapshot(DummyNodeFactory_v41.class.getName());
 
@@ -416,12 +415,12 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void testNodeDescriptionSnapshot(final String classname)
-        throws NodeNotFoundException, ServiceCallException {
+        throws ServiceCallException {
         testNodeDescriptionSnapshot(classname, null, null);
     }
 
     private void testNodeDescriptionSnapshot(final String classname, final String settings,
-        final String settingsReadable) throws NodeNotFoundException, ServiceCallException {
+        final String settingsReadable) throws ServiceCallException {
         NodeFactoryKeyEnt keyEnt = builder(NodeFactoryKeyEntBuilder.class) //
             .setClassName(classname) //
             .setSettings(settings) //

@@ -53,7 +53,6 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -111,7 +110,7 @@ public class DefaultComponentService implements ComponentService {
 
             throw new ServiceCallException(
                 "No Component for " + projectId + ", " + workflowId + ", " + nodeId + " found.");
-        } catch (NodeNotFoundException | IllegalArgumentException ex) {
+        } catch (ServiceCallException ex) {
             throw new ServiceCallException("Could not get component description. " + ex.getMessage(), ex);
         }
     }

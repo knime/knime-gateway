@@ -92,10 +92,9 @@ public interface WorkflowService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    java.util.List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    java.util.List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException;
         
     /**
      * Retrieves the complete structure (sub-)workflows.
@@ -106,10 +105,9 @@ public interface WorkflowService extends GatewayService {
      * @param includeInteractionInfo Whether to enclose information that is required when the user is interacting with the returned workflow. E.g. the allowed actions (reset, execute, cancel) for contained nodes and the entire workflow itself.
      *
      * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, Boolean includeInteractionInfo)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.ServiceCallException;
+    WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, Boolean includeInteractionInfo)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Returns the current state of the workflow monitor.

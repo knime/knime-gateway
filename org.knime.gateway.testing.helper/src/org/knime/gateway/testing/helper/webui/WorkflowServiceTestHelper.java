@@ -183,7 +183,6 @@ import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -1569,7 +1568,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void assertPortsUnchanged(final String projectId, final NodeIDEnt wfId, final NodeIDEnt node,
-        final WorkflowEnt originalWfEnt) throws ServiceExceptions.ServiceCallException, NodeNotFoundException {
+        final WorkflowEnt originalWfEnt) throws ServiceExceptions.ServiceCallException {
         var currentWfEnt = ws().getWorkflow(projectId, wfId, null, false).getWorkflow();
         var unchangedInports = originalWfEnt.getNodes().get(node.toString()).getInPorts();
         var changedInPorts = currentWfEnt.getNodes().get(node.toString()).getInPorts();

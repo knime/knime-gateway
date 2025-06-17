@@ -49,7 +49,6 @@
 package org.knime.gateway.impl.webui;
 
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
@@ -73,19 +72,22 @@ public final class WorkflowUtil {
      *
      * @param wfKey
      * @return the workflow manager
-     * @throws NodeNotFoundException if there is no metanode or component for the given workflow-id
-     * @throws ServiceCallException if the workflow-id doesn't reference a metanode or a component
+     * @throws ServiceCallException if the workflow-id doesn't reference a metanode or a component or if there is no
+     *             metanode or component for the given workflow-id
      */
-    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)
-        throws NodeNotFoundException, ServiceCallException {
+    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) throws ServiceCallException {
         WorkflowManager wfm;
         try {
             // No version needed, only current state
             wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId());
         } catch (IllegalArgumentException ex) {
-            throw new NodeNotFoundException(ex.getMessage(), ex);
+
+            throw new ServiceCallException("Node not found. " + ex.getMessage(), ex);
+
         } catch (IllegalStateException ex) {
+
             throw new ServiceCallException("Not a sub-workflow. " + ex.getMessage(), ex);
+
         }
         return wfm;
     }
@@ -97,10 +99,9 @@ public final class WorkflowUtil {
      *
      * @param wfKey
      * @throws NodeNotFoundException
-     * @throws NotASubWorkflowException
      */
     public static void assertWorkflowExists(final WorkflowKey wfKey)
-        throws NodeNotFoundException, ServiceCallException {
+        throws ServiceCallException {
         getWorkflowManager(wfKey);
     }
 

@@ -52,7 +52,6 @@ import java.util.Optional;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowUtil;
@@ -97,11 +96,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     public boolean execute(final WorkflowKey wfKey) throws ServiceExceptions.ServiceCallException {
         m_wfKey = wfKey;
         WorkflowManager wfm;
-        try {
-            wfm = WorkflowUtil.getWorkflowManager(wfKey);
-        } catch (NodeNotFoundException | ServiceCallException ex) {
-            throw new ServiceCallException(ex.getMessage(), ex);
-        }
+        wfm = WorkflowUtil.getWorkflowManager(wfKey);
         var isWorkflowModified = false;
         try (WorkflowLock lock = wfm.lock()) {
             for (var command : m_commands) {
