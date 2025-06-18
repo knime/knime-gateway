@@ -348,8 +348,8 @@ public class DefaultSpaceService implements SpaceService {
         }
 
         try {
-            var anchestorItemIds = sourceSpace.getAncestorItemIds(sourceItemId);
-            if (anchestorItemIds.contains(destinationItemId)) {
+            var ancestorItemIds = sourceSpace.getAncestorItemIds(sourceItemId);
+            if (ancestorItemIds.contains(destinationItemId)) {
                 throw new ServiceCallException(
                     "The item with name '%s' can't overwrite itself. I.e. the destination item is a parent of the source item."
                         .formatted(itemName));
