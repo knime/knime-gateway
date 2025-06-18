@@ -125,7 +125,7 @@ public final class ProjectManager {
             .flatMap(this::getProject) //
             .flatMap(originalProject -> originalProject.getWorkflowManagerIfLoaded().map(wfm -> {
                 var newOrigin = new Origin(spaceProviderId, spaceId, itemId, projectType);
-                var updatedProject = Project.updateOrigin(originalProject, newOrigin);
+                var updatedProject = Project.of(originalProject, newOrigin);
                 this.addProject(updatedProject);
                 return updatedProject;
             }));

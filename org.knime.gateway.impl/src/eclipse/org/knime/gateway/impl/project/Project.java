@@ -49,7 +49,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -108,10 +107,30 @@ public final class Project {
      * @param newOrigin -
      * @return A new instance with same property values and updated origin property
      */
-    public static Project updateOrigin(final Project originalProject, final Origin newOrigin) {
+    static Project of(final Project originalProject, final Origin newOrigin) {
         return new Project( //
             originalProject.m_id, //
             originalProject.m_name, //
+            newOrigin, //
+            originalProject.m_projectWfmCache, //
+            Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {
+            }), //
+            originalProject.m_generateReport //
+        );
+    }
+
+    /**
+     * -
+     *
+     * @param originalProject -
+     * @param newName -
+     * @param newOrigin -
+     * @return A new instance with same property values and updated name and origin
+     */
+    public static Project of(final Project originalProject, final String newName, final Origin newOrigin) {
+        return new Project( //
+            originalProject.m_id, //
+            newName, //
             newOrigin, //
             originalProject.m_projectWfmCache, //
             Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {
@@ -307,9 +326,9 @@ public final class Project {
         @SuppressWarnings({"MissingJavadoc", "java:S1176"})
         interface RequiresWorkflow {
             /**
-             * Associate a single {@code WorkflowManager} instance with this project as current state.
-             * This means this project is not able to dynamically load any other kind of workflows, e.g.
-             * those of previous versions.
+             * Associate a single {@code WorkflowManager} instance with this project as current state. This means this
+             * project is not able to dynamically load any other kind of workflows, e.g. those of previous versions.
+             * 
              * @param wfm -
              * @return -
              */
@@ -317,6 +336,7 @@ public final class Project {
 
             /**
              * Define how the project can dynamically load workflows.
+             * 
              * @param wfmLoader -
              * @return -
              */

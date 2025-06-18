@@ -46,13 +46,21 @@
 
 package org.knime.gateway.impl.project;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
+import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
+import org.knime.core.node.workflow.contextv2.ServerLocationInfo;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Identifies space and item from which this workflow/component project has been opened.
@@ -65,12 +73,13 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
  * @param itemVersion The item version of the workflow/component project, or absent for latest version
  */
 public record Origin(//
-    String providerId, //
-    String spaceId, //
-    String itemId, //
-    Optional<SpaceItemReferenceEnt.ProjectTypeEnum> projectType, //
-    Optional<VersionId> versionId, //
-    Optional<SpaceItemVersionEnt> itemVersion) { // TODO NXT-3701: Remove itemVersion from this record
+        String providerId, //
+        String spaceId, //
+        String itemId, //
+        Optional<SpaceItemReferenceEnt.ProjectTypeEnum> projectType, //
+        Optional<VersionId> versionId, //
+        // TODO NXT-3701: Remove itemVersion from this record
+        Optional<SpaceItemVersionEnt> itemVersion) {
 
     /**
      * @see Origin
@@ -90,6 +99,50 @@ public record Origin(//
     }
 
     /**
+     * Infer the {@link Origin} of the given {@code WorkflowManager}.
+     *
+     * @param wfm -
+     * @param spaceProviders -
+     * @return -
+     * @throws IllegalArgumentException If Origin can not be parsed
+     * @throws NotImplementedException Not implemented for projects on server spaces
+     * @throws NoSuchElementException If the project indicates it is from the local space but no such space is available
+     */
+    // TODO NXT-2199 (move ProjectTypeEnum out of Origin) can then be a function of WorkflowContextV2, which then enables
+    //  de-duplication with Session#getOriginFromLocationInfo, GatewayDevServerApplication#getOriginFromLocationInfo (NOSONAR)
+    public static Origin of(final WorkflowManager wfm, final SpaceProviders spaceProviders)
+        throws NoSuchElementException, IllegalArgumentException, NotImplementedException {
+        var locationInfo = wfm.getContextV2().getLocationInfo();
+        final var type = wfm.isComponentProjectWFM() //
+            ? SpaceItemReferenceEnt.ProjectTypeEnum.COMPONENT //
+            : SpaceItemReferenceEnt.ProjectTypeEnum.WORKFLOW;
+        if (locationInfo instanceof HubSpaceLocationInfo hubSpaceLocationInfo) {
+            return new Origin( //
+                hubSpaceLocationInfo.getDefaultMountId(), //
+                hubSpaceLocationInfo.getSpaceItemId(), //
+                hubSpaceLocationInfo.getWorkflowItemId(), //
+                type //
+            );
+        } else if (locationInfo instanceof LocalLocationInfo) {
+            var localSpace = (LocalSpace)spaceProviders.getSpace( //
+                SpaceProvider.LOCAL_SPACE_PROVIDER_ID, //
+                LocalSpace.LOCAL_SPACE_ID //
+            );
+            final var itemId = localSpace.getItemId(wfm.getContextV2().getExecutorInfo().getLocalWorkflowPath());
+            return new Origin( //
+                SpaceProvider.LOCAL_SPACE_PROVIDER_ID, //
+                LocalSpace.LOCAL_SPACE_ID, //
+                itemId, //
+                type //
+            );
+        } else if (locationInfo instanceof ServerLocationInfo) {
+            throw new NotImplementedException();
+        } else {
+            throw new IllegalArgumentException("Unknown location info type: " + locationInfo.getClass().getName());
+        }
+    };
+
+    /**
      * @return {@code true} if the space provider is local
      */
     public boolean isLocal() {
@@ -102,11 +155,9 @@ public record Origin(//
             return true;
         }
 
-        if (!(obj instanceof Origin)) {
+        if (!(obj instanceof Origin other)) {
             return false;
         }
-
-        final Origin other = (Origin)obj;
         return new EqualsBuilder()//
             .append(providerId, other.providerId)//
             .append(spaceId, other.spaceId)//
