@@ -258,7 +258,7 @@ public final class Project {
 
     /**
      * TODO NXT-3607 Projects can be immutable (NOSONAR)
-     * 
+     *
      * @param loader -
      */
     public void setWfmLoader(final WorkflowManagerLoader loader) {
@@ -328,7 +328,7 @@ public final class Project {
             /**
              * Associate a single {@code WorkflowManager} instance with this project as current state. This means this
              * project is not able to dynamically load any other kind of workflows, e.g. those of previous versions.
-             * 
+             *
              * @param wfm -
              * @return -
              */
@@ -336,7 +336,7 @@ public final class Project {
 
             /**
              * Define how the project can dynamically load workflows.
-             * 
+             *
              * @param wfmLoader -
              * @return -
              */
