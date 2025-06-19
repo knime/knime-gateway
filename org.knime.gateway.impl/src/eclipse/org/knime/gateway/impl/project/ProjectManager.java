@@ -297,7 +297,7 @@ public final class ProjectManager {
         if (!updatedProjectInternal.hasUIConsumer && updatedProjectInternal.numNonUIConsumer == 0) {
             var removedProject = m_projectsMap.remove(projectId);
             if (removedProject != null) {
-                removedProject.project().dispose();
+                removedProject.project.dispose();
             }
             m_projectRemovedListeners.forEach(l -> l.accept(projectId));
 

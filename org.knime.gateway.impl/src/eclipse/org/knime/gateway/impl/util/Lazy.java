@@ -68,7 +68,7 @@ public final class Lazy {
      * <li>org.apache.commons.lang3.concurrent.LazyInitializer</li>
      * <li>com.google.common.base.Suppliers.MemoizingSupplier</li>
      * </ul>
-     * 
+     *
      * @implNote Not thread-safe.
      * @param <V> The type of the provided value.
      */
@@ -86,7 +86,7 @@ public final class Lazy {
          * @param supplier providing the value on initialisation
          */
         public Init(final Supplier<V> supplier) {
-            this.m_supplier = Objects.requireNonNull(supplier );
+            this.m_supplier = Objects.requireNonNull(supplier);
         }
 
         /**
@@ -154,7 +154,7 @@ public final class Lazy {
 
     /**
      * Lazy transformation of the wrapped value.
-     * 
+     *
      * @implNote Not thread-safe.
      * @param <V> The type of the contained value.
      */

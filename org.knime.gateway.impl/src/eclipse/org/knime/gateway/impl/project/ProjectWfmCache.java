@@ -46,15 +46,15 @@
 
 package org.knime.gateway.impl.project;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.util.Lazy;
-
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * For fixed versions, we want an LRU cache. The current-state a.k.a. working area should be kept indefinitely.
