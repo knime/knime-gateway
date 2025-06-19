@@ -218,10 +218,14 @@ public final class Project {
     }
 
     /**
-     * Dispose the loaded {@link WorkflowManager} instance for the given version.
+     * Dispose the entire cache of loaded {@link WorkflowManager} instances.
      */
     public void dispose() {
         m_projectWfmCache.dispose();
+        // NXT-3763:
+        // * Do avoid memory leaks, we replace the cache with a new empty one.
+        // * To avoid any un-handled exceptions, we use a loader that always returns `null`.
+        m_projectWfmCache = new ProjectWfmCache(version -> null);
     }
 
     /**
