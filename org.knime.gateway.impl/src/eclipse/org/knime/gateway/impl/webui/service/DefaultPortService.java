@@ -182,6 +182,11 @@ public class DefaultPortService implements PortService {
             // in case there is no project for the given id
             throw new InvalidRequestException(e.getMessage(), e);
         }
+        if (!nc.getNodeContainerState().isExecuted()) {
+            // deactivation is not required if the node isn't executed since the
+            // port view is not active (or has already been deactivated on node reset)
+            return;
+        }
         PortViewManager.getInstance().getDataServiceManager()
             .deactivateDataServices(NodePortWrapper.of(nc, portIdx, viewIdx));
     }
