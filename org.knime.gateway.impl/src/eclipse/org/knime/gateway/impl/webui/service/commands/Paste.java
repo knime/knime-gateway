@@ -70,6 +70,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Delta;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Point;
+import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
 import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
@@ -118,6 +119,11 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
         // Get nodes and annotations
         var nodes = Arrays.stream(m_workflowCopyContent.getNodeIDs())//
             .map(id -> CoreUtil.getNodeContainer(id, wfm).orElseThrow())//
+            .map(nc -> {
+                // update global node timer (usage statistics)
+                NodeCreator.trackNodeCreation(nc, false);
+                return nc;
+            })
             .collect(Collectors.toSet());
         var annotations = Arrays.stream(m_workflowCopyContent.getAnnotationIDs())//
             .map(id -> CoreUtil.getAnnotation(id, wfm).orElse(null))//
