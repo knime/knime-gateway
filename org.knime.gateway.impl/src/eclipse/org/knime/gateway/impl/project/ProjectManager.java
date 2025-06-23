@@ -429,10 +429,6 @@ public final class ProjectManager {
             return new ProjectInternal(project, hasUIConsumer, updatedNumNonUIConsumer, activeVersion);
         }
 
-        ProjectInternal updateActiveVersion(final VersionId updatedActiveVersion) {
-            return new ProjectInternal(project, hasUIConsumer, numNonUIConsumer, updatedActiveVersion);
-        }
-
     }
 
     /**
