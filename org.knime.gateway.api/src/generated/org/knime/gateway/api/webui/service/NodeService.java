@@ -85,9 +85,8 @@ public interface NodeService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    void changeLoopState(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String action)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.OperationNotAllowedException;
+    void changeLoopState(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String action)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Changes the node state of multiple nodes represented by a list of node-ids.
@@ -99,9 +98,8 @@ public interface NodeService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    void changeNodeStates(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.OperationNotAllowedException;
+    void changeNodeStates(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, String action)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * De-activates all the data service associated with the specified ui-extension.

@@ -156,31 +156,6 @@ public final class ServiceExceptions {
     }
 
    /**
-    * If the an operation is not allowed, e.g., because it&#39;s not applicable.
-    */
-    public static class OperationNotAllowedException extends GatewayException {
-        
-        public OperationNotAllowedException(String message) {
-            super(false);
-            addProperty("message", message);
-        }
-
-        public OperationNotAllowedException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
-        }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public OperationNotAllowedException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
-    }
-
-   /**
     * If there was a collision, e.g. due to naming conflicts
     */
     public static class CollisionException extends GatewayException {

@@ -83,7 +83,6 @@ import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -122,7 +121,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
-        final String action) throws ServiceCallException, OperationNotAllowedException {
+        final String action) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
@@ -131,13 +130,13 @@ public final class DefaultNodeService implements NodeService {
         } catch (IllegalArgumentException e) {
             throw new ServiceCallException("Node not found. " + e.getMessage(), e);
         } catch (IllegalStateException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
+            throw new ServiceCallException("Operation not allowed. " + e.getMessage(), e);
         }
     }
 
     @Override
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String action) throws ServiceCallException, OperationNotAllowedException {
+        final String action) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
@@ -148,15 +147,16 @@ public final class DefaultNodeService implements NodeService {
                     return;
                 }
             }
-            throw new OperationNotAllowedException("The action to change the loop state is not applicable for "
-                + nc.getNameWithID() + ". Not a loop end node.");
+            throw new ServiceCallException(
+                "Operation not allowed. The action to change the loop state is not applicable for " + nc.getNameWithID()
+                    + ". Not a loop end node.");
         } catch (IllegalArgumentException e) {
             throw new ServiceCallException("Node not found. " + e.getMessage(), e);
         }
     }
 
     private static void changeLoopState(final String action, final NativeNodeContainer nnc)
-        throws OperationNotAllowedException {
+        throws ServiceCallException {
         WorkflowManager wfm = nnc.getParent();
         if (StringUtils.isBlank(action)) {
             // if there is no action (null or empty)
@@ -177,7 +177,7 @@ public final class DefaultNodeService implements NodeService {
                 //
             }
         } else {
-            throw new OperationNotAllowedException("Unknown action '" + action + "'");
+            throw new ServiceCallException("Operation not allowed. Unknown action '" + action + "'");
         }
     }
 

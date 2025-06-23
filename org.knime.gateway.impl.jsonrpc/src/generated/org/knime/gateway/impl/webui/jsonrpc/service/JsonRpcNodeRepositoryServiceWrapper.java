@@ -92,9 +92,9 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
     @Override
     @JsonRpcMethod(value = "getNodeRecommendations")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public java.util.List<NodeTemplateEnt> getNodeRecommendations(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="nodesLimit") Integer nodesLimit, @JsonRpcParam(value="nodeRelation") String nodeRelation, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException {
+    public java.util.List<NodeTemplateEnt> getNodeRecommendations(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="nodesLimit") Integer nodesLimit, @JsonRpcParam(value="nodeRelation") String nodeRelation, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit, nodeRelation, fullTemplateInfo);    
     }
 

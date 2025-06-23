@@ -91,10 +91,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "changeLoopState")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600),
-        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public void changeLoopState(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.OperationNotAllowedException {
+    public void changeLoopState(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.ServiceCallException {
         m_service.get().changeLoopState(projectId, workflowId, nodeId, action);    
     }
 
@@ -104,10 +103,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "changeNodeStates")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600),
-        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public void changeNodeStates(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeIds") java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.OperationNotAllowedException {
+    public void changeNodeStates(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeIds") java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.ServiceCallException {
         m_service.get().changeNodeStates(projectId, workflowId, nodeIds, action);    
     }
 

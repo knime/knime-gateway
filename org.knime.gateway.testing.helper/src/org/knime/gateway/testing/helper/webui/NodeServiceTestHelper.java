@@ -82,7 +82,6 @@ import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.json.util.ObjectMapperUtil;
@@ -140,7 +139,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         });
 
         // test operation not allow exception
-        assertThrows(OperationNotAllowedException.class, () -> {
+        assertThrows(ServiceCallException.class, () -> {
             ns().changeNodeStates(wfId, getRootID(), singletonList(new NodeIDEnt(1)), "blub");
         });
     }
@@ -363,12 +362,12 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         });
 
         // test operation not allow exception
-        assertThrows(OperationNotAllowedException.class, () -> {
+        assertThrows(ServiceCallException.class, () -> {
             ns().changeLoopState(wfId, subWfId, n4, "blub");
         });
 
         // test on non-loop-end node
-        assertThrows(OperationNotAllowedException.class, () -> {
+        assertThrows(ServiceCallException.class, () -> {
             ns().changeLoopState(wfId, subWfId, subWfId.appendNodeID(2), "pause");
         });
     }

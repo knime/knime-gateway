@@ -73,7 +73,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
@@ -260,10 +260,10 @@ public interface Space {
      * @param newName The new name
      * @return {@link SpaceItemEnt} describing the item after renaming
      * @throws IOException
-     * @throws ServiceExceptions.OperationNotAllowedException
+     * @throws ServiceCallException
      */
     SpaceItemEnt renameItem(String itemId, String newName) throws IOException,
-            ServiceExceptions.OperationNotAllowedException;
+            ServiceExceptions.ServiceCallException;
 
     /**
      * Rename this space
@@ -271,12 +271,12 @@ public interface Space {
      * @param newName The new name
      * @return {@link SpaceEnt} describing the space after renaming
      * @throws IOException
-     * @throws ServiceExceptions.OperationNotAllowedException
+     * @throws ServiceCallException
      */
     default SpaceEnt renameSpace(final String newName)
-        throws IOException, ServiceExceptions.OperationNotAllowedException {
-        throw new ServiceExceptions.OperationNotAllowedException(
-            "Renaming of spaces is not supported in this provider");
+        throws IOException, ServiceExceptions.ServiceCallException {
+        throw new ServiceExceptions.ServiceCallException(
+            "Operation not allowed. Renaming of spaces is not supported in this provider");
     }
 
     /**
@@ -552,12 +552,13 @@ public interface Space {
      * @param targetItemId ID of the target folder to upload to
      * @param excludeData whether or not to exclude data from uploaded workflows
      * @return result indicating success or failure of the upload
-     * @throws OperationNotAllowedException if the method is called for anything but a space on a Hub that supports
+     * @throws ServiceCallException if the method is called for anything but a space on a Hub that supports
      *     asynchronous uploads
      */
     default TransferResult uploadFrom(final LocalSpace sourceSpace, final List<String> itemIds,
-            final String targetItemId, final boolean excludeData) throws OperationNotAllowedException {
-        throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
+            final String targetItemId, final boolean excludeData) throws ServiceCallException {
+        throw new ServiceCallException(
+            "Operation not allowed. Cannot call this method on spaces other than Hub spaces.");
     }
 
     /**
@@ -567,11 +568,12 @@ public interface Space {
      * @param targetSpace local space to download to
      * @param targetItemId item ID of the target folder
      * @return result indicating success or failure of the download
-     * @throws OperationNotAllowedException
+     * @throws ServiceCallException
      */
     default TransferResult downloadInto(final List<String> itemIds, final LocalSpace targetSpace,
-            final String targetItemId) throws OperationNotAllowedException {
-        throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
+            final String targetItemId) throws ServiceCallException {
+        throw new ServiceCallException(
+            "Operation not allowed. Cannot call this method on spaces other than Hub spaces.");
     }
 
     /**

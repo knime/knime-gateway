@@ -63,7 +63,7 @@ import org.hamcrest.core.IsNull;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -158,16 +158,15 @@ public class NodeRecommendationsTestHelper extends WebUIGatewayServiceTestHelper
     public void testNodeRecommendationsThrowingExceptions() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
         var workflowId = getRootID();
-        assertThrows("<nodeId> and <portIdx> must either be both null or not null", OperationNotAllowedException.class,
+        assertThrows("<nodeId> and <portIdx> must either be both null or not null", ServiceCallException.class,
             () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, null, null, null, null));
-        assertThrows("<nodeId> and <portIdx> must either be both null or not null", OperationNotAllowedException.class,
+        assertThrows("<nodeId> and <portIdx> must either be both null or not null", ServiceCallException.class,
             () -> nrs().getNodeRecommendations(projectId, workflowId, null, 1, null, null, null));
-        assertThrows("<nodeId> and <direction> must either be both null or not null",
-            OperationNotAllowedException.class,
+        assertThrows("<nodeId> and <direction> must either be both null or not null", ServiceCallException.class,
             () -> nrs().getNodeRecommendations(projectId, workflowId, null, 1, 7, null, null));
-        assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
+        assertThrows("Cannot recommend nodes for non-existing port", ServiceCallException.class,
             () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, 4, null, SUCCESSORS, null));
-        assertThrows("Cannot recommend nodes for non-existing port", OperationNotAllowedException.class,
+        assertThrows("Cannot recommend nodes for non-existing port", ServiceCallException.class,
             () -> nrs().getNodeRecommendations(projectId, workflowId, m_datagenerator, -1, null, SUCCESSORS, null));
     }
 

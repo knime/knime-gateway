@@ -66,13 +66,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.knime.core.ui.node.workflow.async.OperationNotAllowedException;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceItemPathAndTypeCache;
@@ -313,7 +314,7 @@ public final class LocalSpaceTests {
      * @throws OperationNotAllowedException
      */
     @Test
-    public void testRenameChangingItemCasing() throws IOException, OperationNotAllowedException {
+    public void testRenameChangingItemCasing() throws IOException, ServiceCallException {
         final var spaceRootPath = m_space.getRootPath();
         final var spaceRootId = m_space.getItemId(spaceRootPath);
 
@@ -339,7 +340,7 @@ public final class LocalSpaceTests {
     }
 
     @Test
-    public void testNoOpRenameItem() throws OperationNotAllowedException, IOException {
+    public void testNoOpRenameItem() throws ServiceCallException, IOException {
         final var spaceRootPath = m_space.getRootPath();
         final var spaceRootId = m_space.getItemId(spaceRootPath);
 
@@ -366,7 +367,7 @@ public final class LocalSpaceTests {
     }
 
     @Test
-    public void testRenameItemCollision() throws OperationNotAllowedException, IOException {
+    public void testRenameItemCollision() throws ServiceCallException, IOException {
         final var spaceRootPath = m_space.getRootPath();
         final var spaceRootId = m_space.getItemId(spaceRootPath);
 
@@ -389,7 +390,7 @@ public final class LocalSpaceTests {
             final var existingItemName = m_space.getItemName(existingItemId);
             try {
                 m_space.renameItem(itemId, existingItemName);
-            } catch (final ServiceExceptions.OperationNotAllowedException e) {
+            } catch (final ServiceExceptions.ServiceCallException e) {
                 final var msg = e.getMessage();
                 assertThat("Expected exception message to contain the existing item type", msg,
                     Matchers.containsString(existingTypeName));

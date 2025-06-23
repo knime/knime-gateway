@@ -82,9 +82,9 @@ public interface NodeRepositoryService extends GatewayService {
      * @param fullTemplateInfo If true, the result will contain the full information for nodes/components (such as icon and port information). Otherwise only minimal information (such as name) will be included and the others omitted.
      *
      * @return the result
-     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    java.util.List<NodeTemplateEnt> getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, String nodeRelation, Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException;
+    java.util.List<NodeTemplateEnt> getNodeRecommendations(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, Integer portIdx, Integer nodesLimit, String nodeRelation, Boolean fullTemplateInfo)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Compiles a list of node templates (with complete information, i.e. including icons, etc.). It doesn&#39;t actually change any state or create a new resource (despite the &#39;post&#39;).

@@ -64,7 +64,7 @@ import org.knime.core.ui.workflowcoach.NodeRecommendationManager.NodeRecommendat
 import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.NodeRelation;
 
@@ -105,23 +105,26 @@ public class NodeRecommendations {
      * @param nodeRelation The relation of the recommended nodes, either recommendations for 'successors' or
      *            'predecessors'
      * @return The node recommendations
-     * @throws OperationNotAllowedException
+     * @throws ServiceCallException
      */
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final NodeRelation nodeRelation,
-        final Boolean fullTemplateInfo) throws OperationNotAllowedException {
+        final Boolean fullTemplateInfo) throws ServiceCallException {
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
         }
 
         if (!m_nodeRecommendationManagerIsInitialized) {
-            throw new OperationNotAllowedException("Node recommendation manager was not initialized properly");
+            throw new ServiceCallException(
+                "Operation not allowed. Node recommendation manager was not initialized properly");
         }
         if (nodeId == null ^ portIdx == null) {
-            throw new OperationNotAllowedException("<nodeId> and <portIdx> must either be both null or not null");
+            throw new ServiceCallException(
+                "Operation not allowed. <nodeId> and <portIdx> must either be both null or not null");
         }
         if (nodeId == null ^ nodeRelation == null) {
-            throw new OperationNotAllowedException("<nodeId> and <direction> must either be both null or not null");
+            throw new ServiceCallException(
+                "Operation not allowed. <nodeId> and <direction> must either be both null or not null");
         }
 
         var searchSuccessors = nodeRelation == null || nodeRelation == NodeRelation.SUCCESSORS;
@@ -155,10 +158,10 @@ public class NodeRecommendations {
     }
 
     private static PortType determinePortType(final NodeContainer nc, final Integer portIdx, final boolean isSourcePort)
-        throws OperationNotAllowedException {
+        throws ServiceCallException {
         final var numPorts = isSourcePort ? nc.getNrOutPorts() : nc.getNrInPorts();
         if (portIdx + 1 > numPorts || portIdx < 0) {
-            throw new OperationNotAllowedException("Cannot recommend nodes for non-existing port");
+            throw new ServiceCallException("Operation not allowed. Cannot recommend nodes for non-existing port");
         }
         return isSourcePort ? nc.getOutPort(portIdx).getPortType() : nc.getInPort(portIdx).getPortType();
     }

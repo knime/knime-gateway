@@ -95,7 +95,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.spaces.Collision;
@@ -260,7 +260,7 @@ public final class LocalSpace implements Space {
 
     /**
      * -
-     * 
+     *
      * @return The base path in the local file system.
      */
     public Path getRootPath() {
@@ -301,10 +301,10 @@ public final class LocalSpace implements Space {
 
     @Override
     public SpaceItemEnt renameItem(final String itemId, final String queriedName)
-        throws IOException, ServiceExceptions.OperationNotAllowedException {
+        throws IOException, ServiceExceptions.ServiceCallException {
 
         if (itemId.equals(Space.ROOT_ITEM_ID)) {
-            throw new ServiceExceptions.OperationNotAllowedException("Can not rename root item");
+            throw new ServiceExceptions.ServiceCallException("Operation not allowed. Can not rename root item");
         }
 
         final var sourcePath = toLocalAbsolutePath(itemId) //
@@ -325,8 +325,8 @@ public final class LocalSpace implements Space {
         // do not throw here and still carry out the rename: as per the above if-return we may be currently changing case of an existing file.
         // If it is a different file but existing, then we indeed have a collision.
         if (Files.exists(destinationPath) && !Files.isSameFile(sourcePath, destinationPath)) {
-            throw new ServiceExceptions.OperationNotAllowedException(
-                "There already exists a %s with that name. Pick a different name or rename the other item first."
+            throw new ServiceExceptions.ServiceCallException(
+                "Operation not allowed. There already exists a %s with that name. Pick a different name or rename the other item first."
                     .formatted(getReadableFileType(destinationPath)));
         }
 
@@ -647,23 +647,23 @@ public final class LocalSpace implements Space {
      *
      * @param name The candidate new name.
      */
-    private static void assertValidItemNameOrThrow(final String name) throws OperationNotAllowedException {
+    private static void assertValidItemNameOrThrow(final String name) throws ServiceCallException {
         if (name == null || name.trim().isEmpty()) {
-            throw new OperationNotAllowedException("Please choose a name");
+            throw new ServiceCallException("Operation not allowed. Please choose a name");
         }
         if (Path.of(name).getParent() != null) {
-            throw new OperationNotAllowedException("Name cannot be a path");
+            throw new ServiceCallException("Operation not allowed. Name cannot be a path");
         }
         if (name.startsWith(".")) {
-            throw new OperationNotAllowedException("Name cannot start with dot.");
+            throw new ServiceCallException("Operation not allowed. Name cannot start with dot.");
         }
         if (name.endsWith(".")) {
-            throw new OperationNotAllowedException("Name cannot end with dot.");
+            throw new ServiceCallException("Operation not allowed. Name cannot end with dot.");
         }
         var matcher = FileUtil.ILLEGAL_FILENAME_CHARS_PATTERN.matcher(name);
         if (matcher.find()) {
-            throw new OperationNotAllowedException(
-                "Name contains invalid characters (" + FileUtil.ILLEGAL_FILENAME_CHARS + ").");
+            throw new ServiceCallException(
+                "Operation not allowed. Name contains invalid characters (" + FileUtil.ILLEGAL_FILENAME_CHARS + ").");
         }
     }
 
