@@ -102,6 +102,7 @@ import org.knime.core.util.urlresolve.KnimeUrlResolver.KnimeUrlVariant;
 import org.knime.core.util.urlresolve.URLResolverUtil;
 import org.knime.core.util.workflowalizer.NodeAndBundleInformation;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
+import org.knime.core.webui.node.dialog.SubNodeContainerDialogFactory;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
@@ -636,6 +637,14 @@ public final class WorkflowEntityFactory {
             return DialogTypeEnum.SWING;
         } else {
             return null;
+        }
+    }
+
+    private static DialogTypeEnum getDialogType(final SubNodeContainer snc) {
+        if (SubNodeContainerDialogFactory.isSubNodeContainerNodeDialogEnabled()) {
+            return new SubNodeContainerDialogFactory(snc).hasNodeDialog() ? DialogTypeEnum.WEB : null;
+        } else {
+            return snc.hasDialog() ? DialogTypeEnum.SWING : null;
         }
     }
 

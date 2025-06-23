@@ -446,7 +446,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var workflow = ws().getWorkflow(projectId, getRootID(), null, Boolean.FALSE).getWorkflow();
         assertThat(((NativeNodeEnt)workflow.getNodes().get("root:1")).getDialogType(), is(DialogTypeEnum.WEB));
-        assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:14")).getDialogType(), is(DialogTypeEnum.SWING));
+        assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:14")).getDialogType(), is(nullValue()));
         assertThat(((ComponentNodeEnt)workflow.getNodes().get("root:17")).getDialogType(), is(DialogTypeEnum.WEB));
 
         // dialog of a native node
