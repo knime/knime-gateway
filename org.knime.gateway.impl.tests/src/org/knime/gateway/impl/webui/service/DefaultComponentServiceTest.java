@@ -80,7 +80,7 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
     public void reexecuteComponentViaBooleanWidget() throws Exception {
         var projectId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.COMPONENT_REEXECUTION, projectId);
-        var cs = new DefaultComponentService();
+        var cvs = new DefaultCompositeViewService();
 
         var widgetBooleanPath = "/webNodes/3:0:4/viewRepresentation/currentValue/boolean";
         var scatterPlotInitialDataPath = "/nodeViews/3:0:3/initialData";
@@ -89,7 +89,7 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         wfm.executeAllAndWaitUntilDone();
 
         var compositeViewPage =
-            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
+            (String)cvs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
         var beforeJson = m_mapper.readTree(compositeViewPage);
         var beforeBoolean = beforeJson.at(widgetBooleanPath);
         var scatterPlotBefore = m_mapper.readTree(beforeJson.at(scatterPlotInitialDataPath).asText());
@@ -97,15 +97,15 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
         assertThat("yAxisLabel should _not_ have value 'test'",
             scatterPlotBefore.at(scatterPlotYAxisLabelPath).asText(), not(is("test")));
 
-        cs.triggerComponentReexecution(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4", Map
+        cvs.triggerComponentReexecution(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4", Map
             .of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
         var reexecutionStatus =
-            cs.pollComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4");
+            cvs.pollComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4");
 
         wfm.executeAllAndWaitUntilDone();
 
         var compositeViewPageAfterReexecution =
-            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
+            (String)cvs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
         var afterJson = m_mapper.readTree(compositeViewPageAfterReexecution);
         var afterBoolean = afterJson.at(widgetBooleanPath);
         var scatterPlotAfter = m_mapper.readTree(afterJson.at(scatterPlotInitialDataPath).asText());
@@ -125,24 +125,24 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
     public void setViewValuesAsNewDefault() throws Exception {
         var projectId = "wf_id";
         var wfm = loadWorkflow(TestWorkflowCollection.COMPONENT_REEXECUTION, projectId);
-        var cs = new DefaultComponentService();
+        var cvs = new DefaultCompositeViewService();
 
         var widgetBooleanPath = "/webNodes/3:0:4/viewRepresentation/currentValue/boolean";
 
         wfm.executeAllAndWaitUntilDone();
 
         var compositeViewPage =
-            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
+            (String)cvs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
         var beforeJson = m_mapper.readTree(compositeViewPage);
         var beforeBooleanDefault = beforeJson.at("/webNodes/3:0:4/viewRepresentation/defaultValue");
 
-        cs.setViewValuesAsNewDefault(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), Map.of("3:0:4",
+        cvs.setViewValuesAsNewDefault(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), Map.of("3:0:4",
             "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
 
         wfm.executeAllAndWaitUntilDone();
 
         var compositeViewPageAfterReexecution =
-            (String)cs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
+            (String)cvs.getCompositeViewPage(projectId, NodeIDEnt.getRootID(), null, new NodeIDEnt("root:3"));
         var afterJson = m_mapper.readTree(compositeViewPageAfterReexecution);
         var afterBooleanDefault = afterJson.at(widgetBooleanPath);
 
