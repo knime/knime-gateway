@@ -65,6 +65,8 @@ import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 /**
  * Service implementation for the composite view service. Practically a wrapper that delegates all calls to a
  * {@link CompositeViewService} implementation created in js-core
+ *
+ * @since 5.5
  */
 public class DefaultCompositeViewService implements CompositeViewService {
 

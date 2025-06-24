@@ -687,6 +687,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/CompositeViewService.java" type="org.knime.gateway.api.webui.service.CompositeViewService">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.CompositeViewService"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/service/NodeService.java" type="org.knime.gateway.api.webui.service.NodeService">
         <filter id="403804204">
             <message_arguments>
