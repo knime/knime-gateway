@@ -182,8 +182,14 @@ public class DefaultPortService implements PortService {
             // in case there is no project for the given id
             throw new InvalidRequestException(e.getMessage(), e);
         }
-        PortViewManager.getInstance().getDataServiceManager()
-            .deactivateDataServices(NodePortWrapper.of(nc, portIdx, viewIdx));
+
+        var outPort = nc.getOutPort(portIdx);
+        var viewDescriptor = PortViewManager.getPortViewDescriptor(outPort.getPortType(), viewIdx).orElse(null);
+
+        if (viewDescriptor != null && isExecutionStateValid(viewDescriptor, nc, portIdx)) {
+            PortViewManager.getInstance().getDataServiceManager()
+                .deactivateDataServices(NodePortWrapper.of(nc, portIdx, viewIdx));
+        }
     }
 
     @Override
