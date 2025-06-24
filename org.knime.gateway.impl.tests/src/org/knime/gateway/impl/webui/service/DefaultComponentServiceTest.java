@@ -54,11 +54,13 @@ import static org.hamcrest.Matchers.not;
 
 import java.util.Map;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.ComponentServiceTestHelper;
+import org.knime.js.core.JSCorePlugin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -68,6 +70,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Tobias Kampmann, TNG Technology Consulting GmbH
  */
 public class DefaultComponentServiceTest extends GatewayServiceTest {
+
+    /**
+     * Makes sure the org.knime.js.core plugin is activated which in provides a
+     * {@link CompositeViewServiceFactory}-implementation via the respective extension point.
+     */
+    @BeforeClass
+    public static void activateJsCore() {
+        JSCorePlugin.class.getName();
+    }
 
     private final ObjectMapper m_mapper = new ObjectMapper();
 
