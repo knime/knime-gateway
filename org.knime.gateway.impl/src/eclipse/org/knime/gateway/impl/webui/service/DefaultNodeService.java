@@ -82,7 +82,6 @@ import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
@@ -190,13 +189,14 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId) throws ServiceCallException, InvalidRequestException {
+        final NodeIDEnt nodeId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
 
         if (!NodeDialogManager.hasNodeDialog(snc)) {
-            throw new InvalidRequestException("The node " + snc.getNameWithID() + " doesn't have a dialog");
+            throw new ServiceCallException(
+                "Invalid request. The node " + snc.getNameWithID() + " doesn't have a dialog");
         }
         return DataServiceDependencies.runWithDependencies(createDialogDataServiceDependencies(projectId),
             () -> new NodeDialogEnt(snc));
@@ -204,7 +204,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId) throws ServiceCallException, InvalidRequestException {
+        final NodeIDEnt nodeId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var nnc = getNC(projectId, workflowId, version, nodeId, NativeNodeContainer.class);
@@ -218,18 +218,18 @@ public final class DefaultNodeService implements NodeService {
      * @param projectId project id, can be null. Only used in {@link PerNodeWrapperEventEmitter} and if null default
      *            `projectWfm.getNameWithID()` will be used
      * @return node view
-     * @throws NodeNotFoundException
-     * @throws InvalidRequestException
+     * @throws ServiceCallException
      */
     static Object getNodeView(final NativeNodeContainer nnc, final String projectId,
-        final SelectionEventBus selectionEventBus) throws InvalidRequestException {
+        final SelectionEventBus selectionEventBus) throws ServiceCallException {
 
         if (!NodeViewManager.hasNodeView(nnc)) {
-            throw new InvalidRequestException("The node " + nnc.getNameWithID() + " does not have a view");
+            throw new ServiceCallException(
+                "Invalid request. The node " + nnc.getNameWithID() + " does not have a view");
         }
         if (!nnc.getNodeContainerState().isExecuted()) {
-            throw new InvalidRequestException(
-                "Node view can't be requested. The node " + nnc.getNameWithID() + " is not executed.");
+            throw new ServiceCallException(
+                "Invalid request. Node view can't be requested. The node " + nnc.getNameWithID() + " is not executed.");
         }
 
         return NodeViewEnt.create(nnc, createInitialSelectionSupplier(NodeWrapper.of(nnc), projectId,
@@ -271,7 +271,7 @@ public final class DefaultNodeService implements NodeService {
     }
 
     private static <T> T getNC(final String projectId, final NodeIDEnt workflowId, final VersionId versionId,
-        final NodeIDEnt nodeId, final Class<T> ncClass) throws ServiceCallException, InvalidRequestException {
+        final NodeIDEnt nodeId, final Class<T> ncClass) throws ServiceCallException {
         NodeContainer nc;
         try {
             nc = getNodeContainer(projectId, workflowId, versionId, nodeId);
@@ -280,8 +280,8 @@ public final class DefaultNodeService implements NodeService {
         }
 
         if (!ncClass.isAssignableFrom(nc.getClass())) {
-            throw new InvalidRequestException(
-                "The requested node " + nc.getNameWithID() + " is not a " + ncClass.getName());
+            throw new ServiceCallException(
+                "Invalid request. The requested node " + nc.getNameWithID() + " is not a " + ncClass.getName());
         }
 
         return ncClass.cast(nc);
@@ -290,7 +290,7 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final String extensionType, final String serviceType, final String request)
-        throws ServiceCallException, InvalidRequestException {
+        throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
@@ -305,35 +305,35 @@ public final class DefaultNodeService implements NodeService {
             } else if ("apply_data".equals(serviceType)) {
                 return dataServiceManager.callApplyDataService(sncWrapper, request);
             } else {
-                throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
+                throw new ServiceCallException("Invalid request. Unknown service type '" + serviceType + "'");
             }
         });
     }
 
     @Override
     public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId, final String extensionType) throws ServiceCallException, InvalidRequestException {
+        final NodeIDEnt nodeId, final String extensionType) throws ServiceCallException {
         var version = VersionId.parse(versionId);
         NodeContainer nc;
         try {
             nc = getNC(projectId, workflowId, version, nodeId, NodeContainer.class);
         } catch (NoSuchElementException e) {
             // in case there is no project for the given id
-            throw new InvalidRequestException(e.getMessage(), e);
+            throw new ServiceCallException("Invalid request. " + e.getMessage(), e);
         }
         var dataServiceManager = getDataServiceManager(extensionType);
         dataServiceManager.deactivateDataServices(NodeWrapper.of(nc));
     }
 
     private static DataServiceManager<NodeWrapper> getDataServiceManager(final String extensionType)
-        throws InvalidRequestException {
+        throws ServiceCallException {
         final DataServiceManager<NodeWrapper> dataServiceManager;
         if ("view".equals(extensionType)) {
             dataServiceManager = NodeViewManager.getInstance().getDataServiceManager();
         } else if ("dialog".equals(extensionType)) {
             dataServiceManager = NodeDialogManager.getInstance().getDataServiceManager();
         } else {
-            throw new InvalidRequestException("Unknown target for node data service: " + extensionType);
+            throw new ServiceCallException("Invalid request. Unknown target for node data service: " + extensionType);
         }
         return dataServiceManager;
     }

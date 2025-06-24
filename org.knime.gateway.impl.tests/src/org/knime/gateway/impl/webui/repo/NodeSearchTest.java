@@ -73,7 +73,7 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.NodeRelation;
 
 /**
@@ -203,7 +203,7 @@ public class NodeSearchTest {
 
     @Test
     public void testSearchNodesException() {
-        assertThrows("Not a valid port type set", InvalidRequestException.class, () -> m_search.searchNodes(null, null,
+        assertThrows("Not a valid port type set", ServiceCallException.class, () -> m_search.searchNodes(null, null,
             null, null, null, null, "porttype.id.does.not.exist", NodeRelation.SUCCESSORS));
     }
 
@@ -249,7 +249,7 @@ public class NodeSearchTest {
             try {
                 return m_search.searchNodes("a", null, null, null, null, Boolean.TRUE, TABLE_PORT_TYPE_ID,
                     NodeRelation.SUCCESSORS);
-            } catch (InvalidRequestException e) {
+            } catch (ServiceCallException e) {
                 throw new RuntimeException(e);
             }
         };

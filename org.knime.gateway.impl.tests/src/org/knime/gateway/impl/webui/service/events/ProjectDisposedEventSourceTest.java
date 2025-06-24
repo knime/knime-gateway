@@ -56,7 +56,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventEnt.ProjectDisposedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt.ProjectDisposedEventTypeEntBuilder;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.project.WorkflowManagerLoader;
@@ -78,7 +78,7 @@ public class ProjectDisposedEventSourceTest {
 
     @SuppressWarnings("javadoc")
     @Test
-    public void testProjectDisposedEventSource() throws InvalidRequestException {
+    public void testProjectDisposedEventSource() throws ServiceCallException {
         var projectManager = ProjectManager.getInstance();
         var project = Project.builder() //
             .setWfmLoader(WorkflowManagerLoader.providingOnlyCurrentState(() -> null)) //

@@ -62,7 +62,7 @@ import org.knime.gateway.api.webui.entity.UpdateAvailableEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -137,7 +137,7 @@ public final class DefaultEventService implements EventService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
+    public void addEventListener(final EventTypeEnt eventTypeEnt) throws ServiceCallException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
 
@@ -182,14 +182,15 @@ public final class DefaultEventService implements EventService {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new SpaceItemChangedEventSource(m_eventConsumer, m_spaceProvidersManager));
         } else {
-            throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
+            throw new ServiceCallException(
+                "Invalid request. Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
         }
 
         // After setting the event source, try to add an event listener for the event type
         try {
             eventSource.addEventListenerFor(eventTypeEnt, projectId());
         } catch (IllegalArgumentException e) {
-            throw new InvalidRequestException(e.getMessage(), e);
+            throw new ServiceCallException("Invalid request. " + e.getMessage(), e);
         }
     }
 

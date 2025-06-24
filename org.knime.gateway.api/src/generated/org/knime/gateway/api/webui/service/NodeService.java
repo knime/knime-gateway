@@ -71,9 +71,8 @@ public interface NodeService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    String callNodeDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType, String serviceType, String dataServiceRequest)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException;
+    String callNodeDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType, String serviceType, String dataServiceRequest)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Changes state of a loop. The provided node-id must reference a loop-end node.
@@ -112,9 +111,8 @@ public interface NodeService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    void deactivateNodeDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException;
+    void deactivateNodeDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Obtain the description of a given node.
@@ -136,9 +134,8 @@ public interface NodeService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    Object getNodeDialog(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException;
+    Object getNodeDialog(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Returns all the information on a node view required to render it.
@@ -150,9 +147,8 @@ public interface NodeService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
      */
-    Object getNodeView(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException;
+    Object getNodeView(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Updates the data point selection (aka hiliting) for a single node as specified.

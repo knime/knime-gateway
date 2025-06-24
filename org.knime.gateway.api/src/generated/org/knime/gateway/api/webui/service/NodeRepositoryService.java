@@ -120,8 +120,8 @@ public interface NodeRepositoryService extends GatewayService {
      * @param nodeRelation The relation between connected nodes, either predecessors or successors
      *
      * @return the result
-     * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String portTypeId, String nodeRelation)  throws ServiceExceptions.InvalidRequestException;
+    NodeSearchResultEnt searchNodes(String q, java.util.List<String> tags, Boolean allTagsMatch, Integer offset, Integer limit, Boolean fullTemplateInfo, String portTypeId, String nodeRelation)  throws ServiceExceptions.ServiceCallException;
         
 }

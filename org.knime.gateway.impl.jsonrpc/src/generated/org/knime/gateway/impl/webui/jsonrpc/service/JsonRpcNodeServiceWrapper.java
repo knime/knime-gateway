@@ -78,10 +78,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "callNodeDataService")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600),
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public String callNodeDataService(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="extensionType") String extensionType, @JsonRpcParam(value="serviceType") String serviceType, @JsonRpcParam(value="dataServiceRequest") String dataServiceRequest)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException {
+    public String callNodeDataService(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="extensionType") String extensionType, @JsonRpcParam(value="serviceType") String serviceType, @JsonRpcParam(value="dataServiceRequest") String dataServiceRequest)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().callNodeDataService(projectId, workflowId, versionId, nodeId, extensionType, serviceType, dataServiceRequest);    
     }
 
@@ -115,10 +114,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "deactivateNodeDataServices")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600),
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public void deactivateNodeDataServices(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="extensionType") String extensionType)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException {
+    public void deactivateNodeDataServices(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="extensionType") String extensionType)  throws ServiceExceptions.ServiceCallException {
         m_service.get().deactivateNodeDataServices(projectId, workflowId, versionId, nodeId, extensionType);    
     }
 
@@ -140,10 +138,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "getNodeDialog")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600),
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public Object getNodeDialog(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException {
+    public Object getNodeDialog(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().getNodeDialog(projectId, workflowId, versionId, nodeId);    
     }
 
@@ -153,10 +150,9 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "getNodeView")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600),
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public Object getNodeView(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.InvalidRequestException {
+    public Object getNodeView(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().getNodeView(projectId, workflowId, versionId, nodeId);    
     }
 

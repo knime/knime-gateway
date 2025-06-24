@@ -81,7 +81,6 @@ import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBui
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.json.util.ObjectMapperUtil;
@@ -461,13 +460,13 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(resourceInfo.get("id").textValue(), is("defaultdialog"));
         assertThat(resourceInfo.get("type").textValue(), is("SHADOW_APP"));
 
-        var message = assertThrows(InvalidRequestException.class,
+        var message = assertThrows(ServiceCallException.class,
             () -> ns().getNodeDialog(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(3)))
                 .getMessage();
         assertThat(message, containsString("doesn't have a dialog"));
 
         // request dialog of a component without any configuration nodes
-        message = assertThrows(InvalidRequestException.class,
+        message = assertThrows(ServiceCallException.class,
             () -> ns().getNodeDialog(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(14)))
                 .getMessage();
         assertThat(message, containsString("doesn't have a dialog"));
@@ -532,7 +531,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testGetNodeView() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.VIEW_NODES);
 
-        var message = assertThrows(InvalidRequestException.class,
+        var message = assertThrows(ServiceCallException.class,
             () -> ns().getNodeView(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1)))
                 .getMessage();
         assertThat(message, containsString("is not executed"));
@@ -554,7 +553,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
             is("org.knime.base.views.node.scatterplot.ScatterPlotNodeFactory"));
         assertThat(resourceInfo.get("type").textValue(), is("HTML"));
 
-        message = assertThrows(InvalidRequestException.class,
+        message = assertThrows(ServiceCallException.class,
             () -> ns().getNodeView(projectId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(3)))
                 .getMessage();
         assertThat(message, containsString("does not have a view"));
@@ -619,10 +618,10 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(jsonNode.get("id").intValue(), is(1));
 
         // errors
-        var message = assertThrows(InvalidRequestException.class, () -> ns().callNodeDataService(projectId, getRootID(),
+        var message = assertThrows(ServiceCallException.class, () -> ns().callNodeDataService(projectId, getRootID(),
             VersionId.currentState().toString(), new NodeIDEnt(1), "view", "nonsense", "")).getMessage();
         assertThat(message, containsString("Unknown service type"));
-        message = assertThrows(InvalidRequestException.class, () -> ns().callNodeDataService(projectId, getRootID(),
+        message = assertThrows(ServiceCallException.class, () -> ns().callNodeDataService(projectId, getRootID(),
             VersionId.currentState().toString(), new NodeIDEnt(1), "nonsense", "data", "")).getMessage();
         assertThat(message, containsString("Unknown target"));
     }

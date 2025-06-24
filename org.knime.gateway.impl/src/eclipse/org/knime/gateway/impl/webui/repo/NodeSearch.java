@@ -65,7 +65,7 @@ import org.knime.core.ui.util.FuzzySearchable;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeSearchResultEnt.NodeSearchResultEntBuilder;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.NodeRelation;
 import org.knime.gateway.impl.webui.repo.NodeRepository.Node;
 
@@ -139,16 +139,16 @@ public class NodeSearch {
      *            will allow any node
      *
      * @return the search result entity
-     * @throws InvalidRequestException
+     * @throws ServiceCallException
      */
     @SuppressWarnings("java:S107")
     public NodeSearchResultEnt searchNodes(final String queryString, final List<String> tags,
         final Boolean allTagsMatch, final Integer offset, final Integer limit, final Boolean includeFullTemplateInfo,
-        final String portTypeId, final NodeRelation nodeRelation) throws InvalidRequestException {
+        final String portTypeId, final NodeRelation nodeRelation) throws ServiceCallException {
 
         if (portTypeId == null ^ nodeRelation == null) {
-            throw new InvalidRequestException(
-                "Both <portTypeId> and <searchDirection> must either be both null or both not null");
+            throw new ServiceCallException(
+                "Invalid request. Both <portTypeId> and <searchDirection> must either be both null or both not null");
         }
         final var searchForSuccesors = nodeRelation == null || nodeRelation == NodeRelation.SUCCESSORS;
         final var query = new SearchQuery(queryString, tags, allTagsMatch, portTypeId, searchForSuccesors);

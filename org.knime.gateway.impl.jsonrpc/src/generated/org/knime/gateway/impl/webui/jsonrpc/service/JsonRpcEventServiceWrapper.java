@@ -77,9 +77,9 @@ public class JsonRpcEventServiceWrapper implements EventService {
     @Override
     @JsonRpcMethod(value = "addEventListener")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public void addEventListener(@JsonRpcParam(value="eventType") EventTypeEnt eventType)  throws ServiceExceptions.InvalidRequestException {
+    public void addEventListener(@JsonRpcParam(value="eventType") EventTypeEnt eventType)  throws ServiceExceptions.ServiceCallException {
         m_service.get().addEventListener(eventType);    
     }
 

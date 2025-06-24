@@ -82,7 +82,7 @@ final class SearchQuery {
      * @param searchForSuccesors if the search look for successors compatible with the given portTypeId
      */
     SearchQuery(final String query, final List<String> tags, final Boolean allTagsMustMatch, final String portTypeId,
-        final boolean searchForSuccesors) throws ServiceExceptions.InvalidRequestException {
+        final boolean searchForSuccesors) throws ServiceExceptions.ServiceCallException {
         var parsed = parseQuery(query);
         m_searchTerm = parsed.getFirst();
         m_nodeFilter = parsed.getSecond();
@@ -92,12 +92,12 @@ final class SearchQuery {
         m_searchForSuccesors = searchForSuccesors;
     }
 
-    private static PortType verifyPortTypeId(final String portTypeId) throws ServiceExceptions.InvalidRequestException {
+    private static PortType verifyPortTypeId(final String portTypeId) throws ServiceExceptions.ServiceCallException {
         if (StringUtils.isBlank(portTypeId)) {
             return null;
         }
-        return CoreUtil.getPortType(portTypeId).orElseThrow(() -> new ServiceExceptions.InvalidRequestException(
-            String.format("Not port type found for <%s>", portTypeId)));
+        return CoreUtil.getPortType(portTypeId).orElseThrow(() -> new ServiceExceptions.ServiceCallException(
+            String.format("Invalid request. Not port type found for <%s>", portTypeId)));
     }
 
     /**

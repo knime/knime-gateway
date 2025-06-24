@@ -90,7 +90,7 @@ import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt.Wor
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt.WorkflowMonitorStateChangeEventTypeEntBuilder;
 import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
@@ -186,10 +186,10 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
      * Makes sure that {@link EventService#addEventListener(org.knime.gateway.api.webui.entity.EventTypeEnt)} doesn't
      * cause an event to be emitted for event type {@link AppStateChangedEventTypeEnt}.
      *
-     * @throws InvalidRequestException
+     * @throws ServiceCallException
      */
     @Test
-    public void testNoEventsEmittedOnAddingAppStateChangedEventListener() throws InvalidRequestException {
+    public void testNoEventsEmittedOnAddingAppStateChangedEventListener() throws ServiceCallException {
         var es = DefaultEventService.getInstance();
         es.addEventListener(builder(AppStateChangedEventTypeEntBuilder.class).build());
         verify(m_testConsumer, never()).accept(any(), any());

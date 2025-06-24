@@ -122,9 +122,9 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
     @Override
     @JsonRpcMethod(value = "searchNodes")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public NodeSearchResultEnt searchNodes(@JsonRpcParam(value="q") String q, @JsonRpcParam(value="tags") java.util.List<String> tags, @JsonRpcParam(value="allTagsMatch") Boolean allTagsMatch, @JsonRpcParam(value="offset") Integer offset, @JsonRpcParam(value="limit") Integer limit, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo, @JsonRpcParam(value="portTypeId") String portTypeId, @JsonRpcParam(value="nodeRelation") String nodeRelation)  throws ServiceExceptions.InvalidRequestException {
+    public NodeSearchResultEnt searchNodes(@JsonRpcParam(value="q") String q, @JsonRpcParam(value="tags") java.util.List<String> tags, @JsonRpcParam(value="allTagsMatch") Boolean allTagsMatch, @JsonRpcParam(value="offset") Integer offset, @JsonRpcParam(value="limit") Integer limit, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo, @JsonRpcParam(value="portTypeId") String portTypeId, @JsonRpcParam(value="nodeRelation") String nodeRelation)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().searchNodes(q, tags, allTagsMatch, offset, limit, fullTemplateInfo, portTypeId, nodeRelation);    
     }
 

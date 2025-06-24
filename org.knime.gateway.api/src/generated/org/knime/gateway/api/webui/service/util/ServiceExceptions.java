@@ -131,31 +131,6 @@ public final class ServiceExceptions {
     }
 
    /**
-    * If the request is invalid for a reason.
-    */
-    public static class InvalidRequestException extends GatewayException {
-        
-        public InvalidRequestException(String message) {
-            super(false);
-            addProperty("message", message);
-        }
-
-        public InvalidRequestException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
-        }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public InvalidRequestException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
-    }
-
-   /**
     * If there was a collision, e.g. due to naming conflicts
     */
     public static class CollisionException extends GatewayException {

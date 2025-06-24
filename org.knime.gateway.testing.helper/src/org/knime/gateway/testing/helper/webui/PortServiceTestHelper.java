@@ -61,7 +61,7 @@ import org.knime.core.webui.data.RpcDataService;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.service.PortService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -100,7 +100,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var wfId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
 
         // get table port view (registered at index 1) for a non-executed node
-        var message = assertThrows(InvalidRequestException.class,
+        var message = assertThrows(ServiceCallException.class,
             () -> ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(1), 1, 1))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
@@ -128,7 +128,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertPortView(portView, "root:1", "tableview", "SHADOW_APP");
 
         // get data for an inactive port
-        message = assertThrows(InvalidRequestException.class,
+        message = assertThrows(ServiceCallException.class,
             () -> ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(14), 1, 0))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
@@ -139,7 +139,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(portViewJsonNode.get("resourceInfo").get("id").textValue(), is("tableview"));
 
         // get data for a metanode port that is not executed
-        message = assertThrows(InvalidRequestException.class,
+        message = assertThrows(ServiceCallException.class,
             () -> ps().getPortView(wfId, getRootID(), VersionId.currentState().toString(), new NodeIDEnt(6), 2, 1))
                 .getMessage();
         assertThat(message, containsString("No port view available"));
