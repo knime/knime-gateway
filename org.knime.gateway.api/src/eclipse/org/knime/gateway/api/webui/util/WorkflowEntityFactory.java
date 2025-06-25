@@ -1305,7 +1305,7 @@ public final class WorkflowEntityFactory {
      * @param ncState The node container state
      * @return Combination of node ID and execution state
      */
-    public static NodeIdAndIsExecutedEnt buildNodeIdAndIsExecutedEnt(final NodeID nodeId,
+    public NodeIdAndIsExecutedEnt buildNodeIdAndIsExecutedEnt(final NodeID nodeId,
         final NodeContainerState ncState) {
         final var ncStateEnum = getNodeExecutionStateEnum(ncState);
         final var isExecuted =
