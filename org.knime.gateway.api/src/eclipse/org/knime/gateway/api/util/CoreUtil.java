@@ -71,7 +71,6 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.swt.widgets.Display;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.InvalidSettingsException;
@@ -777,12 +776,15 @@ public final class CoreUtil {
     /**
      *
      * If the node is already executed, run the given task. If the node is not already executed, execute the workflow up
-     * to the node and attach a listener to run the given task once executed.
+     * to the node and attach a listener to run the given task once executed. Do nothing if the node is not active.
      *
      * @param nc -
      * @param task -
      */
     public static void executeThenRun(NodeContainer nc, Runnable task) {
+        if (nc.isInactive()) {
+            return;
+        }
         if (nc.getNodeContainerState().isExecuted()) {
             task.run();
             return;
