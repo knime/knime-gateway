@@ -66,9 +66,9 @@ public interface NodeRepositoryService extends GatewayService {
      * @param categoryPath 
      *
      * @return the result
-     * @throws ServiceExceptions.NoSuchElementException The requested element was not found.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    NodeCategoryEnt getNodeCategory(java.util.List<String> categoryPath)  throws ServiceExceptions.NoSuchElementException;
+    NodeCategoryEnt getNodeCategory(java.util.List<String> categoryPath)  throws ServiceExceptions.ServiceCallException;
         
     /**
      * Given a node, a port and a node-relation it recommends a certain number of compatible nodes the user might want to add next to its workflow. If queried with no node, no port and no node-relation, it recommends the most relevant source nodes, that naturally have no predecessor.

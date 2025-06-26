@@ -80,9 +80,9 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
     @Override
     @JsonRpcMethod(value = "getNodeCategory")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NoSuchElementException.class, code = -32600)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public NodeCategoryEnt getNodeCategory(@JsonRpcParam(value="categoryPath") java.util.List<String> categoryPath)  throws ServiceExceptions.NoSuchElementException {
+    public NodeCategoryEnt getNodeCategory(@JsonRpcParam(value="categoryPath") java.util.List<String> categoryPath)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().getNodeCategory(categoryPath);    
     }
 

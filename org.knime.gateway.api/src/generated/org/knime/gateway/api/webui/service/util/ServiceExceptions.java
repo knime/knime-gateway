@@ -106,31 +106,6 @@ public final class ServiceExceptions {
     }
 
    /**
-    * The requested element was not found.
-    */
-    public static class NoSuchElementException extends GatewayException {
-        
-        public NoSuchElementException(String message) {
-            super(false);
-            addProperty("message", message);
-        }
-
-        public NoSuchElementException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
-        }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public NoSuchElementException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
-    }
-
-   /**
     * If there was a collision, e.g. due to naming conflicts
     */
     public static class CollisionException extends GatewayException {
