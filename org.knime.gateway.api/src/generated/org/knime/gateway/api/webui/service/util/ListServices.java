@@ -53,6 +53,7 @@ import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.ComponentService;
+import org.knime.gateway.api.webui.service.ComponentEditorService;
 import org.knime.gateway.api.webui.service.ApplicationService;
 
 import org.knime.gateway.api.service.GatewayService;
@@ -88,6 +89,7 @@ public class ListServices {
         res.add(EventService.class);
         res.add(WorkflowService.class);
         res.add(ComponentService.class);
+        res.add(ComponentEditorService.class);
         res.add(ApplicationService.class);
         return res;
     }

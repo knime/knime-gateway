@@ -34,6 +34,8 @@ Export-Package: org.knime.gateway.impl,
  org.knime.gateway.impl.webui.service.events,
  org.knime.gateway.impl.webui.spaces,
  org.knime.gateway.impl.webui.spaces.local
-Import-Package: org.eclipse.jdt.annotation
+Import-Package: org.eclipse.jdt.annotation,
+ org.knime.js.core.layout,
+ org.knime.js.core.layout.bs
 Automatic-Module-Name: org.knime.gateway.impl
 Bundle-Activator: org.knime.gateway.impl.GatewayImplPlugin

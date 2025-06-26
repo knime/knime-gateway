@@ -4,6 +4,7 @@
    <extension-point id="SpaceProvidersFactory" name="Space Providers Factory" schema="schema/SpaceProvidersFactory.exsd"/>
    <extension-point id="KaiHandlerFactory" name="KaiHandlerFactory" schema="schema/KaiHandlerFactory.exsd"/>
    <extension-point id="CompositeViewServiceFactory" name="CompositeViewServiceFactory" schema="schema/CompositeViewServiceFactory.exsd"/>
+   <extension-point id="ComponentEditorService" name="ComponentEditorService" schema="schema/ComponentEditorService.exsd"/>
    <extension
          point="org.knime.gateway.api.entity.EntityBuilderFactory">
       <EntityBuilderFactory
