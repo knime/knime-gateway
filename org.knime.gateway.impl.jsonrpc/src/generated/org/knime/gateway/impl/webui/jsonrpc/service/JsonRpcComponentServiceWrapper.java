@@ -45,8 +45,6 @@
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
-import org.knime.gateway.api.webui.service.ComponentService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
@@ -54,8 +52,12 @@ import com.googlecode.jsonrpc4j.JsonRpcMethod;
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
 
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+
+import org.knime.gateway.api.webui.service.ComponentService;
+
 /**
- * Json rpc annotated class that wraps another service and delegates the method calls.
+ * Json rpc annotated class that wraps another service and delegates the method calls. 
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -64,8 +66,8 @@ import com.googlecode.jsonrpc4j.JsonRpcService;
 public class JsonRpcComponentServiceWrapper implements ComponentService {
 
     private final java.util.function.Supplier<ComponentService> m_service;
-
-    public JsonRpcComponentServiceWrapper(final java.util.function.Supplier<ComponentService> service) {
+    
+    public JsonRpcComponentServiceWrapper(java.util.function.Supplier<ComponentService> service) {
         m_service = service;
     }
 
@@ -77,8 +79,8 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public void cancelOrRetryComponentLoadJob(@JsonRpcParam(value="projectId") final String projectId, @JsonRpcParam(value="workflowId") final org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="placeholderId") final String placeholderId, @JsonRpcParam(value="action") final String action)  throws ServiceExceptions.ServiceCallException {
-        m_service.get().cancelOrRetryComponentLoadJob(projectId, workflowId, placeholderId, action);
+    public void cancelOrRetryComponentLoadJob(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="placeholderId") String placeholderId, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.ServiceCallException {
+        m_service.get().cancelOrRetryComponentLoadJob(projectId, workflowId, placeholderId, action);    
     }
 
 	/**
@@ -89,8 +91,8 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600)
     })
-    public ComponentNodeDescriptionEnt getComponentDescription(@JsonRpcParam(value="projectId") final String projectId, @JsonRpcParam(value="workflowId") final org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") final String versionId, @JsonRpcParam(value="nodeId") final org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
-        return m_service.get().getComponentDescription(projectId, workflowId, versionId, nodeId);
+    public ComponentNodeDescriptionEnt getComponentDescription(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
+        return m_service.get().getComponentDescription(projectId, workflowId, versionId, nodeId);    
     }
 
 }
