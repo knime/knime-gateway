@@ -58,7 +58,6 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.util.ExtPointUtil;
 import org.knime.gateway.api.webui.service.CompositeViewService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
@@ -180,11 +179,11 @@ public class DefaultCompositeViewService implements CompositeViewService {
             try {
                 var nodeView = DefaultNodeService.getNodeView(nnc, projectId, m_selectionEventBus);
                 if (!(nodeView instanceof NodeViewEnt)) {
-                    throw new InvalidRequestException("NodeView is not of type " + NodeViewEnt.class.getSimpleName()
-                        + ", but " + nodeView.getClass().getName() + ".");
+                    throw new ServiceCallException("Invalid request. NodeView is not of type "
+                        + NodeViewEnt.class.getSimpleName() + ", but " + nodeView.getClass().getName() + ".");
                 }
                 return (NodeViewEnt)nodeView;
-            } catch (InvalidRequestException ex) {
+            } catch (ServiceCallException ex) {
                 LOGGER.error("Could not create a node view for " + nnc.getNameWithID() + ": " + ex.getMessage());
                 return NodeViewEnt.create(nnc);
             }
