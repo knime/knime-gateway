@@ -222,7 +222,17 @@ public final class NodeConnector {
         return true;
     }
 
-    private static void trackConnectionCreation(final WorkflowManager wfm, final NodeID sourceNodeId,
+    /**
+     * Tracks the connection creation via the {@link NodeTimer}.
+     *
+     * @param wfm the {@link WorkflowManager} to retrieve NCs from IDs
+     * @param sourceNodeId the source node of the connection
+     * @param destNodeId the destination node of the connection
+     *
+     * @since 5.6
+     */
+    @SuppressWarnings("java:S2301")
+    public static void trackConnectionCreation(final WorkflowManager wfm, final NodeID sourceNodeId,
         final NodeID destNodeId) {
         NodeTimer.GLOBAL_TIMER.addConnectionCreation(getNodeContainerOrSelf(sourceNodeId, wfm),
             getNodeContainerOrSelf(destNodeId, wfm));

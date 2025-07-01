@@ -68,6 +68,8 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
+import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
 
 /**
  * Workflow command to replace a node.
@@ -102,6 +104,10 @@ final class ReplaceNode extends AbstractWorkflowCommand {
             var targetNodeContainer = wfm.getNodeContainer(targetNodeId);
             if (nodeFactoryEnt != null && targetNodeContainer instanceof NativeNodeContainer) {
                 m_result = replaceNativeNodeWithNewNode(targetNodeId, nodeFactoryEnt, wfm);
+
+                // update global node timer (usage statistics): only tracked here (not below)
+                // since a new node is created, see `ReplaceNodeCommand` in CUI
+                NodeCreator.trackNodeCreation(wfm.getNodeContainer(targetNodeId), false);
             } else {
                 var replacementNodeId = replacementNodeEnt == null ? null
                     : replacementNodeEnt.toNodeID(wfm);
@@ -159,7 +165,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
                 for (ConnectionContainer cc : previousConnections) {
                     var newConnection =
                         wfm.addConnection(cc.getSource(), cc.getSourcePort(), cc.getDest(), cc.getDestPort());
-                    setConnectionUIInfo(cc, newConnection);
+                    setConnectionUIInfo(cc, newConnection, wfm);
                 }
             }
 
@@ -256,7 +262,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
             if (wfm.canAddConnection(c.getSource(), c.getSourcePort(), newId, c.getDestPort() + inShift)) {
                 var newConnection =
                     wfm.addConnection(c.getSource(), c.getSourcePort(), newId, c.getDestPort() + inShift);
-                setConnectionUIInfo(c, newConnection);
+                setConnectionUIInfo(c, newConnection, wfm);
             } else {
                 break;
             }
@@ -267,7 +273,7 @@ final class ReplaceNode extends AbstractWorkflowCommand {
             if (wfm.canAddConnection(newId, c.getSourcePort() + outShift, c.getDest(), c.getDestPort())) {
                 var newConnection =
                     wfm.addConnection(newId, c.getSourcePort() + outShift, c.getDest(), c.getDestPort());
-                setConnectionUIInfo(c, newConnection);
+                setConnectionUIInfo(c, newConnection, wfm);
             } else {
                 break;
             }
@@ -281,11 +287,15 @@ final class ReplaceNode extends AbstractWorkflowCommand {
      * @param newConnection the connection container to add the information to
      */
     private static void setConnectionUIInfo(final ConnectionContainer removedConnection,
-        final ConnectionContainer newConnection) {
+        final ConnectionContainer newConnection, final WorkflowManager wfm) {
         if (removedConnection.getUIInfo() != null) {
             ConnectionUIInformation newInfo = ConnectionUIInformation.builder(removedConnection.getUIInfo()).build();
             newConnection.setUIInfo(newInfo);
         }
+
+        // update global node timer (usage statistics): only tracking connections here as
+        // the node already exists, see `SupplantationCommand` in CUI
+        NodeConnector.trackConnectionCreation(wfm, newConnection.getSource(), newConnection.getDest());
     }
 
     /**
