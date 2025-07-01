@@ -60,6 +60,7 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.ApplicationService;
+import org.knime.gateway.api.webui.service.ComponentEditorService;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.CompositeViewService;
 import org.knime.gateway.api.webui.service.EventService;
@@ -71,30 +72,31 @@ import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
 
 /**
- * Provides the default service implementations for gateway services and utility methods to
- * dispose the service instances.
+ * Provides the default service implementations for gateway services and utility methods to dispose the service
+ * instances.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
  */
 public final class ServiceInstances {
 
-    // TODO auto-generate?
-    private static final Map<Class<?>, Class<?>> INTERFACE_TO_IMPLEMENTATION_MAP = synchronizedMap(Map.of(//
-        WorkflowService.class, DefaultWorkflowService.class, //
-        NodeService.class, DefaultNodeService.class, //
-        PortService.class, DefaultPortService.class, //
-        EventService.class, DefaultEventService.class, //
-        ApplicationService.class, DefaultApplicationService.class, //
-        NodeRepositoryService.class, DefaultNodeRepositoryService.class, //
-        SpaceService.class, DefaultSpaceService.class, //
-        KaiService.class, DefaultKaiService.class, //
-        ComponentService.class, DefaultComponentService.class, //
-        CompositeViewService.class, DefaultCompositeViewService.class) //
-    );
+    // TODO auto-generate? Yes, easy to miss otherwise.
+    private static final Map<Class<?>, Class<?>> INTERFACE_TO_IMPLEMENTATION_MAP = synchronizedMap(Map.ofEntries(//
+        Map.entry(WorkflowService.class, DefaultWorkflowService.class), //
+        Map.entry(NodeService.class, DefaultNodeService.class), //
+        Map.entry(PortService.class, DefaultPortService.class), //
+        Map.entry(EventService.class, DefaultEventService.class), //
+        Map.entry(ApplicationService.class, DefaultApplicationService.class), //
+        Map.entry(NodeRepositoryService.class, DefaultNodeRepositoryService.class), //
+        Map.entry(SpaceService.class, DefaultSpaceService.class), //
+        Map.entry(KaiService.class, DefaultKaiService.class), //
+        Map.entry(ComponentService.class, DefaultComponentService.class), //
+        Map.entry(CompositeViewService.class, DefaultCompositeViewService.class), //
+        Map.entry(ComponentEditorService.class, DefaultComponentEditorService.class) //
+    ));
 
     private static final Map<Class<? extends GatewayService>, LazyInitializer<? extends GatewayService>> SERVICE_INITIALIZERS =
-            synchronizedMap(new HashMap<>());
+        synchronizedMap(new HashMap<>());
 
     private ServiceInstances() {
         // Utility class

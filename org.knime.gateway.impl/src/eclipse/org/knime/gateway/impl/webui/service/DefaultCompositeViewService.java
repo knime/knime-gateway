@@ -163,11 +163,11 @@ public class DefaultCompositeViewService implements CompositeViewService {
 
     private CompositeViewService getCompositeViewServiceDelegate() {
         if (m_compositeViewServiceDelegate == null) {
-            List<CompositeViewServiceFactory> componentServiceFactories =
-                ExtPointUtil.collectExecutableExtensions("org.knime.gateway.impl.CompositeViewServiceFactory", "impl");
+            List<GatewayServiceFactory> componentServiceFactories =
+                ExtPointUtil.collectExecutableExtensions("org.knime.gateway.impl.GatewayServiceFactory", "impl");
             if (componentServiceFactories.size() != 1) {
-                throw new IllegalStateException("Expected only a single composite view service factory. Got "
-                    + componentServiceFactories.size() + ".");
+                throw new IllegalStateException(
+                    "Expected only a single gateway service factory. Got " + componentServiceFactories.size() + ".");
             }
             m_compositeViewServiceDelegate =
                 componentServiceFactories.get(0).createCompositeViewService(this::getNodeViewCreator);

@@ -57,7 +57,7 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.service.ComponentService;
+import org.knime.gateway.api.webui.service.CompositeViewService;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.webui.ComponentServiceTestHelper;
 import org.knime.js.core.JSCorePlugin;
@@ -65,15 +65,15 @@ import org.knime.js.core.JSCorePlugin;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Tests methods in {@link DefaultComponentService} which can't be covered by {@link ComponentServiceTestHelper}.
+ * Tests methods in {@link DefaultCompositeViewService} which can't be covered by {@link ComponentServiceTestHelper}.
  *
  * @author Tobias Kampmann, TNG Technology Consulting GmbH
  */
-public class DefaultComponentServiceTest extends GatewayServiceTest {
+public class DefaultCompositeViewServiceTest extends GatewayServiceTest {
 
     /**
      * Makes sure the org.knime.js.core plugin is activated which in provides a
-     * {@link CompositeViewServiceFactory}-implementation via the respective extension point.
+     * {@link GatewayServiceFactory}-implementation via the respective extension point.
      */
     @BeforeClass
     public static void activateJsCore() {
@@ -83,7 +83,7 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
     private final ObjectMapper m_mapper = new ObjectMapper();
 
     /**
-     * Makes sure that {@link ComponentService#reexecuteComponentNode(String, NodeIDEnt, NodeIDEnt, String, Map)} works
+     * Makes sure that {@link CompositeViewService#triggerComponentReexecution(String, NodeIDEnt, NodeIDEnt, String, Map)} works
      *
      * @throws Exception
      */
@@ -110,8 +110,7 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
 
         cvs.triggerComponentReexecution(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4", Map
             .of("3:0:4", "{\"@class\":\"org.knime.js.base.node.base.input.bool.BooleanNodeValue\",\"boolean\":true}"));
-        var reexecutionStatus =
-            cvs.pollComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4");
+        cvs.pollComponentReexecutionStatus(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), "3:0:4");
 
         wfm.executeAllAndWaitUntilDone();
 
@@ -127,8 +126,7 @@ public class DefaultComponentServiceTest extends GatewayServiceTest {
     }
 
     /**
-     * Makes sure that {@link ComponentService#setViewValuesAsNewDefault(String, NodeIDEnt, NodeIDEnt, String, Map)}
-     * works
+     * Makes sure that {@link CompositeViewService#setViewValuesAsNewDefault(String, NodeIDEnt, NodeIDEnt, Map)} works
      *
      * @throws Exception
      */

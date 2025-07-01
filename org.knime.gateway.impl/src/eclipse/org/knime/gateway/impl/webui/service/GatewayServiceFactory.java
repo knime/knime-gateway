@@ -52,14 +52,16 @@ import java.util.function.Function;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.gateway.api.entity.NodeViewEnt;
+import org.knime.gateway.api.webui.service.ComponentEditorService;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.CompositeViewService;
 
 /**
- *  Interface for a factory that creates a CompositeViewService
+ * Interface for a factory that creates a CompositeViewService
+ *
  * @since 5.5
  */
-public interface CompositeViewServiceFactory {
+public interface GatewayServiceFactory {
 
     /**
      * Creates a new instance of {@link CompositeViewService}
@@ -69,4 +71,11 @@ public interface CompositeViewServiceFactory {
      */
     CompositeViewService createCompositeViewService(
         final Function<String, Function<NativeNodeContainer, NodeViewEnt>> createNodeViewEntityFactory);
+
+    /**
+     * Creates a new instance of {@link ComponentEditorService}
+     *
+     * @return a new instance of {@link ComponentEditorService} that can be used to interact with components
+     */
+    ComponentEditorService createComponentEditorService();
 }
