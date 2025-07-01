@@ -449,7 +449,12 @@ public final class ProjectManager {
             /**
              * If a project is consumed in order to execute a workflow called by a workflow service node.
              */
-            WORKFLOW_SERVICE;
+            WORKFLOW_SERVICE,
+
+            /**
+             * If a project is used as a virtual workflow, e.g., for tool execution in an agent node.
+             */
+            VIRTUAL_WORKFLOW;
 
         private boolean isUI() {
             return this == UI;
