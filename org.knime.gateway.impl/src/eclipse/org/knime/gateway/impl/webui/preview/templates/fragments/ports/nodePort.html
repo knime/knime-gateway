@@ -1,0 +1,33 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="nodePort(direction, port, relativePosition)" th:with="portSize=${shapes.PORT_SIZE},trafficLight=${portUtils.getTrafficLightColor(port)}">
+    <g th:transform="'translate(' + ${relativePosition[0]} + ',' + ${relativePosition[1]} +')'">
+      <th:block th:insert="fragments/ports/portIcon :: portIcon(${port})" />
+      <!--/* X outline */-->
+      <path
+        th:if="${port.inactive}"
+        stroke-width="3"
+        th:stroke="${colors.portColors.inactiveOutline}"
+        th:d="${portUtils.getInactivePath()}"
+      />
+      <!--/* X */-->
+      <path
+        th:if="${port.inactive}"
+        stroke-width="1.5"
+        th:stroke="${colors.portColors.inactive}"
+        th:d="${portUtils.getInactivePath()}"
+      />
+      <!--/* metanode port traffic light */-->
+      <g th:if="${trafficLight != null}">
+        <g transform="translate(-5.5, 0)" fill="none">
+          <circle r="3.75" fill="white" />
+          <circle r="3" th:attr="fill=${colors.trafficLight.get(trafficLight)}" />
+          <path fill="none"
+            th:d="${'M2.5,0a1,1 0 0 0 -5,0a1,1 0 0 0 5,0' + ((trafficLight == 'yellow' or trafficLight == 'green') ? 'h-5' : '')}"
+            th:stroke="${colors.trafficLight.get(trafficLight + 'Border')}"
+            th:transform="${trafficLight == 'yellow' ? 'rotate(90)' : null}" 
+          />
+        </g>
+      </g>
+    </g>
+  </th:block>
+</svg>

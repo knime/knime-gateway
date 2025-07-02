@@ -1,0 +1,9 @@
+<svg xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="render(connection)">
+  <g th:attr="data-connector-id=${connection.id}" fill="none" stroke-width="1" th:stroke="${connectorUtils.isFlowVariableConnection(connection) ? colors.connectorColors.flowVariable : colors.connectorColors.default}">
+    <th:block th:each="segment,iter : ${connectorUtils.getPathSegments(connection)}">
+      <th:block th:insert="fragments/connectors/connectorPathSegment :: render(${segment})" />
+    </th:block>
+  </g>
+</th:block>
+</svg>

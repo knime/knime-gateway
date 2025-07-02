@@ -1,0 +1,12 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="nodeName(name)">
+    <foreignObject
+      th:x="${(shapes.NODE_SIZE - shapes.NODE_NAME_WIDTH) / 2}"
+      th:y="${-(shapes.NODE_NAME_MARGIN + (shapes.NODE_NAME_MAX_LINES * shapes.NODE_NAME_LINE_HEIGHT))}"
+      th:width="${shapes.NODE_NAME_WIDTH}"
+      th:height="${shapes.NODE_NAME_MAX_LINES * shapes.NODE_NAME_LINE_HEIGHT}"
+    >
+      <div xmlns="http://www.w3.org/1999/xhtml" class="node-name"><div th:text="${name}"></div></div>
+    </foreignObject>
+  </th:block>
+</svg>

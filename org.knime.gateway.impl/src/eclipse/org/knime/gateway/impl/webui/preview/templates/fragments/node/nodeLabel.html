@@ -1,0 +1,13 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="nodeLabel(node)" th:with="label=${nodeUtils.getNodeLabel(node)}">
+    <foreignObject
+   	  th:if="${label != null}"
+      th:x="${labelUtils.calculateX()}"
+      th:y="${labelUtils.calculateY(node)}"
+      th:width="${shapes.NODE_LABEL_WIDTH}"
+      th:height="${shapes.NODE_LABEL_LINE_HEIGHT * shapes.NODE_LABEL_MAX_LINES}"
+    >
+      <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" th:text="${label}"></div>
+    </foreignObject>
+  </th:block>
+</svg>

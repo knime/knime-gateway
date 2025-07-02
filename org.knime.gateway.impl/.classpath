@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/attoparser-2.0.7.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javassist-3.29.0-GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ognl-3.3.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-2.0.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/thymeleaf-3.1.3.RELEASE.jar" sourcepath="lib/thymeleaf-3.1.3.RELEASE-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/unbescape-1.1.6.RELEASE.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
 		<attributes>
 			<attribute name="module" value="true"/>

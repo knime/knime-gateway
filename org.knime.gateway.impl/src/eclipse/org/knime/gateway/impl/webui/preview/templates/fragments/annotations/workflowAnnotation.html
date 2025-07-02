@@ -1,0 +1,31 @@
+<html xmlns:th="https://www.thymeleaf.org">
+  <th:block
+    th:fragment="render(annotation)"
+    th:with="
+      isRichTextAnnotation=${{annotation.text.contentType}} == 'text/html',
+      style=${isRichTextAnnotation} ? 
+        'border:2px solid ' + ${annotation.borderColor} + ';background-color:white;' : 
+        'border:' + ${annotation.borderWidth} + 'px solid ' + ${annotation.borderColor} + ';background-color:' + ${annotation.backgroundColor} + ';'
+  "
+  >
+    <foreignObject
+      th:data-annotation-id="${annotation.id}"
+      th:x="${annotation.bounds.x}"
+      th:y="${annotation.bounds.y}"
+      th:width="${annotation.bounds.width}"
+      th:height="${annotation.bounds.height}"
+    >
+      <div
+        th:if="${isRichTextAnnotation}"
+        xmlns="http://www.w3.org/1999/xhtml"
+        class="annotation rich-text-annotation"
+        th:utext="${annotationUtils.cleanHtml(annotation.text.value)}"
+        th:style="${style}"
+      ></div>
+      <th:block
+        th:unless="${isRichTextAnnotation}"
+        th:insert="fragments/annotations/legacyAnnotation :: render(${annotation}, ${style})"
+      ></th:block>
+    </foreignObject>
+  </th:block>
+</html>

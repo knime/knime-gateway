@@ -1,0 +1,16 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="nodeTorso(type, kind, icon)" th:with="isKnownNode=
+      ${kind == 'component' ?
+          (type == null or colors.nodeBackgroundColors.containsKey(type)) :
+          (kind == 'metanode' or colors.nodeBackgroundColors.containsKey(type != null ? type : ''))}">
+    <g>
+      <th:block th:if="${type == 'Missing'}" th:insert="fragments/node/torso/nodeTorsoMissing :: torsoMissing" />
+      <th:block th:if="${type == 'Forbidden'}" th:insert="fragments/node/torso/nodeTorsoForbidden :: torsoForbidden" />
+      <th:block th:if="${type != 'Missing' and type != 'Forbidden' and kind == 'metanode'}" th:insert="fragments/node/torso/nodeTorsoMetanode :: torsoMetanode" />
+      <th:block th:if="${type != 'Missing' and type != 'Forbidden' and kind != 'metanode' and isKnownNode}">
+        <th:block th:insert="fragments/node/torso/nodeTorsoNormal :: torsoNormal(isComponent=${kind == 'component'}, icon=${icon}, type=${type})" />
+      </th:block>
+      <th:block th:if="${type != 'Missing' and type != 'Forbidden' and kind != 'metanode' and !isKnownNode}" th:insert="fragments/node/torso/nodeTorsoUnknown :: torsoUnknown" />
+    </g>
+  </th:block>
+</svg>

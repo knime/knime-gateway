@@ -1,0 +1,16 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="torsoNormal(isComponent,icon,type)"
+      th:with="backgroundPath=${nodeUtils.getNodeTorsoPath(type)},
+        backgroundColor=${nodeUtils.getNodeBackgroundColor(type)},
+        componentColor=${colors.nodeBackgroundColors['Component']},
+        offset=16,
+        scaleFactor=0.75,
+        componentTransform=${'translate(' + offset + ',' + offset + ') scale(' + scaleFactor + ') translate(-' + offset + ',-' + offset + ')'}
+    ">
+    <g>
+      <path th:attr="d=${backgroundPath}, fill=${isComponent} ? ${componentColor} : ${backgroundColor}" />
+      <path th:if="${isComponent} and ${type} != null" th:attr="d=${backgroundPath}, fill=${backgroundColor}, transform=${componentTransform}" />
+      <image th:if="${icon != null}" x="8" y="8" width="16" height="16" th:attr="'xlink:href'=${icon}" />
+    </g>
+  </th:block>
+</svg>

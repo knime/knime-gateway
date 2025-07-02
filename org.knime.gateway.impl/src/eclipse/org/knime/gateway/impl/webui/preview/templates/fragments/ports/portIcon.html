@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:th="http://www.thymeleaf.org">
+  <th:block th:fragment="portIcon(port)" th:with="
+    portSize=${shapes.PORT_SIZE},
+    strokeWidth=${shapes.PORT_STROKE_WIDTH},
+    type=${{portUtils.getPortType(port)}},
+    color=${portUtils.getPortColor(port)},
+    filled=${portUtils.shouldBeFilled(port)},
+    trianglePath=${portUtils.getTrianglePath()},
+    fillColor=${filled == true ? color : 'transparent'}
+  ">
+    <!--/* Table port (triangle) */-->
+    <polygon th:if="${type == 'table'}"
+             th:attr="points=${trianglePath},
+                      fill=${fillColor},
+                      stroke=${color},
+                      stroke-width=${strokeWidth}" />
+    <!--/* Flow variable port (circle) */-->
+    <circle th:if="${type == 'flowVariable'}"
+            th:attr="r=${portSize / 2 - strokeWidth / 2},
+                     fill=${fillColor},
+                     stroke=${color},
+                     stroke-width=${strokeWidth}" />
+    <!--/* Default (square) */-->
+    <rect th:if="${type != 'table' and type != 'flowVariable'}"
+          th:attr="width=${portSize - strokeWidth},
+                   height=${portSize - strokeWidth},
+                   x=${-portSize / 2 + strokeWidth / 2},
+                   y=${-portSize / 2 + strokeWidth / 2},
+                   fill=${fillColor},
+                   stroke=${color},
+                   stroke-width=${strokeWidth}" />
+  </th:block>
+</svg>

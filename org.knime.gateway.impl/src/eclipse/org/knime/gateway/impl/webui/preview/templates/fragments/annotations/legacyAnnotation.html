@@ -1,0 +1,4 @@
+<th:block th:fragment="render(annotation, style)"
+	th:with="parts=${legacyAnnotationUtils.applyStyleRanges(annotation.styleRanges, annotation.text.value, annotation.defaultFontSize)}">
+	<div xmlns="http://www.w3.org/1999/xhtml" class="annotation legacy-annotation" th:style="${style + legacyAnnotationUtils.getWrapperStyle(annotation)}"><th:block th:each="part : ${parts}"><span th:style="${legacyAnnotationUtils.getPartStyle(part.styleRange)}" th:text="${part.text}"></span></th:block></div>
+</th:block>

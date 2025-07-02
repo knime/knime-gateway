@@ -10,4 +10,10 @@
             EntityBuilderFactory="org.knime.gateway.impl.webui.entity.DefaultEntityBuilderFactory">
       </EntityBuilderFactory>
    </extension>
+   <extension
+         point="org.knime.core.WorkflowSaveHook">
+      <WorkflowSaveHook
+            class="org.knime.gateway.impl.webui.preview.GenerateSVGWorkflowSaveHook">
+      </WorkflowSaveHook>
+   </extension>
 </plugin>
