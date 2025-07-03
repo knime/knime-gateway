@@ -23,5 +23,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" data-v-9d46eff4="" width="2345.1562841530053" height="2253.7999999999997" viewBox="108.1171875 85 956.8828125 874.9999389648438">
-<text th:each="node : ${workflow.nodes}" th:text="${node.name}">blub</text>
+<text th:each="node : ${workflow.nodes}" th:text="${workflow.nodeTemplates[node.value.templateId].name}">blub</text>
 </svg>
