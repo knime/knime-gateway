@@ -51,11 +51,11 @@ package org.knime.gateway.impl.webui.preview;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
-import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowSaveHook;
+import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.DefaultTemplateResolver;
@@ -82,38 +82,12 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
         templateResolver.setName("svg");
         templateEngine.addTemplateResolver(templateResolver);
         var context = new Context();
-        context.setVariable("workflow", new SVGWorkflow(workflow));
+
+        var workflowEnt = EntityFactory.Workflow.buildWorkflowEnt(workflow, WorkflowBuildContext.builder());
+        context.setVariable("workflow", workflowEnt);
         // templateEngine.process("svg", new Context(), new FileWriter(null /* TODO */));
         var res = templateEngine.process("svg", context);
-    }
-
-    public class SVGWorkflow {
-
-        private final WorkflowManager m_wfm;
-
-        SVGWorkflow(final WorkflowManager wfm) {
-            m_wfm = wfm;
-
-        }
-
-        public List<SVGNode> getNodes() {
-            return m_wfm.getNodeContainers().stream().map(SVGNode::new).toList();
-        }
-
-    }
-
-    public class SVGNode {
-
-        private final NodeContainer m_nc;
-
-        SVGNode(final NodeContainer nc) {
-            m_nc = nc;
-        }
-
-        public String getName() {
-            return m_nc.getName();
-        }
-
+        System.out.println();
     }
 
 }
