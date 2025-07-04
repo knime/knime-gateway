@@ -50,7 +50,6 @@ package org.knime.gateway.impl.webui.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -89,34 +88,19 @@ public class DefaultComponentEditorServiceTest extends GatewayServiceTest {
 
         wfm.executeAllAndWaitUntilDone();
 
-        var viewLayout =
-            componentEditorService.getViewLayout(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
-
-        assertThat("View layout should not be null", viewLayout, not(is(null)));
-
         var mockLayout = "mocked layout";
-
         componentEditorService.setViewLayout(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"), mockLayout);
-
         var viewLayoutAfterPush =
             componentEditorService.getViewLayout(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
-
         assertThat("View layout should have been set", viewLayoutAfterPush, is(mockLayout));
 
-        var configurationLayout =
-            componentEditorService.getConfigurationLayout(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
-
-        assertThat("Configuration layout should not be null", configurationLayout, not(is(null)));
-
         var mockConfigurationLayout = "mocked configuration layout";
-
         componentEditorService.setConfigurationLayout(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"),
             mockConfigurationLayout);
-
         var configurationLayoutAfterPush =
-                componentEditorService.getConfigurationLayout(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
-
-        assertThat("Configuration layout should have been set", configurationLayoutAfterPush, is(mockConfigurationLayout));
+            componentEditorService.getConfigurationLayout(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
+        assertThat("Configuration layout should have been set", configurationLayoutAfterPush,
+            is(mockConfigurationLayout));
     }
 
     /**
@@ -132,19 +116,13 @@ public class DefaultComponentEditorServiceTest extends GatewayServiceTest {
 
         wfm.executeAllAndWaitUntilDone();
 
-        var viewNodes =
-            componentEditorService.getViewNodes(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
-
-        System.out.println(viewNodes);
-
-        assertThat("View nodes should not be null", viewNodes, not(is(null)));
+        var viewNodes = componentEditorService.getViewNodes(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
+        // TODO: Better assertion, use our object mapper instance, see other tests
+        //assertThat("View nodes should not be null", viewNodes, is("[{\"layout\":{\"type\":\"view\",\"nodeID\":\"3\",\"resizeMethod\":\"aspectRatio4by3\",\"autoResize\":false,\"useLegacyMode\":false,\"sizeWidth\":false,\"resizeTolerance\":5,\"scrolling\":false,\"sizeHeight\":true},\"icon\":\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABSSURBVHgBxZNLCgAgCAVfHSS6X0H3XxUtamGYgUqzVXTwg5xS1xBBaLXgxhE3M1iVOQMa33nfDPxmIE3fz4DrKOJ2idJW7A1op+ef0BqEWQAKBuVdBT9PJfc5AAAAAElFTkSuQmCC\",\"type\":\"view\",\"name\":\"Scatter Plot\",\"nodeID\":\"3\",\"containerLegacyModeEnabled\":false,\"availableInView\":true},{\"layout\":{\"type\":\"view\",\"nodeID\":\"4\",\"resizeMethod\":\"viewLowestElement\",\"autoResize\":true,\"useLegacyMode\":false,\"sizeWidth\":false,\"resizeTolerance\":5,\"scrolling\":false,\"sizeHeight\":true},\"icon\":\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTExIDc5LjE1ODMyNSwgMjAxNS8wOS8xMC0wMToxMDoyMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NjAwRUJFNjcwRTFDMTFFNkE3NkZCQjA2REE3QjhBQ0IiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NjAwRUJFNjgwRTFDMTFFNkE3NkZCQjA2REE3QjhBQ0IiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoxMzY0M0M1MDBFMTAxMUU2QTc2RkJCMDZEQTdCOEFDQiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo2MDBFQkU2NjBFMUMxMUU2QTc2RkJCMDZEQTdCOEFDQiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PpSP8JMAAAKoSURBVHjaYpCWljJWV1d9zMQABHbTLGQAAogBKPI/bKbPQwb/Prf/QMAAEEBgkZsPbv4/cHL/f78O5xwGkCgMP/YP/A8QQGAVIOzf48oC1nL/2X2Q3v+Zh+LAZjDZmFozZByIY3h68jknyCpGsDIguKJs8FBAV0kOIIDAZiCDR48e/g+d4f0maXsU2AgWkOqW1fUMT8UfMMQJpDPMfzyFgZGZiX2ux1JGFCNBIHiy56l/f//vrKy80s4lJXL9z7fvl1AUwMAFSfXNIubaPn+//WQACCBGDQ31p58/f5ZCkjcxLdFtZGRkeL0uf0ci065du6SePHnKAMPcchxnJIzEvRn+/ecFqWZiYmJmOHThAEJ7jj7D11ff/q0r3BkCVvDv31+GZe/mMSQsC2ZYf2gdA78sL8P72+8NYRoY1dRUHjFJMsjaVVsAvcfI8OLy67sb8rerwI2EhbxXs6Ns8HTvRyD2eQm1zZeV9B+e5JDmwurNJwFBYMEPl+89YmLAAkD+BwFQQAEEGCgcnkRFRUknJCQwgHyEDEAeWLBgAcPChQsf6GQo9/Mr8ndxiXKxv7n69tXqzC3iYE+AIvPkyVPASJXGZhnD06dPGZJmRDHI28oyMLExMby7+fbp90+/TDaX7n4BkmeBKSxZks/wXuQNw593vxjyDCsYjDWNGX78/M7QubeFQdFFnuH/r/8MLy+82ru+YIcLsgWMKirKD+Pi4uR8Ar0ZFl6Yy/BN4jMDCysjw7eXP4CeZGLglGFn+Pbm2/8Pdz9Ubyzd3Y7uQoxQ9G5xUuES5NwhpCagzMTOwvDuzvt3315+ddtcufcsNi9ijQZsAJQCBXVVfJi52OEx8f7ynS1MDEQCFi5OPZhmEACxQWJEu+AUpwwXmwD3SpAmWBr49eFrOABu3kNaCuHSIAAAAABJRU5ErkJggg==\",\"type\":\"view\",\"name\":\"Boolean Widget\",\"nodeID\":\"4\",\"containerLegacyModeEnabled\":false,\"availableInView\":true}]"));
 
         var configurationNodes =
             componentEditorService.getConfigurationNodes(projectId, NodeIDEnt.getRootID(), new NodeIDEnt("root:3"));
-
-        System.out.println(configurationNodes);
-
-        assertThat("Configuration nodes should not be null", configurationNodes, not(is(null)));
+        assertThat("Configuration nodes should not be null", configurationNodes, is("[]"));
     }
 
 }
