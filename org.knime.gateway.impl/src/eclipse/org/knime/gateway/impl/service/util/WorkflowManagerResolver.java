@@ -189,6 +189,9 @@ public final class WorkflowManagerResolver {
         return wfm;
     }
 
+    /**
+     * Tries to get the {@link WorkflowManager} from cache, if not found, loads it from the project.
+     */
     static WorkflowManager loadProjectWfm(final String projectId, final VersionId versionId) {
         return ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
@@ -200,10 +203,13 @@ public final class WorkflowManagerResolver {
         return getProjectWfm(projectId, VersionId.currentState());
     }
 
+    /**
+     * Tries to get the {@link WorkflowManager} from cache, throws an exception if not found.
+     */
     static WorkflowManager getProjectWfm(final String projectId, final VersionId versionId) {
         return ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
-            .getFromCacheOrLoadWorkflowManager(versionId) //
+            .getWorkflowManagerIfLoaded(versionId) //
             .orElseThrow(() -> new NoSuchElementException("Workflow not found."));
     }
 
