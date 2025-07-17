@@ -55,6 +55,9 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 
 /**
@@ -73,9 +76,13 @@ public final class WorkflowManagerResolver {
      *
      * @param projectId the root workflow id
      * @return The {@link WorkflowManager}-instance
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      * @throws NoSuchElementException
      */
-    public static WorkflowManager load(final String projectId) {
+    public static WorkflowManager load(final String projectId)
+        throws NoSuchElementException, ServiceCallException, LoggedOutException, NetworkException {
         return load(projectId, VersionId.currentState());
     }
 
@@ -85,9 +92,13 @@ public final class WorkflowManagerResolver {
      * @param projectId the root workflow id
      * @param versionId the version id
      * @return The {@link WorkflowManager}-instance
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      * @throws NoSuchElementException
      */
-    public static WorkflowManager load(final String projectId, final VersionId versionId) {
+    public static WorkflowManager load(final String projectId, final VersionId versionId)
+        throws NoSuchElementException, ServiceCallException, LoggedOutException, NetworkException {
         return load(projectId, NodeIDEnt.getRootID(), versionId);
     }
 
@@ -97,9 +108,13 @@ public final class WorkflowManagerResolver {
      * @param projectId the root workflow id
      * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
      * @return The {@link WorkflowManager}-instance
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      * @throws NoSuchElementException
      */
-    public static WorkflowManager load(final String projectId, final NodeIDEnt workflowId) {
+    public static WorkflowManager load(final String projectId, final NodeIDEnt workflowId)
+        throws NoSuchElementException, ServiceCallException, LoggedOutException, NetworkException {
         return load(projectId, workflowId, VersionId.currentState());
     }
 
@@ -111,8 +126,12 @@ public final class WorkflowManagerResolver {
      * @param versionId the version id
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    public static WorkflowManager load(final String projectId, final NodeIDEnt workflowId, final VersionId versionId) {
+    public static WorkflowManager load(final String projectId, final NodeIDEnt workflowId, final VersionId versionId)
+        throws NoSuchElementException, ServiceCallException, LoggedOutException, NetworkException {
         return parseWfm(findNodeContainer(loadProjectWfm(projectId, versionId), workflowId));
     }
 
@@ -121,9 +140,13 @@ public final class WorkflowManagerResolver {
      *
      * @param projectId the root workflow id
      * @return The {@link WorkflowManager}-instance
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      * @throws NoSuchElementException
      */
-    public static WorkflowManager get(final String projectId) {
+    public static WorkflowManager get(final String projectId)
+        throws NoSuchElementException, ServiceCallException, LoggedOutException, NetworkException {
         return get(projectId, VersionId.currentState());
     }
 
@@ -133,9 +156,13 @@ public final class WorkflowManagerResolver {
      * @param projectId the root workflow id
      * @param versionId the version id
      * @return The {@link WorkflowManager}-instance
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      * @throws NoSuchElementException
      */
-    public static WorkflowManager get(final String projectId, final VersionId versionId) {
+    public static WorkflowManager get(final String projectId, final VersionId versionId)
+        throws NoSuchElementException, ServiceCallException, LoggedOutException, NetworkException {
         return get(projectId, NodeIDEnt.getRootID(), versionId);
     }
 
@@ -145,12 +172,16 @@ public final class WorkflowManagerResolver {
      * @param projectId the root workflow id
      * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
      * @return the {@link WorkflowManager}-instance
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
      */
-    public static WorkflowManager get(final String projectId, final NodeIDEnt workflowId) {
+    public static WorkflowManager get(final String projectId, final NodeIDEnt workflowId)
+        throws NoSuchElementException, ServiceCallException, LoggedOutException, NetworkException {
         return get(projectId, workflowId, VersionId.currentState());
     }
 
@@ -161,9 +192,13 @@ public final class WorkflowManagerResolver {
      * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
      * @param versionId the version id
      * @return The {@link WorkflowManager}-instance
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
+     * @throws NoSuchElementException
      */
-    public static WorkflowManager get(final String projectId, final NodeIDEnt workflowId,
-        final VersionId versionId) {
+    public static WorkflowManager get(final String projectId, final NodeIDEnt workflowId, final VersionId versionId)
+        throws NoSuchElementException, ServiceCallException, LoggedOutException, NetworkException {
         return parseWfm(findNodeContainer(getProjectWfm(projectId, versionId), workflowId));
     }
 
@@ -181,6 +216,7 @@ public final class WorkflowManagerResolver {
         } else if (nc instanceof WorkflowManager metanodeWfm) {
             wfm = metanodeWfm;
         } else {
+            // TODO error handling in this class
             throw new IllegalStateException("The node id '" + nc.getID() + "' doesn't reference a sub workflow.");
         }
         if (wfm.isEncrypted() && !wfm.isUnlocked()) {
@@ -189,18 +225,21 @@ public final class WorkflowManagerResolver {
         return wfm;
     }
 
-    static WorkflowManager loadProjectWfm(final String projectId, final VersionId versionId) {
+    static WorkflowManager loadProjectWfm(final String projectId, final VersionId versionId)
+        throws NoSuchElementException, ServiceCallException, LoggedOutException, NetworkException {
         return ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
             .getFromCacheOrLoadWorkflowManager(versionId) //
             .orElseThrow(() -> new NoSuchElementException("Workflow not found."));
     }
 
-    static WorkflowManager getProjectWfm(final String projectId) {
+    static WorkflowManager getProjectWfm(final String projectId)
+        throws ServiceCallException, LoggedOutException, NetworkException {
         return getProjectWfm(projectId, VersionId.currentState());
     }
 
-    static WorkflowManager getProjectWfm(final String projectId, final VersionId versionId) {
+    static WorkflowManager getProjectWfm(final String projectId, final VersionId versionId)
+        throws ServiceCallException, LoggedOutException, NetworkException {
         return ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
             .getFromCacheOrLoadWorkflowManager(versionId) //

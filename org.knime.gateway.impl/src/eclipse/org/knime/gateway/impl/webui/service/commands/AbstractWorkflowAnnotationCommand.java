@@ -59,6 +59,8 @@ import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.shared.workflow.def.AnnotationDataDef;
@@ -85,11 +87,9 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
         m_annotationIdEnt = commandEnt.getAnnotationId();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         m_annotationId = DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_annotationIdEnt);
         final var annotation = getWorkflowAnnotation(getWorkflowManager(), m_annotationId);
         m_previousAnnotationData = annotation.getData().clone();

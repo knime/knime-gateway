@@ -53,7 +53,7 @@ import org.knime.gateway.api.util.VersionId;
 class ProjectWfmCacheTest {
 
     @Test
-    void testContains() {
+    void testContains() throws Exception {
         var instance = new ProjectWfmCache(ignored -> null);
         Assertions.assertFalse(instance.contains(VersionId.currentState()));
         Assertions.assertFalse(instance.contains(someVersion()));

@@ -44,50 +44,56 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 26, 2025 (hornm): created
+ *   26 May 2025 (leonard.woerteler): created
  */
-package org.knime.gateway.impl.project;
+package org.knime.gateway.api.webui.service.util;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.virtual.parchunk.FlowVirtualScopeContext;
-import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
- * Allows to keep track of 'virtual projects'. A virtual project only exist for a temporary period of time and is never
- * persisted, such as a project used for tool-execution for an 'agent'-node. See also {@link FlowVirtualScopeContext}.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author leonard.woerteler
  * @since 5.6
  */
-public final class VirtualWorkflowProjects {
+@SuppressWarnings("serial")
+public class ContextfulServiceCallException extends Exception {
 
-    private VirtualWorkflowProjects() {
-        // utility class
+    private String m_title;
+
+    private final Deque<String> m_details = new ArrayDeque<>();
+
+    public ContextfulServiceCallException(final String message) {
+        super(message);
+        m_title = message;
     }
 
-    /**
-     * Registers a workflow manager as virtual project. As a result, the gateway API can be used to access the workflow
-     * manager (i.e. in order to access a node view and it's data services).
-     *
-     * @param wfm the workflow manager to register
-     * @return the new project ID
-     */
-    public static String registerProject(final WorkflowManager wfm) {
-        var proj = //
-            Project.builder() //
-                .setWfm(wfm) //
-                .build();
-        ProjectManager.getInstance().addProject(proj, ProjectConsumerType.VIRTUAL_WORKFLOW, false);
-        return proj.getID();
+    public ContextfulServiceCallException(final String message, final Throwable cause) {
+        super(message, cause);
+        m_title = message;
     }
 
-    /**
-     * Removes the project for the given id and disposes the workflow manager associated with it.
-     *
-     * @param id the id of the project to remove
-     */
-    public static void removeProject(final String id) {
-        ProjectManager.getInstance().removeProject(id, ProjectConsumerType.VIRTUAL_WORKFLOW);
+    public ContextfulServiceCallException(final String message, final List<String> details, final Throwable cause) {
+        super(message, cause);
+        pushContext(null, details);
     }
 
+    public ContextfulServiceCallException pushContext(final String newTitle, final List<String> detailsLines) {
+        if (newTitle != null) {
+            m_title = newTitle;
+        }
+        if (detailsLines != null) {
+            for (int i = detailsLines.size() - 1; i >= 0; i--) {
+                m_details.addFirst(detailsLines.get(i));
+            }
+        }
+        return this;
+    }
+
+    public ServiceCallException toGatewayException() {
+        return new ServiceCallException(m_title, getCause()); // TODO
+    }
 }

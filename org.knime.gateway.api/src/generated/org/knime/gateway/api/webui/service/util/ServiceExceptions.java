@@ -256,31 +256,6 @@ public final class ServiceExceptions {
     }
 
    /**
-    * If there was an I/O error of some kind.
-    */
-    public static class IOException extends GatewayException {
-        
-        public IOException(String message) {
-            super(false);
-            addProperty("message", message);
-        }
-
-        public IOException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
-        }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public IOException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
-    }
-
-   /**
     * If there was a collision, e.g. due to naming conflicts
     */
     public static class CollisionException extends GatewayException {
@@ -300,6 +275,33 @@ public final class ServiceExceptions {
         * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
         */
         public CollisionException(Map<String, String> gatewayProblemDescription) {
+            super(gatewayProblemDescription);
+        }
+
+    }
+
+   /**
+    * If a web request could not be authorized because the space provider isn&#39;t logged in
+    */
+    public static class LoggedOutException extends GatewayException {
+        
+        public LoggedOutException(String message, String spaceProviderId) {
+            super(false);
+            addProperty("message", message);
+            addProperty("spaceProviderId", spaceProviderId);
+        }
+
+        public LoggedOutException(String message, String spaceProviderId, Throwable cause) {
+            super(false);
+            addProperty("message", message);
+            addProperty("spaceProviderId", spaceProviderId);
+            initCause(cause);
+        }
+
+       /**
+        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
+        */
+        public LoggedOutException(Map<String, String> gatewayProblemDescription) {
             super(gatewayProblemDescription);
         }
 

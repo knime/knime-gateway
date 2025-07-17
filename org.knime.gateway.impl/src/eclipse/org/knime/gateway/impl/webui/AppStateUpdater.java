@@ -52,6 +52,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.function.FailableRunnable;
+import org.knime.core.node.NodeLogger;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
@@ -69,7 +72,9 @@ import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
  */
 public final class AppStateUpdater {
 
-    private final Set<Runnable> m_listeners = new HashSet<>();
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(AppStateUpdater.class);
+
+    private final Set<FailableRunnable<GatewayException>> m_listeners = new HashSet<>();
 
     private AppStateEnt m_lastAppState;
 
@@ -91,15 +96,22 @@ public final class AppStateUpdater {
      * Informs all the registered listeners that the app state has changed.
      */
     public void updateAppState() {
-        m_listeners.forEach(Runnable::run);
+        for (final var listener : m_listeners) {
+            try {
+                listener.run();
+            } catch (GatewayException ex) {
+                LOGGER.error(ex);
+            }
+        }
     }
 
     /**
      * Subscribe a listener to updates of the application state. Do nothing if the listener is already registered.
      *
      * @param callback The callback to be called with the new application state
+     * @since 5.6
      */
-    public void addAppStateChangedListener(final Runnable callback) {
+    public void addAppStateChangedListener(final FailableRunnable<GatewayException> callback) {
         m_listeners.add(callback);
     }
 
@@ -107,8 +119,9 @@ public final class AppStateUpdater {
      * Remove a subscribed listener
      *
      * @param callback The callback to be removed from the set of listeners.
+     * @since 5.6
      */
-    public void removeAppStateChangedListener(final Runnable callback) {
+    public void removeAppStateChangedListener(final FailableRunnable<GatewayException> callback) {
         m_listeners.remove(callback);
     }
 

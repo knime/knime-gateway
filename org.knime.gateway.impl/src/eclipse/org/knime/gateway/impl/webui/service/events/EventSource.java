@@ -52,6 +52,11 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import org.knime.core.node.util.CheckUtils;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.DefaultServiceContext;
 
 /**
@@ -108,9 +113,16 @@ public abstract class EventSource<T, E> {
      *
      * @return the very first event or an empty optional if there isn't any (method must not wait for events to arrive -
      *         only returns if there is an event at event listener registration time)
+     * @throws NotASubWorkflowException
+     * @throws NodeNotFoundException
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      * @throws IllegalArgumentException if object describing the event type isn't valid
      */
-    public abstract Optional<E> addEventListenerAndGetInitialEventFor(T eventTypeEnt, String projectId);
+    public abstract Optional<E> addEventListenerAndGetInitialEventFor(T eventTypeEnt, String projectId)
+        throws ServiceCallException, LoggedOutException, NetworkException, NodeNotFoundException,
+        NotASubWorkflowException;
 
     /**
      * Little helper to assert that the project id equals the expected one (see also {@link DefaultServiceContext}).
@@ -130,10 +142,16 @@ public abstract class EventSource<T, E> {
      * @param projectId id of the workflow project this event listener is associated with (i.e. the initial event, if
      *            there is one, will be associated with that workflow project - see {@link #sendEvent(Object, String)};
      *            can be {@code null}
+     * @throws NotASubWorkflowException
+     * @throws NodeNotFoundException
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      *
      * @throws IllegalArgumentException if object describing the event type isn't valid
      */
-    public void addEventListenerFor(final T eventTypeEnt, final String projectId) {
+    public void addEventListenerFor(final T eventTypeEnt, final String projectId) throws ServiceCallException,
+        LoggedOutException, NetworkException, NodeNotFoundException, NotASubWorkflowException {
         // make sure the returned event is the first being send!
         synchronized (m_sendEventLock) {
             addEventListenerAndGetInitialEventFor(eventTypeEnt, projectId).ifPresent(e -> sendEvent(e, projectId));

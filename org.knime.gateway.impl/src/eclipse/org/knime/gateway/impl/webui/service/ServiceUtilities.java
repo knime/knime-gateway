@@ -66,7 +66,10 @@ import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
@@ -90,12 +93,17 @@ final class ServiceUtilities {
      * @param nodeId -
      * @param versionId
      * @return -
-     * @throws NodeNotFoundException if the node container couldn't be found
+     * @throws NodeNotFoundException
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      * @throws IllegalStateException if the given project-id is not the expected one
      * @throws NoSuchElementException if there is no project for the given id
      */
     static NodeContainer assertProjectIdAndGetNodeContainer(final String projectId, final NodeIDEnt workflowId,
-        final VersionId versionId, final NodeIDEnt nodeId) throws NodeNotFoundException {
+        final VersionId versionId, final NodeIDEnt nodeId)
+        throws NodeNotFoundException, ServiceCallException, LoggedOutException, NetworkException {
+
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         try {
             return org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeContainer(projectId, workflowId,
@@ -111,9 +119,13 @@ final class ServiceUtilities {
      *
      * @param wfKey -
      * @return -
-     * @throws NodeNotFoundException -
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
+     * @throws NodeNotFoundException
      */
-    static WorkflowManager assertProjectIdAndGetWorkflowManager(final WorkflowKey wfKey) throws NodeNotFoundException {
+    static WorkflowManager assertProjectIdAndGetWorkflowManager(final WorkflowKey wfKey)
+        throws ServiceCallException, LoggedOutException, NetworkException, NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(wfKey.getProjectId());
         try {
             return org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(wfKey);
@@ -138,13 +150,18 @@ final class ServiceUtilities {
      * @param versionId
      * @param portIdx can be {@code null} if not a port view
      * @param viewIdx can be {@code null} if not a port view
-     * @throws NodeNotFoundException if the node for the given id couldn't be found
+     * @throws NetworkException -
+     * @throws LoggedOutException -
+     * @throws ServiceCallException -
+     * @throws NodeNotFoundException -
      * @throws IllegalStateException If there was a problem with translating teh strings to row-keys
      */
     @SuppressWarnings("unchecked")
     static <N extends NodeWrapper> void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId,
         final VersionId versionId, final NodeIDEnt nodeId, final String mode, final List<String> selection,
-        final Function<NodeContainer, N> getNodeWrapper) throws NodeNotFoundException {
+        final Function<NodeContainer, N> getNodeWrapper)
+        throws NodeNotFoundException, ServiceCallException, LoggedOutException, NetworkException {
+
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, versionId, nodeId);
         var nodeWrapper = getNodeWrapper.apply(nc);
         TableViewManager<N> tableViewManager;

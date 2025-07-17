@@ -83,8 +83,11 @@ import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.kai.CodeKaiHandler;
@@ -122,7 +125,9 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
-        final String action) throws NodeNotFoundException, OperationNotAllowedException {
+        final String action) throws ServiceCallException, LoggedOutException, NetworkException, NodeNotFoundException,
+        OperationNotAllowedException {
+
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
@@ -137,7 +142,9 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String action) throws NodeNotFoundException, OperationNotAllowedException {
+        final String action) throws ServiceCallException, LoggedOutException, NetworkException,
+        OperationNotAllowedException, NodeNotFoundException {
+
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
@@ -190,7 +197,8 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
+        final NodeIDEnt nodeId) throws NodeNotFoundException, ServiceCallException, LoggedOutException,
+        NetworkException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
@@ -204,7 +212,8 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
+        final NodeIDEnt nodeId) throws NodeNotFoundException, ServiceCallException, LoggedOutException,
+        NetworkException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var nnc = getNC(projectId, workflowId, version, nodeId, NativeNodeContainer.class);
@@ -271,7 +280,9 @@ public final class DefaultNodeService implements NodeService {
     }
 
     private static <T> T getNC(final String projectId, final NodeIDEnt workflowId, final VersionId versionId,
-        final NodeIDEnt nodeId, final Class<T> ncClass) throws NodeNotFoundException, InvalidRequestException {
+        final NodeIDEnt nodeId, final Class<T> ncClass) throws NodeNotFoundException, ServiceCallException,
+        LoggedOutException, NetworkException, InvalidRequestException {
+
         NodeContainer nc;
         try {
             nc = getNodeContainer(projectId, workflowId, versionId, nodeId);
@@ -290,7 +301,9 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final String extensionType, final String serviceType, final String request)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws NodeNotFoundException, ServiceCallException, LoggedOutException, NetworkException,
+        InvalidRequestException {
+
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
@@ -312,7 +325,8 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId, final String extensionType) throws NodeNotFoundException, InvalidRequestException {
+        final NodeIDEnt nodeId, final String extensionType) throws NodeNotFoundException, ServiceCallException,
+        LoggedOutException, NetworkException, InvalidRequestException {
         var version = VersionId.parse(versionId);
         NodeContainer nc;
         try {
@@ -340,7 +354,8 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId, final String mode, final List<String> selection) throws NodeNotFoundException {
+        final NodeIDEnt nodeId, final String mode, final List<String> selection)
+        throws NodeNotFoundException, ServiceCallException, LoggedOutException, NetworkException {
         var version = VersionId.parse(versionId);
         ServiceUtilities.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
             NodeWrapper::of);

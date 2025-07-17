@@ -52,6 +52,8 @@ import java.util.Optional;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -95,7 +97,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public boolean execute(final WorkflowKey wfKey) throws ServiceExceptions.ServiceCallException {
+    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException, LoggedOutException, NetworkException {
         m_wfKey = wfKey;
         WorkflowManager wfm;
         try {
@@ -115,7 +117,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public void undo() throws ServiceExceptions.ServiceCallException {
+    public void undo() throws ServiceCallException, LoggedOutException, NetworkException {
         var iterator = m_commands.listIterator(m_commands.size());
         while (iterator.hasPrevious()) {
             iterator.previous().undo();
@@ -123,18 +125,27 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public void redo() throws ServiceCallException {
+    public void redo() throws ServiceCallException, LoggedOutException, NetworkException {
         execute(m_wfKey);
     }
 
     @Override
-    public boolean canUndo() {
-        return m_commands.stream().allMatch(WorkflowCommand::canUndo);
+    public boolean canUndo() throws ServiceCallException, LoggedOutException, NetworkException {
+        for (final var cmd : m_commands) {
+            if (!cmd.canUndo()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
-    public boolean canRedo() {
-        return m_commands.stream().allMatch(WorkflowCommand::canRedo);
+    public boolean canRedo() throws ServiceCallException, LoggedOutException, NetworkException {
+        for (final var cmd : m_commands) {
+            if (!cmd.canRedo()) {
+                return false;
+            }
+        }
+        return true;
     }
-
 }

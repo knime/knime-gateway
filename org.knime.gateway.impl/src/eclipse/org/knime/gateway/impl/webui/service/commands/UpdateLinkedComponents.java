@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -73,6 +74,8 @@ import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.UpdateLinkedComponentsResultEntBuilder;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -109,7 +112,8 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         if (m_nodeIdEnts.isEmpty()) {
             throw new ServiceCallException("No component IDs passed for <%s>".formatted(getWorkflowKey()));
         }
@@ -176,13 +180,15 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     private static List<SubNodeContainer> getLinkedComponents(final List<NodeIDEnt> nodeIdEnts,
-        final WorkflowKey wfKey) {
-        return nodeIdEnts.stream() //
-            .map(nodeIdEnt -> DefaultServiceUtil.getNodeContainer(wfKey.getProjectId(), nodeIdEnt)) //
-            .filter(SubNodeContainer.class::isInstance) // Only components
-            .map(SubNodeContainer.class::cast) //
-            .filter(component -> component.getTemplateInformation().getRole() == Role.Link) // Only linked components
-            .toList();
+        final WorkflowKey wfKey) throws ServiceCallException, LoggedOutException, NetworkException {
+        final List<SubNodeContainer> linked = new ArrayList<>();
+        for (final var nodeIdEnt : nodeIdEnts) {
+            if (DefaultServiceUtil.getNodeContainer(wfKey.getProjectId(), nodeIdEnt) instanceof SubNodeContainer snc
+                    && snc.getTemplateInformation().getRole() == Role.Link) {
+                linked.add(snc);
+            }
+        }
+        return linked;
     }
 
     private static StatusEnum determineAggregateStatus(final List<UpdateLog> updateLogs) {

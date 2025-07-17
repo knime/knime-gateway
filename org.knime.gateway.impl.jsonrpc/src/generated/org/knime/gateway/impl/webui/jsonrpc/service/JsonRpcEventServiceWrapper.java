@@ -78,9 +78,19 @@ public class JsonRpcEventServiceWrapper implements EventService {
     @JsonRpcMethod(value = "addEventListener")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void addEventListener(@JsonRpcParam(value="eventType") EventTypeEnt eventType)  throws ServiceExceptions.InvalidRequestException {
+    public void addEventListener(@JsonRpcParam(value="eventType") EventTypeEnt eventType)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, ServiceExceptions.ServiceCallException {
         m_service.get().addEventListener(eventType);    
     }
 

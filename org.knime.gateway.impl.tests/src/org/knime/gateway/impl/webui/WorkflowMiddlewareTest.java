@@ -59,6 +59,7 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.ContainerTypeEnum;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.Project;
@@ -140,7 +141,7 @@ public class WorkflowMiddlewareTest {
     }
 
     private static void createWorkflowSnapshotEnts(final String projectId, final WorkflowMiddleware middleware,
-        final ContainerTypeEnum expectedContainerType, final NodeID... nodeIds) {
+        final ContainerTypeEnum expectedContainerType, final NodeID... nodeIds) throws GatewayException {
         for (var nodeId : nodeIds) {
             var snapshot = middleware.buildWorkflowSnapshotEnt(new WorkflowKey(projectId, new NodeIDEnt(nodeId)),
                 WorkflowBuildContext::builder);

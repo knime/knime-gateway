@@ -64,7 +64,6 @@ import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.PreferencesProvider;
@@ -130,20 +129,12 @@ public class GatewayDefaultServiceTests {
 
             @Override
             public void executeWorkflowAsync(final String wfId) throws Exception {
-                ProjectManager.getInstance() //
-                    .getProject(wfId) //
-                    .flatMap(Project::getWorkflowManagerIfLoaded) //
-                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
-                    .executeAll();
+                GatewayServiceTest.getWFM(wfId).executeAll();
             }
 
             @Override
             public void executeWorkflow(final String wfId) throws Exception {
-                ProjectManager.getInstance() //
-                    .getProject(wfId) //
-                    .flatMap(Project::getWorkflowManagerIfLoaded) //
-                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
-                    .executeAllAndWaitUntilDone();
+                GatewayServiceTest.getWFM(wfId).executeAllAndWaitUntilDone();
             }
         };
         m_serviceProvider = new ServiceProvider() {

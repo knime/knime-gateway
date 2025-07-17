@@ -59,6 +59,8 @@ import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.util.ExtPointUtil;
 import org.knime.gateway.api.webui.service.CompositeViewService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
@@ -136,7 +138,7 @@ public class DefaultCompositeViewService implements CompositeViewService {
 
     @Override
     public void setViewValuesAsNewDefault(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final Map<String, String> viewValues) throws ServiceCallException {
+        final Map<String, String> viewValues) throws ServiceCallException, LoggedOutException, NetworkException {
 
         assertProjectId(projectId);
         getCompositeViewServiceDelegate().setViewValuesAsNewDefault(projectId, workflowId, nodeId, viewValues);

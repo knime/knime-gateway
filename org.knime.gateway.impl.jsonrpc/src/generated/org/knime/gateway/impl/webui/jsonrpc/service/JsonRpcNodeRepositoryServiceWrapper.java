@@ -93,10 +93,16 @@ public class JsonRpcNodeRepositoryServiceWrapper implements NodeRepositoryServic
     @Override
     @JsonRpcMethod(value = "getNodeRecommendations")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
-            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
+            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public java.util.List<NodeTemplateEnt> getNodeRecommendations(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="nodesLimit") Integer nodesLimit, @JsonRpcParam(value="nodeRelation") String nodeRelation, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo)  throws ServiceExceptions.OperationNotAllowedException {
+    public java.util.List<NodeTemplateEnt> getNodeRecommendations(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="portIdx") Integer portIdx, @JsonRpcParam(value="nodesLimit") Integer nodesLimit, @JsonRpcParam(value="nodeRelation") String nodeRelation, @JsonRpcParam(value="fullTemplateInfo") Boolean fullTemplateInfo)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.OperationNotAllowedException, ServiceExceptions.ServiceCallException {
         return m_service.get().getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit, nodeRelation, fullTemplateInfo);    
     }
 

@@ -780,8 +780,9 @@ public final class CoreUtil {
      *
      * @param nc -
      * @param task -
+     * @since 5.6
      */
-    public static void executeThenRun(NodeContainer nc, Runnable task) {
+    public static void executeThenRun(final NodeContainer nc, final Runnable task) {
         if (nc.isInactive()) {
             return;
         }

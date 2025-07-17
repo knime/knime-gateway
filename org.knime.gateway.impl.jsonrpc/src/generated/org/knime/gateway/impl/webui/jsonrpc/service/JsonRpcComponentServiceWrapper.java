@@ -90,10 +90,14 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
     @Override
     @JsonRpcMethod(value = "getComponentDescription")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public ComponentNodeDescriptionEnt getComponentDescription(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
+    public ComponentNodeDescriptionEnt getComponentDescription(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException {
         return m_service.get().getComponentDescription(projectId, workflowId, versionId, nodeId);    
     }
 
