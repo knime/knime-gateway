@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -56,21 +56,21 @@ import java.util.stream.Stream;
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
-import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.CollisionException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.util.NetworkExceptions;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
@@ -108,108 +108,110 @@ public class DefaultSpaceService implements SpaceService {
         return DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<SpaceGroupEnt> getSpaceGroups(final String spaceProviderId)
-        throws ServiceCallException, NetworkException {
+        throws ServiceCallException, NetworkException, LoggedOutException {
         if (spaceProviderId == null || spaceProviderId.isBlank()) {
             throw new ServiceCallException("Invalid space-provider-id (empty/null)");
         }
         try {
             final var spaceProvider =
                 m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
-            final var message = "Could not access '" + spaceProvider.getName() + "'.";
-            return NetworkExceptions.callWithCatch(spaceProvider::toEntity, message);
+            return spaceProvider.toEntity();
         } catch (NoSuchElementException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String spaceProviderId,
-        final String workflowGroupId) throws ServiceCallException, NetworkException {
+        final String workflowGroupId) throws ServiceCallException, NetworkException, LoggedOutException {
         try {
             final var spaceProvider =
                 m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
             final var space = spaceProvider.getSpace(spaceId);
-            final var message = "Could not list spaces of '" + spaceProvider.getName() + "'.";
-            return NetworkExceptions.callWithCatch(() -> space.listWorkflowGroup(workflowGroupId), message);
-        } catch (NoSuchElementException | IOException e) {
+            return space.listWorkflowGroup(workflowGroupId);
+        } catch (NoSuchElementException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
     @Override
     public List<Object> listJobsForWorkflow(final String spaceId, final String spaceProviderId, final String workflowId)
-        throws ServiceCallException {
+        throws ServiceCallException, LoggedOutException, NetworkException {
         try {
             return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
                 .listJobsForWorkflow(workflowId);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Problem fetching jobs", e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
     @Override
     public void deleteJobsForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
-        final String jobId) throws ServiceCallException {
-        final var space =
-            m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId).getSpace(spaceId);
+        final String jobId) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
+            final var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId)
+                .getSpace(spaceId);
             space.deleteJobsForWorkflow(itemId, List.of(jobId));
-        } catch (final ResourceAccessException e) {
-            throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
     @Override
     public List<Object> listSchedulesForWorkflow(final String spaceId, final String spaceProviderId,
-        final String workflowId) throws ServiceCallException {
+        final String workflowId) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
             return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
                 .listSchedulesForWorkflow(workflowId);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Problem fetching jobs", e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
     @Override
     public void deleteSchedulesForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
-        final String scheduleId) throws ServiceCallException {
-        final var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId);
+        final String scheduleId) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
+            final var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId);
             space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
-        } catch (final ResourceAccessException e) {
-            throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public SpaceEnt createSpace(final String spaceProviderId, final String spaceGroupName) throws ServiceCallException {
+    public SpaceEnt createSpace(final String spaceProviderId, final String spaceGroupName)
+        throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             return m_spaceProvidersManager.getSpaceProviders(projectId()) //
                 .getSpaceProvider(spaceProviderId) //
                 .getSpaceGroup(spaceGroupName) //
                 .createSpace() //
                 .toEntity();
-        } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
+        } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
     @Override
     public SpaceItemEnt createWorkflow(final String spaceId, final String spaceProviderId, final String workflowGroupId,
-        final String name) throws ServiceCallException {
+        final String name)
+        throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
-            final var item = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId) //
+            final var item = m_spaceProvidersManager.getSpaceProviders(projectId()) //
+                .getSpace(spaceProviderId, spaceId) //
                 .createWorkflow(workflowGroupId, name);
             if (GlobalNodeStats.isEnabled()) {
                 NodeTimer.GLOBAL_TIMER.incWorkflowCreate(
@@ -219,46 +221,43 @@ public class DefaultSpaceService implements SpaceService {
             return item;
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Problem fetching space items", e);
-        } catch (IOException e) {
-            throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void deleteItems(final String spaceId, final String spaceProviderId, final List<String> spaceItemIds,
-        final Boolean softDelete) throws ServiceCallException {
+        final Boolean softDelete)
+        throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
                 .deleteItems(spaceItemIds, softDelete);
-        } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
+        } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpaceItemEnt createWorkflowGroup(final String spaceId, final String spaceProviderId, final String itemId)
-        throws ServiceCallException {
+        throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
                 .createWorkflowGroup(itemId);
-        } catch (NoSuchElementException | UnsupportedOperationException | IOException e) {
+        } catch (NoSuchElementException | UnsupportedOperationException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void moveOrCopyItems(final String spaceId, final String spaceProviderId, final List<String> itemIds,
         final String destSpaceId, final String destWorkflowGroupItemId, final Boolean copy,
-        final String collisionHandling) throws ServiceCallException, CollisionException {
+        final String collisionHandling) throws ServiceCallException, CollisionException, LoggedOutException,
+        NetworkException, OperationNotAllowedException {
 
         if (itemIds.isEmpty()) {
             return;
@@ -287,62 +286,66 @@ public class DefaultSpaceService implements SpaceService {
                 NameCollisionHandling.of(collisionHandling).orElse(NameCollisionHandling.NOOP);
 
             destinationSpace.moveOrCopyItems(itemIds, destWorkflowGroupItemId, actualCollisionHandling, copy);
-        } catch (NoSuchElementException | IllegalArgumentException | IOException e) {
+        } catch (NoSuchElementException | IllegalArgumentException e) {
             // should never happen
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpaceItemEnt renameItem(final String spaceProviderId, final String spaceId, final String itemId,
-        final String newName) throws ServiceCallException {
+        final String newName) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
             return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
                 .renameItem(itemId, newName);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Could not access space", e);
-        } catch (OperationNotAllowedException | IOException e) {
+        } catch (OperationNotAllowedException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpaceEnt renameSpace(final String spaceProviderId, final String spaceId, final String spaceName)
-        throws ServiceCallException {
+        throws ServiceCallException, LoggedOutException, NetworkException {
         try {
             return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
                 .renameSpace(spaceName);
         } catch (NoSuchElementException e) {
             throw new ServiceCallException("Could not access space", e);
-        } catch (OperationNotAllowedException | IOException e) {
+        } catch (OperationNotAllowedException e) {
             throw new ServiceCallException(e.getMessage(), e);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
     private static void checkForCollisionsInSpace(final List<String> itemIds, final Space sourceSpace,
         final Space destinationSpace, final String destWorkflowGroupItemId)
-        throws CollisionException, ServiceCallException {
+        throws CollisionException, NoSuchElementException, NetworkException, LoggedOutException, ServiceCallException {
         for (var itemId : itemIds) {
-            var itemName = sourceSpace.getItemName(itemId);
-            var destinationItemId = destinationSpace.getItemIdForName(destWorkflowGroupItemId, itemName);
-            if (destinationItemId.isPresent()) {
-                checkForDestinationContainingSource(itemId, sourceSpace, destinationItemId.get(), destinationSpace,
-                    itemName);
-                throw new CollisionException(
-                    "An item with name '%s' already exists at the target location".formatted(itemName));
+            try {
+                var itemName = sourceSpace.getItemName(itemId);
+                var destinationItemId = destinationSpace.getItemIdForName(destWorkflowGroupItemId, itemName);
+                if (destinationItemId.isPresent()) {
+                    checkForDestinationContainingSource(itemId, sourceSpace, destinationItemId.get(), destinationSpace,
+                        itemName);
+                    throw new CollisionException(
+                        "An item with name '%s' already exists at the target location".formatted(itemName));
+                }
+            } catch (MutableServiceCallException e) { // NOSONAR
+                throw e.toGatewayException();
             }
         }
     }
 
     private static void checkForDestinationContainingSource(final String sourceItemId, final Space sourceSpace,
         final String destinationItemId, final Space destinationSpace, final String itemName)
-        throws ServiceCallException {
+        throws ServiceCallException, NetworkException, LoggedOutException {
         if (!sourceSpace.getId().equals(destinationSpace.getId())) {
             return; // Different spaces, no collision
         }
@@ -351,11 +354,11 @@ public class DefaultSpaceService implements SpaceService {
             var ancestorItemIds = sourceSpace.getAncestorItemIds(sourceItemId);
             if (ancestorItemIds.contains(destinationItemId)) {
                 throw new ServiceCallException(
-                    "The item with name '%s' can't overwrite itself. I.e. the destination item is a parent of the source item."
+                    "The item with name '%s' can't overwrite itself (the destination item contains the source item)."
                         .formatted(itemName));
             }
-        } catch (ResourceAccessException ex) {
-            throw new ServiceCallException("A problem occurred while checking for collisions", ex);
+        } catch (MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException();
         }
     }
 
@@ -374,16 +377,18 @@ public class DefaultSpaceService implements SpaceService {
     }
 
     private static List<String> checkForWorkflowsToClose(final Stream<String> openWorkflowIds,
-        final List<String> itemIds, final LocalSpace localSpace) {
-        return openWorkflowIds//
-            .filter(workflowId -> {
-                if (itemIds.contains(workflowId)) {
-                    return true;
+        final List<String> itemIds, final LocalSpace localSpace) throws ServiceCallException {
+        final List<String> toClose = new ArrayList<>();
+        for (final String workflowId : (Iterable<String>)openWorkflowIds::iterator) {
+            try {
+                if (itemIds.contains(workflowId)
+                    || localSpace.getAncestorItemIds(workflowId).stream().anyMatch(itemIds::contains)) {
+                    toClose.add(workflowId);
                 }
-                var ancestorItemIds = localSpace.getAncestorItemIds(workflowId);
-                return ancestorItemIds.stream().anyMatch(itemIds::contains);
-            })//
-            .toList();
+            } catch (MutableServiceCallException e) { // NOSONAR
+                throw e.toGatewayException();
+            }
+        }
+        return toClose;
     }
-
 }

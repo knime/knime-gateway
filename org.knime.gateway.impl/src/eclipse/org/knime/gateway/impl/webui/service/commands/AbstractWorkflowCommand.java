@@ -51,6 +51,8 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -87,7 +89,7 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
     }
 
     @Override
-    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException {
+    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
             m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
@@ -97,7 +99,7 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
         return executeInternal();
     }
 
-    private boolean executeInternal() throws ServiceCallException {
+    private boolean executeInternal() throws ServiceCallException, LoggedOutException, NetworkException {
         if (m_lockWorkflow) {
             return executeWithWorkflowLockAndContextInternal();
         } else {
@@ -105,7 +107,8 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
         }
     }
 
-    private boolean executeWithWorkflowLockAndContextInternal() throws ServiceCallException {
+    private boolean executeWithWorkflowLockAndContextInternal()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         NodeContext.pushContext(m_wfm);
         try (WorkflowLock lock = m_wfm.lock()) {
             return executeWithWorkflowLockAndContext();
@@ -114,7 +117,7 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
         }
     }
 
-    private boolean executeWithWorkflowContextInternal() throws ServiceCallException {
+    private boolean executeWithWorkflowContextInternal() {
         NodeContext.pushContext(m_wfm);
         try {
             return executeWithWorkflowContext();
@@ -138,9 +141,12 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command did not change the workflow
      *
+     * @throws NetworkException
+     * @throws LoggedOutException
      * @throws ServiceCallException If the command could not be executed
      */
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -152,25 +158,23 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
      *
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command did not change the workflow
-     *
-     * @throws ServiceCallException If the command could not be executed
      */
-    protected boolean executeWithWorkflowContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowContext() {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public boolean canUndo() {
+    public boolean canUndo() throws ServiceCallException, LoggedOutException, NetworkException {
         return true;
     }
 
     @Override
-    public boolean canRedo() {
+    public boolean canRedo() throws ServiceCallException, LoggedOutException, NetworkException {
         return true;
     }
 
     @Override
-    public void redo() throws ServiceCallException {
+    public void redo() throws ServiceCallException, LoggedOutException, NetworkException {
         executeInternal();
     }
 

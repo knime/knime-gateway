@@ -49,10 +49,11 @@
 package org.knime.gateway.impl.webui.service.commands;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -71,6 +72,8 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
@@ -137,11 +140,9 @@ final class Delete extends AbstractWorkflowCommand {
         return m_connectionsDeleted != null && m_connectionsDeleted.stream().allMatch(wfm::canRemoveConnection);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         var wfm = getWorkflowManager();
         String projectId = getWorkflowKey().getProjectId();
         Set<NodeID> nodesToDelete = m_nodeIdsQueried.stream()
@@ -186,11 +187,16 @@ final class Delete extends AbstractWorkflowCommand {
         m_copy = wfm.copy(true, content);
         WorkflowAnnotationID[] annoIds = content.getAnnotationIDs();
 
-        var bendpointsToDelete = m_bendpointsIndicesQueried == null ? Collections.<ConnectionID, int[]> emptyMap()
-            : m_bendpointsIndicesQueried.entrySet().stream().filter(e -> !e.getValue().isEmpty())
-                .collect(Collectors.toMap(
-                    e -> DefaultServiceUtil.entityToConnectionID(projectId, new ConnectionIDEnt(e.getKey())),
-                    e -> e.getValue().stream().mapToInt(Integer::intValue).toArray()));
+        final Map<ConnectionID, int[]> bendpointsToDelete = new LinkedHashMap<>();
+        if (m_bendpointsIndicesQueried != null) {
+            for (final Entry<String, List<Integer>> e : m_bendpointsIndicesQueried.entrySet()) {
+                if (!e.getValue().isEmpty()) {
+                    bendpointsToDelete.put(
+                        DefaultServiceUtil.entityToConnectionID(projectId, new ConnectionIDEnt(e.getKey())),
+                        e.getValue().stream().mapToInt(Integer::intValue).toArray());
+                }
+            }
+        }
         m_connectionsWithBendpointsRemoved = bendpointsToDelete.keySet().stream()
             .collect(Collectors.toMap(id -> id, id -> wfm.getConnection(id).getUIInfo()));
         remove(wfm, nodesToDelete, m_connectionsDeleted, annoIds, bendpointsToDelete);

@@ -53,9 +53,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.function.FailableRunnable;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.extension.NodeSpecCollectionProvider.Progress.ProgressEvent;
 import org.knime.gateway.api.entity.EntityBuilderManager;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt.AppStateChangedEventEntBuilder;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
@@ -78,6 +81,8 @@ import org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependen
  * @author Kai Franze, KNIME GmbH
  */
 public class AppStateChangedEventSource extends EventSource<AppStateChangedEventTypeEnt, CompositeEventEnt> {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(AppStateChangedEventSource.class);
 
     private static final AppStateChangedEventEnt EMPTY_APP_STATE_CHANGED_EVENT =
         builder(AppStateChangedEventEntBuilder.class).setAppState(builder(AppStateEntBuilder.class).build()).build();
@@ -104,15 +109,21 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
     }
 
     @Override
-    public Optional<CompositeEventEnt>
-        addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt, final String projectId) {
-        Runnable appStateChangedListener = this::checkForAppStateChangeAndSendEvent;
+    public Optional<CompositeEventEnt> addEventListenerAndGetInitialEventFor(
+        final AppStateChangedEventTypeEnt eventTypeEnt, final String projectId) {
+        FailableRunnable<GatewayException> appStateChangedListener = this::checkForAppStateChangeAndSendEvent;
         m_appStateUpdater.addAppStateChangedListener(appStateChangedListener);
         m_removeAppStateChangedListener =
             () -> m_appStateUpdater.removeAppStateChangedListener(appStateChangedListener);
 
         if (!NodeSpecCollectionProvider.Progress.isDone()) {
-            NodeSpecCollectionProvider.Progress.addListener(this::handleProgressEvent);
+            NodeSpecCollectionProvider.Progress.addListener(evt -> {
+                try {
+                    handleProgressEvent(evt);
+                } catch (GatewayException ex) {
+                    LOGGER.error(ex);
+                }
+            });
         }
 
         if (!m_appStateUpdater.filterProjectSpecificInfosFromEvents()
@@ -129,7 +140,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         }
     }
 
-    private void handleProgressEvent(final ProgressEvent progressEvent) {
+    private void handleProgressEvent(final ProgressEvent progressEvent) throws GatewayException {
         if (progressEvent.isDone()) {
             checkForAppStateChangeAndSendEvent();
         }
@@ -155,7 +166,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         return "AppStateChangedEvent:ProjectDirtyStateEvent";
     }
 
-    private void checkForAppStateChangeAndSendEvent() {
+    private void checkForAppStateChangeAndSendEvent() throws GatewayException {
         var appStateChangedEvent = buildAppStateChangedEvent();
         List<EventEnt> events = null;
         if (m_appStateUpdater.filterProjectSpecificInfosFromEvents()) {

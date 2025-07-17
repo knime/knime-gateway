@@ -103,6 +103,7 @@ import org.knime.core.util.pathresolve.URIToFileResolve;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.util.VersionId;
@@ -182,8 +183,6 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -1569,7 +1568,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void assertPortsUnchanged(final String projectId, final NodeIDEnt wfId, final NodeIDEnt node,
-        final WorkflowEnt originalWfEnt) throws ServiceExceptions.NotASubWorkflowException, NodeNotFoundException {
+        final WorkflowEnt originalWfEnt) throws GatewayException {
         var currentWfEnt = ws().getWorkflow(projectId, wfId, null, false).getWorkflow();
         var unchangedInports = originalWfEnt.getNodes().get(node.toString()).getInPorts();
         var changedInPorts = currentWfEnt.getNodes().get(node.toString()).getInPorts();

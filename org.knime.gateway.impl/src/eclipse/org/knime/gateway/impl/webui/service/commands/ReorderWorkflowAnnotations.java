@@ -61,6 +61,8 @@ import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ActionEnum;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
@@ -88,16 +90,15 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
         m_commandEnt = commandEnt;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         final var wfm = getWorkflowManager();
         final var workflowKey = getWorkflowKey();
-        final var annotationIds = m_commandEnt.getAnnotationIds().stream()//
-            .map(id -> DefaultServiceUtil.entityToAnnotationID(workflowKey.getProjectId(), id))//
-                .toList();
+        final List<WorkflowAnnotationID> annotationIds = new ArrayList<>();
+        for (final var idEnt : m_commandEnt.getAnnotationIds()) {
+            annotationIds.add(DefaultServiceUtil.entityToAnnotationID(workflowKey.getProjectId(), idEnt));
+        }
         final var annotations = getAnnotions(wfm, annotationIds);
         final var action = m_commandEnt.getAction();
 
@@ -115,9 +116,6 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
         return processAnnotations(annotations, m_comparator, function);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void undo() throws ServiceCallException {
         final var wfm = getWorkflowManager();

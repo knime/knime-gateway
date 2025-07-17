@@ -56,6 +56,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+import org.apache.commons.lang3.function.FailableRunnable;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.LoopStatusChangeListener;
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -67,6 +69,7 @@ import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowEvent.Type;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.impl.service.util.CallThrottle.CallState;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -81,9 +84,11 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 public class WorkflowChangesListener implements Closeable {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowChangesListener.class);
+
     private final WorkflowManager m_wfm;
 
-    private final Set<Runnable> m_workflowChangedCallbacks = new HashSet<>();
+    private final Set<FailableRunnable<GatewayException>> m_workflowChangedCallbacks = new HashSet<>();
 
     private final Set<WorkflowChangesTracker> m_workflowChangesTrackers = Collections.synchronizedSet(new HashSet<>());
 
@@ -143,7 +148,13 @@ public class WorkflowChangesListener implements Closeable {
         }
 
         m_callThrottle = new CallThrottle(() -> {
-            m_workflowChangedCallbacks.forEach(Runnable::run);
+            for (final var callback : m_workflowChangedCallbacks) {
+                try {
+                    callback.run();
+                } catch (GatewayException ex) {
+                    LOGGER.error(ex); // TODO
+                }
+            }
             m_postProcessCallbacks.forEach(Runnable::run);
         }, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")", true);
 
@@ -201,8 +212,9 @@ public class WorkflowChangesListener implements Closeable {
      * Adds a callback which is called as soon as the associated workflow changed.
      *
      * @param callback the callback to call if a change occurs in the workflow manager(s)
+     * @since 5.6
      */
-    public void addWorkflowChangeCallback(final Runnable callback) {
+    public void addWorkflowChangeCallback(final FailableRunnable<GatewayException> callback) {
         if (m_workflowChangedCallbacks.isEmpty()) {
             startListening();
         }
@@ -213,8 +225,9 @@ public class WorkflowChangesListener implements Closeable {
      * Removes a registered callback.
      *
      * @param callback
+     * @since 5.6
      */
-    public void removeCallback(final Runnable callback) {
+    public void removeCallback(final FailableRunnable<GatewayException> callback) {
         m_workflowChangedCallbacks.remove(callback);
         if (m_workflowChangedCallbacks.isEmpty()) {
             stopListening();

@@ -48,7 +48,8 @@
  */
 package org.knime.gateway.api.service;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -69,7 +70,7 @@ public abstract class GatewayException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    private final Map<String, String> m_properties = new HashMap<>();
+    private final Map<String, String> m_properties = new LinkedHashMap<>();
 
     private final boolean m_canCopy;
 
@@ -106,9 +107,10 @@ public abstract class GatewayException extends Exception {
      * Gets the details of the exception as per "Problem Details” / RFC9457 standard.
      *
      * @return Exception details property if present or {@code null} if not present
+     * @since 5.6
      */
-    public String getDetails() {
-        return m_properties.get("details");
+    public List<String> getDetails() {
+        return m_properties.get("details").lines().toList();
     }
 
     /**

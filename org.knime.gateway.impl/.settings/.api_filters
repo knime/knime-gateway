@@ -27,6 +27,50 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/WorkflowManagerLoader.java" type="org.knime.gateway.impl.project.WorkflowManagerLoader">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.WorkflowManagerLoader"/>
+                <message_argument value="fetch(Origin, VersionId, SpaceProviders, ExecutionMonitor)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/service/util/WorkflowChangesListener.java" type="org.knime.gateway.impl.service.util.WorkflowChangesListener">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.service.util.WorkflowChangesListener"/>
+                <message_argument value="addWorkflowChangeCallback(Runnable)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.service.util.WorkflowChangesListener"/>
+                <message_argument value="removeCallback(Runnable)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/AppStateUpdater.java" type="org.knime.gateway.impl.webui.AppStateUpdater">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.AppStateUpdater"/>
+                <message_argument value="addAppStateChangedListener(Runnable)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.AppStateUpdater"/>
+                <message_argument value="removeAppStateChangedListener(Runnable)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/AbstractKaiHandler.java" type="org.knime.gateway.impl.webui.kai.AbstractKaiHandler">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.AbstractKaiHandler"/>
+                <message_argument value="getEventConsumer(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentNodeDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt">
         <filter id="337682486">
             <message_arguments>

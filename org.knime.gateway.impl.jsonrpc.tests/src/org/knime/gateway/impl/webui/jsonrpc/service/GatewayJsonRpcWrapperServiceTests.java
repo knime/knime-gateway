@@ -63,6 +63,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.CompositeViewService;
 import org.knime.gateway.api.webui.service.EventService;
@@ -149,19 +151,21 @@ public class GatewayJsonRpcWrapperServiceTests {
     public GatewayJsonRpcWrapperServiceTests(final String gatewayTestName) {
         m_workflowLoader = new LocalWorkflowLoader();
         m_workflowExecutor = new WorkflowExecutor() {
-
             @Override
             public void executeWorkflowAsync(final String wfId) throws Exception {
-                ProjectManager.getInstance().getProject(wfId).flatMap(Project::getWorkflowManagerIfLoaded) //
-                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
-                    .executeAll();
+                getWFM(wfId).executeAll();
             }
 
             @Override
             public void executeWorkflow(final String wfId) throws Exception {
-                ProjectManager.getInstance().getProject(wfId).flatMap(Project::getWorkflowManagerIfLoaded) //
-                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
-                    .executeAllAndWaitUntilDone();
+                getWFM(wfId).executeAllAndWaitUntilDone();
+            }
+
+            private WorkflowManager getWFM(final String wfId) throws GatewayException {
+                final Project project = ProjectManager.getInstance().getProject(wfId) //
+                        .orElseThrow(() -> new IllegalStateException("No project for id " + wfId));
+                return project.getWorkflowManagerIfLoaded() //
+                    .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId));
             }
         };
         DefaultJsonRpcRequestHandler handler = new DefaultJsonRpcRequestHandler();
