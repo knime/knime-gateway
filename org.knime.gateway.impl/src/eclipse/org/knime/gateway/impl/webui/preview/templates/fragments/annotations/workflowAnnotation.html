@@ -1,0 +1,16 @@
+<th:block th:fragment="render(annotation)">
+  <foreignObject
+    th:x="${annotation.bounds.x}"
+    th:y="${annotation.bounds.y}"
+    th:width="${annotation.bounds.width}"
+    th:height="${annotation.bounds.height}">
+    <div
+      th:if="${{annotation.text.contentType}} == 'text/html'"
+      class="annotation rich-text-annotation"
+      th:utext="${annotation.text.value}">
+    </div>
+    <div th:text="${annotation.text.contentType}"></div>
+  </foreignObject>
+</th:block>
+
+<!-- Make sure to close void HTML5 tags, e.g. hr -->

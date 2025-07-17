@@ -50,22 +50,30 @@ package org.knime.gateway.impl.webui.preview;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowSaveHook;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.impl.webui.preview.util.WorkflowBoundsCalculator;
+import org.knime.gateway.impl.webui.preview.util.WorkflowBoundsCalculator.BoundingBox;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.DefaultTemplateResolver;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 /**
- * TODO
  *
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
+
+    static int EMPTY_MARGIN = 20;
 
     /**
      * {@inheritDoc}
@@ -74,20 +82,37 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
     public void onSave(final WorkflowManager workflow, final boolean isSaveData, final File artifactsFolder)
         throws IOException {
 
-        var templateEngine = new TemplateEngine();
-        var templateResolver = new DefaultTemplateResolver(); // TODO use different resolver
-        var template = new String(this.getClass().getResourceAsStream("workflow_preview_template.svg").readAllBytes(),
-            StandardCharsets.UTF_8); // TODO close
-        templateResolver.setTemplate(template);
-        templateResolver.setName("svg");
-        templateEngine.addTemplateResolver(templateResolver);
-        var context = new Context();
+        String fileName = "workflow_new.svg";
+        Path outputPath = artifactsFolder.toPath().resolve("../" + fileName);
 
+        var basePath = GenerateSVGWorkflowSaveHook.class.getPackage().getName().replace('.', '/');
+        var templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setName("svg");
+        templateResolver.setPrefix("/" + basePath + "/templates/");
+        templateResolver.setSuffix(".html"); //ThymeLeaf templating default
+        templateResolver.setTemplateMode(TemplateMode.HTML); // Need to use HTML and not XML because of foreignObjects
+        templateResolver.setCharacterEncoding("UTF-8");
+        templateResolver.setCacheable(false); // TODO set to true for production
+
+        var context = new Context();
         var workflowEnt = EntityFactory.Workflow.buildWorkflowEnt(workflow, WorkflowBuildContext.builder());
-        context.setVariable("workflow", workflowEnt);
-        // templateEngine.process("svg", new Context(), new FileWriter(null /* TODO */));
-        var res = templateEngine.process("svg", context);
-        System.out.println();
+        BoundingBox workflowBounds = WorkflowBoundsCalculator.getWorkflowBoundingBox(workflowEnt);
+        String viewBox = (workflowBounds != null)
+                ? String.format("%d %d %d %d", workflowBounds.minX(), workflowBounds.minY(), workflowBounds.width(), workflowBounds.height())
+                : String.format("0 0 %d %d", EMPTY_MARGIN, EMPTY_MARGIN);
+        context.setVariable("bounds", workflowBounds);
+        context.setVariable("viewbox", viewBox);
+        //var annotations = workflowEnt.getWorkflowAnnotations();
+        context.setVariable("annotations", workflowEnt.getWorkflowAnnotations());
+        context.setVariable("nodes", workflowEnt.getNodes().values());
+        context.setVariable("connections", workflowEnt.getConnections().values());
+
+        var templateEngine = new TemplateEngine();
+        templateEngine.addTemplateResolver(templateResolver);
+        try (Writer writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
+            templateEngine.process("workflow", context, writer);
+        }
+        System.out.println(templateEngine.process("workflow", context));
     }
 
 }

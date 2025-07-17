@@ -1,0 +1,13 @@
+<th:block th:fragment="render(node)">
+  <g
+    th:attr="transform='translate(' + ${node.position.x} + ',' + ${node.position.y} + ')'"
+    th:attrappend="data-node-id=${node.id}"
+    class="node-wrapper"
+  >
+    <!-- <th:block th:insert="fragments/node/torso/nodeTorso :: nodeTorso(
+        type=${node.type},
+        kind=${node.kind},
+        icon=${node.icon}
+      )" /> -->
+  </g>
+</th:block>
