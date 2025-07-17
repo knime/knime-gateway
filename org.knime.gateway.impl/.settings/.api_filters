@@ -477,6 +477,16 @@
                 <message_argument value="updateDataPointSelection(String, NodeIDEnt, NodeIDEnt, String, List&lt;String&gt;)"/>
             </message_arguments>
         </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getNodeDialog(String, NodeIDEnt, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getNodeView(String, NodeIDEnt, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultPortService.java" type="org.knime.gateway.impl.webui.service.DefaultPortService">
         <filter id="338792546">
@@ -507,6 +517,11 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.service.DefaultPortService"/>
                 <message_argument value="updateDataPointSelection(String, NodeIDEnt, NodeIDEnt, Integer, Integer, String, List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getPortView(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer)"/>
             </message_arguments>
         </filter>
     </resource>

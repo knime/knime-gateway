@@ -98,7 +98,7 @@ public class DefaultPortService implements PortService {
     }
 
     @Override
-    public Object getPortView(final String projectId, final NodeIDEnt workflowId, final String versionId,
+    public PortViewEnt getPortView(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx)
         throws NodeNotFoundException, InvalidRequestException {
         var version = VersionId.parse(versionId);
