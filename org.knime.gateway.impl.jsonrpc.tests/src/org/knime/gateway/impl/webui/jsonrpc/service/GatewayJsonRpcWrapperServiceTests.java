@@ -63,6 +63,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.CompositeViewService;
 import org.knime.gateway.api.webui.service.EventService;
@@ -151,7 +153,6 @@ public class GatewayJsonRpcWrapperServiceTests {
     public GatewayJsonRpcWrapperServiceTests(final String gatewayTestName) {
         m_workflowLoader = new LocalWorkflowLoader();
         m_workflowExecutor = new WorkflowExecutor() {
-
             @Override
             public void executeWorkflowAsync(final String wfId) throws Exception {
                 m_projectManager.getProject(wfId).flatMap(Project::getWorkflowManagerIfLoaded) //

@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
@@ -75,39 +77,51 @@ public interface WorkflowCommand {
      * @param wfKey references the workflow to execute the command for
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command didn't do any change to the workflow
-     * @throws ServiceCallException -
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    boolean execute(WorkflowKey wfKey) throws ServiceCallException;
+    boolean execute(WorkflowKey wfKey) throws ServiceCallException, LoggedOutException, NetworkException;
 
     /**
      * Whether the command can be undone. Must be a rather light operation because it's potentially called repeatedly
      * (on every/many workflow changes).
      *
      * @return {@code false} if the undo operation can't be carried out
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    boolean canUndo();
+    boolean canUndo() throws ServiceCallException, LoggedOutException, NetworkException;
 
     /**
      * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey)} has been called before
      * already.
      *
-     * @throws ServiceCallException -
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    void undo() throws ServiceCallException;
+    void undo() throws ServiceCallException, LoggedOutException, NetworkException;
 
     /**
      * Whether the command can be redone. Must be a rather light operation because it's potentially called repeatedly
      * (on every/many workflow changes).
      *
      * @return {@code false} if the redo operation can't be carried out
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    boolean canRedo();
+    boolean canRedo() throws ServiceCallException, LoggedOutException, NetworkException;
 
     /**
      * Re-does this command. Guaranteed to be called only if {@link #undo()} has been called before already.
      *
-     * @throws ServiceCallException -
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    void redo() throws ServiceCallException;
+    void redo() throws ServiceCallException, LoggedOutException, NetworkException;
 
 }

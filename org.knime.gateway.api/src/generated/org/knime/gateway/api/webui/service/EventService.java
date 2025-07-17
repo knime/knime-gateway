@@ -64,8 +64,13 @@ public interface EventService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void addEventListener(EventTypeEnt eventType)  throws ServiceExceptions.InvalidRequestException;
+    void addEventListener(EventTypeEnt eventType)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException, ServiceExceptions.ServiceCallException;
         
     /**
      * Unregisters event listeners.

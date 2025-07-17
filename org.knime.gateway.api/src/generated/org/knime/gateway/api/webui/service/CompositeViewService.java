@@ -116,8 +116,10 @@ public interface CompositeViewService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    void setViewValuesAsNewDefault(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException;
+    void setViewValuesAsNewDefault(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
         
     /**
      * Triggers the re-execution process (and updates the viewValues) for the whole component, i.e.,  every containing node will be re-executed. If a specific node has triggered the re-execution process use  &#39;trigger-reexecution/{resetNodeIdSuffix}&#39; to only re-execute that node together  with every down-stream node of it.

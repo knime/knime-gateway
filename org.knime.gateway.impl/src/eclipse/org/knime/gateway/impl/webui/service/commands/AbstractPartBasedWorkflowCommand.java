@@ -53,8 +53,10 @@ import static org.knime.gateway.impl.service.util.DefaultServiceUtil.entityToCon
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -71,6 +73,8 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
@@ -101,10 +105,11 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
      * To avoid already performing modifications to the workflow and only then realising some workflow part is not
      * present, you may call this method at the beginning of {@link AbstractPartBasedWorkflowCommand#execute()} and,
      * going forward, assume that all workflow parts are available.
-     *
-     * @throws ServiceExceptions.ServiceCallException If a workflow part is not available
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    private void checkPartsPresentElseThrow() throws ServiceExceptions.ServiceCallException {
+    private void checkPartsPresentElseThrow() throws ServiceCallException, LoggedOutException, NetworkException {
         if (m_partsChecked) {
             return;
         }
@@ -192,9 +197,12 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     /**
      * @throws java.util.NoSuchElementException If a node container is not available.
      * @return The node containers for the node ids affected by this command.
-     * @throws ServiceCallException if a workflow part is not available
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    protected final Set<NodeContainer> getNodeContainers() throws ServiceCallException {
+    protected final Set<NodeContainer> getNodeContainers()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         checkPartsPresentElseThrow();
         return stream(getNodeIDs()) //
             .map(id -> CoreUtil.getNodeContainer(id, getWorkflowManager()).orElseThrow()) //
@@ -204,9 +212,12 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     /**
      * @throws java.util.NoSuchElementException If an annotation is not available.
      * @return The annotation objects for the annotation ids affected by this command.
-     * @throws ServiceCallException if a workflow part is not available
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    protected final Set<WorkflowAnnotation> getAnnotations() throws ServiceCallException {
+    protected final Set<WorkflowAnnotation> getAnnotations()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         checkPartsPresentElseThrow();
         return getAnnotations(getAnnotationIDs());
     }
@@ -233,23 +244,31 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
         return m_nodesQueried;
     }
 
-    protected final WorkflowAnnotationID[] getAnnotationIDs() {
+    protected final WorkflowAnnotationID[] getAnnotationIDs()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         if (m_annotationsQueried == null) {
-            m_annotationsQueried = m_commandEnt.getAnnotationIds().stream() //
-                .map(id -> DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), id)) //
-                .toArray(WorkflowAnnotationID[]::new);
+            final var idEnts = m_commandEnt.getAnnotationIds();
+            m_annotationsQueried = new WorkflowAnnotationID[idEnts.size()];
+            for (var i = 0; i < idEnts.size(); i++) {
+                final var id = idEnts.get(i);
+                m_annotationsQueried[i] = DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), id);
+            }
         }
         return m_annotationsQueried;
     }
 
-    protected final Map<ConnectionID, List<Integer>> getBendpoints() {
+    protected final Map<ConnectionID, List<Integer>> getBendpoints()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         if (m_bendpointsQueried == null) {
             if (m_commandEnt.getConnectionBendpoints() == null) {
                 m_bendpointsQueried = Map.of();
             } else {
                 var projId = getWorkflowKey().getProjectId();
-                m_bendpointsQueried = m_commandEnt.getConnectionBendpoints().entrySet().stream().collect(Collectors
-                    .toMap(e -> entityToConnectionID(projId, new ConnectionIDEnt(e.getKey())), Map.Entry::getValue));
+                m_bendpointsQueried = new LinkedHashMap<>();
+                for (final Entry<String, List<Integer>> e : m_commandEnt.getConnectionBendpoints().entrySet()) {
+                    final var connectionId = entityToConnectionID(projId, new ConnectionIDEnt(e.getKey()));
+                    m_bendpointsQueried.put(connectionId, e.getValue());
+                }
             }
         }
         return m_bendpointsQueried;

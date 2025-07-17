@@ -56,7 +56,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +71,6 @@ import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBui
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.DefaultApplicationService;
@@ -92,11 +90,10 @@ public class AppStateUpdaterTest {
     /**
      * Tests the {@link AppStateUpdater} and the events it triggers (through the {@link DefaultEventService}).
      *
-     * @throws InvalidRequestException
-     * @throws IOException
+     * @throws Exception -
      */
     @Test
-    public void testAppStateUpdaterToTriggerAppStateChangedEvents() throws InvalidRequestException, IOException {
+    public void testAppStateUpdaterToTriggerAppStateChangedEvents() throws Exception {
         var eventConsumer = mock(EventConsumer.class);
         var appStateUpdater = new AppStateUpdater();
         var preferencesProvider = mock(PreferencesProvider.class);
@@ -141,12 +138,10 @@ public class AppStateUpdaterTest {
      * Tests the {@link AppStateUpdater} to trigger {@link AppStateChangedEventEnt app-state-changed-events}, but remove
      * any project-specific infos from the events in case the app-state-update is configured to do so.
      *
-     * @throws InvalidRequestException
-     * @throws IOException
+     * @throws Exception -
      */
     @Test
-    public void testAppStateUpdaterToFilterProjectSpecificInfosFromAppStateChangedEvent()
-        throws InvalidRequestException, IOException {
+    public void testAppStateUpdaterToFilterProjectSpecificInfosFromAppStateChangedEvent() throws Exception {
         var eventConsumer = mock(EventConsumer.class);
         var appStateUpdater = new AppStateUpdater(true /* that's what we actually test here */);
         var preferencesProvider = mock(PreferencesProvider.class);

@@ -60,7 +60,10 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.NodeRepositoryService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.NodeRelation;
 import org.knime.gateway.impl.webui.repo.NodeCategories;
 import org.knime.gateway.impl.webui.repo.NodeCategoryExtensions;
@@ -142,15 +145,11 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws OperationNotAllowedException
-     */
     @Override
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final String nodeRelation,
-        final Boolean fullTemplateInfo) throws OperationNotAllowedException {
+        final Boolean fullTemplateInfo)
+        throws OperationNotAllowedException, ServiceCallException, LoggedOutException, NetworkException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         return m_nodeRecommendations.getNodeRecommendations(projectId, workflowId, nodeId, portIdx, nodesLimit,
             nodeRelation == null ? null : NodeRelation.valueOf(nodeRelation), fullTemplateInfo);

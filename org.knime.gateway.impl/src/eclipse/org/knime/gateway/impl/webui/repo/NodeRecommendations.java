@@ -64,7 +64,10 @@ import org.knime.core.ui.workflowcoach.NodeRecommendationManager.NodeRecommendat
 import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.NodeRelation;
 
@@ -106,10 +109,14 @@ public class NodeRecommendations {
      *            'predecessors'
      * @return The node recommendations
      * @throws OperationNotAllowedException
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final NodeRelation nodeRelation,
-        final Boolean fullTemplateInfo) throws OperationNotAllowedException {
+        final Boolean fullTemplateInfo)
+        throws OperationNotAllowedException, ServiceCallException, LoggedOutException, NetworkException {
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
         }

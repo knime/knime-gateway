@@ -51,8 +51,11 @@ import java.util.function.Function;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowUtil;
 
@@ -90,7 +93,7 @@ abstract class CommandIfElse extends HigherOrderCommand {
 
     @Override
     public Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
-        throws ServiceExceptions.ServiceCallException {
+        throws ServiceCallException, LoggedOutException, NetworkException {
         WorkflowManager wfm;
         try {
             wfm = WorkflowUtil.getWorkflowManager(wfKey);
@@ -107,23 +110,23 @@ abstract class CommandIfElse extends HigherOrderCommand {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         return m_activeCommand.execute(getWorkflowKey());
     }
 
     @Override
-    public void undo() throws ServiceExceptions.ServiceCallException {
+    public void undo() throws ServiceCallException, LoggedOutException, NetworkException {
         m_activeCommand.undo();
     }
 
     @Override
-    public boolean canUndo() {
+    public boolean canUndo() throws ServiceCallException, LoggedOutException, NetworkException {
         return m_activeCommand.canUndo();
     }
 
     @Override
-    public boolean canRedo() {
+    public boolean canRedo() throws ServiceCallException, LoggedOutException, NetworkException {
         return m_activeCommand.canRedo();
     }
-
 }

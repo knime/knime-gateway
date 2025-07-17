@@ -62,6 +62,8 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry.Delta;
 
@@ -83,7 +85,8 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     }
 
     @Override
-    public boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    public boolean executeWithWorkflowLockAndContext()
+        throws LoggedOutException, NetworkException, ServiceCallException {
         if (m_delta.isZero()) {
             return false;
         }
@@ -97,7 +100,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     }
 
     @Override
-    public void undo() throws ServiceCallException {
+    public void undo() throws ServiceCallException, LoggedOutException, NetworkException {
         performTranslation(getWorkflowManager(), getNodeContainers(), getAnnotations(), getBendpoints(),
             m_metanodePortsBars, m_delta.invert());
     }

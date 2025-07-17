@@ -1,7 +1,8 @@
 /*
  * ------------------------------------------------------------------------
+ *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -42,30 +43,57 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
+ * History
+ *   26 May 2025 (leonard.woerteler): created
  */
-package org.knime.gateway.api.service;
+package org.knime.gateway.api.webui.service.util;
 
-import org.knime.gateway.api.entity.GatewayEntity;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
- * Marks gateway services, i.e. usually singleton classes with methods that define the communication between remote
- * points. The service methods either take entities (see {@link GatewayEntity}) or primitives as parameters (or return
- * type).
  *
- * Note: all gateway service methods that are intended to invoke a method on a particular KNIME executor are required to
- * have the workflow/job id as the very first parameter. It will be extracted by the server that mediates the
- * communication to the executor.
- *
- * @author Martin Horn, University of Konstanz
+ * @author leonard.woerteler
+ * @since 5.6
  */
-public interface GatewayService {
+@SuppressWarnings("serial")
+public class MutableServiceCallException extends Exception {
 
-    /**
-     * Cleans up the service instance.
-     * @throws GatewayException
-     */
-    default void dispose() throws GatewayException {
-        //
+    private String m_title;
+
+    private final Deque<String> m_details = new ArrayDeque<>();
+
+    public MutableServiceCallException(final String message) {
+        super(message);
+        m_title = message;
     }
 
+    public MutableServiceCallException(final String message, final Throwable cause) {
+        super(message, cause);
+        m_title = message;
+    }
+
+    public MutableServiceCallException(final String message, final List<String> details, final Throwable cause) {
+        super(message, cause);
+        pushContext(null, details);
+    }
+
+    public MutableServiceCallException pushContext(final String newTitle, final List<String> detailsLines) {
+        if (newTitle != null) {
+            m_title = newTitle;
+        }
+        if (detailsLines != null) {
+            for (int i = detailsLines.size() - 1; i >= 0; i--) {
+                m_details.addFirst(detailsLines.get(i));
+            }
+        }
+        return this;
+    }
+
+    public ServiceCallException toGatewayException() {
+        return new ServiceCallException(m_title, getCause()); // TODO
+    }
 }
