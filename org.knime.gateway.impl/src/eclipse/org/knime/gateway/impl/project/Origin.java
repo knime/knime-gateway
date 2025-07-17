@@ -58,6 +58,9 @@ import org.knime.core.node.workflow.contextv2.ServerLocationInfo;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
@@ -107,11 +110,15 @@ public record Origin(//
      * @throws IllegalArgumentException If Origin can not be parsed
      * @throws NotImplementedException Not implemented for projects on server spaces
      * @throws NoSuchElementException If the project indicates it is from the local space but no such space is available
+     * @throws MutableServiceCallException
+     * @throws LoggedOutException
+     * @throws NetworkException
      */
     // TODO NXT-2199 (move ProjectTypeEnum out of Origin) can then be a function of WorkflowContextV2, which then enables
     //  de-duplication with Session#getOriginFromLocationInfo, GatewayDevServerApplication#getOriginFromLocationInfo (NOSONAR)
     public static Origin of(final WorkflowManager wfm, final SpaceProviders spaceProviders)
-        throws NoSuchElementException, IllegalArgumentException, NotImplementedException {
+        throws NoSuchElementException, IllegalArgumentException, NotImplementedException, NetworkException,
+        LoggedOutException, MutableServiceCallException {
         var locationInfo = wfm.getContextV2().getLocationInfo();
         final var type = wfm.isComponentProjectWFM() //
             ? SpaceItemReferenceEnt.ProjectTypeEnum.COMPONENT //

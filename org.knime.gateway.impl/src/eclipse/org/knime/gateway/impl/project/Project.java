@@ -54,6 +54,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.VersionId;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * A workflow or component project.
@@ -167,8 +170,12 @@ public final class Project {
      * Get the {@link WorkflowManager} from cache or load it
      *
      * @return The workflow manager of the project of the current state
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager() {
+    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager()
+        throws ServiceCallException, LoggedOutException, NetworkException {
         return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(VersionId.currentState()));
     }
 
@@ -177,8 +184,12 @@ public final class Project {
      *
      * @param version The version id
      * @return The workflow manager of the project of a given {@link VersionId}.
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version) {
+    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version)
+        throws ServiceCallException, LoggedOutException, NetworkException {
         return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version));
     }
 
@@ -189,9 +200,7 @@ public final class Project {
      *         yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
-        return this.m_projectWfmCache.contains(VersionId.currentState()) ? //
-            Optional.of(m_projectWfmCache.getWorkflowManager(VersionId.currentState())) : //
-            Optional.empty();
+        return this.m_projectWfmCache.getWorkflowManagerIfLoaded(VersionId.currentState());
     }
 
     /**
@@ -202,11 +211,7 @@ public final class Project {
      *         is not yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
-        if (m_projectWfmCache.contains(version)) {
-            return Optional.of(m_projectWfmCache.getWorkflowManager(version));
-        } else {
-            return Optional.empty();
-        }
+        return this.m_projectWfmCache.getWorkflowManagerIfLoaded(version);
     }
 
     /**
@@ -258,10 +263,14 @@ public final class Project {
 
     /**
      * TODO NXT-3607 Projects can be immutable (NOSONAR)
-     * 
+     *
      * @param loader -
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    public void setWfmLoader(final WorkflowManagerLoader loader) {
+    public void setWfmLoader(final WorkflowManagerLoader loader)
+        throws ServiceCallException, LoggedOutException, NetworkException {
         var previousCache = m_projectWfmCache;
         if (previousCache.contains(VersionId.currentState())) {
             // for full generality one would have to carry over other cached instances too.
@@ -328,7 +337,7 @@ public final class Project {
             /**
              * Associate a single {@code WorkflowManager} instance with this project as current state. This means this
              * project is not able to dynamically load any other kind of workflows, e.g. those of previous versions.
-             * 
+             *
              * @param wfm -
              * @return -
              */
@@ -336,7 +345,7 @@ public final class Project {
 
             /**
              * Define how the project can dynamically load workflows.
-             * 
+             *
              * @param wfmLoader -
              * @return -
              */

@@ -89,6 +89,8 @@ import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangeWaiter;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -137,11 +139,12 @@ public final class WorkflowCommands {
      * @param commandEnt the workflow command entity to execute
      *
      * @return The instance of the executed command
-     *
-     * @throws ServiceCallException if the command couldn't be executed
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
-        throws ServiceCallException {
+        throws ServiceCallException, LoggedOutException, NetworkException {
         return execute(wfKey, commandEnt, null, null, null);
     }
 
@@ -157,12 +160,13 @@ public final class WorkflowCommands {
      * @param spaceProviders The space providers
      *
      * @return The instance of the executed command
-     *
-     * @throws ServiceCallException if the command couldn't be executed
+     * @throws ServiceCallException
+     * @throws NetworkException
+     * @throws LoggedOutException
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
-        final SpaceProviders spaceProviders) throws ServiceCallException {
+        final SpaceProviders spaceProviders) throws ServiceCallException, LoggedOutException, NetworkException {
         var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders, workflowMiddleware);
 
         var hasResult = hasCommandResult(wfKey, command);
@@ -252,7 +256,7 @@ public final class WorkflowCommands {
     }
 
     private static boolean hasCommandResult(final WorkflowKey wfKey, final WorkflowCommand command)
-        throws ServiceCallException {
+        throws ServiceCallException, LoggedOutException, NetworkException {
         if (command instanceof WithResult) {
             var hasResult = true;
             if (command instanceof HigherOrderCommand hoc) {
@@ -275,7 +279,7 @@ public final class WorkflowCommands {
     }
 
     private synchronized void executeCommandAndModifyCommandStacks(final WorkflowKey wfKey,
-        final WorkflowCommand command) throws ServiceCallException {
+        final WorkflowCommand command) throws ServiceCallException, LoggedOutException, NetworkException {
         var undoStack = getOrCreateCommandStackFor(wfKey, m_undoStacks);
         var redoStack = getOrCreateCommandStackFor(wfKey, m_redoStacks);
 
@@ -320,19 +324,26 @@ public final class WorkflowCommands {
     /**
      * @param wfKey reference to the workflow to check the undo-state for
      * @return whether there is at least one command on the undo-stack
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    public synchronized boolean canUndo(final WorkflowKey wfKey) {
-        var stack = m_undoStacks.get(wfKey);
-        return stack != null && stack.peek().map(WorkflowCommand::canUndo).orElse(Boolean.FALSE);
+    public synchronized boolean canUndo(final WorkflowKey wfKey)
+        throws ServiceCallException, LoggedOutException, NetworkException {
+        final var topCommand = Optional.ofNullable(m_undoStacks.get(wfKey)).flatMap(CommandStack::peek).orElse(null);
+        return topCommand != null && topCommand.canUndo();
     }
 
     /**
      * Undoes the last command executed for the given workflow.
      *
      * @param wfKey reference to the workflow to undo the last command for
-     * @throws ServiceCallException if there is no command to be undone
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    public synchronized void undo(final WorkflowKey wfKey) throws ServiceCallException {
+    public synchronized void undo(final WorkflowKey wfKey)
+        throws ServiceCallException, LoggedOutException, NetworkException {
         var undoStack = m_undoStacks.get(wfKey);
         if (undoStack != null && !undoStack.isEmpty()) {
             undoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_redoStacks)).undo();
@@ -346,19 +357,26 @@ public final class WorkflowCommands {
      *
      * @param wfKey reference to the workflow to check the redo-state for
      * @return whether there is at least one command on the redo-stack
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    public synchronized boolean canRedo(final WorkflowKey wfKey) {
-        var stack = m_redoStacks.get(wfKey);
-        return stack != null && stack.peek().map(WorkflowCommand::canRedo).orElse(Boolean.FALSE);
+    public synchronized boolean canRedo(final WorkflowKey wfKey)
+        throws ServiceCallException, LoggedOutException, NetworkException {
+        final var topCommand = Optional.ofNullable(m_redoStacks.get(wfKey)).flatMap(CommandStack::peek).orElse(null);
+        return topCommand != null && topCommand.canRedo();
     }
 
     /**
      * Re-does the last command that has been undone for the given workflow.
      *
      * @param wfKey reference to the workflow to redo the last command for
-     * @throws ServiceCallException if there is no command to be redone
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    public synchronized void redo(final WorkflowKey wfKey) throws ServiceCallException {
+    public synchronized void redo(final WorkflowKey wfKey)
+        throws ServiceCallException, LoggedOutException, NetworkException {
         var redoStack = m_redoStacks.get(wfKey);
         if (redoStack != null && !redoStack.isEmpty()) {
             redoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_undoStacks)).redo();
@@ -381,7 +399,7 @@ public final class WorkflowCommands {
      * Removes all commands from the undo- and redo-stacks for all workflows of a workflow project referenced by its
      * project-id.
      *
-     * @param keyFilter
+     * @param keyFilter filter determining which workflow(s) to dispose the command stacks of
      */
     public synchronized void disposeUndoAndRedoStacks(final Predicate<WorkflowKey> keyFilter) {
         m_undoStacks.entrySet().removeIf(e -> keyFilter.test(e.getKey()));

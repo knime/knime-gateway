@@ -63,6 +63,11 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -137,7 +142,8 @@ public final class DefaultEventService implements EventService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
+    public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException, ServiceCallException,
+        LoggedOutException, NetworkException, NodeNotFoundException, NotASubWorkflowException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
 

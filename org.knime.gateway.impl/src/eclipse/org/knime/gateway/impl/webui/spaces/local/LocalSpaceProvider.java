@@ -68,9 +68,9 @@ public class LocalSpaceProvider implements SpaceProvider {
      */
     private final LocalSpace m_space;
 
-    private final SpaceGroup<LocalSpace> m_group = new LocalSpaceGroup();
+    private final LocalSpaceGroup m_group = new LocalSpaceGroup();
 
-    private final Lazy.Init<LocalSpaceItemChangeNotifier> m_itemChangedNotifier =
+    private final Lazy.Init<LocalSpaceItemChangeNotifier, RuntimeException> m_itemChangedNotifier =
         new Lazy.Init<>(() -> new LocalSpaceItemChangeNotifier(this));
 
     /**
@@ -102,7 +102,7 @@ public class LocalSpaceProvider implements SpaceProvider {
 
     @Override
     public List<SpaceGroupEnt> toEntity() {
-        return List.of(getLocalSpaceGroup().toEntity());
+        return List.of(m_group.toEntity());
     }
 
     @Override

@@ -1,10 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.api" version="2">
+    <resource path="src/eclipse/org/knime/gateway/api/service/GatewayException.java" type="org.knime.gateway.api.service.GatewayException">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.service.GatewayException"/>
+                <message_argument value="getDetails()"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentNodeDescriptionEnt.java" type="org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt">
         <filter id="404791350">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt"/>
                 <message_argument value="org.knime.gateway.api.webui.entity.ProjectMetadataEnt,org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/util/ServiceExceptions.java" type="org.knime.gateway.api.webui.service.util.ServiceExceptions">
+        <filter id="338886760">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException"/>
+                <message_argument value="org.knime.gateway.api_5.6.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/util/ServiceExceptions.java" type="org.knime.gateway.api.webui.service.util.ServiceExceptions$LoggedOutException">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="LoggedOutException"/>
             </message_arguments>
         </filter>
     </resource>

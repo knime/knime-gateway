@@ -78,12 +78,18 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "callNodeDataService")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public String callNodeDataService(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="extensionType") String extensionType, @JsonRpcParam(value="serviceType") String serviceType, @JsonRpcParam(value="dataServiceRequest") String dataServiceRequest)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public String callNodeDataService(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="extensionType") String extensionType, @JsonRpcParam(value="serviceType") String serviceType, @JsonRpcParam(value="dataServiceRequest") String dataServiceRequest)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ServiceCallException {
         return m_service.get().callNodeDataService(projectId, workflowId, versionId, nodeId, extensionType, serviceType, dataServiceRequest);    
     }
 
@@ -93,12 +99,18 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "changeLoopState")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
-            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
+            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void changeLoopState(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
+    public void changeLoopState(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException, ServiceExceptions.ServiceCallException {
         m_service.get().changeLoopState(projectId, workflowId, nodeId, action);    
     }
 
@@ -108,12 +120,18 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "changeNodeStates")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
-            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
+            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void changeNodeStates(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeIds") java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException {
+    public void changeNodeStates(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeIds") java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds, @JsonRpcParam(value="action") String action)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.OperationNotAllowedException, ServiceExceptions.ServiceCallException {
         m_service.get().changeNodeStates(projectId, workflowId, nodeIds, action);    
     }
 
@@ -123,12 +141,18 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "deactivateNodeDataServices")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void deactivateNodeDataServices(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="extensionType") String extensionType)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public void deactivateNodeDataServices(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="extensionType") String extensionType)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ServiceCallException {
         m_service.get().deactivateNodeDataServices(projectId, workflowId, versionId, nodeId, extensionType);    
     }
 
@@ -153,12 +177,18 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "getNodeDialog")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public Object getNodeDialog(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public Object getNodeDialog(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ServiceCallException {
         return m_service.get().getNodeDialog(projectId, workflowId, versionId, nodeId);    
     }
 
@@ -168,12 +198,18 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "getNodeView")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public Object getNodeView(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public Object getNodeView(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.ServiceCallException {
         return m_service.get().getNodeView(projectId, workflowId, versionId, nodeId);    
     }
 
@@ -183,10 +219,16 @@ public class JsonRpcNodeServiceWrapper implements NodeService {
     @Override
     @JsonRpcMethod(value = "updateDataPointSelection")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public void updateDataPointSelection(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="mode") String mode, @JsonRpcParam(value="selection") java.util.List<String> selection)  throws ServiceExceptions.NodeNotFoundException {
+    public void updateDataPointSelection(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="mode") String mode, @JsonRpcParam(value="selection") java.util.List<String> selection)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException {
         m_service.get().updateDataPointSelection(projectId, workflowId, versionId, nodeId, mode, selection);    
     }
 

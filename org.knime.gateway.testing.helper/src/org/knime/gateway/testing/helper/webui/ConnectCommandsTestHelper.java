@@ -66,6 +66,7 @@ import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt.AutoConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
@@ -73,7 +74,6 @@ import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -506,7 +506,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private List<ConnectionEnt> getConnectionsFromWorkflow(final String projectId, final NodeIDEnt workflowId)
-            throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException {
+            throws GatewayException {
         var workflow = ws().getWorkflow(projectId, workflowId, null, true).getWorkflow();
         return workflow.getConnections().entrySet().stream().map(Map.Entry::getValue).toList();
     }

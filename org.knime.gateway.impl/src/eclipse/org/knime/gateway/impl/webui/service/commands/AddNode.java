@@ -59,7 +59,6 @@ import java.util.Set;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.NodeRelationEnum;
@@ -69,6 +68,9 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -105,7 +107,8 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException, NetworkException, LoggedOutException {
         var wfm = getWorkflowManager();
         // Add node
         var positionEnt = m_commandEnt.getPosition();
@@ -171,17 +174,20 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         }
     }
 
-    private URL getUrlFromSpaceItemReference(final SpaceItemReferenceEnt spaceItemId) {
+    private URL getUrlFromSpaceItemReference(final SpaceItemReferenceEnt spaceItemId)
+        throws NetworkException, LoggedOutException, ServiceCallException {
         final var spaceProviderId = spaceItemId.getProviderId();
         final var spaceId = spaceItemId.getSpaceId();
         final var itemId = spaceItemId.getItemId();
         try {
             var space = m_spaceProviders.getSpace(spaceProviderId, spaceId);
             return space.toPathBasedKnimeUrl(itemId).toURL();
-        } catch (MalformedURLException | ResourceAccessException ex) {
+        } catch (MalformedURLException ex) {
             NodeLogger.getLogger(AddNode.class).warn("Failed to resolve item ID " + itemId
                 + " to URL in " + spaceProviderId, ex);
             return null;
+        } catch (MutableServiceCallException ex) { // NOSONAR rethrown
+            throw ex.toGatewayException();
         }
     }
 

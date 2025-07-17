@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
@@ -56,13 +55,15 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 
 /**
  * Represents an entity that holds spaces. E.g. a Hub instance.
@@ -105,19 +106,25 @@ public interface SpaceProvider {
      *
      * @param spaceId space ID
      * @return space with the given ID
-     * @throws NoSuchElementException if no space with the given ID exists
+     * @throws LoggedOutException
+     * @throws NetworkException
+     * @throws MutableServiceCallException
      */
-    Space getSpace(String spaceId);
+    Space getSpace(String spaceId) throws NetworkException, LoggedOutException, MutableServiceCallException;
 
     /**
      * Returns the space groups of this provider.
      *
      * @param spaceGroupName The name of the space group to obtain
      * @return spaceGroup The associated space group
-     * @throws NoSuchElementException if no group with the given name exists
+     * @throws LoggedOutException
+     * @throws NetworkException
+     * @throws NoSuchElementException
+     * @throws MutableServiceCallException
      */
     @SuppressWarnings("java:S1452") // wildcard is needed so `HubSpaceGroup implements SpaceGroup<HubSpace>` works here
-    SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName);
+    SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName)
+        throws NetworkException, LoggedOutException, NoSuchElementException, MutableServiceCallException;
 
     /**
      * Returns the server address of the current space provider
@@ -132,8 +139,11 @@ public interface SpaceProvider {
      * Creates an entity representing the available spaces.
      *
      * @return entity representing this space provider
+     * @throws LoggedOutException
+     * @throws NetworkException
+     * @throws MutableServiceCallException
      */
-    List<SpaceGroupEnt> toEntity();
+    List<SpaceGroupEnt> toEntity() throws NetworkException, LoggedOutException, MutableServiceCallException;
 
     /**
      * Uploads a workflow to the location represented by the given KNIME URL.
@@ -143,13 +153,14 @@ public interface SpaceProvider {
      * @param deleteSource flag indicating that the operation is a move instead of a copy operation
      * @param excludeDataInWorkflows data exclusion flag
      * @param progressMonitor monitor for aborting or receiving progress updates
-     * @throws CoreException if errors occur during upload
-     * @throws IOException if I/O errors occur during upload
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws MutableServiceCallException
      * @throws UnsupportedOperationException for local space providers
      */
     default void syncUploadWorkflow(final Path localWorkflow, final URI targetUri, final boolean deleteSource,
         final boolean excludeDataInWorkflows, final IProgressMonitor progressMonitor)
-        throws CoreException, IOException {
+        throws NetworkException, LoggedOutException, MutableServiceCallException {
         throw new UnsupportedOperationException();
     }
 
@@ -160,12 +171,14 @@ public interface SpaceProvider {
      * @param targetUri target KNIME URL
      * @param deleteSource flag indicating that the operation is a move instead of a copy operation
      * @param progressMonitor monitor for aborting or receiving progress updates
-     * @throws CoreException if errors occur during download
-     * @throws IOException if I/O errors occur during download
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws MutableServiceCallException
      * @throws UnsupportedOperationException for local space providers
      */
     default void syncDownloadWorkflow(final URI sourceUri, final URI targetUri, final boolean deleteSource,
-        final IProgressMonitor progressMonitor) throws CoreException, IOException {
+        final IProgressMonitor progressMonitor)
+        throws NetworkException, LoggedOutException, MutableServiceCallException {
         throw new UnsupportedOperationException();
     }
 
@@ -213,9 +226,12 @@ public interface SpaceProvider {
      * Gets the server version.
      *
      * @return The {@link Version} running on this server
+     * @throws MutableServiceCallException
+     * @throws LoggedOutException
+     * @throws NetworkException
      * @throws UnsupportedOperationException for local space providers
      */
-    default Version getServerVersion() {
+    default Version getServerVersion() throws NetworkException, LoggedOutException, MutableServiceCallException {
         throw new UnsupportedOperationException();
     }
 
@@ -267,8 +283,12 @@ public interface SpaceProvider {
      *
      * @param uri uri of item to resolve
      * @return resolved item or {@link Optional#empty()} if item could not be resolved by this space provider
+     * @throws LoggedOutException
+     * @throws NetworkException
+     * @throws MutableServiceCallException
      */
-    default Optional<SpaceAndItemId> resolveSpaceAndItemId(final URI uri) {
+    default Optional<SpaceAndItemId> resolveSpaceAndItemId(final URI uri)
+        throws NetworkException, LoggedOutException, MutableServiceCallException {
         return Optional.empty();
     }
 
