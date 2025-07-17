@@ -90,7 +90,8 @@ final class InsertNode extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException {
         var wfm = getWorkflowManager();
         m_connection =
             DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_commandEnt.getConnectionId());
@@ -129,8 +130,11 @@ final class InsertNode extends AbstractWorkflowCommand {
                     .trackCreation()) //
                 .create();
         } else {
-            throw new ServiceCallException(
-                "Both nodeId and nodeFactoryId are not defined. Provide one of them.");
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to insert node") //
+                .withDetails("Both nodeId and nodeFactoryId are not defined. Provide one of them.") //
+                .canCopy(false) //
+                .build();
         }
 
         return true;

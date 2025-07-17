@@ -57,6 +57,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConvertContainerResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
@@ -89,7 +90,12 @@ class ConvertMetanodeToComponent extends AbstractWorkflowCommand implements With
             }
             return true;
         } catch (IllegalArgumentException e) { // NOSONAR: Exception is re-thrown as different type
-            throw new ServiceExceptions.ServiceCallException(e.getMessage());
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to convert metanode") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 

@@ -53,6 +53,11 @@ import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  *
@@ -202,14 +207,23 @@ public interface KaiHandler {
         /**
          * Executes commands that need to be put onto the command stack.
          * @param command to execute on the workflow
+         * @throws NetworkException
+         * @throws LoggedOutException
+         * @throws ServiceCallException
          */
-        void execute(KaiCommand command);
+        void execute(KaiCommand command) throws ServiceCallException, LoggedOutException, NetworkException;
 
         /**
          * Executes actions that require the workflow but do not need to be put on the command stack.
          * @param workflowAction action to execute on the workflow
+         * @throws NotASubWorkflowException
+         * @throws NodeNotFoundException
+         * @throws NetworkException
+         * @throws LoggedOutException
+         * @throws ServiceCallException
          */
-        void executeWorkflowAction(Consumer<WorkflowManager> workflowAction);
+        void executeWorkflowAction(Consumer<WorkflowManager> workflowAction) throws ServiceCallException,
+            LoggedOutException, NetworkException, NodeNotFoundException, NotASubWorkflowException;
     }
 
     /**

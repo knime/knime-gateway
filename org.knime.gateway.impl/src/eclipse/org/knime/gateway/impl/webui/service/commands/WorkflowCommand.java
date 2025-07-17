@@ -106,7 +106,7 @@ public interface WorkflowCommand {
     /**
      * Re-does this command. Guaranteed to be called only if {@link #undo()} has been called before already.
      *
-     * @throws ServiceCallException -
+     * @throws ServiceCallException
      */
     void redo() throws ServiceCallException;
 

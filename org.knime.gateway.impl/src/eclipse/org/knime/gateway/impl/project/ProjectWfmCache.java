@@ -46,15 +46,16 @@
 
 package org.knime.gateway.impl.project;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.LRUCache;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.impl.util.Lazy;
-
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * For fixed versions, we want an LRU cache. The current-state a.k.a. working area should be kept indefinitely.
@@ -63,7 +64,7 @@ class ProjectWfmCache {
 
     private final WorkflowManagerLoader m_wfmLoader;
 
-    private final Lazy.Init<WorkflowManager> m_currentState;
+    private final Lazy.Init<WorkflowManager, GatewayException> m_currentState;
 
     private static final int VERSION_WFM_CACHE_MAX_SIZE = 5;
 
@@ -77,23 +78,52 @@ class ProjectWfmCache {
         this(wfmLoader, new Lazy.Init<>(wfm, () -> wfmLoader.load(VersionId.currentState())));
     }
 
-    private ProjectWfmCache(final WorkflowManagerLoader wfmLoader, final Lazy.Init<WorkflowManager> currentState) {
+    private ProjectWfmCache(final WorkflowManagerLoader wfmLoader,
+        final Lazy.Init<WorkflowManager, GatewayException> currentState) {
         m_wfmLoader = Objects.requireNonNull(wfmLoader);
         m_currentState = Objects.requireNonNull(currentState);
         m_fixedVersions = new LRUCache<>( //
-                VERSION_WFM_CACHE_MAX_SIZE, //
-                (removedVersion, removedWfm) -> disposeWorkflowManager(removedWfm));
+            VERSION_WFM_CACHE_MAX_SIZE, //
+            (removedVersion, removedWfm) -> disposeWorkflowManager(removedWfm));
+    }
+
+    Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
+        if (version instanceof VersionId.Fixed fixedVersion) {
+            return Optional.ofNullable(m_fixedVersions.get(fixedVersion));
+        } else if (version.isCurrentState()) {
+            try {
+                return Optional.ofNullable(m_currentState.isInitialized() ? m_currentState.get() : null);
+            } catch (final GatewayException ex) {
+                // should never happen
+                throw new IllegalStateException(ex);
+            }
+        } else {
+            return Optional.empty();
+        }
     }
 
     WorkflowManager getWorkflowManager(final VersionId version) {
         if (version instanceof VersionId.Fixed fixedVersion) {
             if (m_wfmLoader == null) {
                 throw new IllegalArgumentException(
-                        "No workflow loader set for this project (required for dynamically loading some version)");
+                    "No workflow loader set for this project (required for dynamically loading some version)");
             }
-            return m_fixedVersions.computeIfAbsent(fixedVersion, m_wfmLoader::load);
+
+            // TODO is this unsynchronized not-quite-LRU map the right class to use?
+            final var existing = m_fixedVersions.get(fixedVersion);
+            if (existing != null) {
+                return existing;
+            }
+
+            final var loaded = m_wfmLoader.load(fixedVersion);
+            m_fixedVersions.put(fixedVersion, loaded);
+            return loaded;
         } else {
-            return m_currentState.get();
+            try {
+                return m_currentState.get();
+            } catch (GatewayException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

@@ -79,7 +79,12 @@ final class Connect extends AbstractWorkflowCommand {
         try {
             m_oldConnection = wfm.getConnection(new ConnectionID(destNodeId, destPortIdx));
         } catch (IllegalArgumentException e) {
-            throw new ServiceCallException(e.getMessage(), e);
+            throw ServiceCallException.builder() //
+                .withTitle("Connection not found") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
 
         var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm);
@@ -93,7 +98,11 @@ final class Connect extends AbstractWorkflowCommand {
         m_newConnection =
             NodeConnector.connect(getWorkflowManager(), sourceNodeId, sourcePortIdx, destNodeId, destPortIdx, true);
         if (m_newConnection == null) {
-            throw new ServiceCallException("Connection couldn't be created");
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to create connection") //
+                .withDetails("Connection couldn't be created") //
+                .canCopy(false) //
+                .build();
         }
         return true;
     }

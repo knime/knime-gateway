@@ -167,8 +167,8 @@ public class WorkflowChangesListenerTest {
         disposeWorkflow(wfm);
     }
 
-    private static void modifyWorkflowAndVerifyCallback(final WorkflowManager wfm, final Runnable callbackMock,
-        final Predicate<Modification> callbackExpected) {
+    private static void modifyWorkflowAndVerifyCallback(final WorkflowManager wfm,
+        final Runnable callbackMock, final Predicate<Modification> callbackExpected) {
         var annoId = wfm.addWorkflowAnnotation(new AnnotationData(), 0).getID();
         verify(callbackMock, callbackExpected.test(Modification.OTHER));
         wfm.removeAnnotation(annoId);

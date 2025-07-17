@@ -94,10 +94,14 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "executeWorkflowCommand")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public CommandResultEnt executeWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="workflowCommand") WorkflowCommandEnt workflowCommand)  throws ServiceExceptions.ServiceCallException {
+    public CommandResultEnt executeWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="workflowCommand") WorkflowCommandEnt workflowCommand)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException {
         return m_service.get().executeWorkflowCommand(projectId, workflowId, workflowCommand);    
     }
 
@@ -107,14 +111,14 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "getUpdatableLinkedComponents")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
+            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/)
     })
-    public java.util.List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException {
+    public java.util.List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException {
         return m_service.get().getUpdatableLinkedComponents(projectId, workflowId);    
     }
 
@@ -124,12 +128,10 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "getWorkflow")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
             data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="includeInteractionInfo") Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException {
+    public WorkflowSnapshotEnt getWorkflow(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="includeInteractionInfo") Boolean includeInteractionInfo)  throws ServiceExceptions.NodeNotFoundException {
         return m_service.get().getWorkflow(projectId, workflowId, versionId, includeInteractionInfo);    
     }
 
@@ -148,10 +150,14 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "redoWorkflowCommand")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void redoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException {
+    public void redoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException {
         m_service.get().redoWorkflowCommand(projectId, workflowId);    
     }
 
@@ -161,10 +167,14 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "restoreVersion")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void restoreVersion(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="version") String version)  throws ServiceExceptions.ServiceCallException {
+    public void restoreVersion(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="version") String version)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.ServiceCallException {
         m_service.get().restoreVersion(projectId, version);    
     }
 
@@ -174,10 +184,14 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "saveProject")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void saveProject(@JsonRpcParam(value="projectId") String projectId)  throws ServiceExceptions.ServiceCallException {
+    public void saveProject(@JsonRpcParam(value="projectId") String projectId)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException {
         m_service.get().saveProject(projectId);    
     }
 
@@ -187,10 +201,14 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
     @Override
     @JsonRpcMethod(value = "undoWorkflowCommand")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
-    public void undoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException {
+    public void undoWorkflowCommand(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException {
         m_service.get().undoWorkflowCommand(projectId, workflowId);    
     }
 

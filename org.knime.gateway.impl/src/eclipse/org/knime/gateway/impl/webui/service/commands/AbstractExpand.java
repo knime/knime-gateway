@@ -107,16 +107,26 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
 
     protected void checkCanExpandOrThrow(final WorkflowManager wfm, final NodeID nodeToExpand)
         throws ServiceExceptions.ServiceCallException {
-        var containedWfm = CoreUtil.getContainedWfm(nodeToExpand, wfm)
-            .orElseThrow(() -> new ServiceExceptions.ServiceCallException(
-                "No container node with the supplied ID can be found in workflow"));
+        final var errorTitle = "Failed to expand container";
+        var containedWfm = CoreUtil.getContainedWfm(nodeToExpand, wfm) //
+            .orElseThrow(() -> ServiceCallException.builder() //
+                .withTitle(errorTitle) //
+                .withDetails("No container node with the supplied ID can be found in workflow") //
+                .canCopy(false) //
+                .build());
         if (!containedWfm.isUnlocked()) {
-            throw new ServiceExceptions.ServiceCallException(
-                "Password-protected metanode/container needs to be unlocked first");
+            throw ServiceCallException.builder() //
+                .withTitle(errorTitle) //
+                .withDetails("Password-protected metanode/container needs to be unlocked first") //
+                .canCopy(false) //
+                .build();
         }
         if (containedWfm.isWriteProtected()) {
-            throw new ServiceExceptions.ServiceCallException(
-                "Workflow to be expanded is write-protected (may be a linked metanode or component)");
+            throw ServiceCallException.builder() //
+                .withTitle(errorTitle) //
+                .withDetails("Workflow to be expanded is write-protected (may be a linked metanode or component)") //
+                .canCopy(false) //
+                .build();
         }
     }
 

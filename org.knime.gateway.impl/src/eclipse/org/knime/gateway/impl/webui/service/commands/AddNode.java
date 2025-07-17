@@ -59,8 +59,8 @@ import java.util.Set;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.NodeRelationEnum;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
@@ -69,6 +69,7 @@ import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -105,7 +106,8 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException {
         var wfm = getWorkflowManager();
         // Add node
         var positionEnt = m_commandEnt.getPosition();
@@ -120,7 +122,11 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         }
 
         if (factoryKeyEnt == null) {
-            throw new ServiceCallException("No node factory class given");
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to add node") //
+                .withDetails("No node factory class given") //
+                .canCopy(false) //
+                .build();
         }
 
         m_addedNode = new NodeCreator(wfm, factoryKeyEnt, positionEnt) //
@@ -178,9 +184,11 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         try {
             var space = m_spaceProviders.getSpace(spaceProviderId, spaceId);
             return space.toPathBasedKnimeUrl(itemId).toURL();
-        } catch (MalformedURLException | ResourceAccessException ex) {
+        } catch (MalformedURLException ex) {
             NodeLogger.getLogger(AddNode.class).warn("Failed to resolve item ID " + itemId
                 + " to URL in " + spaceProviderId, ex);
+            return null;
+        } catch (GatewayException | MutableServiceCallException ex) {
             return null;
         }
     }

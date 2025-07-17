@@ -48,8 +48,8 @@
  */
 package org.knime.gateway.impl.webui.kai;
 
-import java.util.function.Consumer;
-
+import org.apache.commons.lang3.function.FailableConsumer;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 
 /**
@@ -71,8 +71,9 @@ public abstract class AbstractKaiHandler implements KaiHandler {
     /**
      * @param projectId the id of the current workflow
      * @return the returned consumer relays events to the frontend (message must be JSON serializable)
+     * @since 5.7
      */
-    protected final Consumer<Object> getEventConsumer(final String projectId) {
+    protected final FailableConsumer<Object, GatewayException> getEventConsumer(final String projectId) {
         return m -> m_eventConsumer.accept("AiAssistantEvent", m, projectId);
     }
 }

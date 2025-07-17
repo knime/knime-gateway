@@ -57,6 +57,7 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 
@@ -78,13 +79,18 @@ class AddBendpoint extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException {
 
         var wfm = getWorkflowManager();
         var connectionId =
             DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_commandEnt.getConnectionId());
-        m_connection = CoreUtil.getConnection(connectionId, wfm).orElseThrow(
-            () -> new ServiceExceptions.ServiceCallException("Connection not found: " + connectionId));
+        m_connection = CoreUtil.getConnection(connectionId, wfm) //
+            .orElseThrow(() -> ServiceCallException.builder() //
+                .withTitle("Failed to add bendpoint") //
+                .withDetails("Connection not found: " + connectionId) //
+                .canCopy(false) //
+                .build());
         var connectionUIInfo = m_connection.getUIInfo();
         var nBendpoints = connectionUIInfo == null ? 0 : connectionUIInfo.getAllBendpoints().length;
 

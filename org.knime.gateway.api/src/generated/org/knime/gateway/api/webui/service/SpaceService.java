@@ -68,8 +68,11 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    SpaceEnt createSpace(String spaceProviderId, String spaceGroupName)  throws ServiceExceptions.ServiceCallException;
+    SpaceEnt createSpace(String spaceProviderId, String spaceGroupName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.OperationNotAllowedException;
         
     /**
      * Create a new workflow within a given workflow group.
@@ -80,9 +83,12 @@ public interface SpaceService extends GatewayService {
      * @param itemName Name given to a space item.
      *
      * @return the result
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String itemId, String itemName)  throws ServiceExceptions.ServiceCallException;
+    SpaceItemEnt createWorkflow(String spaceId, String spaceProviderId, String itemId, String itemName)  throws ServiceExceptions.OperationNotAllowedException, ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
         
     /**
      * Create a new workflow group within a given workflow group.
@@ -92,9 +98,12 @@ public interface SpaceService extends GatewayService {
      * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    SpaceItemEnt createWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException;
+    SpaceItemEnt createWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.OperationNotAllowedException, ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
         
     /**
      * Deletes items from the space.
@@ -105,9 +114,12 @@ public interface SpaceService extends GatewayService {
      * @param softDelete If true the specified items will be moved to the bin. Otherwise they will be permanently deleted.
      *
      * 
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    void deleteItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, Boolean softDelete)  throws ServiceExceptions.ServiceCallException;
+    void deleteItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, Boolean softDelete)  throws ServiceExceptions.OperationNotAllowedException, ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
         
     /**
      * Deletes job from the space.
@@ -119,8 +131,10 @@ public interface SpaceService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    void deleteJobsForWorkflow(String spaceId, String spaceProviderId, String itemId, String jobId)  throws ServiceExceptions.ServiceCallException;
+    void deleteJobsForWorkflow(String spaceId, String spaceProviderId, String itemId, String jobId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
         
     /**
      * Deletes schedule from the space.
@@ -132,8 +146,10 @@ public interface SpaceService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException;
+    void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
         
     /**
      * Returns the spaces provided by this space-provider.
@@ -141,10 +157,11 @@ public interface SpaceService extends GatewayService {
      * @param spaceProviderId Identifies a space-provider.
      *
      * @return the result
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    java.util.List<SpaceGroupEnt> getSpaceGroups(String spaceProviderId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
+    java.util.List<SpaceGroupEnt> getSpaceGroups(String spaceProviderId)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException;
         
     /**
      * Lists the available jobs for the given workflow.
@@ -155,8 +172,10 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    java.util.List<Object> listJobsForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException;
+    java.util.List<Object> listJobsForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
         
     /**
      * Lists the available schedules for the given workflow.
@@ -167,8 +186,10 @@ public interface SpaceService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    java.util.List<Object> listSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException;
+    java.util.List<Object> listSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
         
     /**
      * Get shallow list of workflows, components and data-files within a given workflow group.
@@ -178,10 +199,11 @@ public interface SpaceService extends GatewayService {
      * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
      *
      * @return the result
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
      * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    WorkflowGroupContentEnt listWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NetworkException;
+    WorkflowGroupContentEnt listWorkflowGroup(String spaceId, String spaceProviderId, String itemId)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.ServiceCallException;
         
     /**
      * Move or copy space items to a different workflow group within its space.
@@ -197,8 +219,11 @@ public interface SpaceService extends GatewayService {
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.CollisionException If there was a collision, e.g. due to naming conflicts
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    void moveOrCopyItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destSpaceId, String destWorkflowGroupItemId, Boolean copy, String collisionHandling)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.CollisionException;
+    void moveOrCopyItems(String spaceId, String spaceProviderId, java.util.List<String> itemIds, String destSpaceId, String destWorkflowGroupItemId, Boolean copy, String collisionHandling)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.CollisionException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.OperationNotAllowedException;
         
     /**
      * Rename a space Item
@@ -209,9 +234,11 @@ public interface SpaceService extends GatewayService {
      * @param itemName Name given to a space item.
      *
      * @return the result
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    SpaceItemEnt renameItem(String spaceProviderId, String spaceId, String itemId, String itemName)  throws ServiceExceptions.ServiceCallException;
+    SpaceItemEnt renameItem(String spaceProviderId, String spaceId, String itemId, String itemName)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.ServiceCallException;
         
     /**
      * Rename a space
@@ -221,8 +248,10 @@ public interface SpaceService extends GatewayService {
      * @param spaceName Name given to a space.
      *
      * @return the result
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    SpaceEnt renameSpace(String spaceProviderId, String spaceId, String spaceName)  throws ServiceExceptions.ServiceCallException;
+    SpaceEnt renameSpace(String spaceProviderId, String spaceId, String spaceName)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.ServiceCallException;
         
 }

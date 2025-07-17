@@ -81,7 +81,12 @@ class AddPort extends AbstractPortCommand<AddPortCommandEnt> implements WithResu
             m_newPortIdx = editor.addPort(portCommandEnt);
             return true;
         } catch (NoSuchElementException e) {
-            throw new ServiceCallException("Could not determine new port index", e);
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to add port") //
+                .withDetails("Could not determine new port index") //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 

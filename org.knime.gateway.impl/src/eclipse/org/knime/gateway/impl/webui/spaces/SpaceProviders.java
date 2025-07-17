@@ -55,6 +55,9 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 
 /**
  * Summarizes all available space providers.
@@ -80,8 +83,12 @@ public final class SpaceProviders {
      * @param spaceId
      * @throws NoSuchElementException if there is no space provider or space for the given ids
      * @return the space
+     * @throws LoggedOutException
+     * @throws NetworkException
+     * @throws MutableServiceCallException
      */
-    public Space getSpace(final String spaceProviderId, final String spaceId) {
+    public Space getSpace(final String spaceProviderId, final String spaceId)
+        throws NetworkException, LoggedOutException, MutableServiceCallException {
         return getSpaceProvider(spaceProviderId).getSpace(spaceId);
     }
 

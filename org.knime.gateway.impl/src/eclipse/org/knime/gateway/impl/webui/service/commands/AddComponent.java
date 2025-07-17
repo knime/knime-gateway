@@ -58,7 +58,7 @@ import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt.AddComponentPlaceholderResultEntBuilder;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.ComponentLoadJobManager.LoadJob;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
@@ -86,11 +86,8 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
         m_workflowMiddleware = workflowMiddleware;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean executeWithWorkflowContext() throws ServiceCallException {
+    public boolean executeWithWorkflowContext() {
         var componentLoader = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey());
         m_loadJob = componentLoader.startLoadJob(m_commandEnt);
         return true;
@@ -103,7 +100,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    public void undo() throws ServiceCallException {
+    public void undo() throws ServiceExceptions.ServiceCallException {
         if (!m_loadJob.future().isDone()) {
             var workflowElementLoader = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey());
             workflowElementLoader.cancelAndRemoveLoadJob(m_loadJob.id());

@@ -55,9 +55,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -271,38 +269,35 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
      *            {@link Space#toLocalAbsolutePath(ExecutionMonitor, String)} method
      * @return a mocked space
      */
+    @SuppressWarnings("java:S112") // raw `Exception` is OK in tests
     static Space createSpace(final String spaceId, final String componentItemId, final String componentName,
-        final long toLocalAbsolutePathDelayInMs, final AtomicBoolean toLocalAbsolutePathWasCancelled) {
+        final long toLocalAbsolutePathDelayInMs, final AtomicBoolean toLocalAbsolutePathWasCancelled) throws Exception {
         var spaceMock = Mockito.mock(Space.class);
         when(spaceMock.getId()).thenReturn(spaceId);
         when(spaceMock.getItemName(componentItemId)).thenReturn(componentName);
-        try {
-            var uri = new URI("knime://LOCAL/component/");
-            when(spaceMock.toKnimeUrl(componentItemId)).thenReturn(uri);
-            var componentPath = CoreUtil
+        var uri = new URI("knime://LOCAL/component/");
+        when(spaceMock.toKnimeUrl(componentItemId)).thenReturn(uri);
+        var componentPath = CoreUtil
                 .resolveToFile("/files/test_workspace_to_list/component", AddComponentCommandTestHelper.class).toPath();
-            when(spaceMock.toLocalAbsolutePath(any(), any())).thenAnswer(i -> {
-                // ensures that 'component loading' takes a bit longer to make the test deterministic
-                // (when checking for the placeholder state - which is 'loading' on the first event)
-                // and also makes it 'cancellable'
-                var exec = (ExecutionMonitor)i.getArgument(0);
-                var start = System.currentTimeMillis();
-                while (System.currentTimeMillis() - start < toLocalAbsolutePathDelayInMs) {
-                    Thread.sleep(100);
-                    try {
-                        exec.checkCanceled();
-                    } catch (CanceledExecutionException ex) {
-                        if (toLocalAbsolutePathWasCancelled != null) {
-                            toLocalAbsolutePathWasCancelled.set(true);
-                        }
-                        throw ex;
+        when(spaceMock.toLocalAbsolutePath(any(), any())).thenAnswer(i -> {
+            // ensures that 'component loading' takes a bit longer to make the test deterministic
+            // (when checking for the placeholder state - which is 'loading' on the first event)
+            // and also makes it 'cancellable'
+            var exec = (ExecutionMonitor)i.getArgument(0);
+            var start = System.currentTimeMillis();
+            while (System.currentTimeMillis() - start < toLocalAbsolutePathDelayInMs) {
+                Thread.sleep(100);
+                try {
+                    exec.checkCanceled();
+                } catch (CanceledExecutionException ex) {
+                    if (toLocalAbsolutePathWasCancelled != null) {
+                        toLocalAbsolutePathWasCancelled.set(true);
                     }
+                    throw ex;
                 }
-                return Optional.of(componentPath);
-            });
-        } catch (IOException | URISyntaxException | CanceledExecutionException ex) {
-            throw new AssertionError(ex);
-        }
+            }
+            return Optional.of(componentPath);
+        });
         return spaceMock;
     }
 

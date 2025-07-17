@@ -55,7 +55,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
-import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -68,8 +67,6 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -164,7 +161,7 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
     /**
      * Checks the {@link ComponentNodeEnt#isIsLocked()} property.
      *
-     * @throws Exception
+     * @throws Exception -
      */
     @Test
     @SuppressWarnings("java:S1941")
@@ -196,13 +193,10 @@ public class DefaultWorkflowServiceTest extends GatewayServiceTest {
     /**
      * Makes sure that hidden metanodes (see {@link WorkflowManager#isHiddenInUI()} aren't communicated to the frontend.
      *
-     * @throws IOException
-     * @throws NodeNotFoundException
-     * @throws NotASubWorkflowException
+     * @throws Exception -
      */
     @Test
-    public void testGetWorkflowWithHiddenMetanode()
-        throws IOException, NotASubWorkflowException, NodeNotFoundException {
+    public void testGetWorkflowWithHiddenMetanode() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var metanode = wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "metanode");
         var project = Project.builder().setWfm(wfm).build();

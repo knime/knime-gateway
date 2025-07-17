@@ -75,7 +75,7 @@ public final class WorkflowManagerResolver {
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
-    public static WorkflowManager load(final String projectId) {
+    public static WorkflowManager load(final String projectId) throws NoSuchElementException {
         return load(projectId, VersionId.currentState());
     }
 
@@ -87,7 +87,8 @@ public final class WorkflowManagerResolver {
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
-    public static WorkflowManager load(final String projectId, final VersionId versionId) {
+    public static WorkflowManager load(final String projectId, final VersionId versionId)
+        throws NoSuchElementException {
         return load(projectId, NodeIDEnt.getRootID(), versionId);
     }
 
@@ -99,7 +100,8 @@ public final class WorkflowManagerResolver {
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
-    public static WorkflowManager load(final String projectId, final NodeIDEnt workflowId) {
+    public static WorkflowManager load(final String projectId, final NodeIDEnt workflowId)
+        throws NoSuchElementException {
         return load(projectId, workflowId, VersionId.currentState());
     }
 
@@ -112,7 +114,8 @@ public final class WorkflowManagerResolver {
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
-    public static WorkflowManager load(final String projectId, final NodeIDEnt workflowId, final VersionId versionId) {
+    public static WorkflowManager load(final String projectId, final NodeIDEnt workflowId, final VersionId versionId)
+        throws NoSuchElementException {
         return parseWfm(findNodeContainer(loadProjectWfm(projectId, versionId), workflowId));
     }
 
@@ -123,7 +126,7 @@ public final class WorkflowManagerResolver {
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
-    public static WorkflowManager get(final String projectId) {
+    public static WorkflowManager get(final String projectId) throws NoSuchElementException {
         return get(projectId, VersionId.currentState());
     }
 
@@ -135,7 +138,7 @@ public final class WorkflowManagerResolver {
      * @return The {@link WorkflowManager}-instance
      * @throws NoSuchElementException
      */
-    public static WorkflowManager get(final String projectId, final VersionId versionId) {
+    public static WorkflowManager get(final String projectId, final VersionId versionId) throws NoSuchElementException {
         return get(projectId, NodeIDEnt.getRootID(), versionId);
     }
 
@@ -150,7 +153,8 @@ public final class WorkflowManagerResolver {
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
      */
-    public static WorkflowManager get(final String projectId, final NodeIDEnt workflowId) {
+    public static WorkflowManager get(final String projectId, final NodeIDEnt workflowId)
+        throws NoSuchElementException {
         return get(projectId, workflowId, VersionId.currentState());
     }
 
@@ -161,9 +165,10 @@ public final class WorkflowManagerResolver {
      * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
      * @param versionId the version id
      * @return The {@link WorkflowManager}-instance
+     * @throws NoSuchElementException
      */
-    public static WorkflowManager get(final String projectId, final NodeIDEnt workflowId,
-        final VersionId versionId) {
+    public static WorkflowManager get(final String projectId, final NodeIDEnt workflowId, final VersionId versionId)
+        throws NoSuchElementException {
         return parseWfm(findNodeContainer(getProjectWfm(projectId, versionId), workflowId));
     }
 
@@ -189,7 +194,8 @@ public final class WorkflowManagerResolver {
         return wfm;
     }
 
-    static WorkflowManager loadProjectWfm(final String projectId, final VersionId versionId) {
+    static WorkflowManager loadProjectWfm(final String projectId, final VersionId versionId)
+        throws NoSuchElementException {
         return ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
             .getFromCacheOrLoadWorkflowManager(versionId) //

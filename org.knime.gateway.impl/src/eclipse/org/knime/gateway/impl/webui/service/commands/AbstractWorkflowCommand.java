@@ -51,6 +51,8 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -91,7 +93,12 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
         try {
             m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-            throw new ServiceCallException("Could not find workflow", ex);
+            throw ServiceCallException.builder() //
+                .withTitle("Workflow not found") //
+                .withDetails("No workflow found for key " + wfKey + ": " + ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         }
         m_wfKey = wfKey;
         return executeInternal();
@@ -114,7 +121,7 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
         }
     }
 
-    private boolean executeWithWorkflowContextInternal() throws ServiceCallException {
+    private boolean executeWithWorkflowContextInternal() {
         NodeContext.pushContext(m_wfm);
         try {
             return executeWithWorkflowContext();
@@ -138,6 +145,8 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command did not change the workflow
      *
+     * @throws NetworkException
+     * @throws LoggedOutException
      * @throws ServiceCallException If the command could not be executed
      */
     protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
@@ -152,10 +161,8 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
      *
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command did not change the workflow
-     *
-     * @throws ServiceCallException If the command could not be executed
      */
-    protected boolean executeWithWorkflowContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowContext() {
         throw new UnsupportedOperationException("Not implemented");
     }
 

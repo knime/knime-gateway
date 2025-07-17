@@ -67,9 +67,10 @@ public class ToastServiceTest {
     /**
      * Tests
      * {@link ToastService#showToast(org.knime.gateway.api.webui.entity.ShowToastEventEnt.TypeEnum, String, String, boolean)}
+     * @throws Exception -
      */
     @Test
-    public void testShowToast() {
+    public void testShowToast() throws Exception {
         var eventConsumer = mock(EventConsumer.class);
         var ts = new ToastService(eventConsumer);
 

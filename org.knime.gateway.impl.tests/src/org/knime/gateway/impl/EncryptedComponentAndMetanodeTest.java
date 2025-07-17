@@ -140,7 +140,7 @@ public class EncryptedComponentAndMetanodeTest extends GatewayServiceTest {
      *
      */
     @Test
-    public void testWorkflowService() {
+    public void testWorkflowService() throws Exception {
         var ws = DefaultWorkflowService.getInstance();
         var projectId = m_wfm.getFirst().toString();
         assertThrows(IllegalStateException.class,

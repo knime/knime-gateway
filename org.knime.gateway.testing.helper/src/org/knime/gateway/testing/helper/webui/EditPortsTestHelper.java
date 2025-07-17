@@ -62,6 +62,7 @@ import java.util.Optional;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.AddPortResultEnt;
@@ -70,7 +71,6 @@ import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
@@ -224,7 +224,7 @@ public class EditPortsTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test that a connection is removed with the port (and is not re-attached to the same index)
-     * 
+     *
      * @throws Exception
      */
     public void testConnectionIsRemovedWithPort() throws Exception {
@@ -252,7 +252,7 @@ public class EditPortsTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * Test that a connection not connected to the removed port is not accidentally removed
-     * 
+     *
      * @throws Exception
      */
     public void testOtherConnectionRemains() throws Exception {
@@ -284,7 +284,7 @@ public class EditPortsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void removePort(final String projectId, final NodeContainer node, final int indexToRemove)
-        throws ServiceExceptions.ServiceCallException {
+        throws GatewayException {
         var command = builder(RemovePortCommandEnt.RemovePortCommandEntBuilder.class) //
             .setNodeId(new NodeIDEnt(node.getID())) //
             .setSide(PortCommandEnt.SideEnum.INPUT) //
@@ -295,7 +295,7 @@ public class EditPortsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void addPort(final String projectId, final NodeContainer node, final String portGroup,
-        final PortCommandEnt.SideEnum side) throws ServiceExceptions.ServiceCallException {
+        final PortCommandEnt.SideEnum side) throws GatewayException {
         var command = builder(AddPortCommandEnt.AddPortCommandEntBuilder.class) //
             .setNodeId(new NodeIDEnt(node.getID())) //
             .setSide(side) //
@@ -307,7 +307,7 @@ public class EditPortsTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void connect(final NodeContainer source, final int sourcePort, final NodeContainer dest, final int destPort,
-        final String projectId) throws ServiceExceptions.ServiceCallException {
+        final String projectId) throws GatewayException {
         var comamnd = builder(ConnectCommandEnt.ConnectCommandEntBuilder.class) //
             .setKind(WorkflowCommandEnt.KindEnum.CONNECT) //
             .setSourceNodeId(new NodeIDEnt(source.getID())) //

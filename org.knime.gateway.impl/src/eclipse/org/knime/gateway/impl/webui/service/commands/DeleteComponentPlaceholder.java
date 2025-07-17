@@ -51,7 +51,6 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.DeleteComponentPlaceholderCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
 /**
@@ -75,21 +74,15 @@ class DeleteComponentPlaceholder extends AbstractWorkflowCommand {
         m_workflowMiddleware = workflowMiddleware;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected boolean executeWithWorkflowContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowContext() {
         m_addComponentCommandEnt = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey()) //
             .cancelAndRemoveLoadJob(m_placeholderId);
         return m_addComponentCommandEnt != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void undo() throws ServiceCallException {
+    public void undo() {
         m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey()) //
             .startLoadJob(m_addComponentCommandEnt);
     }

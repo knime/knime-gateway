@@ -103,9 +103,10 @@ public final class DefaultServiceUtil {
      * @return the node container
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no project for the id registered
+     * @since 5.5
      */
     public static NodeContainer getNodeContainer(final String projectId, final VersionId versionId,
-        final NodeIDEnt nodeId) {
+        final NodeIDEnt nodeId) throws NoSuchElementException {
         var parent = WorkflowManagerResolver.get(projectId, versionId);
         return findNodeContainer(parent, nodeId);
     }
@@ -123,7 +124,7 @@ public final class DefaultServiceUtil {
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
-
+     * 
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
         final NodeIDEnt nodeInSubWorkflow) {
@@ -169,12 +170,12 @@ public final class DefaultServiceUtil {
      * @since 5.5
      */
     public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) {
-        return WorkflowManagerResolver.get(wfKey.getProjectId(),  wfKey.workflowId(), wfKey.getVersionId());
+        return WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.workflowId(), wfKey.getVersionId());
     }
 
     /**
      * Gets the root workflow manager and the contained node container at the same time (see
-     * {@link #getNodeContainer(String, NodeIDEnt)} and {@link #getProjectWfm(String, VersionId)}).
+     * {@link #getNodeContainer(String, NodeIDEnt)} and {@link WorkflowManagerResolver#getProjectWfm(String)}).
      *
      * @param rootWorkflowID the id of the root workflow
      * @param nodeID the id of the node requested
@@ -182,6 +183,7 @@ public final class DefaultServiceUtil {
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      */
+    @SuppressWarnings("javadoc")
     public static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final String rootWorkflowID,
         final NodeIDEnt nodeID) {
         return Pair.create( //

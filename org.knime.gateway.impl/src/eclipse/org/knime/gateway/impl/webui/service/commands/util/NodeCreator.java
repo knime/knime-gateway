@@ -63,7 +63,6 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * Helper to create a node and optionally connect it to upstream and/or downstream nodes.
@@ -194,7 +193,12 @@ public final class NodeCreator {
             nodeId = CoreUtil.createAndAddNode(m_factoryKeyEnt.getClassName(), m_factoryKeyEnt.getSettings(), m_url,
                 m_position.getX(), m_position.getY() + m_nodeYPosCorrection, m_wfm, m_centerNode);
         } catch (IOException | NoSuchElementException e) {
-            throw new ServiceCallException(e.getMessage(), e);
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to create node") //
+                .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
 
         if (m_track) {
@@ -204,7 +208,11 @@ public final class NodeCreator {
 
         if (m_nodeConnector != null && !m_nodeConnector.connect(nodeId) && m_failOnConnectionAttempt) {
             m_wfm.removeNode(nodeId);
-            throw new ServiceCallException("Node couldn't be created because a connection couldn't be added.");
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to create node") //
+                .withDetails("Node couldn't be created because a connection couldn't be added.") //
+                .canCopy(false) //
+                .build();
         }
 
         return nodeId;

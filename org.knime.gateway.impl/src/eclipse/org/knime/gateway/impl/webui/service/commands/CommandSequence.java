@@ -95,13 +95,18 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public boolean execute(final WorkflowKey wfKey) throws ServiceExceptions.ServiceCallException {
+    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException {
         m_wfKey = wfKey;
         WorkflowManager wfm;
         try {
             wfm = WorkflowUtil.getWorkflowManager(wfKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-            throw new ServiceCallException(ex.getMessage(), ex);
+            throw ServiceCallException.builder() //
+                .withTitle("Workflow not found") //
+                .withDetails("No workflow found for key " + wfKey + ": " + ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         }
         var isWorkflowModified = false;
         try (WorkflowLock lock = wfm.lock()) {
@@ -115,7 +120,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public void undo() throws ServiceExceptions.ServiceCallException {
+    public void undo() throws ServiceCallException {
         var iterator = m_commands.listIterator(m_commands.size());
         while (iterator.hasPrevious()) {
             iterator.previous().undo();
@@ -129,12 +134,21 @@ abstract class CommandSequence extends HigherOrderCommand {
 
     @Override
     public boolean canUndo() {
-        return m_commands.stream().allMatch(WorkflowCommand::canUndo);
+        for (final var cmd : m_commands) {
+            if (!cmd.canUndo()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
-    public boolean canRedo() {
-        return m_commands.stream().allMatch(WorkflowCommand::canRedo);
+    public boolean canRedo()  {
+        for (final var cmd : m_commands) {
+            if (!cmd.canRedo()) {
+                return false;
+            }
+        }
+        return true;
     }
-
 }

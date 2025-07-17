@@ -50,9 +50,9 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowUtil;
 
@@ -90,12 +90,17 @@ abstract class CommandIfElse extends HigherOrderCommand {
 
     @Override
     public Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
-        throws ServiceExceptions.ServiceCallException {
+        throws ServiceCallException {
         WorkflowManager wfm;
         try {
             wfm = WorkflowUtil.getWorkflowManager(wfKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-            throw new ServiceExceptions.ServiceCallException(ex.getMessage(), ex);
+            throw ServiceCallException.builder() //
+                .withTitle("Workflow not found") //
+                .withDetails("No workflow found for key " + wfKey + ": " + ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         }
         var takeLeft = m_predicate.apply(wfm);
         m_activeCommand = Boolean.TRUE.equals(takeLeft) ? m_leftCommand : m_rightCommand;
@@ -107,12 +112,12 @@ abstract class CommandIfElse extends HigherOrderCommand {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         return m_activeCommand.execute(getWorkflowKey());
     }
 
     @Override
-    public void undo() throws ServiceExceptions.ServiceCallException {
+    public void undo() throws ServiceCallException {
         m_activeCommand.undo();
     }
 
@@ -125,5 +130,4 @@ abstract class CommandIfElse extends HigherOrderCommand {
     public boolean canRedo() {
         return m_activeCommand.canRedo();
     }
-
 }

@@ -91,8 +91,12 @@ final class EditNativeNodePorts implements EditPorts {
 
     @Override
     public int addPort(final AddPortCommandEnt addPortCommandEnt) throws ServiceCallException {
-        var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
-            .orElseThrow(() -> new ServiceCallException("Unknown port type"));
+        var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId()) //
+            .orElseThrow(() -> ServiceCallException.builder() //
+                .withTitle("Failed to add port") //
+                .withDetails("Unknown port type: " + addPortCommandEnt.getPortTypeId()) //
+                .canCopy(false) //
+                .build());
         var groupName = addPortCommandEnt.getPortGroup();
         var creationConfigCopy = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow();
         getExtendablePortGroup(creationConfigCopy, groupName).addPort(newPortType);
@@ -134,7 +138,11 @@ final class EditNativeNodePorts implements EditPorts {
         var portGroupId = addPortCommandEnt.getPortGroup();
         var isPortGroupInput = addPortCommandEnt.getSide() == SideEnum.INPUT;
         var portConfig = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow().getPortConfig()
-            .orElseThrow(() -> new ServiceCallException("Could not retrieve port config"));
+            .orElseThrow(() -> ServiceCallException.builder() //
+                .withTitle("Failed to add port") //
+                .withDetails("Could not retrieve port config of node " + getNodeId()) //
+                .canCopy(false) //
+                .build());
         var portGroupIds = portConfig.getPortGroupNames();
         return IntStream.range(0, portGroupIds.indexOf(portGroupId) + 1)//
             .mapToObj(idx -> portConfig.getGroup(portGroupIds.get(idx)))//

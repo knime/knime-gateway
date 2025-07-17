@@ -58,6 +58,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
@@ -168,9 +169,7 @@ public abstract class GatewayServiceTest {
      */
     protected WorkflowManager loadWorkflow(final TestWorkflow wf, final String projectId) throws Exception {
         m_workflowLoader.loadWorkflow(wf, projectId);
-        return ProjectManager.getInstance().getProject(projectId) //
-                .flatMap(Project::getFromCacheOrLoadWorkflowManager) //
-                .orElse(null);
+        return getWFM(projectId);
     }
 
     /**
@@ -183,9 +182,15 @@ public abstract class GatewayServiceTest {
      */
     protected WorkflowManager loadComponent(final TestWorkflow wf, final String projectId) throws Exception {
         m_workflowLoader.loadComponent(wf, projectId);
-        return ProjectManager.getInstance().getProject(projectId) //
-                .flatMap(Project::getFromCacheOrLoadWorkflowManager) //
-                .orElse(null);
+        return getWFM(projectId);
+    }
+
+    static WorkflowManager getWFM(final String wfId) throws GatewayException {
+        final ProjectManager instance = ProjectManager.getInstance();
+        final Project project = instance.getProject(wfId) //
+                .orElseThrow(() -> new IllegalStateException("No project for id " + wfId));
+        return project.getWorkflowManagerIfLoaded() //
+                .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId));
     }
 
     /**

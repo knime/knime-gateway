@@ -90,7 +90,6 @@ import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt.Wor
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt.WorkflowMonitorStateChangeEventTypeEntBuilder;
 import org.knime.gateway.api.webui.service.EventService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
@@ -169,7 +168,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         return eventType;
     }
 
-    private void checkThatNoEventsAreSent(final WorkflowManager wfm) {
+    private void checkThatNoEventsAreSent(final WorkflowManager wfm) throws Exception {
         // set empty callback for testing
         var es = DefaultEventService.getInstance();
         es.setPreEventCreationCallbackForTesting(null);
@@ -186,10 +185,10 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
      * Makes sure that {@link EventService#addEventListener(org.knime.gateway.api.webui.entity.EventTypeEnt)} doesn't
      * cause an event to be emitted for event type {@link AppStateChangedEventTypeEnt}.
      *
-     * @throws InvalidRequestException
+     * @throws Exception -
      */
     @Test
-    public void testNoEventsEmittedOnAddingAppStateChangedEventListener() throws InvalidRequestException {
+    public void testNoEventsEmittedOnAddingAppStateChangedEventListener() throws Exception {
         var es = DefaultEventService.getInstance();
         es.addEventListener(builder(AppStateChangedEventTypeEntBuilder.class).build());
         verify(m_testConsumer, never()).accept(any(), any());
@@ -269,6 +268,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
     /**
      * Tests {@link EventService#addEventListener(org.knime.gateway.api.webui.entity.EventTypeEnt)} for the
      * {@link SpaceItemChangedEventTypeEnt}.
+     * @throws Exception -
      */
     @Test
     public void testSpaceItemChangedEventListener() throws Exception {

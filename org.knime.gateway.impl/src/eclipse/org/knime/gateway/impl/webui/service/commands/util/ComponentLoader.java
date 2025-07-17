@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -78,7 +79,9 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor.LoadResultEntry;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -106,10 +109,20 @@ public final class ComponentLoader {
      */
     public static LoadResult loadComponent(final AddComponentCommandEnt commandEnt, final WorkflowManager wfm,
         final SpaceProviders spaceProviders, final ExecutionMonitor exec) throws CanceledExecutionException {
-        var space = spaceProviders.getSpace(commandEnt.getProviderId(), commandEnt.getSpaceId());
-        var uri = space.toKnimeUrl(commandEnt.getItemId());
-        exec.setMessage("Downloading...");
-        var localPath = space.toLocalAbsolutePath(exec, commandEnt.getItemId()).orElseThrow();
+
+        final URI uri;
+        final Path localPath;
+        try {
+            var space = spaceProviders.getSpace(commandEnt.getProviderId(), commandEnt.getSpaceId());
+            uri = space.toKnimeUrl(commandEnt.getItemId());
+            exec.setMessage("Downloading...");
+            localPath = space.toLocalAbsolutePath(exec, commandEnt.getItemId()).orElseThrow();
+        } catch (GatewayException ex) {
+            throw new IllegalStateException(ex); // TODO NXT-3938
+        } catch (final MutableServiceCallException ex) {
+            throw new IllegalStateException(ex.toGatewayException("Failed to fetch component template"));
+        }
+
         var componentName = commandEnt.getName();
         try (var lock = wfm.lock()) {
             exec.setMessage("Loading component...");

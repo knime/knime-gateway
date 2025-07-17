@@ -77,7 +77,7 @@ public final class ProjectManager {
     private static final LazyInitializer<ProjectManager> INITIALIZER = new LazyInitializer<>() {
 
         @Override
-        protected ProjectManager initialize() throws ConcurrentException {
+        protected ProjectManager initialize() {
             return new ProjectManager();
         }
 

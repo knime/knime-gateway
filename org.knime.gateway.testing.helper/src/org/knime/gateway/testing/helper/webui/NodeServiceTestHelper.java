@@ -84,7 +84,6 @@ import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeDescriptionNotAvailableException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.json.util.ObjectMapperUtil;
@@ -376,7 +375,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private NativeNodeEnt getNativeNodeEnt(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws NotASubWorkflowException, NodeNotFoundException {
+        throws Exception {
         return (NativeNodeEnt)ws().getWorkflow(projectId, workflowId, null, Boolean.TRUE).getWorkflow().getNodes()
             .get(nodeId.toString());
     }

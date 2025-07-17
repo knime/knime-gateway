@@ -70,10 +70,10 @@ public interface NodeService extends GatewayService {
      * @param dataServiceRequest 
      *
      * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    String callNodeDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType, String serviceType, String dataServiceRequest)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    String callNodeDataService(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType, String serviceType, String dataServiceRequest)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Changes state of a loop. The provided node-id must reference a loop-end node.
@@ -113,10 +113,10 @@ public interface NodeService extends GatewayService {
      * @param extensionType The node ui-extension-type, i.e. dialog or view.
      *
      * 
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    void deactivateNodeDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    void deactivateNodeDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String extensionType)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Obtain the description of a given node.
@@ -138,10 +138,10 @@ public interface NodeService extends GatewayService {
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      *
      * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    Object getNodeDialog(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    Object getNodeDialog(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Returns all the information on a node view required to render it.
@@ -152,10 +152,10 @@ public interface NodeService extends GatewayService {
      * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
      *
      * @return the result
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    Object getNodeView(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    Object getNodeView(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Updates the data point selection (aka hiliting) for a single node as specified.

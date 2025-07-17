@@ -55,7 +55,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.Mockito.mock;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
@@ -71,9 +70,7 @@ import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil.ProjectVersionException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.shared.workflow.storage.clipboard.InvalidDefClipboardContentVersionException;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
-import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -87,10 +84,10 @@ public class WorkflowChangedEventSourceTest {
      * Tests that workflow changed listeners are removed when the respective project is removed from the
      * {@link ProjectManager}.
      *
-     * @throws IOException
+     * @throws Exception -
      */
     @Test
-    public void testRemoveListenerWhenProjectIsRemoved() throws IOException {
+    public void testRemoveListenerWhenProjectIsRemoved() throws Exception {
         var projectManager = ProjectManager.getInstance();
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var origin = new Origin("providerId", "spaceId", "itemId");
@@ -151,15 +148,10 @@ public class WorkflowChangedEventSourceTest {
      * workflow) and back up while the node states in the parent workflow have changed (which also changes dependent
      * node properties which need to be re-computed).
      *
-     * @throws IOException
-     * @throws ObfuscatorException
-     * @throws InvalidDefClipboardContentVersionException
-     * @throws IllegalArgumentException
-     * @throws InterruptedException
+     * @throws Exception -
      */
     @Test
-    public void testClearDependentNodePropertiesCacheOnListenerRemoval() throws IOException, IllegalArgumentException,
-        InvalidDefClipboardContentVersionException, ObfuscatorException, InterruptedException {
+    public void testClearDependentNodePropertiesCacheOnListenerRemoval() throws Exception {
         var projectManager = ProjectManager.getInstance();
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var content = SystemClipboardFormat.deserialize(CLIPBOARD_CONTENT_WAIT_NODES);

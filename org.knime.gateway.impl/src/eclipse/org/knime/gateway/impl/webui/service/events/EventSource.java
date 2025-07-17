@@ -130,7 +130,6 @@ public abstract class EventSource<T, E> {
      * @param projectId id of the workflow project this event listener is associated with (i.e. the initial event, if
      *            there is one, will be associated with that workflow project - see {@link #sendEvent(Object, String)};
      *            can be {@code null}
-     *
      * @throws IllegalArgumentException if object describing the event type isn't valid
      */
     public void addEventListenerFor(final T eventTypeEnt, final String projectId) {

@@ -89,11 +89,19 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
         var container = wfm.getNodeContainer(m_nodeId);
         var newName = m_commandEnt.getName();
         if (newName.isBlank()) {
-            throw new ServiceCallException("Illegal new name: <" + newName + ">");
+            throw ServiceCallException.builder()
+                .withTitle("Failed to update name") //
+                .withDetails("Illegal new name: <" + newName + ">") //
+                .canCopy(false) //
+                .build();
         }
         if (container instanceof WorkflowManager metaNode) {
             if (metaNode.isProject()) {
-                throw new ServiceCallException("Workflow projects cannot be renamed like this");
+                throw ServiceCallException.builder()
+                    .withTitle("Failed to update name") //
+                    .withDetails("Workflow projects cannot be renamed like this") //
+                    .canCopy(false) //
+                    .build();
             }
             m_oldName = metaNode.getName();
             metaNode.setName(newName);
@@ -104,7 +112,11 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
             return true;
         } else {
             String className = container.getClass().getSimpleName();
-            throw new ServiceCallException("<" + className + "> cannot be renamed");
+            throw ServiceCallException.builder()
+                .withTitle("Failed to update name") //
+                .withDetails("<" + className + "> cannot be renamed") //
+                .canCopy(false) //
+                .build();
         }
     }
 

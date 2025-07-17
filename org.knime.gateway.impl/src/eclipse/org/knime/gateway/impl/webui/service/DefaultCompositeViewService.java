@@ -157,7 +157,12 @@ public class DefaultCompositeViewService implements CompositeViewService {
         try {
             DefaultServiceContext.assertWorkflowProjectId(projectId);
         } catch (IllegalStateException ex) {
-            throw new ServiceCallException(ex.getMessage(), ex);
+            throw ServiceCallException.builder() //
+                .withTitle("Invalid project ID") //
+                .withDetails(ex.getMessage()) //
+                .canCopy(false) //
+                .withCause(ex) //
+                .build();
         }
     }
 
@@ -180,15 +185,18 @@ public class DefaultCompositeViewService implements CompositeViewService {
             try {
                 var nodeView = DefaultNodeService.getNodeView(nnc, projectId, m_selectionEventBus);
                 if (!(nodeView instanceof NodeViewEnt)) {
-                    throw new InvalidRequestException("NodeView is not of type " + NodeViewEnt.class.getSimpleName()
-                        + ", but " + nodeView.getClass().getName() + ".");
+                    throw InvalidRequestException.builder() //
+                        .withTitle("Invalid node view type") //
+                        .withDetails("NodeView is not of type " + NodeViewEnt.class.getSimpleName() + ", but "
+                            + nodeView.getClass().getName() + ".") //
+                        .canCopy(false) //
+                        .build();
                 }
-                return (NodeViewEnt)nodeView;
+                return nodeView;
             } catch (InvalidRequestException ex) {
                 LOGGER.error("Could not create a node view for " + nnc.getNameWithID() + ": " + ex.getMessage());
                 return NodeViewEnt.create(nnc);
             }
         };
     }
-
 }

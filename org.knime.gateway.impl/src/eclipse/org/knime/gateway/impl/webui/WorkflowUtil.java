@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui;
 
+import java.util.NoSuchElementException;
+
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -73,19 +75,30 @@ public final class WorkflowUtil {
      *
      * @param wfKey
      * @return the workflow manager
-     * @throws NodeNotFoundException if there is no metanode or component for the given workflow-id
-     * @throws NotASubWorkflowException if the workflow-id doesn't reference a metanode or a component
+     * @throws NoSuchElementException
+     * @throws NodeNotFoundException
+     * @throws NotASubWorkflowException
      */
     public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
+        throws NoSuchElementException, NodeNotFoundException, NotASubWorkflowException {
         WorkflowManager wfm;
         try {
             // No version needed, only current state
             wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId());
         } catch (IllegalArgumentException ex) {
-            throw new NodeNotFoundException(ex.getMessage(), ex);
+            throw NodeNotFoundException.builder() //
+                .withTitle("Workflow not found") //
+                .withDetails(ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         } catch (IllegalStateException ex) {
-            throw new NotASubWorkflowException(ex.getMessage(), ex);
+            throw NotASubWorkflowException.builder() //
+                .withTitle("ID does not identify a sub-workflow") //
+                .withDetails(ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         }
         return wfm;
     }
@@ -96,11 +109,12 @@ public final class WorkflowUtil {
      * All other methods assume that a workflow exists and will otherwise fail with a runtime exceptions.
      *
      * @param wfKey
-     * @throws NodeNotFoundException
      * @throws NotASubWorkflowException
+     * @throws NodeNotFoundException
+     * @throws NoSuchElementException
      */
     public static void assertWorkflowExists(final WorkflowKey wfKey)
-        throws NodeNotFoundException, NotASubWorkflowException {
+        throws NoSuchElementException, NodeNotFoundException, NotASubWorkflowException {
         getWorkflowManager(wfKey);
     }
 

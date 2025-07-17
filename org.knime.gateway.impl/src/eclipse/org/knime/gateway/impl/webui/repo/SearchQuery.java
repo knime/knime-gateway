@@ -54,7 +54,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.port.PortType;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.CoreUtil;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 
 /**
  * A search query for a {@link NodeRepository}.
@@ -82,7 +82,7 @@ final class SearchQuery {
      * @param searchForSuccesors if the search look for successors compatible with the given portTypeId
      */
     SearchQuery(final String query, final List<String> tags, final Boolean allTagsMustMatch, final String portTypeId,
-        final boolean searchForSuccesors) throws ServiceExceptions.InvalidRequestException {
+        final boolean searchForSuccesors) throws InvalidRequestException {
         var parsed = parseQuery(query);
         m_searchTerm = parsed.getFirst();
         m_nodeFilter = parsed.getSecond();
@@ -92,12 +92,15 @@ final class SearchQuery {
         m_searchForSuccesors = searchForSuccesors;
     }
 
-    private static PortType verifyPortTypeId(final String portTypeId) throws ServiceExceptions.InvalidRequestException {
+    private static PortType verifyPortTypeId(final String portTypeId) throws InvalidRequestException {
         if (StringUtils.isBlank(portTypeId)) {
             return null;
         }
-        return CoreUtil.getPortType(portTypeId).orElseThrow(() -> new ServiceExceptions.InvalidRequestException(
-            String.format("Not port type found for <%s>", portTypeId)));
+        return CoreUtil.getPortType(portTypeId).orElseThrow(() -> InvalidRequestException.builder() //
+            .withTitle("Invalid port ID") //
+            .withDetails(String.format("No port type found for <%s>", portTypeId)) //
+            .canCopy(false) //
+            .build());
     }
 
     /**

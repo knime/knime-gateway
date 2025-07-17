@@ -81,8 +81,11 @@ final class UpdateWorkflowAnnotation extends AbstractWorkflowAnnotationCommand {
         final var borderColor = hexStringToInteger(m_commandEnt.getBorderColor());
 
         if (text == null && borderColor == null) {
-            throw new ServiceCallException(
-                "Cannot update a workflow annotation with neither a border color nor a text provided.");
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to update annotation") //
+                .withDetails("Cannot update a workflow annotation with neither a border color nor a text provided.") //
+                .canCopy(false) //
+                .build();
         }
 
         var workflowChanged = false;

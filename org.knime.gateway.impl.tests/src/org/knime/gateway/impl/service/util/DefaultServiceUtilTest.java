@@ -125,9 +125,10 @@ public class DefaultServiceUtilTest {
 
     /**
      * Tests {@link DefaultServiceUtil#changeNodeStates(String, NodeIDEnt, String, NodeIDEnt...)}
+     * @throws Exception -
      */
     @Test
-    public void testChangeNodeStates() {
+    public void testChangeNodeStates() throws Exception {
 
         // action for a node
         NodeIDEnt nodeIDEnt = new NodeIDEnt(1);
@@ -181,8 +182,9 @@ public class DefaultServiceUtilTest {
 
     /**
      * Tests {@link DefaultServiceUtil#changeNodeState(String, NodeIDEnt, String)}.
+     * @throws Exception -
      */
-    public void testChangeNodeState() {
+    public void testChangeNodeState() throws Exception {
         // action for a node
         NodeIDEnt nodeIDEnt = new NodeIDEnt(1);
         NodeContainer nc = DefaultServiceUtil.changeNodeState(m_wfId, nodeIDEnt, "execute");
@@ -219,13 +221,14 @@ public class DefaultServiceUtilTest {
 
     /**
      * Remove workflow projects.
+     * @throws Exception
      */
     @After
-    public void removeWorkflowProjects() {
-        m_projectManager.projects().forEach(project -> {
+    public void removeWorkflowProjects() throws Exception {
+        for (final var project : (Iterable<Project>)() -> m_projectManager.projects().iterator()) {
             project.getWorkflowManagerIfLoaded().ifPresent(WorkflowManagerUtil::disposeWorkflow);
             m_projectManager.removeProject(project.getID());
-        });
+        }
     }
 
     /*

@@ -81,8 +81,8 @@ import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.NodeService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeDescriptionNotAvailableException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
@@ -123,35 +123,54 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
         final String action) throws NodeNotFoundException, OperationNotAllowedException {
+
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
             DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
                 nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        } catch (IllegalStateException e) {
-            throw new OperationNotAllowedException(e.getMessage(), e);
+        } catch (final IllegalArgumentException e) {
+            throw NodeNotFoundException.builder() //
+                .withTitle("Node not found") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
+        } catch (final IllegalStateException e) {
+            throw OperationNotAllowedException.builder() //
+                .withTitle("Operation not allowed") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 
     @Override
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String action) throws NodeNotFoundException, OperationNotAllowedException {
+        final String action) throws OperationNotAllowedException, NodeNotFoundException {
+
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         try {
             var nc = getNodeContainer(projectId, workflowId, nodeId);
-            if (nc instanceof NativeNodeContainer nnc) {
-                if (nnc.isModelCompatibleTo(LoopEndNode.class)) {
-                    changeLoopState(action, nnc);
-                    return;
-                }
+            if (nc instanceof NativeNodeContainer nnc && nnc.isModelCompatibleTo(LoopEndNode.class)) {
+                changeLoopState(action, nnc);
+                return;
             }
-            throw new OperationNotAllowedException("The action to change the loop state is not applicable for "
-                + nc.getNameWithID() + ". Not a loop end node.");
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
+            throw OperationNotAllowedException.builder() //
+                .withTitle("Operation not allowed") //
+                .withDetails("The action to change the loop state is not applicable for "
+                    + nc.getNameWithID() + ". Not a loop end node.") //
+                .canCopy(false) //
+                .build();
+        } catch (final IllegalArgumentException e) {
+            throw NodeNotFoundException.builder() //
+                .withTitle("Node not found") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 
@@ -177,7 +196,11 @@ public final class DefaultNodeService implements NodeService {
                 //
             }
         } else {
-            throw new OperationNotAllowedException("Unknown action '" + action + "'");
+            throw OperationNotAllowedException.builder() //
+                .withTitle("Operation not allowed") //
+                .withDetails("Unknown action '" + action + "'") //
+                .canCopy(true) //
+                .build();
         }
     }
 
@@ -196,7 +219,11 @@ public final class DefaultNodeService implements NodeService {
         var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
 
         if (!NodeDialogManager.hasNodeDialog(snc)) {
-            throw new InvalidRequestException("The node " + snc.getNameWithID() + " doesn't have a dialog");
+            throw InvalidRequestException.builder() //
+                .withTitle("Failed to get node dialog") //
+                .withDetails("The node " + snc.getNameWithID() + " doesn't have a dialog") //
+                .canCopy(false) //
+                .build();
         }
         return DataServiceDependencies.runWithDependencies(createDialogDataServiceDependencies(projectId),
             () -> new NodeDialogEnt(snc));
@@ -204,7 +231,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public NodeViewEnt getNodeView(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
+        final NodeIDEnt nodeId) throws InvalidRequestException, NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var nnc = getNC(projectId, workflowId, version, nodeId, NativeNodeContainer.class);
@@ -218,18 +245,24 @@ public final class DefaultNodeService implements NodeService {
      * @param projectId project id, can be null. Only used in {@link PerNodeWrapperEventEmitter} and if null default
      *            `projectWfm.getNameWithID()` will be used
      * @return node view
-     * @throws NodeNotFoundException
      * @throws InvalidRequestException
      */
     static NodeViewEnt getNodeView(final NativeNodeContainer nnc, final String projectId,
         final SelectionEventBus selectionEventBus) throws InvalidRequestException {
 
         if (!NodeViewManager.hasNodeView(nnc)) {
-            throw new InvalidRequestException("The node " + nnc.getNameWithID() + " does not have a view");
+            throw InvalidRequestException.builder() //
+                .withTitle("Failed to get node view") //
+                .withDetails("The node " + nnc.getNameWithID() + " does not have a view") //
+                .canCopy(false) //
+                .build();
         }
         if (!nnc.getNodeContainerState().isExecuted()) {
-            throw new InvalidRequestException(
-                "Node view can't be requested. The node " + nnc.getNameWithID() + " is not executed.");
+            throw InvalidRequestException.builder() //
+                .withTitle("Node view can't be requested") //
+                .withDetails("The node " + nnc.getNameWithID() + " is not executed.") //
+                .canCopy(false) //
+                .build();
         }
 
         return NodeViewEnt.create(nnc, createInitialSelectionSupplier(NodeWrapper.of(nnc), projectId,
@@ -272,16 +305,25 @@ public final class DefaultNodeService implements NodeService {
 
     private static <T> T getNC(final String projectId, final NodeIDEnt workflowId, final VersionId versionId,
         final NodeIDEnt nodeId, final Class<T> ncClass) throws NodeNotFoundException, InvalidRequestException {
+
         NodeContainer nc;
         try {
             nc = getNodeContainer(projectId, workflowId, versionId, nodeId);
         } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
+            throw NodeNotFoundException.builder() //
+                .withTitle("Node not found") //
+                .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
 
         if (!ncClass.isAssignableFrom(nc.getClass())) {
-            throw new InvalidRequestException(
-                "The requested node " + nc.getNameWithID() + " is not a " + ncClass.getName());
+            throw InvalidRequestException.builder() //
+                .withTitle("Invalid request") //
+                .withDetails("The requested node " + nc.getNameWithID() + " is not a " + ncClass.getName()) //
+                .canCopy(true) //
+                .build();
         }
 
         return ncClass.cast(nc);
@@ -290,7 +332,8 @@ public final class DefaultNodeService implements NodeService {
     @Override
     public String callNodeDataService(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final String extensionType, final String serviceType, final String request)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws InvalidRequestException, NodeNotFoundException {
+
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
         var snc = getNC(projectId, workflowId, version, nodeId, SingleNodeContainer.class);
@@ -305,21 +348,30 @@ public final class DefaultNodeService implements NodeService {
             } else if ("apply_data".equals(serviceType)) {
                 return dataServiceManager.callApplyDataService(sncWrapper, request);
             } else {
-                throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
+                throw InvalidRequestException.builder() //
+                    .withTitle("Invalid request") //
+                    .withDetails("Unknown service type '" + serviceType + "'") //
+                    .canCopy(true) //
+                    .build();
             }
         });
     }
 
     @Override
     public void deactivateNodeDataServices(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId, final String extensionType) throws NodeNotFoundException, InvalidRequestException {
+        final NodeIDEnt nodeId, final String extensionType) throws InvalidRequestException, NodeNotFoundException {
         var version = VersionId.parse(versionId);
         NodeContainer nc;
         try {
             nc = getNC(projectId, workflowId, version, nodeId, NodeContainer.class);
         } catch (NoSuchElementException e) {
             // in case there is no project for the given id
-            throw new InvalidRequestException(e.getMessage(), e);
+            throw InvalidRequestException.builder() //
+                .withTitle("Failed to deactivate data servicees") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
         var dataServiceManager = getDataServiceManager(extensionType);
         dataServiceManager.deactivateDataServices(NodeWrapper.of(nc));
@@ -333,7 +385,11 @@ public final class DefaultNodeService implements NodeService {
         } else if ("dialog".equals(extensionType)) {
             dataServiceManager = NodeDialogManager.getInstance().getDataServiceManager();
         } else {
-            throw new InvalidRequestException("Unknown target for node data service: " + extensionType);
+            throw InvalidRequestException.builder() //
+                .withTitle("Invalid request") //
+                .withDetails("Unknown target for node data service: " + extensionType) //
+                .canCopy(true) //
+                .build();
         }
         return dataServiceManager;
     }
@@ -348,7 +404,7 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public NativeNodeDescriptionEnt getNodeDescription(final NodeFactoryKeyEnt factoryKey)
-        throws NodeNotFoundException, ServiceExceptions.NodeDescriptionNotAvailableException {
+        throws NodeNotFoundException, NodeDescriptionNotAvailableException {
         if (!m_nodeDescriptionCache.containsKey(factoryKey)) {
             NodeFactory<NodeModel> fac;
             try {
@@ -356,12 +412,20 @@ public final class DefaultNodeService implements NodeService {
             } catch (NoSuchElementException | IOException e) { // NOSONAR: exceptions are handled
                 var message = "Could not read node description";
                 NodeLogger.getLogger(this.getClass()).error(message + ": " + e.getMessage());
-                throw new NodeNotFoundException(message, e);
+                throw NodeNotFoundException.builder() //
+                    .withTitle("Node not found") //
+                    .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
+                    .canCopy(true) //
+                    .withCause(e) //
+                    .build();
             }
 
             final var coreNode = CoreUtil.createNode(fac) // needed to init information on ports
-                .orElseThrow(() -> new ServiceExceptions.NodeDescriptionNotAvailableException(
-                    "Could not create instance of node"));
+                .orElseThrow(() -> NodeDescriptionNotAvailableException.builder() //
+                    .withTitle("Node description not available") //
+                    .withDetails("Could not create instance of node") //
+                    .canCopy(true) //
+                    .build());
             var description = EntityFactory.NodeTemplateAndDescription.buildNativeNodeDescriptionEnt(coreNode);
             m_nodeDescriptionCache.put(factoryKey, description);
             return description;

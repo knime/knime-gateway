@@ -96,7 +96,7 @@ public final class NodeCategories {
     /**
      * The category hierarchy tree
      */
-    private final Lazy.Init<CategoryTree> m_tree;
+    private final Lazy.Init<CategoryTree, RuntimeException> m_tree;
 
     /**
      * Provides access to available nodes.
@@ -326,7 +326,7 @@ public final class NodeCategories {
          * @implNote This is expected to correspond to an actually defined, installed category, see
          *           {@link NodeCategories#UNCATEGORIZED_KEY}.
          */
-        Lazy.Init<CategoryTreeNode> m_uncategorized;
+        Lazy.Init<CategoryTreeNode, RuntimeException> m_uncategorized;
 
         /**
          * Create a category tree that organizes the given nodes.
@@ -678,9 +678,9 @@ public final class NodeCategories {
     private static final class CategoryTreeNode implements Tree.TreeNode<CategoryId, CategoryTreeNode> {
         private final CategoryMetadata m_metadata;
 
-        private final Lazy.Transform<List<NodeRepository.Node>> m_nodes;
+        private final Lazy.Transform<List<NodeRepository.Node>, RuntimeException> m_nodes;
 
-        private final Lazy.Transform<Map<CategoryId, CategoryTreeNode>> m_children;
+        private final Lazy.Transform<Map<CategoryId, CategoryTreeNode>, RuntimeException> m_children;
 
         /**
          * @param metadata Metadata for this category
@@ -720,11 +720,11 @@ public final class NodeCategories {
             return m_metadata;
         }
 
-        Lazy.Transform<List<NodeRepository.Node>> nodes() {
+        Lazy.Transform<List<NodeRepository.Node>, RuntimeException> nodes() {
             return m_nodes;
         }
 
-        Lazy.Transform<Map<CategoryId, CategoryTreeNode>> categories() {
+        Lazy.Transform<Map<CategoryId, CategoryTreeNode>, RuntimeException> categories() {
             return m_children;
         }
 

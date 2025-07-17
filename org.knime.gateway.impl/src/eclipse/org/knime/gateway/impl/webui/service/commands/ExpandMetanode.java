@@ -49,7 +49,6 @@ package org.knime.gateway.impl.webui.service.commands;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
@@ -69,7 +68,11 @@ class ExpandMetanode extends AbstractExpand {
         super.checkCanExpandOrThrow(wfm, nodeToExpand);
         var cannotExpandReason = wfm.canExpandMetaNode(nodeToExpand);
         if (cannotExpandReason != null) {
-            throw new ServiceExceptions.ServiceCallException(cannotExpandReason);
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to expand metanode") //
+                .withDetails(cannotExpandReason) //
+                .canCopy(false) //
+                .build();
         }
     }
 }

@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
 /**
@@ -76,7 +77,11 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
     @Override
     public void undo() throws ServiceExceptions.ServiceCallException {
         if (!m_metaNodeCollapseResult.canUndo()) {
-            throw new ServiceExceptions.ServiceCallException("Can not undo metanode creation");
+            throw ServiceCallException.builder() //
+                .withTitle("Can't undo metanode creation") //
+                .withDetails() //
+                .canCopy(false) //
+                .build();
         }
 
         m_metaNodeCollapseResult.undo();
@@ -89,7 +94,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceExceptions.ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
         stream(getNodeIDs()).filter(wfm::canResetNode).forEach(wfm::resetAndConfigureNode);
 
@@ -97,13 +102,20 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
         var annoIDs = getAnnotationIDs();
 
         if (nodeIds.length == 0 && annoIDs.length == 0) {
-            throw new ServiceExceptions.ServiceCallException(
-                "No nodes and workflow annotations given to collapse into metanode or component");
+            throw ServiceCallException.builder() //
+                .withTitle("Could not create metanode") //
+                .withDetails("No nodes and workflow annotations given to collapse into metanode or component") //
+                .canCopy(false) //
+                .build();
         }
 
         var cannotCollapseReason = getWorkflowManager().canCollapseNodesIntoMetaNode(nodeIds, annoIDs);
         if (cannotCollapseReason != null) {
-            throw new ServiceExceptions.ServiceCallException(cannotCollapseReason);
+            throw ServiceCallException.builder() //
+                .withTitle("Could not create metanode") //
+                .withDetails(cannotCollapseReason) //
+                .canCopy(false) //
+                .build();
         }
 
         try {
@@ -113,8 +125,13 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
                 DEFAULT_METANODE_NAME //
             );
             return true;
-        } catch (IllegalArgumentException e) { // NOSONAR: Exception is re-thrown as different type
-            throw new ServiceExceptions.ServiceCallException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to create metanode") //
+                .withDetails("IllegalArgumentException: " + e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 

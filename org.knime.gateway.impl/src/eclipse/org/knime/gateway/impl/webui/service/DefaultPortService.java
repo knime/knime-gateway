@@ -101,30 +101,48 @@ public class DefaultPortService implements PortService {
     public PortViewEnt getPortView(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx)
         throws NodeNotFoundException, InvalidRequestException {
+
         var version = VersionId.parse(versionId);
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
         var outPort = nc.getOutPort(portIdx);
 
+        final var errorTitle = "Failed to get port view";
         if (outPort.getPortObject() == InactiveBranchPortObject.INSTANCE) {
-            throw new InvalidRequestException(
-                String.format("No port view available because the port at index %d for node %s is inactive.", portIdx,
-                    nc.getNameWithID()));
+            throw InvalidRequestException.builder() //
+                .withTitle(errorTitle) //
+                .withDetails(
+                    String.format("No port view available because the port at index %d for node %s is inactive.",
+                        portIdx, nc.getNameWithID())) //
+                .canCopy(true) //
+                .build();
         }
 
-        var viewDescriptor = PortViewManager.getPortViewDescriptor(outPort.getPortType(), viewIdx).orElseThrow(
-            () -> new InvalidRequestException(String.format("Port %d for node %s doesn't provide a view at index %d",
-                portIdx, nc.getNameWithID(), viewIdx)));
+        var viewDescriptor = PortViewManager.getPortViewDescriptor(outPort.getPortType(), viewIdx)
+            .orElseThrow(() -> InvalidRequestException.builder() //
+                .withTitle(errorTitle) //
+                .withDetails(String.format("Port %d for node %s doesn't provide a view at index %d", portIdx,
+                    nc.getNameWithID(), viewIdx)) //
+                .canCopy(false) //
+                .build());
         var isFlowVariablePort = outPort.getPortType().equals(FlowVariablePortObject.TYPE);
 
         if (!isFlowVariablePort && !isExecutionStateValid(viewDescriptor, nc, portIdx)) {
-            throw new InvalidRequestException(String.format(
-                "No port view available at index %d for current state of node %s.", portIdx, nc.getNameWithID()));
+            throw InvalidRequestException.builder() //
+                .withTitle(errorTitle) //
+                .withDetails(String.format("No port view available at index %d for current state of node %s.", portIdx,
+                    nc.getNameWithID())) //
+                .canCopy(true) //
+                .build();
         }
 
         if (!isFlowVariablePort && (viewDescriptor.viewFactory() instanceof PortSpecViewFactory)
             && outPort.getPortObjectSpec() == null) {
-            throw new InvalidRequestException(
-                String.format("No port object spec available at index %d for node %s.", portIdx, nc.getNameWithID()));
+            throw InvalidRequestException.builder() //
+                .withTitle(errorTitle) //
+                .withDetails(String.format("No port object spec available at index %d for node %s.", portIdx,
+                    nc.getNameWithID())) //
+                .canCopy(false) //
+                .build();
         }
 
         var wrapper = NodePortWrapper.of(nc, portIdx, viewIdx);
@@ -136,7 +154,7 @@ public class DefaultPortService implements PortService {
     @Override
     public Object getDataValueView(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer rowIdx, final Integer colIdx)
-        throws NodeNotFoundException, InvalidRequestException {
+        throws NodeNotFoundException {
         var version = VersionId.parse(versionId);
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
         return new DataValueViewEnt(DataValueWrapper.of(nc, portIdx, rowIdx, colIdx),
@@ -155,6 +173,7 @@ public class DefaultPortService implements PortService {
     public String callPortDataService(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx, final String serviceType,
         final String body) throws NodeNotFoundException, InvalidRequestException {
+
         var version = VersionId.parse(versionId);
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
         var portViewManager = PortViewManager.getInstance();
@@ -166,7 +185,11 @@ public class DefaultPortService implements PortService {
             return portViewManager.getDataServiceManager().callRpcDataService(NodePortWrapper.of(nc, portIdx, viewIdx),
                 body);
         } else {
-            throw new InvalidRequestException("Unknown service type '" + serviceType + "'");
+            throw InvalidRequestException.builder() //
+                .withTitle("Failed to call port data service") //
+                .withDetails("Unknown service type '" + serviceType + "'") //
+                .canCopy(true) //
+                .build();
         }
     }
 
@@ -174,13 +197,19 @@ public class DefaultPortService implements PortService {
     public void deactivatePortDataServices(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx)
         throws NodeNotFoundException, InvalidRequestException {
+
         var version = VersionId.parse(versionId);
         NodeContainer nc;
         try {
             nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
         } catch (NoSuchElementException e) {
             // in case there is no project for the given id
-            throw new InvalidRequestException(e.getMessage(), e);
+            throw InvalidRequestException.builder() //
+                .withTitle("Failed to deactivate port data services") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
 
         var outPort = nc.getOutPort(portIdx);
@@ -196,6 +225,7 @@ public class DefaultPortService implements PortService {
     public void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx, final String mode,
         final List<String> selection) throws NodeNotFoundException {
+
         var version = VersionId.parse(versionId);
         ServiceUtilities.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
             nc -> NodePortWrapper.of(nc, portIdx, viewIdx));

@@ -83,9 +83,6 @@ public class NodeRepositoryLoadingProgressEventSource
         super(eventConsumer);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Optional<NodeRepositoryLoadingProgressEventEnt> addEventListenerAndGetInitialEventFor(
         final NodeRepositoryLoadingProgressEventTypeEnt eventTypeEnt, final String projectId) {
@@ -109,18 +106,12 @@ public class NodeRepositoryLoadingProgressEventSource
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeEventListener(final NodeRepositoryLoadingProgressEventTypeEnt eventTypeEnt,
         final String projectId) {
         removeAllEventListeners();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeAllEventListeners() {
         if (m_listener != null) {
@@ -129,9 +120,6 @@ public class NodeRepositoryLoadingProgressEventSource
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getName() {
         return "NodeRepositoryLoadingProgressEvent";
