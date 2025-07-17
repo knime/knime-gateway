@@ -59,6 +59,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowSaveHook;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.impl.webui.preview.util.TemplateUtils;
 import org.knime.gateway.impl.webui.preview.util.WorkflowBoundsCalculator;
 import org.knime.gateway.impl.webui.preview.util.WorkflowBoundsCalculator.BoundingBox;
 import org.thymeleaf.TemplateEngine;
@@ -102,10 +103,12 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
                 : String.format("0 0 %d %d", EMPTY_MARGIN, EMPTY_MARGIN);
         context.setVariable("bounds", workflowBounds);
         context.setVariable("viewbox", viewBox);
-        //var annotations = workflowEnt.getWorkflowAnnotations();
+
         context.setVariable("annotations", workflowEnt.getWorkflowAnnotations());
         context.setVariable("nodes", workflowEnt.getNodes().values());
         context.setVariable("connections", workflowEnt.getConnections().values());
+
+        context.setVariable("utils", new TemplateUtils());
 
         var templateEngine = new TemplateEngine();
         templateEngine.addTemplateResolver(templateResolver);
