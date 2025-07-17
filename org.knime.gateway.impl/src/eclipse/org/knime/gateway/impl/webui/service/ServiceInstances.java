@@ -58,6 +58,8 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.knime.core.node.NodeLogger;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.ApplicationService;
 import org.knime.gateway.api.webui.service.ComponentEditorService;
@@ -79,6 +81,8 @@ import org.knime.gateway.api.webui.service.WorkflowService;
  * @author Kai Franze, KNIME GmbH
  */
 public final class ServiceInstances {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(ServiceInstances.class);
 
     // TODO auto-generate? Yes, easy to miss otherwise.
     private static final Map<Class<?>, Class<?>> INTERFACE_TO_IMPLEMENTATION_MAP = synchronizedMap(Map.ofEntries(//
@@ -127,7 +131,7 @@ public final class ServiceInstances {
                 return new LazyInitializer<S>() {
 
                     @Override
-                    protected S initialize() throws ConcurrentException {
+                    protected S initialize() {
                         try {
                             return defaultServiceClass.getDeclaredConstructor().newInstance();
                         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -160,6 +164,8 @@ public final class ServiceInstances {
                 s.get().dispose();
             } catch (ConcurrentException ex) {
                 throw new IllegalStateException(ex);
+            } catch (GatewayException ex) {
+                LOGGER.error("Could not dispose service instance", ex);
             }
         });
         SERVICE_INITIALIZERS.clear();

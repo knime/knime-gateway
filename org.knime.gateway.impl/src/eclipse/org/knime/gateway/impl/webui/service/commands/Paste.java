@@ -113,7 +113,12 @@ class Paste extends AbstractWorkflowCommand implements WithResult {
             m_workflowCopyContent = getWorkflowManager().paste(defClipboardContent);
         } catch (JsonProcessingException | IllegalArgumentException | InvalidDefClipboardContentVersionException
                 | ObfuscatorException e) {
-            throw new ServiceCallException("Could not parse input string to def clipboard content: ", e);
+            throw ServiceCallException.builder() //
+                .withTitle("Paste request failed") //
+                .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
         // Get nodes and annotations
         var nodes = Arrays.stream(m_workflowCopyContent.getNodeIDs())//

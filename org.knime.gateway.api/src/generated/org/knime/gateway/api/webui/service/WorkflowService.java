@@ -80,9 +80,11 @@ public interface WorkflowService extends GatewayService {
      * @param workflowCommand An object that describes the command to be executed.
      *
      * @return the result
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    CommandResultEnt executeWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, WorkflowCommandEnt workflowCommand)  throws ServiceExceptions.ServiceCallException;
+    CommandResultEnt executeWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, WorkflowCommandEnt workflowCommand)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException;
         
     /**
      * Returns the node IDs of all updatable linked components present on a workflow, even if they are deeply nested.
@@ -91,11 +93,11 @@ public interface WorkflowService extends GatewayService {
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      *
      * @return the result
-     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      */
-    java.util.List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.InvalidRequestException;
+    java.util.List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException;
         
     /**
      * Retrieves the complete structure (sub-)workflows.
@@ -106,10 +108,9 @@ public interface WorkflowService extends GatewayService {
      * @param includeInteractionInfo Whether to enclose information that is required when the user is interacting with the returned workflow. E.g. the allowed actions (reset, execute, cancel) for contained nodes and the entire workflow itself.
      *
      * @return the result
-     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, Boolean includeInteractionInfo)  throws ServiceExceptions.NotASubWorkflowException, ServiceExceptions.NodeNotFoundException;
+    WorkflowSnapshotEnt getWorkflow(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, Boolean includeInteractionInfo)  throws ServiceExceptions.NodeNotFoundException;
         
     /**
      * Returns the current state of the workflow monitor.
@@ -127,9 +128,11 @@ public interface WorkflowService extends GatewayService {
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      *
      * 
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void redoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException;
+    void redoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException;
         
     /**
      * Restore the workflow (manager) corresponding to the given project and version, s.t. the current working area  will be overwritten with the specified version to restore.
@@ -138,9 +141,11 @@ public interface WorkflowService extends GatewayService {
      * @param version The version identifier. &#x60;null&#x60; corresponds to the current-state (working area).
      *
      * 
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void restoreVersion(String projectId, String version)  throws ServiceExceptions.ServiceCallException;
+    void restoreVersion(String projectId, String version)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.ServiceCallException;
         
     /**
      * Save a project. This is a temporary service endpoint to offer saving a project in the browser environment, i.e. without any progress indication. In the desktop environment, this endpoint will not be called and instead the corresponding one from the Desktop API. Projects are usually only saved on session close in the browser environment, so the only other current use-case is saving before creating a version. We leave the call to the Catalog service to create the version to the Frontend for the time being. This means the code paths diverge only on save-and-upload. Otherwise, we would (a) have to parameterise the Gateway endpoint by some &#x60;doSave&#x60;, which is equivalent to &#x60;isBrowser&#x60; and (b) implement capability for the backend to make the Catalog call. As soon as we can provide Browser-compatible (i.e. Web-UI) progress indication (NXT-3634), the two endpoints and their backing duplicated logic can be unified and &#x60;createVersion&#x60; can become a single Gateway endpoint, also performing the hub service call (if desired).
@@ -148,9 +153,11 @@ public interface WorkflowService extends GatewayService {
      * @param projectId ID of the workflow-project.
      *
      * 
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void saveProject(String projectId)  throws ServiceExceptions.ServiceCallException;
+    void saveProject(String projectId)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException;
         
     /**
      * Un-does the last command from the undo-stack.
@@ -159,8 +166,10 @@ public interface WorkflowService extends GatewayService {
      * @param workflowId The ID of a workflow which has the same format as a node-id.
      *
      * 
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
-    void undoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException;
+    void undoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException;
         
 }

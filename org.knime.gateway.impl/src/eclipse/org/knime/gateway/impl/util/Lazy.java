@@ -47,8 +47,9 @@ package org.knime.gateway.impl.util;
 
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+
+import org.apache.commons.lang3.function.FailableSupplier;
 
 /**
  * Utilities around performing operations lazily.
@@ -68,15 +69,15 @@ public final class Lazy {
      * <li>org.apache.commons.lang3.concurrent.LazyInitializer</li>
      * <li>com.google.common.base.Suppliers.MemoizingSupplier</li>
      * </ul>
-     * 
+     *
      * @implNote Not thread-safe.
      * @param <V> The type of the provided value.
      */
-    public static final class Init<V> {
+    public static final class Init<V, E extends Exception> {
 
         private static final Object NO_INIT = new Object();
 
-        private final Supplier<V> m_supplier;
+        private FailableSupplier<V, E> m_supplier;
 
         @SuppressWarnings("unchecked")
         private V m_value = (V)NO_INIT;
@@ -85,8 +86,8 @@ public final class Lazy {
          * Create an instance with the given supplier.
          * @param supplier providing the value on initialisation
          */
-        public Init(final Supplier<V> supplier) {
-            this.m_supplier = Objects.requireNonNull(supplier );
+        public Init(final FailableSupplier<V, E> supplier) {
+            this.m_supplier = supplier;
         }
 
         /**
@@ -95,7 +96,7 @@ public final class Lazy {
          * @param value -
          * @param supplier -
          */
-        public Init(final V value, final Supplier<V> supplier) {
+        public Init(final V value, final FailableSupplier<V, E> supplier) {
             this.m_value = value;
             this.m_supplier = Objects.requireNonNull(supplier);
         }
@@ -106,7 +107,7 @@ public final class Lazy {
          *
          * @return the value
          */
-        public V get() {
+        public V get() throws E {
             var result = this.m_value;
             if (m_value == NO_INIT) {
                 // only go into synchronisation if value has been observed to not yet be initialised
@@ -154,16 +155,16 @@ public final class Lazy {
 
     /**
      * Lazy transformation of the wrapped value.
-     * 
+     *
      * @implNote Not thread-safe.
      * @param <V> The type of the contained value.
      */
-    public static class Transform<V> {
+    public static class Transform<V, E extends Exception> {
         private final UnaryOperator<V> m_transformation;
 
         private final V m_value;
 
-        private final Init<V> m_transformed;
+        private final Init<V, E> m_transformed;
 
         /**
          * Initialise an instance with an original value and a transformation to eventually be applied.
@@ -186,7 +187,7 @@ public final class Lazy {
         /**
          * @return The transformed value
          */
-        public V transformed() {
+        public V transformed() throws E {
             return m_transformed.get();
         }
 

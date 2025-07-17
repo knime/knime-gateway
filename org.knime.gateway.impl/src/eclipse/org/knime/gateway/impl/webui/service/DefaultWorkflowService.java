@@ -76,7 +76,10 @@ import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -126,7 +129,8 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final Boolean includeInteractionInfo) throws NotASubWorkflowException, NodeNotFoundException {
+        final Boolean includeInteractionInfo) throws NodeNotFoundException {
+
         final var version = VersionId.parse(versionId);
         final var wfKey = new WorkflowKey(projectId, workflowId, version);
         final var wfm = ServiceUtilities.assertProjectIdAndGetWorkflowManager(wfKey);
@@ -161,7 +165,8 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(final String projectId, final NodeIDEnt workflowId)
-        throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
+        throws NodeNotFoundException, NotASubWorkflowException, InvalidRequestException {
+
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var wfKey = new WorkflowKey(projectId, workflowId);
         final var wfm = WorkflowUtil.getWorkflowManager(wfKey);
@@ -179,12 +184,16 @@ public final class DefaultWorkflowService implements WorkflowService {
                 })//
                 .toList();
         } catch (IllegalStateException | InterruptedException e) { // NOSONAR
-            throw new InvalidRequestException("Could not determine updatable node IDs", e);
+            throw InvalidRequestException.builder().withTitle("Could not retrieve linked components") //
+                .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 
     @Override
-    public void saveProject(final String projectId) throws ServiceCallException {
+    public void saveProject(final String projectId) throws ServiceCallException, LoggedOutException, NetworkException {
         if (DefaultServiceContext.getProjectId().isEmpty()) {
             // only to be called from browser environment and this value is only set in browser environment
             NodeLogger.getLogger(DefaultWorkflowService.class)
@@ -207,21 +216,27 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public void restoreVersion(final String projectId, final String versionId) throws ServiceCallException {
+    public void restoreVersion(final String projectId, final String versionId)
+        throws ServiceCallException, NetworkException, LoggedOutException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var project = m_projectManager.getProject(projectId).orElseThrow(); // No specific version needed here
         final var origin = project.getOrigin().orElseThrow();
-        final var space = Optional.ofNullable(m_spaceProvidersManager) //
-            .map(mgr -> mgr.getSpaceProviders(getSpaceProvidersKey())) //
-            .map(providers -> providers.getSpace(origin.providerId(), origin.spaceId())) //
-            .orElseThrow();
 
-        try {
-            space.restoreItemVersion(origin.itemId(), VersionId.parse(versionId));
-        } catch (IOException e) {
-            throw new ServiceCallException("Could not restore version: " + versionId, e);
+
+        if (m_spaceProvidersManager == null) {
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to restore item version") //
+                .withDetails("Surrounding space could not be identified (missing space providers manager)") //
+                .canCopy(false) //
+                .build();
         }
-
+        try {
+            m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
+                .getSpace(origin.providerId(), origin.spaceId()) //
+                .restoreItemVersion(origin.itemId(), VersionId.parse(versionId));
+        } catch (final MutableServiceCallException ex) { // NOSONAR
+            throw ex.toGatewayException("Failed to restore item version");
+        }
         disposeVersion(projectId, VersionId.currentState());
     }
 
@@ -271,13 +286,21 @@ public final class DefaultWorkflowService implements WorkflowService {
             throws ServiceCallException {
             var wfm = WorkflowManagerResolver.get(projectId);
             if (wfm.isComponentProjectWFM()) {
-                throw new ServiceCallException("Not supported for component projects");
+                throw ServiceCallException.builder() //
+                    .withTitle("Not supported for component projects") //
+                    .withDetails("Saving component projects is not supported in this context.") //
+                    .canCopy(false) //
+                    .build();
             }
 
             var isExecutionInProgress = wfm.getNodeContainerState().isExecutionInProgress()
                 || wfm.getNodeContainerState().isExecutingRemotely();
             if (isExecutionInProgress) {
-                throw new ServiceCallException("Workflow is currently executing");
+                throw ServiceCallException.builder() //
+                    .withTitle("Workflow is currently executing") //
+                    .withDetails("Cannot save workflow while it is executing.") //
+                    .canCopy(false) //
+                    .build();
             }
 
             return wfm;
@@ -286,15 +309,19 @@ public final class DefaultWorkflowService implements WorkflowService {
         /**
          * TODO NXT-3634: Headless save until we can provide proper UI; de-duplicate from SaveProject (NOSONAR)
          */
-        private static WorkflowContextV2 saveToDisk(final WorkflowManager wfm)
-            throws ServiceCallException {
+        private static WorkflowContextV2 saveToDisk(final WorkflowManager wfm) throws ServiceCallException {
             final var context = wfm.getContextV2();
             var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
 
             try {
                 wfm.save(localWorkflowPath.toFile(), new ExecutionMonitor(), true);
             } catch (IOException | CanceledExecutionException | LockFailedException e) {
-                throw new ServiceCallException("Could not save workflow", e);
+                throw ServiceCallException.builder() //
+                    .withTitle("Could not save workflow") //
+                    .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
+                    .canCopy(true) //
+                    .withCause(e) //
+                    .build();
             }
             return context;
         }
@@ -302,31 +329,33 @@ public final class DefaultWorkflowService implements WorkflowService {
         /**
          * TODO NXT-3634: Headless upload until we can provide proper UI; de-duplicate from 'SaveProject' (NOSONAR)
          */
-        private static void uploadToHub(final WorkflowContextV2 context, final SpaceProvidersManager spaceProvidersManager)
-            throws ServiceCallException {
-            final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
-                .map(mgr -> mgr.getSpaceProviders(getSpaceProvidersKey())) //
-                .orElseThrow();
-            final var spaceProvider = spaceProviders.getAllSpaceProviders().stream().findFirst().orElseThrow();
+        private static void uploadToHub(final WorkflowContextV2 context,
+            final SpaceProvidersManager spaceProvidersManager)
+            throws ServiceCallException, NetworkException, LoggedOutException {
 
             // (a) In Desktop AP, the provider would be identified by the mountpoint URI saved in the workflow context.
             // (b) In Browser, this info is not given (because ultimately the context is constructed off a
             //     HubJobExecutorInfo and not a AnalyticsPlatformExecutorInfo)
-            if (context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo) {
+            if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
+                throw ServiceCallException.builder() //
+                    .withTitle("Unsupported location type") //
+                    .withDetails("The workflow is not stored in a Hub space: " + context.getLocationType()) //
+                    .canCopy(false) //
+                    .build();
+            }
+
+            final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
+                .map(mgr -> mgr.getSpaceProviders(getSpaceProvidersKey())) //
+                .orElseThrow();
+            final var spaceProvider = spaceProviders.getAllSpaceProviders().stream().findFirst().orElseThrow();
+            try {
                 final var space = spaceProvider.getSpace(hubInfo.getSpaceItemId());
-                try {
-                    final var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
-                    final var spaceKnimeUrl = space.toPathBasedKnimeUrl(hubInfo.getWorkflowItemId());
-                    space.saveBackTo(localWorkflowPath, spaceKnimeUrl, false, new NullProgressMonitor());
-                } catch (IOException e) {
-                    NodeLogger.getLogger(DefaultWorkflowService.class).error("Could not upload workflow", e);
-                    throw new ServiceCallException("Could not upload workflow", e);
-                }
-            } else {
-                throw new ServiceCallException("Unsupported location type: " + context.getLocationType());
+                final var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
+                final var spaceKnimeUrl = space.toPathBasedKnimeUrl(hubInfo.getWorkflowItemId());
+                space.saveBackTo(localWorkflowPath, spaceKnimeUrl, false, new NullProgressMonitor());
+            } catch (MutableServiceCallException ex) { // NOSONAR exception is rethrown
+                throw ex.toGatewayException("Upload failed");
             }
         }
-
     }
-
 }

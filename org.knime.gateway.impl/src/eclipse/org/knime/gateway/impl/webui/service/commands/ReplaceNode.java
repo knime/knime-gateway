@@ -93,8 +93,11 @@ final class ReplaceNode extends AbstractWorkflowCommand {
         var targetNodeId = m_commandEnt.getTargetNodeId().toNodeID(wfm);
 
         if (!wfm.canRemoveNode(targetNodeId)) {
-            throw new ServiceCallException(
-                "Unable to delete the targeted node. Replace operation aborted. Please check for any execution on progress.");
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to replace node") //
+                .withDetails("Unable to delete the targeted node. Please check for any execution in progress.") //
+                .canCopy(false) //
+                .build();
         }
 
         var nodeFactoryEnt = m_commandEnt.getNodeFactory();
@@ -133,7 +136,12 @@ final class ReplaceNode extends AbstractWorkflowCommand {
                     CoreUtil.getNodeFactory(nodeFactoryEntOrNull.getClassName(), nodeFactoryEntOrNull.getSettings()),
                     null, -1));
             } catch (NoSuchElementException | IOException ex) {
-                throw new ServiceCallException(ex.getMessage(), ex);
+                throw ServiceCallException.builder() //
+                    .withTitle("Failed to replace node") //
+                    .withDetails(ex.getClass().getSimpleName() + ": " + ex.getMessage()) //
+                    .canCopy(true) //
+                    .withCause(ex) //
+                    .build();
             }
             nodesToRestoreOnUndo = new NodeID[]{targetNodeId};
         } else {
@@ -178,7 +186,12 @@ final class ReplaceNode extends AbstractWorkflowCommand {
         try {
             nodeFactory = CoreUtil.getNodeFactory(nodeFactoryEnt.getClassName(), nodeFactoryEnt.getSettings());
         } catch (NoSuchElementException | IOException ex) {
-            throw new ServiceCallException(ex.getMessage(), ex);
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to replace node") //
+                .withDetails(ex.getClass().getSimpleName() + ": " + ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         }
         var result = wfm.replaceNode(targetNodeId, null, nodeFactory, false, null);
         return new InternalReplaceNodeResult() {

@@ -57,8 +57,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -67,13 +65,10 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.knime.gateway.api.service.GatewayService;
+import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.googlecode.jsonrpc4j.ExceptionResolver;
 import com.googlecode.jsonrpc4j.JsonRpcClient;
@@ -88,21 +83,20 @@ public class UnexpectedJsonRpcErrorTest {
     /**
      * Tests for the correct json-rpc error response if a gateway service throws an unexpected exception.
      *
-     * @throws NodeNotFoundException
-     * @throws NotASubWorkflowException
+     * @throws Exception -
      */
     @Test
-    public void testUnexpectedJsonRpcError() throws NotASubWorkflowException, NodeNotFoundException {
+    public void testUnexpectedJsonRpcError() throws Exception {
         Map<Class<? extends GatewayService>, Supplier<? extends GatewayService>> serviceMocks = new HashMap<>();
-        WorkflowService workflowServiceMock = mock(WorkflowService.class);
+        var workflowServiceMock = mock(WorkflowService.class);
         when(workflowServiceMock.getWorkflow(any(), any(), any(), any()))
             .thenThrow(new UnsupportedOperationException("an unexpected exception"));
         serviceMocks.put(WorkflowService.class, () -> workflowServiceMock);
-        DefaultJsonRpcRequestHandler handler = new DefaultJsonRpcRequestHandler(serviceMocks);
-        ObjectMapper mapper = ObjectMapperUtil.getInstance().getObjectMapper();
-        JsonRpcClient jsonRpcClient =
+        var handler = new DefaultJsonRpcRequestHandler(serviceMocks);
+        var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
+        var jsonRpcClient =
             new JsonRpcClient(mapper, new TestExceptionResolver(Matchers.is("an unexpected exception")));
-        WorkflowService workflowServiceProxy = createClientProxy(WorkflowService.class, handler, jsonRpcClient);
+        var workflowServiceProxy = createClientProxy(WorkflowService.class, handler, jsonRpcClient);
         assertThrows(UnsupportedOperationException.class,
             () -> workflowServiceProxy.getWorkflow(null, null, null, Boolean.FALSE));
     }
@@ -122,13 +116,13 @@ public class UnexpectedJsonRpcErrorTest {
         @Override
         public Throwable resolveException(final ObjectNode response) {
             assertThat(response.get("jsonrpc").asText(), is("2.0"));
-            JsonNode error = response.get("error");
+            var error = response.get("error");
             assertThat("unexpected error code", error.get("code").asInt(), Matchers.is(-32601));
-            JsonNode data = error.get("data");
+            var data = error.get("data");
             assertNotNull("no stacktrace given", data.get("stackTrace"));
-            String message = error.get("message").asText();
+            var message = error.get("message").asText();
             assertThat("unexpected exception message", message, m_messageMatcher);
-            assertThat("unexpected title", data.get("title").asText(), m_messageMatcher);
+            assertThat("unexpected title", data.get("title").asText(), Matchers.is(EntityUtil.UNEXPECTED_TITLE));
             assertThat("unexpected error code in data", data.get("code").asText(),
                     Matchers.is("UnsupportedOperationException"));
             assertThat("unexpected canCopy", data.get("canCopy").asBoolean(), Matchers.is(true));

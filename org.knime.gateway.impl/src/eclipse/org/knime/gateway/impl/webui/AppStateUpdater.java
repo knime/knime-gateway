@@ -91,13 +91,16 @@ public final class AppStateUpdater {
      * Informs all the registered listeners that the app state has changed.
      */
     public void updateAppState() {
-        m_listeners.forEach(Runnable::run);
+        for (final var listener : m_listeners) {
+            listener.run();
+        }
     }
 
     /**
      * Subscribe a listener to updates of the application state. Do nothing if the listener is already registered.
      *
      * @param callback The callback to be called with the new application state
+     * @since 5.6
      */
     public void addAppStateChangedListener(final Runnable callback) {
         m_listeners.add(callback);
@@ -107,6 +110,7 @@ public final class AppStateUpdater {
      * Remove a subscribed listener
      *
      * @param callback The callback to be removed from the set of listeners.
+     * @since 5.6
      */
     public void removeAppStateChangedListener(final Runnable callback) {
         m_listeners.remove(callback);

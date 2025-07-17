@@ -83,7 +83,8 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     }
 
     @Override
-    public boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    public boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException {
         if (m_delta.isZero()) {
             return false;
         }
@@ -183,16 +184,21 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
 
     private static void assertCanMoveMetanodePortsBars(final WorkflowManager wfm,
         final MetanodePortsBars metanodePortsBars) throws ServiceCallException {
+        String detail = null;
         if (isComponentWFM(wfm)) {
-            throw new ServiceCallException("Components don't have metanode-ports-bars to be moved.");
+            detail = "Components don't have metanode-ports-bars to be moved.";
+        } else if (metanodePortsBars.in && wfm.getInPortsBarUIInfo() == null) {
+            detail = "Metanode in-ports-bar can't be moved. It doesn't have a position, yet.";
+        } else if (metanodePortsBars.out && wfm.getOutPortsBarUIInfo() == null) {
+            detail = "Metanode out-ports-bar can't be moved. It doesn't have a position, yet.";
         }
-        if (metanodePortsBars.in && wfm.getInPortsBarUIInfo() == null) {
-            throw new ServiceCallException(
-                "Metanode in-ports-bar can't be moved. It doesn't have a position, yet.");
-        }
-        if (metanodePortsBars.out && wfm.getOutPortsBarUIInfo() == null) {
-            throw new ServiceCallException(
-                "Metanode out-ports-bar can't be moved. It doesn't have a position, yet.");
+
+        if (detail != null) {
+            throw ServiceCallException.builder() //
+                .withTitle("Moving failed") //
+                .withDetails(detail) //
+                .canCopy(false) //
+                .build();
         }
     }
 

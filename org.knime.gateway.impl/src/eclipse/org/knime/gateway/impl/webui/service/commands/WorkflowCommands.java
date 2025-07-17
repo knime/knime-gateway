@@ -137,8 +137,7 @@ public final class WorkflowCommands {
      * @param commandEnt the workflow command entity to execute
      *
      * @return The instance of the executed command
-     *
-     * @throws ServiceCallException if the command couldn't be executed
+     * @throws ServiceCallException
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
         throws ServiceCallException {
@@ -157,8 +156,7 @@ public final class WorkflowCommands {
      * @param spaceProviders The space providers
      *
      * @return The instance of the executed command
-     *
-     * @throws ServiceCallException if the command couldn't be executed
+     * @throws ServiceCallException
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
@@ -244,8 +242,11 @@ public final class WorkflowCommands {
                 command = m_workflowCommandToExecute;
                 m_workflowCommandToExecute = null;
             } else {
-                throw new ServiceCallException("Command of type " + commandEnt.getClass().getSimpleName()
-                    + " cannot be executed. Unknown command.");
+                throw ServiceCallException.builder() //
+                    .withTitle("Unknown command") //
+                    .withDetails("Command of type " + commandEnt.getClass().getSimpleName() + " cannot be executed.") //
+                    .canCopy(true) //
+                    .build();
             }
         }
         return command;
@@ -311,7 +312,12 @@ public final class WorkflowCommands {
                 // Only set a snapshot id if there is a workflow change to wait for
                 latestSnapshotId = workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
             } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
-                throw new ServiceCallException("Interrupted while waiting corresponding workflow change", e);
+                throw ServiceCallException.builder() //
+                    .withTitle("Command execution interrupted") //
+                    .withDetails("Interrupted while waiting corresponding workflow change") //
+                    .canCopy(true) //
+                    .withCause(e) //
+                    .build();
             }
         }
         return ((WithResult)command).buildEntity(latestSnapshotId);
@@ -322,22 +328,26 @@ public final class WorkflowCommands {
      * @return whether there is at least one command on the undo-stack
      */
     public synchronized boolean canUndo(final WorkflowKey wfKey) {
-        var stack = m_undoStacks.get(wfKey);
-        return stack != null && stack.peek().map(WorkflowCommand::canUndo).orElse(Boolean.FALSE);
+        final var topCommand = Optional.ofNullable(m_undoStacks.get(wfKey)).flatMap(CommandStack::peek).orElse(null);
+        return topCommand != null && topCommand.canUndo();
     }
 
     /**
      * Undoes the last command executed for the given workflow.
      *
      * @param wfKey reference to the workflow to undo the last command for
-     * @throws ServiceCallException if there is no command to be undone
+     * @throws ServiceCallException
      */
     public synchronized void undo(final WorkflowKey wfKey) throws ServiceCallException {
         var undoStack = m_undoStacks.get(wfKey);
         if (undoStack != null && !undoStack.isEmpty()) {
             undoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_redoStacks)).undo();
         } else {
-            throw new ServiceCallException("No command to undo");
+            throw ServiceCallException.builder() //
+                .withTitle("No command to undo") //
+                .withDetails() //
+                .canCopy(false) //
+                .build();
         }
     }
 
@@ -348,22 +358,26 @@ public final class WorkflowCommands {
      * @return whether there is at least one command on the redo-stack
      */
     public synchronized boolean canRedo(final WorkflowKey wfKey) {
-        var stack = m_redoStacks.get(wfKey);
-        return stack != null && stack.peek().map(WorkflowCommand::canRedo).orElse(Boolean.FALSE);
+        final var topCommand = Optional.ofNullable(m_redoStacks.get(wfKey)).flatMap(CommandStack::peek).orElse(null);
+        return topCommand != null && topCommand.canRedo();
     }
 
     /**
      * Re-does the last command that has been undone for the given workflow.
      *
      * @param wfKey reference to the workflow to redo the last command for
-     * @throws ServiceCallException if there is no command to be redone
+     * @throws ServiceCallException
      */
     public synchronized void redo(final WorkflowKey wfKey) throws ServiceCallException {
         var redoStack = m_redoStacks.get(wfKey);
         if (redoStack != null && !redoStack.isEmpty()) {
             redoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_undoStacks)).redo();
         } else {
-            throw new ServiceCallException("No command to redo");
+            throw ServiceCallException.builder() //
+                .withTitle("No command to redo") //
+                .withDetails() //
+                .canCopy(false) //
+                .build();
         }
     }
 
@@ -381,7 +395,7 @@ public final class WorkflowCommands {
      * Removes all commands from the undo- and redo-stacks for all workflows of a workflow project referenced by its
      * project-id.
      *
-     * @param keyFilter
+     * @param keyFilter filter determining which workflow(s) to dispose the command stacks of
      */
     public synchronized void disposeUndoAndRedoStacks(final Predicate<WorkflowKey> keyFilter) {
         m_undoStacks.entrySet().removeIf(e -> keyFilter.test(e.getKey()));

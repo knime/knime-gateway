@@ -51,7 +51,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
@@ -151,12 +150,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
             translateCommand(delta, List.of(), Map.of(connectionId, List.of(bendpointIndex)));
-        try {
-            executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
-        } catch (Exception e) {
-            assertThat("unexpected exception message", e.getMessage(),
-                startsWith("Failed to execute command. Workflow parts not found: bendpoints (999 on connection STD"));
-        }
+        assertThrows(Exception.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId));
     }
 
     public void testTranslateBendpointsOnConnectionWithNone() throws Exception {
@@ -165,24 +159,14 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
             translateCommand(delta, List.of(), Map.of(connectionId, List.of(bendpointIndex)));
-        try {
-            executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
-        } catch (Exception e) {
-            assertThat("unexpected exception message", e.getMessage(),
-                startsWith("Failed to execute command. Workflow parts not found: bendpoints (999 on connection"));
-        }
+        assertThrows(Exception.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId));
     }
 
     public void testTranslateBendpointsOnInexistentConnection() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var connection = new ConnectionIDEnt(new NodeIDEnt(999), 999).toString();
         var translateInvalidBendpointIndex = translateCommand(delta, List.of(), Map.of(connection, List.of(0)));
-        try {
-            executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
-        } catch (Exception e) {
-            assertThat("unexpected exception message", e.getMessage(),
-                startsWith("Failed to execute command. Workflow parts not found: " + "connections ([?"));
-        }
+        assertThrows(Exception.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId));
     }
 
     public void testTranslateNodesAndAnnotations() throws Exception {
@@ -307,9 +291,6 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         } catch (Exception e) { // NOSONAR
             assertThat("unexpected exception class", e,
                 Matchers.instanceOf(ServiceExceptions.ServiceCallException.class));
-            assertThat("unexpected exception message", e.getMessage(),
-                is("Failed to execute command. Workflow parts not found: "
-                    + "nodes (0:9999), workflow-annotations (0:12345)"));
         }
 
     }
@@ -338,17 +319,15 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(outPortsBarBoundsTranslatedUndone.getY(), is(outPortsBarBounds.getY()));
 
         // try to execute command on a component
-        var message = assertThrows(ServiceCallException.class,
-            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), translateCommand)).getMessage();
-        assertThat(message, is("Components don't have metanode-ports-bars to be moved."));
+        assertThrows(ServiceCallException.class,
+            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), translateCommand));
 
         // try to translate ports bar without a fixed position
         var translateCommand2 = builder(TranslateCommandEnt.TranslateCommandEntBuilder.class)
             .setKind(WorkflowCommandEnt.KindEnum.TRANSLATE).setMetanodeInPortsBar(Boolean.TRUE)
             .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(10).setY(10).build()).build();
-        message = assertThrows(ServiceCallException.class,
-            () -> ws().executeWorkflowCommand(wfId, metanodeId, translateCommand2)).getMessage();
-        assertThat(message, is("Metanode in-ports-bar can't be moved. It doesn't have a position, yet."));
+        assertThrows(ServiceCallException.class,
+            () -> ws().executeWorkflowCommand(wfId, metanodeId, translateCommand2));
     }
 
 

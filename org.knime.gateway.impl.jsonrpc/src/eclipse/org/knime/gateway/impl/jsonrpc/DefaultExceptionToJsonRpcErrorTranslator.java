@@ -48,14 +48,8 @@
  */
 package org.knime.gateway.impl.jsonrpc;
 
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-
-import java.util.Map;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.knime.gateway.api.service.GatewayException;
-import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt;
-import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt.GatewayProblemDescriptionEntBuilder;
+import org.knime.gateway.api.util.EntityUtil;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 
@@ -74,51 +68,22 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
      */
     public static final int UNEXPECTED_EXCEPTION_ERROR_CODE = -32601;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getMessage(final Throwable throwable, final JsonRpcError errorAnnotation) {
         return throwable.getMessage();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Object getData(final Throwable throwable, final JsonRpcError errorAnnotation) {
         if (throwable instanceof GatewayException gatewayException && errorAnnotation != null) {
-            return knownToEntity(gatewayException);
+            return EntityUtil.knownToProblemDescription(gatewayException);
         } else {
-            return unknownToEntity(throwable);
+            return EntityUtil.unknownToProblemDescription(throwable);
         }
     }
-
 
     @Override
     public int getUnexpectedExceptionErrorCode(final Throwable t) {
         return UNEXPECTED_EXCEPTION_ERROR_CODE;
     }
-
-    private static GatewayProblemDescriptionEnt knownToEntity(final GatewayException gatewayException) {
-        return builder(GatewayProblemDescriptionEntBuilder.class) //
-                .setTitle(gatewayException.getMessage()) //
-                .setCode(gatewayException.getClass().getSimpleName()) //
-                .setCanCopy(gatewayException.isCanCopy()) //
-                .setAdditionalProperties(gatewayException.getAdditionalProperties()) //
-                .build();
-    }
-
-    private static GatewayProblemDescriptionEnt unknownToEntity(final Throwable throwable) {
-        return builder(GatewayProblemDescriptionEntBuilder.class) //
-            .setTitle(throwable.getMessage()) //
-            .setCode(throwable.getClass().getSimpleName()) //
-            .setCanCopy(true) //
-            .setAdditionalProperties(Map.of( //
-                "message", throwable.getMessage(), //
-                "stackTrace",  ExceptionUtils.getStackTrace(throwable)//
-            )) //
-            .build();
-    }
-
 }

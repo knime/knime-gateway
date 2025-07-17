@@ -57,7 +57,7 @@ import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
  * persisted, such as a project used for tool-execution for an 'agent'-node. See also {@link FlowVirtualScopeContext}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @since 5.6
+ * @since 5.7
  */
 public final class VirtualWorkflowProjects {
 

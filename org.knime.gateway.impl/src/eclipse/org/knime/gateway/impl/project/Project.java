@@ -178,7 +178,8 @@ public final class Project {
      * @param version The version id
      * @return The workflow manager of the project of a given {@link VersionId}.
      */
-    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version) {
+    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version)
+         {
         return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version));
     }
 
@@ -189,9 +190,7 @@ public final class Project {
      *         yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
-        return this.m_projectWfmCache.contains(VersionId.currentState()) ? //
-            Optional.of(m_projectWfmCache.getWorkflowManager(VersionId.currentState())) : //
-            Optional.empty();
+        return this.m_projectWfmCache.getWorkflowManagerIfLoaded(VersionId.currentState());
     }
 
     /**
@@ -202,11 +201,7 @@ public final class Project {
      *         is not yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
-        if (m_projectWfmCache.contains(version)) {
-            return Optional.of(m_projectWfmCache.getWorkflowManager(version));
-        } else {
-            return Optional.empty();
-        }
+        return this.m_projectWfmCache.getWorkflowManagerIfLoaded(version);
     }
 
     /**
@@ -258,7 +253,7 @@ public final class Project {
 
     /**
      * TODO NXT-3607 Projects can be immutable (NOSONAR)
-     * 
+     *
      * @param loader -
      */
     public void setWfmLoader(final WorkflowManagerLoader loader) {
@@ -328,7 +323,7 @@ public final class Project {
             /**
              * Associate a single {@code WorkflowManager} instance with this project as current state. This means this
              * project is not able to dynamically load any other kind of workflows, e.g. those of previous versions.
-             * 
+             *
              * @param wfm -
              * @return -
              */
@@ -336,7 +331,7 @@ public final class Project {
 
             /**
              * Define how the project can dynamically load workflows.
-             * 
+             *
              * @param wfmLoader -
              * @return -
              */

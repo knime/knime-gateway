@@ -88,7 +88,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -493,7 +492,7 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
         final int x, final int y) {
         assertThat(message, wf.getWorkflow().getNodeTemplates().keySet(), Matchers.hasItems(nodeFactory));
         var nodeEnt = wf.getWorkflow().getNodes().values().stream()
-            .filter(n -> n instanceof NativeNodeEnt && ((NativeNodeEnt)n).getTemplateId().equals(nodeFactory))
+            .filter(n -> n instanceof NativeNodeEnt nn && nn.getTemplateId().equals(nodeFactory))
             .findFirst().orElseThrow();
         assertThat(message, nodeEnt.getPosition().getX(), is(x));
         assertThat(message, nodeEnt.getPosition().getY(), is(y));
@@ -912,8 +911,8 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var originalNumInPorts = originalPorts.size();
         assertThat("Expect to back to original number of in-ports after undo",
             currentPorts.size() == originalNumInPorts);
-        var originalNames = originalPorts.stream().map(NodePortTemplateEnt::getName).collect(Collectors.toList());
-        var currentNames = currentPorts.stream().map(NodePortTemplateEnt::getName).collect(Collectors.toList());
+        var originalNames = originalPorts.stream().map(NodePortTemplateEnt::getName).toList();
+        var currentNames = currentPorts.stream().map(NodePortTemplateEnt::getName).toList();
         assertEquals("Expect port names to not have changed", originalNames, currentNames);
     }
 
@@ -1251,10 +1250,9 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
         var workflow = ws().getWorkflow(wfId, getRootID(), null, false).getWorkflow();
         var nodes = workflow.getNodes();
-        var newNode = nodes.entrySet().stream()
-            .filter(entry -> entry.getValue() instanceof NativeNodeEnt
-                && ((NativeNodeEnt)entry.getValue()).getTemplateId().equals(columnAppenderFactory))
-            .findFirst().get().getValue();
+        var newNode = nodes.entrySet().stream().filter(
+            entry -> entry.getValue() instanceof NativeNodeEnt nn && nn.getTemplateId().equals(columnAppenderFactory))
+            .findFirst().orElseThrow().getValue();
         var connections = ws().getWorkflow(wfId, getRootID(), null, false).getWorkflow().getConnections();
         var ingoingConnection = connections.get(newNode.getId().toString() + "_1");
         assertThat("connection between src and node exists", ingoingConnection.getSourceNode().toString(),
@@ -1289,10 +1287,9 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
         ws().executeWorkflowCommand(wfId, workflowId, command);
 
         var nodes = ws().getWorkflow(wfId, workflowId, null, false).getWorkflow().getNodes();
-        var newNode = nodes.entrySet().stream()
-            .filter(entry -> entry.getValue() instanceof NativeNodeEnt
-                && ((NativeNodeEnt)entry.getValue()).getTemplateId().equals(columnAppenderFactory))
-            .findFirst().get().getValue();
+        var newNode = nodes.entrySet().stream().filter(
+            entry -> entry.getValue() instanceof NativeNodeEnt nn && nn.getTemplateId().equals(columnAppenderFactory))
+            .findFirst().orElseThrow().getValue();
         var connections = ws().getWorkflow(wfId, workflowId, null, false).getWorkflow().getConnections();
         var ingoingConnection = connections.get(newNode.getId().toString() + "_1");
         assertThat("connection between src and node exists", ingoingConnection.getSourceNode().toString(),

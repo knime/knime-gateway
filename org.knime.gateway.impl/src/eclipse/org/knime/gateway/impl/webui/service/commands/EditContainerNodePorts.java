@@ -63,7 +63,6 @@ import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
 import org.knime.gateway.api.webui.entity.PortCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
@@ -94,8 +93,12 @@ final class EditContainerNodePorts implements EditPorts {
     public int addPort(final AddPortCommandEnt addPortCommandEnt) throws ServiceCallException {
         var currentPortInfos = getCurrentPortInfos();
         List<MetaPortInfo> newPortInfos = new ArrayList<>(Arrays.asList(currentPortInfos));
-        var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId())
-            .orElseThrow(() -> new ServiceCallException("Unknown port type"));
+        var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId()) //
+            .orElseThrow(() -> ServiceCallException.builder() //
+                .withTitle("Failed to add port") //
+                .withDetails("Unknown port type: " + addPortCommandEnt.getPortTypeId()) //
+                .canCopy(false) //
+                .build());
         var newMetaPortInfo = MetaPortInfo.builder() //
             .setPortType(newPortType) //
             .setNewIndex(currentPortInfos.length) //
@@ -111,13 +114,22 @@ final class EditContainerNodePorts implements EditPorts {
         var newPortInfos = new ArrayList<>(Arrays.asList(getCurrentPortInfos()));
         int indexToRemove = removePortCommandEnt.getPortIndex();
         if (getContainerType() == CoreUtil.ContainerType.COMPONENT && indexToRemove == 0) {
-            throw new ServiceExceptions.ServiceCallException(
-                "Can not remove fixed flow variable port at index 0");
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to remove port") //
+                .withDetails("Can't remove fixed flow variable port at index 0") //
+                .canCopy(false) //
+                .build();
         }
         try {
             newPortInfos.remove(indexToRemove);
         } catch (IndexOutOfBoundsException e) { // NOSONAR: Exception is thrown
-            throw new ServiceExceptions.ServiceCallException(e.getMessage());
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to remove port") //
+                .withDetails(
+                    "Port index " + indexToRemove + " is out of bounds for node " + removePortCommandEnt.getNodeId()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
         // when removing a port other than the last one from a component
         // port metadata is at some point just truncated to the right length

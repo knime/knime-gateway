@@ -53,6 +53,8 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
@@ -93,13 +95,18 @@ public class DefaultComponentService implements ComponentService {
         } else if ("retry".equals(action)) {
             componentLoader.rerunLoadJob(placeholderId);
         } else {
-            throw new ServiceCallException("Unknown action: " + action);
+            throw ServiceCallException.builder() //
+                .withTitle("Unknown action") //
+                .withDetails("Unknown component loading action: " + action) //
+                .canCopy(false) //
+                .build();
         }
     }
 
     @Override
     public ComponentNodeDescriptionEnt getComponentDescription(final String projectId, final NodeIDEnt workflowId,
-        final String versionId, final NodeIDEnt nodeId) throws ServiceCallException {
+        final String versionId, final NodeIDEnt nodeId)
+        throws ServiceCallException, LoggedOutException, NetworkException {
 
         try {
             var version = VersionId.parse(versionId);
@@ -109,10 +116,18 @@ public class DefaultComponentService implements ComponentService {
                 return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
             }
 
-            throw new ServiceCallException(
-                "No Component for " + projectId + ", " + workflowId + ", " + nodeId + " found.");
+            throw ServiceCallException.builder() //
+                .withTitle("Component not found") //
+                .withDetails("No Component for " + projectId + ", " + workflowId + ", " + nodeId + " found.") //
+                .canCopy(false) //
+                .build();
         } catch (NodeNotFoundException | IllegalArgumentException ex) {
-            throw new ServiceCallException("Could not get component description. " + ex.getMessage(), ex);
+            throw ServiceCallException.builder() //
+                .withTitle("Component description not found") //
+                .withDetails("Could not get component description. " + ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         }
     }
 

@@ -55,11 +55,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.knime.core.node.workflow.NodeContainerMetadata;
 import org.knime.core.node.workflow.NodeContainerMetadata.Link;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
+import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.service.GatewayException;
+import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt;
+import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt.GatewayProblemDescriptionEntBuilder;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -77,6 +82,12 @@ import org.knime.shared.workflow.def.AnnotationDataDef;
  * @author Kai Franze, KNIME GmbH, Germany
  */
 public final class EntityUtil {
+
+    /**
+     * "title" property of unexpected exceptions.
+     * @since 5.7
+     */
+    public final static String UNEXPECTED_TITLE = "An unexpected error occurred";
 
     private EntityUtil() {
         // utility class
@@ -220,5 +231,48 @@ public final class EntityUtil {
             case WORKFLOW -> Optional.of(ProjectTypeEnum.WORKFLOW);
             default -> Optional.empty();
         };
+    }
+
+    /**
+     * Creates a {@link GatewayProblemDescriptionEnt} from a known exception.
+     *
+     * @param gatewayException known gateway exception
+     * @return problem entity
+     * @since 5.7
+     */
+    public static GatewayProblemDescriptionEnt knownToProblemDescription(final GatewayException gatewayException) {
+        final var details = gatewayException.getDetails();
+        final var additionalProperties = new HashMap<>(gatewayException.getAdditionalProperties());
+        if (gatewayException.getCause() != null) {
+            additionalProperties.put("stackTrace", ExceptionUtils.getStackTrace(gatewayException));
+        }
+        return EntityBuilderManager.builder(GatewayProblemDescriptionEntBuilder.class) //
+            .setTitle(gatewayException.getTitle()) //
+            .setCode(gatewayException.getClass().getSimpleName()) //
+            .setStatus(gatewayException.getStatus().stream().boxed().findAny().orElse(null)) //
+            .setDetails(details == null || details.isEmpty() ? null : details) //
+            .setCanCopy(gatewayException.isCanCopy()) //
+            .setAdditionalProperties(additionalProperties) //
+            .build();
+    }
+
+    /**
+     * Creates a {@link GatewayProblemDescriptionEnt} from an unknown exception.
+     *
+     * @param throwable
+     * @return problem entity
+     * @since 5.7
+     */
+    public static GatewayProblemDescriptionEnt unknownToProblemDescription(final Throwable throwable) {
+        return EntityBuilderManager.builder(GatewayProblemDescriptionEntBuilder.class) //
+            .setTitle(UNEXPECTED_TITLE) //
+            .setCode(throwable.getClass().getSimpleName()) //
+            .setDetails(List.of(throwable.getClass().getSimpleName() + ": " + throwable.getMessage())) //
+            .setCanCopy(true) //
+            .setAdditionalProperties(Map.of( //
+                "message", throwable.getMessage(), //
+                "stackTrace", ExceptionUtils.getStackTrace(throwable)//
+            )) //
+            .build();
     }
 }

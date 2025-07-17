@@ -147,8 +147,11 @@ public class NodeSearch {
         final String portTypeId, final NodeRelation nodeRelation) throws InvalidRequestException {
 
         if (portTypeId == null ^ nodeRelation == null) {
-            throw new InvalidRequestException(
-                "Both <portTypeId> and <searchDirection> must either be both null or both not null");
+            throw InvalidRequestException.builder() //
+                .withTitle("Failed to perform search") //
+                .withDetails("Both <portTypeId> and <searchDirection> must either be both null or both not null") //
+                .canCopy(true) //
+                .build();
         }
         final var searchForSuccesors = nodeRelation == null || nodeRelation == NodeRelation.SUCCESSORS;
         final var query = new SearchQuery(queryString, tags, allTagsMatch, portTypeId, searchForSuccesors);
@@ -202,7 +205,7 @@ public class NodeSearch {
                 .filter(tagFilter)//
                 .sorted(//
                     Comparator.<Node> comparingInt(n -> -n.weight())//
-                        .thenComparing(n -> n.name(), ALPHANUMERIC_COMPARATOR))//
+                        .thenComparing(Node::name, ALPHANUMERIC_COMPARATOR))//
                 .toList();
         }
         // Case 3: filter by tags, rank by similarity to search term

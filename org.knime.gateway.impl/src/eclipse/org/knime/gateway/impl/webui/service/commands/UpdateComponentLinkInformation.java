@@ -98,22 +98,37 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
     protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         if (wfm.isWriteProtected()) {
-            throw new ServiceCallException("Container is read-only.");
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to update component link") //
+                .withDetails("Container is read-only.") //
+                .canCopy(false) //
+                .build();
         }
 
         final var componentId = m_componentId.apply(wfm);
         final var component = wfm.getNodeContainer(componentId, SubNodeContainer.class, false);
         if (component == null) {
-            throw new ServiceCallException("Not a component: " + m_componentId);
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to update component link") //
+                .withDetails("Not a component: " + m_componentId) //
+                .canCopy(false) //
+                .build();
         }
 
         final var templateInformation = component.getTemplateInformation();
         if (templateInformation.getRole() == Role.Template) {
-            throw new ServiceCallException(
-                "Cannot set link source on component template directly: " + m_componentId);
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to update component link") //
+                .withDetails("Cannot set link source on component template directly: " + m_componentId) //
+                .canCopy(false) //
+                .build();
         }
         if (templateInformation.getRole() != Role.Link) {
-            throw new ServiceCallException("Component not linked: " + m_componentId);
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to update component link") //
+                .withDetails("Component not linked: " + m_componentId) //
+                .canCopy(false) //
+                .build();
         }
 
         final var newTemplateInfo = updateTemplateInformation(templateInformation, m_newURI);

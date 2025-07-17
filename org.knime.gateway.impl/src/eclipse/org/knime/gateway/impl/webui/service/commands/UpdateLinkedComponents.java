@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -109,16 +110,24 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext()
+        throws ServiceCallException {
         if (m_nodeIdEnts.isEmpty()) {
-            throw new ServiceCallException("No component IDs passed for <%s>".formatted(getWorkflowKey()));
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to update component(s)") //
+                .withDetails("No component IDs passed for <%s>".formatted(getWorkflowKey())) //
+                .canCopy(false) //
+                .build();
         }
 
         final var components = getLinkedComponents(m_nodeIdEnts, getWorkflowKey());
 
         if (components.size() != m_nodeIdEnts.size()) {
-            throw new ServiceCallException(
-                "Not all of the nodes <%s> are linked components".formatted(m_nodeIdEnts));
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to update component(s)") //
+                .withDetails("Not all of the nodes <%s> are linked components".formatted(m_nodeIdEnts)) //
+                .canCopy(false) //
+                .build();
         }
 
         m_updateLogs = components.stream()//
@@ -177,12 +186,14 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
     private static List<SubNodeContainer> getLinkedComponents(final List<NodeIDEnt> nodeIdEnts,
         final WorkflowKey wfKey) {
-        return nodeIdEnts.stream() //
-            .map(nodeIdEnt -> DefaultServiceUtil.getNodeContainer(wfKey.getProjectId(), nodeIdEnt)) //
-            .filter(SubNodeContainer.class::isInstance) // Only components
-            .map(SubNodeContainer.class::cast) //
-            .filter(component -> component.getTemplateInformation().getRole() == Role.Link) // Only linked components
-            .toList();
+        final List<SubNodeContainer> linked = new ArrayList<>();
+        for (final var nodeIdEnt : nodeIdEnts) {
+            if (DefaultServiceUtil.getNodeContainer(wfKey.getProjectId(), nodeIdEnt) instanceof SubNodeContainer snc
+                    && snc.getTemplateInformation().getRole() == Role.Link) {
+                linked.add(snc);
+            }
+        }
+        return linked;
     }
 
     private static StatusEnum determineAggregateStatus(final List<UpdateLog> updateLogs) {

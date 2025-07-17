@@ -105,23 +105,36 @@ public class NodeRecommendations {
      * @param nodeRelation The relation of the recommended nodes, either recommendations for 'successors' or
      *            'predecessors'
      * @return The node recommendations
-     * @throws OperationNotAllowedException
+     * @throws OperationNotAllowedException -
      */
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final NodeRelation nodeRelation,
         final Boolean fullTemplateInfo) throws OperationNotAllowedException {
+
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
         }
 
         if (!m_nodeRecommendationManagerIsInitialized) {
-            throw new OperationNotAllowedException("Node recommendation manager was not initialized properly");
+            throw OperationNotAllowedException.builder() //
+                .withTitle("Failed to get node recommendations") //
+                .withDetails("Node recommendation manager was not initialized properly") //
+                .canCopy(false) //
+                .build();
         }
         if (nodeId == null ^ portIdx == null) {
-            throw new OperationNotAllowedException("<nodeId> and <portIdx> must either be both null or not null");
+            throw OperationNotAllowedException.builder() //
+                .withTitle("Failed to get node recommendations") //
+                .withDetails("<nodeId> and <portIdx> must either be both null or not null") //
+                .canCopy(false) //
+                .build();
         }
         if (nodeId == null ^ nodeRelation == null) {
-            throw new OperationNotAllowedException("<nodeId> and <direction> must either be both null or not null");
+            throw OperationNotAllowedException.builder() //
+                .withTitle("Failed to get node recommendations") //
+                .withDetails("<nodeId> and <direction> must either be both null or not null") //
+                .canCopy(false) //
+                .build();
         }
 
         var searchSuccessors = nodeRelation == null || nodeRelation == NodeRelation.SUCCESSORS;
@@ -158,7 +171,12 @@ public class NodeRecommendations {
         throws OperationNotAllowedException {
         final var numPorts = isSourcePort ? nc.getNrOutPorts() : nc.getNrInPorts();
         if (portIdx + 1 > numPorts || portIdx < 0) {
-            throw new OperationNotAllowedException("Cannot recommend nodes for non-existing port");
+            throw OperationNotAllowedException.builder() //
+                .withTitle("Failed to get node recommendations") //
+                .withDetails(
+                    "Cannot recommend nodes for non-existing port %s of %s ".formatted(portIdx, nc.getNameWithID())) //
+                .canCopy(false) //
+                .build();
         }
         return isSourcePort ? nc.getOutPort(portIdx).getPortType() : nc.getInPort(portIdx).getPortType();
     }

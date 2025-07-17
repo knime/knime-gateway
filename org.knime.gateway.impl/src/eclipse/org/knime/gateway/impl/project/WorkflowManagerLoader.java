@@ -62,6 +62,10 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.LockFailedException;
 import org.knime.core.util.ProgressMonitorAdapter;
 import org.knime.gateway.api.util.VersionId;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -120,16 +124,18 @@ public interface WorkflowManagerLoader {
      *
      * @param origin -
      * @param version -
-     * @param spaceProviders -
+     * @param space -
      * @param monitor Will receive updates on the progress of the task
      * @return -
+     * @since 5.7
      */
-    static Optional<Path> fetch(final Origin origin, final VersionId version, final SpaceProviders spaceProviders,
-        final ExecutionMonitor monitor) { // NOSONAR false positive
-        var space = spaceProviders.getSpace(origin.providerId(), origin.spaceId());
+    static Optional<Path> fetch(final Origin origin, final VersionId version, final Space space,
+        final ExecutionMonitor monitor) {
         try {
             return space.toLocalAbsolutePath(monitor, origin.itemId(), version);
-        } catch (CanceledExecutionException e) { // NOSONAR
+        } catch (CanceledExecutionException | NetworkException | LoggedOutException
+                | MutableServiceCallException e) {
+            NodeLogger.getLogger(WorkflowManagerLoader.class).error(e);
             return Optional.empty();
         }
     }
@@ -148,5 +154,4 @@ public interface WorkflowManagerLoader {
             }
         };
     }
-
 }

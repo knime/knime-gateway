@@ -52,8 +52,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -85,6 +85,8 @@ abstract class HigherOrderCommand extends AbstractWorkflowCommand implements Wit
      *
      * @return the command that returns a result or an empty optional if this higher order command doesn't return any
      *         result
+     * @throws NetworkException
+     * @throws LoggedOutException
      * @throws ServiceCallException
      */
     protected abstract Optional<WithResult> preExecuteToGetResultProvidingCommand(WorkflowKey wfKey)
@@ -93,14 +95,14 @@ abstract class HigherOrderCommand extends AbstractWorkflowCommand implements Wit
     /**
      * @param wfKey represents the workflow this command operates on
      * @return {@code true} if this higher-order command returns a result, otherwise {@code false}
-     * @throws NodeNotFoundException
-     * @throws NotASubWorkflowException
+     * @throws LoggedOutException
+     * @throws ServiceCallException
      */
-    final boolean preExecuteToDetermineWhetherProvidesResult(final WorkflowKey wfKey) throws ServiceCallException {
+    final boolean preExecuteToDetermineWhetherProvidesResult(final WorkflowKey wfKey)
+        throws ServiceCallException {
         m_resultProvidingCommand = preExecuteToGetResultProvidingCommand(wfKey).orElse(null);
-        if (m_resultProvidingCommand instanceof HigherOrderCommand) {
-            m_resultProvidingCommand = ((HigherOrderCommand)m_resultProvidingCommand)
-                .preExecuteToGetResultProvidingCommand(wfKey).orElse(null);
+        if (m_resultProvidingCommand instanceof HigherOrderCommand hoc) {
+            m_resultProvidingCommand = hoc.preExecuteToGetResultProvidingCommand(wfKey).orElse(null);
         }
         return m_resultProvidingCommand != null;
     }

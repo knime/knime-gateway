@@ -128,7 +128,7 @@ public class GatewayServiceTestHelper {
      * @param versionId the version to load
      * @throws Exception if loading fails
      */
-    protected void loadVersionAndSetActive(final String projectId, final VersionId versionId) throws Exception {
+    protected void loadVersionAndSetActive(final String projectId, final VersionId versionId) {
         m_projectManager.getProject(projectId) //
             .map(project -> project.getFromCacheOrLoadWorkflowManager(versionId)) //
             .orElseThrow(() -> new IllegalStateException(

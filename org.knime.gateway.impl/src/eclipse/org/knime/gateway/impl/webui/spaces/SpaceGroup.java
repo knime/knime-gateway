@@ -48,10 +48,13 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 
 /**
  * Represents a space group which can be a user or a team inside a provider
@@ -106,9 +109,13 @@ public interface SpaceGroup<S extends Space> {
      * Creates a new private space inside this space group, it will use an automatically generated unique name
      *
      * @return the newly created {@link Space}
-     * @throws IOException
+     * @throws OperationNotAllowedException
+     * @throws LoggedOutException
+     * @throws NetworkException
+     * @throws MutableServiceCallException
      */
-    default Space createSpace() throws IOException {
+    default Space createSpace()
+        throws NetworkException, LoggedOutException, OperationNotAllowedException, MutableServiceCallException {
         throw new UnsupportedOperationException("Creation of spaces is not supported in this provider");
     }
 
@@ -116,7 +123,10 @@ public interface SpaceGroup<S extends Space> {
      * Creates a {@link SpaceGroupEnt} for this space group.
      *
      * @return space group entity for this group
+     * @throws LoggedOutException
+     * @throws NetworkException
+     * @throws MutableServiceCallException
      */
-    SpaceGroupEnt toEntity();
+    SpaceGroupEnt toEntity() throws NetworkException, LoggedOutException, MutableServiceCallException;
 
 }

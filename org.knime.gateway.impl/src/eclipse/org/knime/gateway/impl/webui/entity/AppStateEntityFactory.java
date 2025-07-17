@@ -79,6 +79,9 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ConnectionModeEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
@@ -373,10 +376,16 @@ public final class AppStateEntityFactory {
         // ... in the space explorer.
         // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
         if (origin.isLocal()) {
-            var localSpace = (LocalSpace)spaceProviders.getSpace(origin.providerId(), origin.spaceId());
-            return localSpace.getAncestorItemIds(origin.itemId());
+            try {
+                var localSpace = (LocalSpace)spaceProviders.getSpace(origin.providerId(), origin.spaceId());
+                return localSpace.getAncestorItemIds(origin.itemId());
+            } catch (final NetworkException | LoggedOutException e) {
+                throw new IllegalStateException(e);
+            } catch (final MutableServiceCallException e) { // NOSONAR
+                throw new IllegalStateException(e.toGatewayException("Failed to determine ancestor item IDs"));
+            }
         } else {
-            return null; // NOSONAR null return value is reasonable (want to sent entity property to null)
+            return null; // NOSONAR null return value is reasonable (want to set entity property to null)
         }
     }
 

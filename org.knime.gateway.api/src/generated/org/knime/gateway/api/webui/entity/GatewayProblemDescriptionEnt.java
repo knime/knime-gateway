@@ -66,7 +66,7 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
 
 
   /**
-   * Message of the thrown exception.
+   * Title of the problem (non instance-specific).
    * @return title 
    **/
   public String getTitle();
@@ -76,6 +76,18 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
    * @return code 
    **/
   public String getCode();
+
+  /**
+   * HTTP response status code (if applicable).
+   * @return status 
+   **/
+  public Integer getStatus();
+
+  /**
+   * List of details (\&quot;user-facing stack trace\&quot;) of the problem.
+   * @return details 
+   **/
+  public java.util.List<String> getDetails();
 
   /**
    * Indicating whether error details can be copied by the user.
@@ -96,6 +108,8 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
       var e = (GatewayProblemDescriptionEnt)other;
       valueConsumer.accept("title", Pair.create(getTitle(), e.getTitle()));
       valueConsumer.accept("code", Pair.create(getCode(), e.getCode()));
+      valueConsumer.accept("status", Pair.create(getStatus(), e.getStatus()));
+      valueConsumer.accept("details", Pair.create(getDetails(), e.getDetails()));
       valueConsumer.accept("canCopy", Pair.create(isCanCopy(), e.isCanCopy()));
   }
 
@@ -105,7 +119,7 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
     public interface GatewayProblemDescriptionEntBuilder extends GatewayEntityBuilder<GatewayProblemDescriptionEnt> {
 
         /**
-         * Message of the thrown exception.
+         * Title of the problem (non instance-specific).
          * 
          * @param title the property value,  
          * @return this entity builder for chaining
@@ -119,6 +133,22 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         GatewayProblemDescriptionEntBuilder setCode(String code);
+        
+        /**
+         * HTTP response status code (if applicable).
+         * 
+         * @param status the property value,  
+         * @return this entity builder for chaining
+         */
+        GatewayProblemDescriptionEntBuilder setStatus(Integer status);
+        
+        /**
+         * List of details (\&quot;user-facing stack trace\&quot;) of the problem.
+         * 
+         * @param details the property value,  
+         * @return this entity builder for chaining
+         */
+        GatewayProblemDescriptionEntBuilder setDetails(java.util.List<String> details);
         
         /**
          * Indicating whether error details can be copied by the user.

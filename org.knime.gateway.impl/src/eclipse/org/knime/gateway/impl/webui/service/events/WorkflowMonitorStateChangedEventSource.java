@@ -49,7 +49,7 @@
 package org.knime.gateway.impl.webui.service.events;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -87,9 +87,6 @@ public final class WorkflowMonitorStateChangedEventSource
         projectManager.addProjectRemovedListener(m_workflowChangeCallbacks::remove);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Optional<WorkflowMonitorStateChangeEventEnt>
         addEventListenerAndGetInitialEventFor(final WorkflowMonitorStateChangeEventTypeEnt eventTypeEnt,
@@ -105,25 +102,26 @@ public final class WorkflowMonitorStateChangedEventSource
         var initialEvent = m_workflowMiddleware.buildWorkflowMonitorStateChangeEventEnt(wfKey, // NOSONAR
             eventTypeEnt.getSnapshotId(), patchEntCreator);
 
-        m_workflowChangeCallbacks.computeIfAbsent(projectId, id -> { // NOSONAR
-            Runnable callback = () -> {
-                var event = m_workflowMiddleware.buildWorkflowMonitorStateChangeEventEnt(wfKey,
-                    patchEntCreator.getLastSnapshotId(), patchEntCreator);
-                if (event != null) {
-                    sendEvent(event, projectId);
-                }
-            };
-            m_workflowMiddleware.getWorkflowChangesListenerForWorkflowMonitor(wfKey)
-                .addWorkflowChangeCallback(callback);
-            return callback;
-        });
+        m_workflowChangeCallbacks.computeIfAbsent(projectId, id -> createChangeCallback(id, wfKey, patchEntCreator));
 
         return Optional.ofNullable(initialEvent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    private Runnable createChangeCallback(final String projectId, final WorkflowKey wfKey,
+        final PatchEntCreator patchEntCreator) {
+        Runnable callback = () -> {
+            var event = m_workflowMiddleware.buildWorkflowMonitorStateChangeEventEnt(wfKey,
+                patchEntCreator.getLastSnapshotId(), patchEntCreator);
+            if (event != null) {
+                sendEvent(event, projectId);
+            }
+        };
+        m_workflowMiddleware
+            .getWorkflowChangesListenerForWorkflowMonitor(wfKey)
+            .addWorkflowChangeCallback(callback);
+        return callback;
+    }
+
     @Override
     public void removeEventListener(final WorkflowMonitorStateChangeEventTypeEnt eventTypeEnt, final String projectId) {
         removeEventListener(eventTypeEnt.getProjectId());
@@ -132,23 +130,20 @@ public final class WorkflowMonitorStateChangedEventSource
     private void removeEventListener(final String projectId) {
         var callback = m_workflowChangeCallbacks.remove(projectId);
         if (callback != null) {
+            final var wfKey = new WorkflowKey(projectId, NodeIDEnt.getRootID());
             m_workflowMiddleware
-                .getWorkflowChangesListenerForWorkflowMonitor(new WorkflowKey(projectId, NodeIDEnt.getRootID()))
+                .getWorkflowChangesListenerForWorkflowMonitor(wfKey)
                 .removeCallback(callback);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeAllEventListeners() {
-        new HashSet<>(m_workflowChangeCallbacks.keySet()).forEach(this::removeEventListener);
+        for (final var projectId : List.copyOf(m_workflowChangeCallbacks.keySet())) {
+            removeEventListener(projectId);
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getName() {
         return "WorkflowMonitorStateChangeEvent";

@@ -51,13 +51,13 @@ package org.knime.gateway.impl.webui.service.events;
 import static org.knime.gateway.impl.service.util.DefaultServiceUtil.assertProjectVersion;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.EntityBuilderManager;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
@@ -100,12 +100,17 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         super(eventConsumer);
         m_workflowMiddleware = workflowMiddleware;
         m_projectManager = projectManager;
-        m_projectManager.addProjectRemovedListener(projectId ->
+        m_projectManager.addProjectRemovedListener(this::extracted);
+    }
+
+    private void extracted(final String projectId) {
         // remove listeners in case the FE doesn't explicitly do it,
         // e.g., in case the underlying job is swapped (AP in Hub)
-        new HashSet<>(m_workflowChangesCallbacks.keySet()).stream() //
-            .filter(wfKey -> wfKey.getProjectId().equals(projectId)) //
-            .forEach(this::removeEventListener));
+        for (final var wfKey : List.copyOf(m_workflowChangesCallbacks.keySet())) {
+            if (wfKey.getProjectId().equals(projectId)) {
+                removeEventListener(wfKey);
+            }
+        }
     }
 
     /**
@@ -147,7 +152,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         m_workflowChangesCallbacks.computeIfAbsent(workflowKey, wfKey -> {
             var latestSnapshotId =
                 workflowChangedEvent == null ? wfEventType.getSnapshotId() : workflowChangedEvent.getSnapshotId();
-            var callback = createWorkflowChangesCallback(workflowKey, new PatchEntCreator(latestSnapshotId));
+            final var callback = createWorkflowChangesCallback(workflowKey, new PatchEntCreator(latestSnapshotId));
             workflowChangesListener.addWorkflowChangeCallback(callback);
             return callback;
         });
@@ -163,6 +168,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     }
 
     private Runnable createWorkflowChangesCallback(final WorkflowKey wfKey, final PatchEntCreator patchEntCreator) {
+
         // No version needed, only current state
         var wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId());
         return () -> {
@@ -184,9 +190,6 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
             .setEvents(List.of(workflowChangedEvent, projectDirtyStateEvent)).build();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeEventListener(final WorkflowChangedEventTypeEnt wfEventType, final String projectId) {
         var wfKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
@@ -202,12 +205,11 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeAllEventListeners() {
-        new HashSet<>(m_workflowChangesCallbacks.keySet()).forEach(this::removeEventListener);
+        for (final var key : List.copyOf(m_workflowChangesCallbacks.keySet())) {
+            removeEventListener(key);
+        }
     }
 
     /**
@@ -216,10 +218,15 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      * @param state
      * @return <code>true</code> any of the {@link WorkflowChangesListener}s has the callback-state as given by the
      *         argument
+     * @throws GatewayException
      */
     public boolean checkWorkflowChangesListenerCallbackState(final CallState state) {
-        return m_workflowChangesCallbacks.keySet().stream()
-            .anyMatch(k -> m_workflowMiddleware.getWorkflowChangesListener(k).getCallState() == state);
+        for (final var k : m_workflowChangesCallbacks.keySet()) {
+            if (m_workflowMiddleware.getWorkflowChangesListener(k).getCallState() == state) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

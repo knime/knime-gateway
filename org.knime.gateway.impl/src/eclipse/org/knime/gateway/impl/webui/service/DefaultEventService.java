@@ -182,14 +182,23 @@ public final class DefaultEventService implements EventService {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new SpaceItemChangedEventSource(m_eventConsumer, m_spaceProvidersManager));
         } else {
-            throw new InvalidRequestException("Event type not supported: " + eventTypeEnt.getClass().getSimpleName());
+            throw InvalidRequestException.builder() //
+                .withTitle("Event type not supported") //
+                .withDetails("Unexpected event type: " + eventTypeEnt.getClass().getSimpleName()) //
+                .canCopy(true) //
+                .build();
         }
 
         // After setting the event source, try to add an event listener for the event type
         try {
             eventSource.addEventListenerFor(eventTypeEnt, projectId());
         } catch (IllegalArgumentException e) {
-            throw new InvalidRequestException(e.getMessage(), e);
+            throw InvalidRequestException.builder() //
+                .withTitle("Failed to add event listener") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 
