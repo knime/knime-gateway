@@ -99,7 +99,7 @@ public sealed class VersionId {
          */
         @Override
         public String toString() {
-            return "current-state";
+            return org.knime.core.util.hub.CurrentState.getIdentifier();
         }
 
         @Override

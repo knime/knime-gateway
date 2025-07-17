@@ -189,7 +189,7 @@ public final class DefaultNodeService implements NodeService {
     }
 
     @Override
-    public Object getNodeDialog(final String projectId, final NodeIDEnt workflowId, final String versionId,
+    public NodeDialogEnt getNodeDialog(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
@@ -203,7 +203,7 @@ public final class DefaultNodeService implements NodeService {
     }
 
     @Override
-    public Object getNodeView(final String projectId, final NodeIDEnt workflowId, final String versionId,
+    public NodeViewEnt getNodeView(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId) throws NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
@@ -221,7 +221,7 @@ public final class DefaultNodeService implements NodeService {
      * @throws NodeNotFoundException
      * @throws InvalidRequestException
      */
-    static Object getNodeView(final NativeNodeContainer nnc, final String projectId,
+    static NodeViewEnt getNodeView(final NativeNodeContainer nnc, final String projectId,
         final SelectionEventBus selectionEventBus) throws InvalidRequestException {
 
         if (!NodeViewManager.hasNodeView(nnc)) {
