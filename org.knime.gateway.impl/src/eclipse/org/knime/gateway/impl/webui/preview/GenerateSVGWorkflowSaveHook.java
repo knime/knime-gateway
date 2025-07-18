@@ -60,6 +60,8 @@ import org.knime.core.node.workflow.WorkflowSaveHook;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.webui.preview.util.ColorConstants;
+import org.knime.gateway.impl.webui.preview.util.ConnectorUtils;
+import org.knime.gateway.impl.webui.preview.util.PortUtils;
 import org.knime.gateway.impl.webui.preview.util.ShapeConstants;
 import org.knime.gateway.impl.webui.preview.util.TemplateUtils;
 import org.knime.gateway.impl.webui.preview.util.WorkflowBoundsCalculator;
@@ -112,6 +114,8 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
         context.setVariable("nodes", workflowEnt.getNodes().values());
         context.setVariable("connections", workflowEnt.getConnections().values());
 
+        context.setVariable("connectorUtils", new ConnectorUtils());
+        context.setVariable("portUtils", new PortUtils());
         context.setVariable("utils", new TemplateUtils());
 
         var templateEngine = new TemplateEngine();
