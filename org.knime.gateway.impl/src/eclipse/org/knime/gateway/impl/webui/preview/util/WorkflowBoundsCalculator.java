@@ -48,6 +48,14 @@
  */
 package org.knime.gateway.impl.webui.preview.util;
 
+import static org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey.MAX_NODE_NAME_WIDTH;
+import static org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey.NODE_LABEL_OFFSET_Y;
+import static org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey.NODE_NAME_LINE_HEIGHT;
+import static org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey.NODE_NAME_MARGIN;
+import static org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey.NODE_SIZE;
+import static org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey.NODE_STATUS_HEIGHT;
+import static org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey.NODE_STATUS_MARGIN_TOP;
+
 import org.knime.gateway.api.webui.entity.BoundsEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
@@ -65,10 +73,10 @@ public class WorkflowBoundsCalculator {
     private static final int WORKFLOW_PADDING = 10;
 
     // Derived constants
-    private static final double NODE_WIDTH = ShapeConstants.MAX_NODE_NAME_WIDTH;
+    private static final double NODE_WIDTH = ShapeConstants.get(MAX_NODE_NAME_WIDTH);
 
     private static final double NODE_HEIGHT =
-        ShapeConstants.NODE_NAME_LINE_HEIGHT + ShapeConstants.NODE_NAME_MARGIN + ShapeConstants.NODE_SIZE;
+            ShapeConstants.get(NODE_NAME_LINE_HEIGHT) + ShapeConstants.get(NODE_NAME_MARGIN) + ShapeConstants.get(NODE_SIZE);
 
     public record BoundingBox(int minX, int minY, int width, int height) {
     }
@@ -87,19 +95,19 @@ public class WorkflowBoundsCalculator {
         double x = node.getPosition().getX();
         double y = node.getPosition().getY();
 
-        double minX = x + (ShapeConstants.NODE_SIZE - NODE_WIDTH) / 2;
-        double minY = y - (ShapeConstants.NODE_NAME_LINE_HEIGHT + 8); // 8 is padding above node name
+        double minX = x + (ShapeConstants.get(NODE_SIZE) - NODE_WIDTH) / 2;
+        double minY = y - (ShapeConstants.get(NODE_NAME_LINE_HEIGHT) + 8); // 8 is padding above node name
 
         double height = NODE_HEIGHT;
 
         if (node.getKind() != KindEnum.METANODE) {
-            height += ShapeConstants.NODE_STATUS_HEIGHT + ShapeConstants.NODE_STATUS_MARGIN_TOP;
+            height += ShapeConstants.get(NODE_STATUS_HEIGHT) + ShapeConstants.get(NODE_STATUS_MARGIN_TOP);
         }
 
         if (node.getAnnotation() != null && node.getAnnotation().getText() != null
             && node.getAnnotation().getText().getValue() != null
             && !node.getAnnotation().getText().getValue().isEmpty()) {
-            height += ShapeConstants.NODE_LABEL_OFFSET_Y;
+            height += ShapeConstants.get(NODE_LABEL_OFFSET_Y);
         }
 
         Extents extents = new Extents();

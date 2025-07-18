@@ -59,6 +59,8 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowSaveHook;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.impl.webui.preview.util.ColorConstants;
+import org.knime.gateway.impl.webui.preview.util.ShapeConstants;
 import org.knime.gateway.impl.webui.preview.util.TemplateUtils;
 import org.knime.gateway.impl.webui.preview.util.WorkflowBoundsCalculator;
 import org.knime.gateway.impl.webui.preview.util.WorkflowBoundsCalculator.BoundingBox;
@@ -103,6 +105,8 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
                 : String.format("0 0 %d %d", EMPTY_MARGIN, EMPTY_MARGIN);
         context.setVariable("bounds", workflowBounds);
         context.setVariable("viewbox", viewBox);
+        context.setVariable("colors", ColorConstants.COLORS);
+        context.setVariable("shapes", ShapeConstants.SHAPES);
 
         context.setVariable("annotations", workflowEnt.getWorkflowAnnotations());
         context.setVariable("nodes", workflowEnt.getNodes().values());

@@ -44,72 +44,37 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   15 Jul 2025 (albrecht): created
+ *   17 Jul 2025 (albrecht): created
  */
 package org.knime.gateway.impl.webui.preview.util;
 
-import java.util.EnumMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
- * Size constants for shapes drawn on the workflow canvas. Derived from component/workflow/util/shapes.ts
+ * Color constants for shapes drawn on the workflow canvas. Derived from component/workflow/util/colors.ts
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("javadoc")
-public class ShapeConstants {
+public final class ColorConstants {
 
-    public static enum ShapeKey {
-        NODE_SIZE,
-        PORT_SIZE,
-        NODE_TORSO_RADIUS,
-        NODE_STATUS_HEIGHT,
-        NODE_STATUS_MARGIN_TOP,
-        NODE_ANNOTATION_MARGIN_TOP,
-        NODE_NAME_MARGIN,
-        NODE_NAME_LINE_HEIGHT,
-        NODE_NAME_FONT_SIZE,
-        NODE_NAME_MAX_LINES,
-        MAX_NODE_NAME_WIDTH,
-        METANODE_LABEL_OFFSET_Y,
-        NODE_LABEL_OFFSET_Y,
-        WORKFLOW_ANNOTATION_PADDING,
-        ANNOTATIONS_FONT_SIZE_POINT_TO_PIXEL_FACTOR
-    }
+    /* Color values are made available as a map, because static fields are not easily accessible for ThymeLeaf.
+     * In case they are supposed to be used in Java as well a type safe map can be created as in ShapeConstants.
+     */
 
-    /* Size values are made available as a map, because static fields are not easily accessible for ThymeLeaf */
+    public static final Map<String, String> KNIME_COLORS = Map.of(
+        "Yellow", "hsl(50.8, 100%, 50%)",       /* #FFD800 */
+        "Masala", "hsl(12, 4.2%, 23.3%)",       /* #3E3A39 */
+        "DoveGray", "hsl(0, 0%, 43.1%)",        /* #6E6E6E */
+        "SilverSand", "hsl(200, 5%, 76.5%)",    /* #C0C4C6 */
+        "Porcelain", "hsl(200, 10.33%, 94.3%)", /* #EFF1F2 */
+        "White", "hsl(0, 0%, 100%)",            /* #FFFFFF */
+        "Black", "hsl(0, 3%, 12%)"              /* #201E1E */
+    );
 
-    private static final EnumMap<ShapeKey, Double> VALUES = new EnumMap<>(ShapeKey.class);
-    public static final Map<String, Double> SHAPES;
+    public static final Map<String, Object> COLORS = Map.of(
+        "knimeColors", KNIME_COLORS,
+        "linkDecorator", KNIME_COLORS.get("Black")
+    );
 
-    static {
-        VALUES.put(ShapeKey.NODE_SIZE, 32.0);
-        VALUES.put(ShapeKey.PORT_SIZE, 9.0);
-        VALUES.put(ShapeKey.NODE_TORSO_RADIUS, 2.8);
-        VALUES.put(ShapeKey.NODE_STATUS_HEIGHT, 12.0);
-        VALUES.put(ShapeKey.NODE_STATUS_MARGIN_TOP, 8.0);
-        VALUES.put(ShapeKey.NODE_ANNOTATION_MARGIN_TOP, 8.0);
-        VALUES.put(ShapeKey.NODE_NAME_MARGIN, 7.0);
-        VALUES.put(ShapeKey.NODE_NAME_LINE_HEIGHT, 14.0);
-        VALUES.put(ShapeKey.NODE_NAME_FONT_SIZE, 12.0);
-        VALUES.put(ShapeKey.NODE_NAME_MAX_LINES, 2.0);
-        VALUES.put(ShapeKey.MAX_NODE_NAME_WIDTH, 32.0 * 1.7); // 54.4
-        VALUES.put(ShapeKey.METANODE_LABEL_OFFSET_Y, 32.0 + 8.0); // NODE_SIZE + NODE_ANNOTATION_MARGIN_TOP
-        VALUES.put(ShapeKey.NODE_LABEL_OFFSET_Y, 32.0 + 8.0 + 12.0 + 8.0); // NODE_SIZE + NODE_ANNOTATION_MARGIN_TOP + NODE_STATUS_HEIGHT + NODE_STATUS_MARGIN_TOP
-        VALUES.put(ShapeKey.WORKFLOW_ANNOTATION_PADDING, 3.0);
-        VALUES.put(ShapeKey.ANNOTATIONS_FONT_SIZE_POINT_TO_PIXEL_FACTOR, 1.3333);
-
-        SHAPES = VALUES.entrySet().stream().collect(Collectors.toUnmodifiableMap(
-            entry -> entry.getKey().name(),
-            Map.Entry::getValue
-        ));
-    }
-
-    /* get method for type safe java access */
-    public static double get(final ShapeKey key) {
-        return VALUES.get(key);
-    }
-
-    private ShapeConstants() {}
 }

@@ -1,34 +1,34 @@
-<th:block
-  th:fragment="render(annotation)"
-  th:with="
+<html xmlns:th="https://www.thymeleaf.org">
+  <th:block
+    th:fragment="render(annotation)"
+    th:with="
       isRichTextAnnotation=${{annotation.text.contentType}} == 'text/html',
       style=${isRichTextAnnotation} ? 
         'border:2px solid ' + ${annotation.borderColor} + ';background-color:white;' : 
         'border:' + ${annotation.borderWidth} + 'px solid ' + ${annotation.borderColor} + ';background-color:' + ${annotation.backgroundColor} + ';'
   "
->
-  <foreignObject
-    th:x="${annotation.bounds.x}"
-    th:y="${annotation.bounds.y}"
-    th:width="${annotation.bounds.width}"
-    th:height="${annotation.bounds.height}"
-    th:data-annotation-id="${annotation.id}"
   >
-    <div
-      th:if="${isRichTextAnnotation}"
-      xmlns="http://www.w3.org/1999/xhtml"
-      class="annotation rich-text-annotation"
-      th:utext="${utils.cleanHtml(annotation.text.value)}"
-      th:style="${style}"
-    ></div>
-    <div
-      th:unless="${isRichTextAnnotation}"
-      xmlns="http://www.w3.org/1999/xhtml"
-      class="annotation legacy-annotation"
-      th:utext="${annotation.text.value}"
-      th:style="${style}"
-    ></div>
-  </foreignObject>
-</th:block>
-
-<!-- Make sure to close void HTML5 tags, e.g. hr -->
+    <foreignObject
+      th:x="${annotation.bounds.x}"
+      th:y="${annotation.bounds.y}"
+      th:width="${annotation.bounds.width}"
+      th:height="${annotation.bounds.height}"
+      th:data-annotation-id="${annotation.id}"
+    >
+      <div
+        th:if="${isRichTextAnnotation}"
+        class="annotation rich-text-annotation"
+        th:utext="${utils.cleanHtml(annotation.text.value)}"
+        th:style="${style}"
+        xmlns="http://www.w3.org/1999/xhtml"
+      ></div>
+      <div
+        th:unless="${isRichTextAnnotation}"
+        class="annotation legacy-annotation"
+        th:utext="${annotation.text.value}"
+        th:style="${style}"
+        xmlns="http://www.w3.org/1999/xhtml"
+      ></div>
+    </foreignObject>
+  </th:block>
+</html>
