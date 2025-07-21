@@ -61,6 +61,7 @@ import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.CallThrottle;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceAndItemId;
@@ -229,7 +230,9 @@ final class LocalSpaceItemChangeNotifier implements SpaceProvider.SpaceItemChang
         try {
             targetPath = m_spaceProvider.getSpace(item.spaceId()).getAbsolutePath(item.itemId()).toFile();
         } catch (final MutableServiceCallException ex) {
-            throw new IllegalStateException(ex.toGatewayException()); // TODO
+            final var sce = new ServiceCallException("Failed to resolve local item", ex);
+            ex.copyContextTo(sce);
+            throw new IllegalStateException(sce); // TODO
         }
         var isSibling = createFilter(file -> {
             // Avoid reporting changes in subdirectories.

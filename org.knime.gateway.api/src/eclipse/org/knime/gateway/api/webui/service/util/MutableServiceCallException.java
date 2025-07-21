@@ -50,7 +50,10 @@ package org.knime.gateway.api.webui.service.util;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
@@ -60,31 +63,26 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
  * @since 5.6
  */
 @SuppressWarnings("serial")
-public class MutableServiceCallException extends Exception {
-
-    private String m_title;
+public final class MutableServiceCallException extends Exception {
 
     private final Deque<String> m_details = new ArrayDeque<>();
 
-    public MutableServiceCallException(final String message) {
-        super(message);
-        m_title = message;
+    private final Map<String, String> m_additional = new HashMap<>();
+
+    public MutableServiceCallException(final List<String> details) {
+        this(details, null);
     }
 
-    public MutableServiceCallException(final String message, final Throwable cause) {
-        super(message, cause);
-        m_title = message;
+    public MutableServiceCallException(final List<String> details, final Throwable cause) {
+        super(cause);
+        m_details.addAll(details);
     }
 
-    public MutableServiceCallException(final String message, final List<String> details, final Throwable cause) {
-        super(message, cause);
-        pushContext(null, details);
+    public MutableServiceCallException addDetails(final String... detailsLines) {
+        return addDetails(List.of(detailsLines));
     }
 
-    public MutableServiceCallException pushContext(final String newTitle, final List<String> detailsLines) {
-        if (newTitle != null) {
-            m_title = newTitle;
-        }
+    public MutableServiceCallException addDetails(final List<String> detailsLines) {
         if (detailsLines != null) {
             for (int i = detailsLines.size() - 1; i >= 0; i--) {
                 m_details.addFirst(detailsLines.get(i));
@@ -93,7 +91,28 @@ public class MutableServiceCallException extends Exception {
         return this;
     }
 
-    public ServiceCallException toGatewayException() {
-        return new ServiceCallException(m_title, getCause()); // TODO
+    public MutableServiceCallException setAdditionalProperty(final String key, final String value) {
+        m_additional.put(key, value);
+        return this;
+    }
+
+    public ServiceCallException toGatewayException(final String title) {
+        final var sce = new ServiceCallException(title, this);
+        copyContextTo(sce);
+        return sce;
+    }
+
+    public void copyContextTo(final ServiceCallException ex) {
+        final var title = getMessage();
+        ex.addProperty("title", title);
+        if (m_details.isEmpty()) {
+            ex.addProperty("details", "");
+        } else {
+            ex.addProperty("details", m_details.stream().collect(Collectors.joining("\n")));
+            final var sb = new StringBuilder(title);
+            m_details.forEach(detail -> sb.append(" * " + detail));
+            ex.addProperty("message", sb.toString());
+        }
+        m_additional.forEach(ex::addProperty);
     }
 }

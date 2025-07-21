@@ -325,8 +325,10 @@ public final class DefaultWorkflowService implements WorkflowService {
                 final var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
                 final var spaceKnimeUrl = space.toPathBasedKnimeUrl(hubInfo.getWorkflowItemId());
                 space.saveBackTo(localWorkflowPath, spaceKnimeUrl, false, new NullProgressMonitor());
-            } catch (MutableServiceCallException ex) { // NOSONAR exception is rethrown
-                throw ex.toGatewayException();
+            } catch (final MutableServiceCallException ex) {
+                final var sce = new ServiceCallException("An error occurred while uploading workflow", ex);
+                ex.copyContextTo(sce);
+                throw sce;
             }
         }
 
