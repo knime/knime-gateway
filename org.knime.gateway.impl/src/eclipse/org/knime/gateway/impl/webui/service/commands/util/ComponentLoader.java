@@ -82,6 +82,7 @@ import org.knime.core.util.Pair;
 import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -120,7 +121,9 @@ public final class ComponentLoader {
         } catch (GatewayException ex) {
             throw new IllegalStateException(ex); // TODO
         } catch (final MutableServiceCallException ex) {
-            throw new IllegalStateException(ex.toGatewayException()); // TODO
+            final var sce = new ServiceCallException("Failed to fetch component template", ex); // TODO
+            ex.copyContextTo(sce);
+            throw new IllegalStateException(sce);
         }
 
         var componentName = commandEnt.getName();
