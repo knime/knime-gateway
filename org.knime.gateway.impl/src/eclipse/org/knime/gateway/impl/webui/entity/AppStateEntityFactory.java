@@ -382,7 +382,7 @@ public final class AppStateEntityFactory {
             } catch (final NetworkException | LoggedOutException e) { // TODO
                 throw new IllegalStateException(e);
             } catch (final MutableServiceCallException e) { // NOSONAR
-                throw new IllegalStateException(e.toGatewayException());
+                throw new IllegalStateException(e.toGatewayException("Failed to determine ancestor item IDs"));
             }
         } else {
             return null; // NOSONAR null return value is reasonable (want to set entity property to null)

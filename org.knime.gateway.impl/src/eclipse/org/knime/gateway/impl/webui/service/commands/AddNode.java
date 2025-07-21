@@ -186,8 +186,10 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             NodeLogger.getLogger(AddNode.class).warn("Failed to resolve item ID " + itemId
                 + " to URL in " + spaceProviderId, ex);
             return null;
-        } catch (MutableServiceCallException ex) { // NOSONAR rethrown
-            throw ex.toGatewayException();
+        } catch (MutableServiceCallException ex) {
+            final var sce = new ServiceCallException("Failed to construct URL of node to add", ex);
+            ex.copyContextTo(sce);
+            throw sce;
         }
     }
 
