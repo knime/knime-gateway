@@ -80,6 +80,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.service.CompositeViewServiceFactory">
+        <filter comment="NXT-3871 - renamed interface" id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.CompositeViewServiceFactory"/>
+                <message_argument value="org.knime.gateway.impl_5.6.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.spaces.local.LocalWorkspace">
         <filter id="305324134">
             <message_arguments>

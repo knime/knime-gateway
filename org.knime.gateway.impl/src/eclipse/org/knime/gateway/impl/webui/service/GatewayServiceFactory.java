@@ -59,7 +59,7 @@ import org.knime.gateway.api.webui.service.CompositeViewService;
 /**
  * Interface for a factory that creates a CompositeViewService
  *
- * @since 5.5
+ * @since 5.6
  */
 public interface GatewayServiceFactory {
 
