@@ -847,7 +847,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 () -> ss().moveOrCopyItems(spaceId, providerId, List.of(wfId, fileId), spaceId, wfGroupId, false,
                     Space.NameCollisionHandling.NOOP.toString()));
         } finally {
-            ProjectManager.getInstance().removeProject(wfId);
+            ProjectManager.getInstance().removeProject(workflowProject.getID());
         }
     }
 
@@ -878,7 +878,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             ss().moveOrCopyItems(spaceId, providerId, List.of(wfId), spaceId, wfGroupId, false,
                 Space.NameCollisionHandling.NOOP.toString());
         } finally {
-            ProjectManager.getInstance().removeProject(wfId);
+            ProjectManager.getInstance().removeProject(hubWorkflowProject.getID());
             FileUtils.deleteQuietly(testWorkspacePath.resolve(wfGroupName).toFile());
         }
     }
