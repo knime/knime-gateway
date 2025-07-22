@@ -5,11 +5,13 @@
       th:attrappend="data-node-id=${node.id}"
       class="node-wrapper"
     >
-      <!-- <th:block th:insert="fragments/node/torso/nodeTorso :: nodeTorso(
-          type=${node.type},
-          kind=${node.kind},
-          icon=${node.icon}
-        )" /> -->
+      <th:block th:insert="fragments/node/torso/nodeTorso :: nodeTorso(
+          type=${nodeUtils.getNodeType(node)},
+          kind=${{node.kind}},
+          icon=${nodeUtils.getNodeIcon(node)}
+          )" />
+      <th:block th:if="${{node.kind}} != 'metanode'" th:insert="fragments/node/nodeState :: nodeState(state=${node.state})" />
+      <th:block th:insert="fragments/node/nodeName :: nodeName(name=${nodeUtils.getNodeName(node)})" />
     </g>
   </th:block>
 </svg>

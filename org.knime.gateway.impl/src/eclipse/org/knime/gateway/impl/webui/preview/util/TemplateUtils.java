@@ -67,6 +67,18 @@ public class TemplateUtils {
 
     }
 
+    public static String getTruncatedValue(final String value, final int maxLength) {
+        if (value == null) {
+            return null;
+        }
+
+        if (maxLength > 0) {
+            return value.length() > maxLength ? value.substring(0, maxLength) + "..." : value;
+        } else {
+            return value;
+        }
+    }
+
     public TemplateUtils() {
     }
 }

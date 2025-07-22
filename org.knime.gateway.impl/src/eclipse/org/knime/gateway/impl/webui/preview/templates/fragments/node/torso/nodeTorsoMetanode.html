@@ -1,6 +1,6 @@
 <svg th:fragment="torsoMetanode" xmlns:th="https://www.thymeleaf.org">
-  <g :fill="nodeBackgroundColors.MetanodeSecondary">
-    <rect width="32" height="32" rx="2" :fill="nodeBackgroundColors.Metanode" />
+  <g th:attr="fill=${colors.nodeBackgroundColors.MetanodeSecondary}">
+    <rect width="32" height="32" rx="2" th:attr="fill=${colors.nodeBackgroundColors.Metanode}" />
     <path
       d="M0 2C0 0.895431 0.895431 0 2 0H8V2H2.75C2.33579 2 2 2.33579 2 2.75V8H0V2Z
         M2 24H0V30C0 31.1046 0.895431 32 2 32H8V30H2.75C2.33579 30 2 29.6642 2 29.25V24Z

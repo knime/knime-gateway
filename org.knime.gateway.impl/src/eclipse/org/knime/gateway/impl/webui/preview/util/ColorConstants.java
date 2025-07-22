@@ -63,27 +63,28 @@ public final class ColorConstants {
      */
 
     public static final Map<String, String> KNIME_COLORS = Map.ofEntries(
-        Map.entry("Yellow", "hsl(50.8, 100%, 50%)"),       // #FFD800
-        Map.entry("Masala", "hsl(12, 4.2%, 23.3%)"),       // #3E3A39
-        Map.entry("DoveGray", "hsl(0, 0%, 43.1%)"),        // #6E6E6E
-        Map.entry("SilverSand", "hsl(200, 5%, 76.5%)"),    // #C0C4C6
-        Map.entry("Porcelain", "hsl(200, 10.33%, 94.3%)"), // #EFF1F2
-        Map.entry("White", "hsl(0, 0%, 100%)"),            // #FFFFFF
-        Map.entry("Black", "hsl(0, 3%, 12%)"),             // #201E1E
+        Map.entry("Yellow", "hsl(50.8, 100%, 50%)"),            // #FFD800
+        Map.entry("Masala", "hsl(12, 4.2%, 23.3%)"),            // #3E3A39
+        Map.entry("DoveGray", "hsl(0, 0%, 43.1%)"),             // #6E6E6E
+        Map.entry("SilverSand", "hsl(200, 5%, 76.5%)"),         // #C0C4C6
+        Map.entry("Porcelain", "hsl(200, 10.33%, 94.3%)"),      // #EFF1F2
+        Map.entry("White", "hsl(0, 0%, 100%)"),                 // #FFFFFF
+        Map.entry("Black", "hsl(0, 3%, 12%)"),                  // #201E1E
 
-        Map.entry("Avocado", "hsl(78, 38.7%, 75.7%)"),     // #CBD9A9
-        Map.entry("AvocadoDark", "hsl(60, 23%, 49.4%)"),   // #9B9B61
-        Map.entry("MeadowLight", "hsl(70, 78.3%, 54.9%)"), // #C8E632
-        Map.entry("Aquamarine", "hsl(188, 63%, 71.4%)"),   // #88D8E4
-        Map.entry("StoneLight", "hsl(220, 4.3%, 86.5%)"),  // #DBDCDE
-        Map.entry("StoneGray", "hsl(0, 0%, 53.3%)"),       // #888888
-        Map.entry("Wood", "hsl(24, 46.4%, 67.1%)"),        // #D2A384
-        Map.entry("Meadow", "hsl(128, 50%, 47.1%)"),       // #3CB44B
-        Map.entry("Lavender", "hsl(305, 27.7%, 46.1%)"),   // #965591
-        Map.entry("Coral", "hsl(0, 100%, 64.7%)"),         // #FF4B4B
-        Map.entry("Carrot", "hsl(29, 100%, 59.8%)"),       // #FF9632
-        Map.entry("Stone", "hsl(0, 0%, 66.7%)"),           // #AAAAAA
-        Map.entry("AquamarineDark", "hsl(193, 60.9%, 43.1%)") // #2B94B1
+        Map.entry("Avocado", "hsl(78, 38.7%, 75.7%)"),          // #CBD9A9
+        Map.entry("AvocadoDark", "hsl(60, 23%, 49.4%)"),        // #9B9B61
+        Map.entry("MeadowLight", "hsl(70, 78.3%, 54.9%)"),      // #C8E632
+        Map.entry("Aquamarine", "hsl(188, 63%, 71.4%)"),        // #88D8E4
+        Map.entry("StoneLight", "hsl(220, 4.3%, 86.5%)"),       // #DBDCDE
+        Map.entry("StoneGray", "hsl(0, 0%, 53.3%)"),            // #888888
+        Map.entry("Wood", "hsl(24, 46.4%, 67.1%)"),             // #D2A384
+        Map.entry("Meadow", "hsl(128, 50%, 47.1%)"),            // #3CB44B
+        Map.entry("Lavender", "hsl(305, 27.7%, 46.1%)"),        // #965591
+        Map.entry("Coral", "hsl(0, 100%, 64.7%)"),              // #FF4B4B
+        Map.entry("Carrot", "hsl(29, 100%, 59.8%)"),            // #FF9632
+        Map.entry("Stone", "hsl(0, 0%, 66.7%)"),                // #AAAAAA
+        Map.entry("AquamarineDark", "hsl(193, 60.9%, 43.1%)"),  // #2B94B1
+        Map.entry("HibiscusDark", "hsl(329, 71.4%, 52%)")       // #DC2D87
     );
 
     public static final Map<String, String> NODE_COLORS = Map.ofEntries(
@@ -124,12 +125,32 @@ public final class ColorConstants {
         Map.entry("flowVariable", PORT_COLORS.get("flowVariable"))
     );
 
+    public static final Map<String, String> TRAFFIC_LIGHT = Map.ofEntries(
+        Map.entry("red", "hsl(357, 72%, 45%)"),
+        Map.entry("redBorder", "hsl(348, 94%, 21%)"),
+        Map.entry("yellow", KNIME_COLORS.get("Yellow")),
+        Map.entry("yellowBorder", "hsla(0, 0%, 0%, 54%)"),
+        Map.entry("green", "hsl(107, 43%, 55%)"),
+        Map.entry("greenBorder", "hsl(116, 47%, 26%)"),
+        Map.entry("blue", "hsl(206, 69.7%, 55.9%)"),
+        Map.entry("inactive", "hsl(0, 0%, 100%)"),
+        Map.entry("inactiveBorder", "hsl(0, 0%, 73%)"),
+        Map.entry("background", "hsl(192, 6.8%, 85.7%)")
+    );
+
     public static final Map<String, Object> COLORS = Map.of(
         "knimeColors", KNIME_COLORS,
         "nodeBackgroundColors", NODE_COLORS,
         "portColors", PORT_COLORS,
         "connectorColors", CONNECTOR_COLORS,
-        "linkDecorator", KNIME_COLORS.get("Black")
+        "trafficLight", TRAFFIC_LIGHT,
+
+        "textDefault", KNIME_COLORS.get("Masala"),
+        "linkDecorator", KNIME_COLORS.get("Black"),
+        "darkeningMask", "hsla(0, 0%, 0%, 33.3%)",
+
+        "error", TRAFFIC_LIGHT.get("red"),
+        "warning", KNIME_COLORS.get("Yellow")
     );
 
 }

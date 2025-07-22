@@ -52,6 +52,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 /**
  * Size constants for shapes drawn on the workflow canvas. Derived from component/workflow/util/shapes.ts
  *
@@ -81,7 +82,17 @@ public class ShapeConstants {
     /* Size values are made available as a map, because static fields are not easily accessible for ThymeLeaf */
 
     private static final EnumMap<ShapeKey, Double> VALUES = new EnumMap<>(ShapeKey.class);
-    public static final Map<String, Double> SHAPES;
+    public static final Map<String, Object> SHAPES;
+
+    public static final Map<String, String> NODE_TORSO_PATHS = Map.ofEntries(
+        Map.entry("default", "M0,29.2L0,2.8C0,1.3,1.3,0,2.8,0l26.3,0C30.7,0,32,1.3,32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H2.8C1.3,32,0,30.7,0,29.2z"),
+        Map.entry("LoopEnd", "M32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H4L0,16.1L4,0l25.2,0C30.7,0,32,1.3,32,2.8z"),
+        Map.entry("LoopStart", "M0,29.2L0,2.8C0,1.3,1.3,0,2.8,0L32,0l-4,15.9L32,32H2.8C1.3,32,0,30.7,0,29.2z"),
+        Map.entry("ScopeEnd", "M32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H4L0,16.1L4,0l25.2,0C30.7,0,32,1.3,32,2.8z"),
+        Map.entry("ScopeStart", "M0,29.2L0,2.8C0,1.3,1.3,0,2.8,0L32,0l-4,15.9L32,32H2.8C1.3,32,0,30.7,0,29.2z"),
+        Map.entry("VirtualIn", "M32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H6.5L0,25.9l5.2-10L0.7,7.2L6.5,0l22.7,0C30.7,0,32,1.3,32,2.8z"),
+        Map.entry("VirtualOut", "M0,29.2L0,2.8C0,1.3,1.3,0,2.8,0L32,0l-5.8,7.2l4.5,8.7l-5.2,10L32,32H2.8C1.3,32,0,30.7,0,29.2z")
+    );
 
     static {
         VALUES.put(ShapeKey.NODE_SIZE, 32.0);

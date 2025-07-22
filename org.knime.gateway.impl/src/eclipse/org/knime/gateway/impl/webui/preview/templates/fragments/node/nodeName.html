@@ -1,0 +1,12 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="nodeName(name)" th:with="MAX_LENGTH=60">
+    <foreignObject
+      th:x="-34"
+      th:y="-67"
+      th:width="100"
+      th:height="60"
+    >
+      <div xmlns="http://www.w3.org/1999/xhtml" class="node-name" th:text="${utils.getTruncatedValue(name, MAX_LENGTH)}"></div>
+    </foreignObject>
+  </th:block>
+</svg>
