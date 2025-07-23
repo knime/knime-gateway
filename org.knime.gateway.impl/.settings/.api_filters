@@ -8,25 +8,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultNodeService.java" type="org.knime.gateway.impl.webui.service.DefaultNodeService">
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="getNodeDialog(String, NodeIDEnt, String, NodeIDEnt)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="getNodeView(String, NodeIDEnt, String, NodeIDEnt)"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultPortService.java" type="org.knime.gateway.impl.webui.service.DefaultPortService">
-        <filter id="1143996420">
-            <message_arguments>
-                <message_argument value="getPortView(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer)"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/project/WorkflowManagerLoader.java" type="org.knime.gateway.impl.project.WorkflowManagerLoader">
         <filter id="405901410">
             <message_arguments>
@@ -71,11 +52,50 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultNodeService.java" type="org.knime.gateway.impl.webui.service.DefaultNodeService">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getNodeDialog(String, NodeIDEnt, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getNodeView(String, NodeIDEnt, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultPortService.java" type="org.knime.gateway.impl.webui.service.DefaultPortService">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getPortView(String, NodeIDEnt, String, NodeIDEnt, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentNodeDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt">
         <filter id="337682486">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentNodeDescriptionEnt"/>
                 <message_argument value="org.knime.gateway.api.webui.entity.ProjectMetadataEnt,org.knime.gateway.api.webui.entity.EditableProjectMetadataEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultGatewayProblemDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt"/>
+                <message_argument value="DefaultGatewayProblemDescriptionEnt(String, String, Boolean, Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultGatewayProblemDescriptionEnt(String, String, List&lt;String&gt;, Boolean, Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultGatewayProblemDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt$DefaultGatewayProblemDescriptionEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setDetails(List&lt;String&gt;)"/>
             </message_arguments>
         </filter>
     </resource>

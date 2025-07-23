@@ -16,6 +16,39 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/GatewayProblemDescriptionEnt.java" type="org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt"/>
+                <message_argument value="getDetails()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getDetails()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/GatewayProblemDescriptionEnt.java" type="org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt$GatewayProblemDescriptionEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt.GatewayProblemDescriptionEntBuilder"/>
+                <message_argument value="setDetails(List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setDetails(List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/ComponentEditorService.java" type="org.knime.gateway.api.webui.service.ComponentEditorService">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.ComponentEditorService"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/service/util/ServiceExceptions.java" type="org.knime.gateway.api.webui.service.util.ServiceExceptions">
         <filter id="338886760">
             <message_arguments>
