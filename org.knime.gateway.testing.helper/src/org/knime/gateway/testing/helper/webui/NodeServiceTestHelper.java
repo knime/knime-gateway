@@ -111,10 +111,13 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param serviceProvider
      * @param workflowLoader
      * @param workflowExecutor
+     * @param projectManager
      */
     public NodeServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
-        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
-        super(NodeServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor,
+        final ProjectManager projectManager) {
+        super(NodeServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor,
+            projectManager);
     }
 
     /**
@@ -159,15 +162,12 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
         );
         var projectId = loadWorkflow(testWorkflowWithVersion);
 
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.FALSE);
-
         // Current version, doesn't throw
         ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "execute");
         ns().changeNodeStates(projectId, NodeIDEnt.getRootID(), singletonList(new NodeIDEnt(1)), "reset");
 
         var version = VersionId.parse("5");
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
-        ProjectManager.getInstance().setProjectActive(projectId, version);
+        loadVersionAndSetActive(projectId, version);
 
         // Earlier version, throws
         var ex1 = assertThrows(Throwable.class,
@@ -288,7 +288,7 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testChangeLoopExecutionStateThrowsIfNotCurrentState() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.LOOP_EXECUTION);
         var version = VersionId.parse("5");
-        ProjectManager.getInstance().setProjectActive(projectId, version);
+        setVersionActive(projectId, version);
 
         // Throws since cannot change loop execution state for fixed versions
         var n4 = NodeIDEnt.getRootID().appendNodeID(4);
@@ -509,9 +509,8 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
             getInitialData(ns().getNodeDialog(projectId, getRootID(), VersionId.currentState().toString(), nodeId));
         var currentVersionNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentVersionInitialData);
 
-        // Initially fetch workflow entity to load the workflow manager
         var version = VersionId.parse("2");
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+        loadVersionAndSetActive(projectId, version);
 
         var earlierVersionInitialData =
             getInitialData(ns().getNodeDialog(projectId, getRootID(), version.toString(), nodeId));
@@ -579,9 +578,8 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
             getInitialData(ns().getNodeView(projectId, getRootID(), VersionId.currentState().toString(), nodeId));
         var currentVersionNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentVersionInitialData);
 
-        // Initially fetch workflow entity to load the workflow manager
         var version = VersionId.parse("2");
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+        loadVersionAndSetActive(projectId, version);
 
         var earlierVersionInitialData =
             getInitialData(ns().getNodeView(projectId, getRootID(), version.toString(), nodeId));
@@ -651,9 +649,8 @@ public class NodeServiceTestHelper extends WebUIGatewayServiceTestHelper {
             nodeId, "view", "data", dataServiceRequest);
         var currentStateNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentStateData);
 
-        // Initially fetch workflow entity to load the workflow manager
         var version = VersionId.parse("2");
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+        loadVersionAndSetActive(projectId, version);
 
         // Earlier version
         var versionedData = ns().callNodeDataService(projectId, getRootID(), version.toString(), nodeId, "view", "data",

@@ -17,6 +17,7 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.knime.core.util.Pair;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
@@ -71,22 +73,56 @@ public final class GatewayTestCollection {
      * @return map from the individual test names to a function that allows one to run the test
      */
     public static Map<String, GatewayTestRunner> collectAllGatewayTests() {
-
         return CONTRIBUTING_CLASSES.stream().flatMap(helper -> Arrays.stream(helper.getDeclaredMethods())) //
             .filter(method -> !Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers())) //
             .map(method -> {
-                var declaringClass = method.getDeclaringClass();
+                final var declaringClass = method.getDeclaringClass();
                 return Pair.create(declaringClass.getSimpleName() + "::" + method.getName(),
                     createGatewayTestRunner(declaringClass, method));
-            }).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+            }) //
+            .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+    }
+
+    private static boolean hasConstructor(final Class<?> clazz, final Class<?>... parameterTypes) {
+        for (final Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+            if (Arrays.equals(constructor.getParameterTypes(), parameterTypes)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Whether we need to {@link ProjectManager} dependency or not, we choose the matching constructor and instantiate
+     * the class.
+     *
+     */
+    private static Object getInstanceFromInferredConstructor(final Class<?> declaringClass, final ResultChecker rc,
+        final ServiceProvider sp, final WorkflowLoader wl, final WorkflowExecutor we, final ProjectManager pm)
+        throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
+        IllegalArgumentException, InvocationTargetException {
+        // Use the constructor including the project manager
+        if (hasConstructor(declaringClass, ResultChecker.class, ServiceProvider.class, WorkflowLoader.class,
+            WorkflowExecutor.class, ProjectManager.class)) {
+            return declaringClass.getConstructor(ResultChecker.class, ServiceProvider.class, WorkflowLoader.class,
+                WorkflowExecutor.class, ProjectManager.class).newInstance(rc, sp, wl, we, pm);
+        }
+
+        // Use the constructor without the project manager
+        if (hasConstructor(declaringClass, ResultChecker.class, ServiceProvider.class, WorkflowLoader.class,
+            WorkflowExecutor.class)) {
+            return declaringClass.getConstructor(ResultChecker.class, ServiceProvider.class, WorkflowLoader.class,
+                WorkflowExecutor.class).newInstance(rc, sp, wl, we);
+        }
+
+        throw new IllegalStateException("No suitable constructor found for " + declaringClass.getName());
     }
 
     private static GatewayTestRunner createGatewayTestRunner(final Class<?> declaringClass, final Method method) {
-        return (rc, sp, wl, we) -> { // NOSONAR
-            var obj = declaringClass.getConstructor(ResultChecker.class, ServiceProvider.class, WorkflowLoader.class,
-                WorkflowExecutor.class).newInstance(rc, sp, wl, we);
+        return (rc, sp, wl, we, pm) -> { // NOSONAR
+            final var instance = getInstanceFromInferredConstructor(declaringClass, rc, sp, wl, we, pm);
             try {
-                method.invoke(obj);
+                method.invoke(instance);
             } catch (InvocationTargetException ex) {
                 var cause = ex.getCause();
                 if (cause instanceof Exception e) {

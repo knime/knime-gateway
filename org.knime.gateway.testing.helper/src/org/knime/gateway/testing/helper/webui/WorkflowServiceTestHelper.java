@@ -217,10 +217,13 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param serviceProvider
      * @param workflowLoader
      * @param workflowExecutor
+     * @param projectManager
      */
     public WorkflowServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
-        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
-        super(WorkflowServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor,
+        final ProjectManager projectManager) {
+        super(WorkflowServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor,
+            projectManager);
     }
 
     /**
@@ -272,7 +275,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 && workflow.getInfo().getVersion() == null);
 
         var version = new VersionId.Fixed(5); // actual value does not matter, we always load "the other" workflow
-        // using an actual value's toString to make sure this will also parse to a string inside this call
+        loadVersionAndSetActive(wfId, version);
+
         var versionWorkflow =
             ws().getWorkflow(wfId, NodeIDEnt.getRootID(), version.toString(), Boolean.TRUE).getWorkflow();
         assertTrue("Version workflow is returned",
@@ -289,8 +293,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var projectId = loadWorkflow(testWorkflowWithVersion);
 
         var version = new VersionId.Fixed(4);
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
-        ProjectManager.getInstance().setProjectActive(projectId, version);
+        loadVersionAndSetActive(projectId, version);
 
         // Try to get the workflow for a different project ID, throws
         var ex1 = assertThrows(Throwable.class,
@@ -316,8 +319,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID());
 
         var version = new VersionId.Fixed(5);
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
-        ProjectManager.getInstance().setProjectActive(projectId, version);
+        loadVersionAndSetActive(projectId, version);
 
         // Earlier version, throws
         var ex1 =
