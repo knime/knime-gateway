@@ -1,0 +1,13 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="nodeLabel(label)" th:with="MAX_LENGTH=200">
+    <foreignObject
+   	  th:if="${label != null}"
+      th:x="-34"
+      th:y="60"
+      th:width="100"
+      th:height="200"
+    >
+      <div xmlns="http://www.w3.org/1999/xhtml" class="node-label" th:text="${textUtils.getTruncatedValue(label, MAX_LENGTH)}"></div>
+    </foreignObject>
+  </th:block>
+</svg>

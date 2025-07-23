@@ -82,6 +82,8 @@ public class NodeUtils {
                 case "name" -> template.getName();
                 case "icon" -> template.getIcon();
                 case "type" -> template.getType().toString();
+                case "annotation" -> node.getAnnotation() != null ? node.getAnnotation().getText().getValue()
+                    : null;
                 default -> null;
             };
         } else if (node.getKind() == NodeEnt.KindEnum.COMPONENT) {
@@ -90,12 +92,16 @@ public class NodeUtils {
                 case "name" -> component.getName();
                 case "icon" -> component.getIcon();
                 case "type" -> component.getType() != null ? component.getType().toString() : null;
+                case "annotation" -> component.getAnnotation() != null ? component.getAnnotation().getText().getValue()
+                    : null;
                 default -> null;
             };
         } else if (node.getKind() == NodeEnt.KindEnum.METANODE) {
             var metanode = (MetaNodeEnt)node;
             return switch (property) {
                 case "name" -> metanode.getName();
+                case "annotation" -> metanode.getAnnotation() != null ? metanode.getAnnotation().getText().getValue()
+                    : null;
                 default -> null;
             };
         } else {
@@ -115,9 +121,14 @@ public class NodeUtils {
         return getNodeOrTemplateProperty(node, "name");
     }
 
+    public String getNodeLabel(final NodeEnt node) {
+        return getNodeOrTemplateProperty(node, "annotation");
+    }
+
     public static String getNodeTorsoPath(final String type) {
         String nullSafeType = type == null ? "default" : type;
-        return ShapeConstants.NODE_TORSO_PATHS.getOrDefault(nullSafeType, ShapeConstants.NODE_TORSO_PATHS.get("default"));
+        return ShapeConstants.NODE_TORSO_PATHS.getOrDefault(nullSafeType,
+            ShapeConstants.NODE_TORSO_PATHS.get("default"));
     }
 
     public static String getNodeBackgroundColor(final String type) {
@@ -126,10 +137,7 @@ public class NodeUtils {
     }
 
     public enum ExecutionStateEnum {
-        IDLE,
-        CONFIGURED,
-        EXECUTED,
-        HALTED
+            IDLE, CONFIGURED, EXECUTED, HALTED
     }
 
     /**
@@ -159,13 +167,13 @@ public class NodeUtils {
         return defaultTrafficLight;
     }
 
-    private static final String[] activeColorNames = new String[] {"red", "yellow", "green"};
-    private static final String[] activeStrokeNames = new String[] {"redBorder", "yellowBorder", "greenBorder"};
+    private static final String[] activeColorNames = new String[]{"red", "yellow", "green"};
+
+    private static final String[] activeStrokeNames = new String[]{"redBorder", "yellowBorder", "greenBorder"};
 
     public static String getTrafficFillColor(final boolean active, final int index) {
         return active && index >= 0 && index < activeColorNames.length
-            ? ColorConstants.TRAFFIC_LIGHT.get(activeColorNames[index])
-            : ColorConstants.TRAFFIC_LIGHT.get("inactive");
+            ? ColorConstants.TRAFFIC_LIGHT.get(activeColorNames[index]) : ColorConstants.TRAFFIC_LIGHT.get("inactive");
     }
 
     public static String getTrafficStrokeColor(final boolean active, final int index) {
@@ -174,4 +182,3 @@ public class NodeUtils {
             : ColorConstants.TRAFFIC_LIGHT.get("inactiveBorder");
     }
 }
-

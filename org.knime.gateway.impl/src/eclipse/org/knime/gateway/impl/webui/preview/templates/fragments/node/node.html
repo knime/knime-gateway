@@ -5,6 +5,7 @@
       th:attrappend="data-node-id=${node.id}"
       class="node-wrapper"
     >
+      <th:block th:insert="fragments/node/nodeLabel :: nodeLabel(label=${nodeUtils.getNodeLabel(node)})" />
       <th:block th:insert="fragments/node/torso/nodeTorso :: nodeTorso(
           type=${nodeUtils.getNodeType(node)},
           kind=${{node.kind}},
