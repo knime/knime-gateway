@@ -12,6 +12,7 @@
           icon=${nodeUtils.getNodeIcon(node)}
           )" />
       <th:block th:if="${{node.kind}} != 'metanode'" th:insert="fragments/node/nodeState :: nodeState(state=${node.state})" />
+      <th:block th:insert="fragments/ports/nodePorts :: nodePorts(node=${node})" />
       <th:block th:insert="fragments/node/nodeName :: nodeName(name=${nodeUtils.getNodeName(node)})" />
     </g>
   </th:block>

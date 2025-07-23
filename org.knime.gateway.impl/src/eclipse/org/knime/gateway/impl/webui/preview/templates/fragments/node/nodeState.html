@@ -13,6 +13,8 @@
         stroke-width=".3"
         rx="1"
       />
+
+    <!--/* node's static states */-->
     <g th:if="${trafficLight} != null">
       <th:block th:each="active,iter : ${trafficLight}">
         <circle
@@ -31,7 +33,7 @@
       </th:block>
     </g>
     <text
-      th:if="${trafficLight} == null and ${executionState} == 'QUEUED'"
+      th:if="${trafficLight == null and executionState == 'QUEUED'}"
       th:with="loopStatus=${{state.loopStatus}}"
       th:x="${shapes.nodeSize} / 2"
       th:fill="${colors.textDefault}"
@@ -40,17 +42,17 @@
       th:text="${loopStatus != null and loopStatus == 'PAUSED'} ? 'paused' : 'queued'"
     ></text>
 
-    <!-- node's animated execution state -->
-    <!-- <template v-else-if="executionState === 'EXECUTING'">
+    <!--/* node's animated execution state, should not exist in saved workflows, leaving it here for reference */-->
+    <!--/* <template v-else-if="executionState === 'EXECUTING'">
       <circle
         v-if="!progress"
         r="4"
         :cy="$shapes.nodeStatusHeight / 2"
         :fill="$colors.nodeProgressBar"
       />
--->
-      <!-- progress bar with text -->
-      <!-- <template v-else>
+    */-->
+      <!--/* progress bar with text */-->
+      <!--/* <template v-else>
         <text
           :fill="$colors.text.default"
           :x="$shapes.nodeSize / 2"
@@ -82,32 +84,26 @@
           </text>
         </g>
       </template>
-    </template> -->
+    </template> */-->
 
-    <!-- errors & warnings -->
-    <!-- <g
-      v-if="error"
-      :transform="`translate(${$shapes.nodeSize / 2}, ${
-        $shapes.nodeStatusHeight
-      })`"
-    >
-      <circle r="5" :fill="${colors.error}" />
+    <!--/* errors & warnings */-->
+    <g th:if="${error != null}"
+      th:transform="'translate(' + ${shapes.NODE_SIZE / 2} + ', ' + ${shapes.NODE_STATUS_HEIGHT} + ')'">
+      <circle r="5" th:fill="${colors.error}" />
       <line x1="-2.25" y1="-2.25" x2="2.25" y2="2.25" stroke="white" />
       <line x1="2.25" y1="-2.25" x2="-2.25" y2="2.25" stroke="white" />
     </g>
-    <g
-      v-else-if="warning"
-      :transform="`translate(${$shapes.nodeSize / 2 - 6}, 5.5)`"
-    >
+    <g th:if="${error == null and warning != null}"
+      th:transform="'translate(' + ${shapes.NODE_SIZE / 2 - 6} + ', 5.5)'">
       <path
         d="M6,1.25 L0.5,10.75 H11.5 Z"
-        :fill="${colors.warning}"
-        :stroke="${colors.knimeColors.Masala}"
+        th:fill="${colors.warning}"
+        th:stroke="${colors.knimeColors.Masala}"
         stroke-linejoin="round"
       />
-      <line x1="6" x2="6" :stroke="${colors.knimeColors.Masala}" y1="4.2" y2="7.3" />
-      <circle r="0.5" cy="8.75" cx="6" :fill="${colors.knimeColors.Masala}" />
-    </g> -->
+      <line x1="6" x2="6" th:stroke="${colors.knimeColors.Masala}" y1="4.2" y2="7.3" />
+      <circle r="0.5" cy="8.75" cx="6" th:fill="${colors.knimeColors.Masala}" />
+    </g>
   </g>
   </th:block>
 </svg>

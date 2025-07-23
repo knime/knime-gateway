@@ -64,6 +64,7 @@ public class ShapeConstants {
     public static enum ShapeKey {
         NODE_SIZE,
         PORT_SIZE,
+        PORT_STROKE_WIDTH,
         NODE_TORSO_RADIUS,
         NODE_STATUS_HEIGHT,
         NODE_STATUS_MARGIN_TOP,
@@ -97,6 +98,7 @@ public class ShapeConstants {
     static {
         VALUES.put(ShapeKey.NODE_SIZE, 32.0);
         VALUES.put(ShapeKey.PORT_SIZE, 9.0);
+        VALUES.put(ShapeKey.PORT_STROKE_WIDTH, 1.4);
         VALUES.put(ShapeKey.NODE_TORSO_RADIUS, 2.8);
         VALUES.put(ShapeKey.NODE_STATUS_HEIGHT, 12.0);
         VALUES.put(ShapeKey.NODE_STATUS_MARGIN_TOP, 8.0);

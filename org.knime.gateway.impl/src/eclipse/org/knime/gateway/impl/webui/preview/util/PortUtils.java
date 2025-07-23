@@ -50,17 +50,65 @@ package org.knime.gateway.impl.webui.preview.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.NodePortEnt;
+import org.knime.gateway.api.webui.entity.PortTypeEnt;
+import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt.DefaultPortTypeEntBuilder;
 import org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey;
 
 /**
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("javadoc")
 public final class PortUtils {
 
-    static final double NODE_SIZE = ShapeConstants.get(ShapeKey.NODE_SIZE);
-    static final double PORT_SIZE = ShapeConstants.get(ShapeKey.PORT_SIZE);
+    private static final double NODE_SIZE = ShapeConstants.get(ShapeKey.NODE_SIZE);
+    private static final double PORT_SIZE = ShapeConstants.get(ShapeKey.PORT_SIZE);
+
+    private static final PortTypeEnt TABLE_PORT_TYPE;
+    private static final PortTypeEnt FLOW_VARIABLE_PORT_TYPE;
+
+    static {
+        /* DEFAULT PORT TYPES */
+        var tablePortBuilder = new DefaultPortTypeEntBuilder();
+        tablePortBuilder.setKind(PortTypeEnt.KindEnum.TABLE);
+        tablePortBuilder.setName("KNIME Data Table");
+        tablePortBuilder.setColor(ColorConstants.PORT_COLORS.get("table"));
+        TABLE_PORT_TYPE = tablePortBuilder.build();
+        var flowVariablePortBuilder = new DefaultPortTypeEntBuilder();
+        flowVariablePortBuilder.setKind(PortTypeEnt.KindEnum.FLOWVARIABLE);
+        flowVariablePortBuilder.setName("Flow Variable");
+        flowVariablePortBuilder.setColor(ColorConstants.PORT_COLORS.get("flowVariable"));
+        FLOW_VARIABLE_PORT_TYPE = flowVariablePortBuilder.build();
+    }
+
+    private static String TRIANGLE_PATH = null;
+
+    private final Map<String, PortTypeEnt> m_portTemplates;
+
+    public PortUtils() {
+        var availablePortTypes = PortTypeRegistry.getInstance().availablePortTypes();
+        m_portTemplates = availablePortTypes.stream().distinct()
+            .collect(Collectors.toMap(
+                CoreUtil::getPortTypeId,
+                pt -> EntityFactory.PortType.buildPortTypeEnt(pt, availablePortTypes, false)
+            ));
+        m_portTemplates.put("org.knime.core.node.BufferedDataTable", TABLE_PORT_TYPE);
+        m_portTemplates.put("org.knime.core.node.port.flowvariable.FlowVariablePortObject", FLOW_VARIABLE_PORT_TYPE);
+    }
+
+    private static boolean isMetanode(final NodeEnt.KindEnum nodeKind) {
+        return nodeKind == KindEnum.METANODE;
+    }
 
     /**
      * Calculates the position of the center of a port on a node depending on its index and the total number of ports on
@@ -74,10 +122,10 @@ public final class PortUtils {
      * @param isOutPort true for an output port, false for an input port
      * @return double[] with [x-shift, y-shift]
      */
-    public static double[] portShift(int portIndex, int portCount, final boolean isMetanode, final boolean isOutPort) {
+    private static double[] portShift(int portIndex, int portCount, final NodeEnt.KindEnum nodeKind, final boolean isOutPort) {
         double x = isOutPort ? NODE_SIZE + PORT_SIZE / 2 : -PORT_SIZE / 2;
 
-        if (isMetanode) {
+        if (isMetanode(nodeKind)) {
             portIndex++;
             portCount++;
         }
@@ -107,16 +155,71 @@ public final class PortUtils {
      * Returns a list of [x, y] positions for all ports.
      *
      * @param portCount Number of ports
-     * @param isMetanode Whether it's a metanode
+     * @param nodeKind The kind of node (native, component, metanode)
      * @param isOutports Whether the ports are output ports
      * @return List of double arrays, each representing a port position [x, y]
      */
-    public static List<double[]> portPositions(final int portCount, final boolean isMetanode, final boolean isOutports) {
+    public static List<double[]> portPositions(final int portCount, final NodeEnt.KindEnum nodeKind, final boolean isOutports) {
         List<double[]> positions = new ArrayList<>();
         for (int i = 0; i < portCount; i++) {
-            positions.add(portShift(i, portCount, isMetanode, isOutports));
+            positions.add(portShift(i, portCount, nodeKind, isOutports));
         }
         return positions;
     }
 
+    public static boolean showPort(final NodePortEnt port, final NodeEnt.KindEnum nodeKind) {
+        var isMickeyMousePort = !isMetanode(nodeKind) && port.getIndex() == 0;
+        return !isMickeyMousePort || port.getConnectedVia().size() > 0; // don't display unconnected flow variable ports
+    }
+
+    public PortTypeEnt.KindEnum getPortType(final NodePortEnt port) {
+        if (m_portTemplates.containsKey(port.getTypeId())) {
+            return m_portTemplates.get(port.getTypeId()).getKind();
+        }
+        return PortTypeEnt.KindEnum.OTHER;
+    }
+
+    public String getPortColor(final NodePortEnt port) {
+        if (m_portTemplates.containsKey(port.getTypeId())) {
+            return m_portTemplates.get(port.getTypeId()).getColor();
+        } else {
+            return ColorConstants.PORT_COLORS.get("generic");
+        }
+    }
+
+    public boolean shouldBeFilled(final NodePortEnt port) {
+        if (getPortType(port) == PortTypeEnt.KindEnum.FLOWVARIABLE && port.getIndex() == 0) {
+            // Mickey Mouse ears are always rendered filled, even though they may technically be optional
+            return true;
+        }
+        return !Boolean.TRUE.equals(port.isOptional());
+    }
+
+    public static String getTrianglePath() {
+        // Lazy initialization
+        if (TRIANGLE_PATH == null) {
+            double portSize = ShapeConstants.get(ShapeKey.PORT_SIZE);
+            double strokeWidth = ShapeConstants.get(ShapeKey.PORT_STROKE_WIDTH);
+
+            // Define triangle points relative to the center
+            double x1 = -portSize / 2;
+            double y1 = -portSize / 2;
+            double x2 = portSize / 2;
+            double y3 = portSize / 2;
+
+            // Constants to keep triangle within bounds including stroke
+            double d = Math.sqrt(5) / 2;
+            double y = d / 2 + 0.25;
+
+            // Adjust points for stroke width
+            x1 += strokeWidth / 2;
+            x2 -= strokeWidth * d;
+            y1 += strokeWidth * y;
+            y3 -= strokeWidth * y;
+
+            // Build the path string (clockwise)
+            TRIANGLE_PATH = String.format(Locale.US, "%.3f,%.3f %.3f,0 %.3f,%.3f", x1, y1, x2, x1, y3);
+        }
+        return TRIANGLE_PATH;
+    }
 }

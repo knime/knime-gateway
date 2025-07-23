@@ -1,0 +1,7 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="nodePort(direction, port, relativePosition)">
+    <g th:transform="'translate(' + ${relativePosition[0]} + ',' + ${relativePosition[1]} +')'">
+      <th:block th:insert="fragments/ports/portIcon :: portIcon(${port})" />
+    </g>
+  </th:block>
+</svg>

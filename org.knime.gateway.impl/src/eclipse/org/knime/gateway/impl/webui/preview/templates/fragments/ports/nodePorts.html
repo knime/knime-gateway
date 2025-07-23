@@ -1,0 +1,17 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="nodePorts(node)" th:with="id=${node.id},
+    kind=${node.kind},
+    inPorts=${node.inPorts},
+    outPorts=${node.outPorts}">
+    <g>
+      <th:block th:each="port,iter : ${inPorts}" th:with="portPositions=${portUtils.portPositions(inPorts.size(), kind, false)}">
+        <th:block th:if="${portUtils.showPort(port, kind)}"
+        th:insert="fragments/ports/nodePort :: nodePort(direction='in', port=${port}, relativePosition=${portPositions.get(iter.index)})" />
+      </th:block>
+      <th:block th:each="port,iter : ${outPorts}" th:with="portPositions=${portUtils.portPositions(outPorts.size(), kind, true)}">
+        <th:block th:if="${portUtils.showPort(port, kind)}"
+        th:insert="fragments/ports/nodePort :: nodePort(direction='out', port=${port}, relativePosition=${portPositions.get(iter.index)})" />
+      </th:block>
+    </g>
+  </th:block>
+</svg>

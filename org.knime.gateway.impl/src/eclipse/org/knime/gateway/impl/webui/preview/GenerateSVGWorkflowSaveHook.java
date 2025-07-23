@@ -89,6 +89,7 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
     @Override
     public void onSave(final WorkflowManager workflow, final boolean isSaveData, final File artifactsFolder)
         throws IOException {
+        long startTime = System.nanoTime(); // TODO remove me
 
         String fileName = "workflow_new.svg";
         Path outputPath = artifactsFolder.toPath().resolve("../" + fileName);
@@ -130,7 +131,13 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
         try (Writer writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
             templateEngine.process("workflow", context, writer);
         }
+
+        long endTime = System.nanoTime();
+        long durationInNanoseconds = endTime - startTime;
+        long durationInMilliseconds = durationInNanoseconds / 1_000_000;
+
         System.out.println(templateEngine.process("workflow", context));
+        System.out.println("Preview generation took " + durationInMilliseconds + " ms");
     }
 
 }
