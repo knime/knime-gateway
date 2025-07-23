@@ -58,7 +58,6 @@ import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
@@ -93,10 +92,10 @@ final class InsertNode extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         var wfm = getWorkflowManager();
-        m_connection =
-            DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_commandEnt.getConnectionId());
+        // PR note: this simplifies control flow a lot (previously through DefaultServiceUtil, WorkflowManagerResolver, ProjectManager, ProjectWfmCache)
+        m_connection = m_commandEnt.getConnectionId().toConnectionId(getWorkflowManager());
 
         // Save original source and destination
         var connectionContainer = wfm.getConnection(m_connection);

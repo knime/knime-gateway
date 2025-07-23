@@ -64,6 +64,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutExcep
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.NodeRelation;
 import org.knime.gateway.impl.webui.repo.NodeCategories;
 import org.knime.gateway.impl.webui.repo.NodeCategoryExtensions;
@@ -100,9 +101,10 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
 
     DefaultNodeRepositoryService() {
         var nodeCategories = ServiceDependencies.getServiceDependency(NodeCategoryExtensions.class, true);
+        var projectManager = ServiceDependencies.getServiceDependency(ProjectManager.class, true);
         m_nodeSearch = new NodeSearch(m_nodeRepo);
         m_nodeGroups = new NodeGroups(m_nodeRepo, nodeCategories);
-        m_nodeRecommendations = new NodeRecommendations(m_nodeRepo);
+        m_nodeRecommendations = new NodeRecommendations(m_nodeRepo, projectManager);
         m_nodeCategories = new NodeCategories(m_nodeRepo, nodeCategories);
     }
 

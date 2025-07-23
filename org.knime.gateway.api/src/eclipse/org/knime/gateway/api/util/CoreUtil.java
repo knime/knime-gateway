@@ -67,7 +67,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -112,7 +114,9 @@ import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.shared.workflow.def.AnnotationDataDef;
 import org.osgi.framework.FrameworkUtil;
@@ -803,6 +807,115 @@ public final class CoreUtil {
             }
         });
         nc.getParent().executeUpToHere(nc.getID());
+    }
+
+    /**
+     * Executes, resets or cancels a set of nodes.
+     *
+     * @param projectId the id of the workflow project
+     * @param workflowId the id of the sub-workflow or 'root'
+     * @param action the action to change the node state; 'reset', 'cancel' or 'execute'
+     * @param nodeIdEnts the ids of the nodes to change the state for. All ids must reference nodes on the same workflow
+     *            level (i.e. all must have the same prefix). If no node ids are given, the state of the workflow itself
+     *            (referenced by projectId and workflowId) is changed.
+     *
+     * @throws ServiceExceptions.NetworkException
+     * @throws ServiceExceptions.LoggedOutException
+     * @throws ServiceExceptions.ServiceCallException
+     * @throws NoSuchElementException if there is no workflow for the given root workflow id
+     * @throws IllegalArgumentException if the is no node for one of the given node ids or the given node ids don't
+     *             refer to the same workflow level (i.e. don't have the exact same prefix)
+     * @throws IllegalStateException if the state transition is not possible, e.g., because there are executing
+     *             successors or the provided action is unknown
+     */
+    public static void changeNodeStates(final WorkflowManager wfm, final String action, final NodeIDEnt... nodeIdEnts) {
+        NodeID[] nodeIDs = null;
+        if (nodeIdEnts != null && nodeIdEnts.length != 0) {
+            nodeIDs = new NodeID[nodeIdEnts.length];
+            nodeIDs[0] = nodeIdEnts[0].toNodeID(wfm);
+            var prefix = nodeIDs[0].getPrefix();
+            for (var i = 1; i < nodeIDs.length; i++) {
+                nodeIDs[i] = nodeIdEnts[i].toNodeID(wfm);
+                if (!nodeIDs[i].hasSamePrefix(prefix)) {
+                    throw new IllegalArgumentException("Node ids don't have the same prefix.");
+                }
+            }
+        }
+
+        doChangeNodeStates(wfm, action, nodeIDs);
+    }
+
+    /**
+     * Executes, cancels or resets a node.
+     *
+     * @param projectId the id of the workflow project
+     * @param nodeId the id of the node to change the state for
+     * @param action the action to change the node state; 'reset', 'cancel' or 'execute'
+     * @return the node the state has been changed for
+     * @throws ServiceExceptions.NetworkException
+     * @throws ServiceExceptions.LoggedOutException
+     * @throws ServiceExceptions.ServiceCallException
+     */
+    public static void changeNodeState(final NodeContainer nc, final String action) {
+        if (nc instanceof SubNodeContainer subNodeContainer) {
+            doChangeNodeStates(subNodeContainer.getWorkflowManager(), action);
+        } else if (nc instanceof WorkflowManager metanodeWfm) {
+            doChangeNodeStates(metanodeWfm, action);
+        } else {
+            doChangeNodeStates(nc.getParent(), action, nc.getID());
+        }
+    }
+
+    private static void doChangeNodeStates(final WorkflowManager wfm, final String action, final NodeID... nodeIDs) {
+        try (var l = wfm.lock()) {
+            if (StringUtils.isBlank(action)) {
+                // if there is no action (null or empty)
+            } else if (action.equals("reset")) {
+                reset(wfm, nodeIDs);
+            } else if (action.equals("cancel")) {
+                cancel(wfm, nodeIDs);
+            } else if (action.equals("execute")) {
+                execute(wfm, nodeIDs);
+            } else {
+                throw new IllegalStateException("Unknown action '" + action + "'");
+            }
+        }
+    }
+
+    private static void reset(final WorkflowManager wfm, final NodeID... nodeIDs) {
+        Stream<NodeID> toReset;
+        if (nodeIDs != null && nodeIDs.length != 0) {
+            // Reset given nodes
+            toReset = Arrays.stream(nodeIDs);
+            toReset.forEach(wfm::resetAndConfigureNode);
+        } else {
+            // Reset all nodes that can be reset.
+            // Only need to call on source nodes since `resetAndConfigure` will reset and configure all successors, too.
+            toReset = getSourceNodes(wfm).stream().map(NodeContainer::getID).filter(wfm::canResetNode);
+            toReset.forEach(id -> wfm.resetAndConfigureNode(id, true));
+            // In case a selection is given, we do not need to filter because if not all nodes can be reset, the
+            //    action is not available in the frontend.
+        }
+    }
+
+    private static void cancel(final WorkflowManager wfm, final NodeID... nodeIDs) {
+        if (nodeIDs == null || nodeIDs.length == 0) {
+            // Cancel the execution of the containing workflow manager -- required for properly handling components.
+            cancel(wfm);
+        } else {
+            for (final var nodeID : nodeIDs) {
+                wfm.cancelExecution(wfm.getNodeContainer(nodeID));
+            }
+        }
+    }
+
+    private static void execute(final WorkflowManager wfm, final NodeID... nodeIDs) {
+        if (nodeIDs == null || nodeIDs.length == 0) {
+            // Trigger execution via the containing workflow manager -- required for properly handling components.
+            execute(wfm);
+        } else {
+            wfm.executeUpToHere(nodeIDs);
+        }
     }
 
     /**

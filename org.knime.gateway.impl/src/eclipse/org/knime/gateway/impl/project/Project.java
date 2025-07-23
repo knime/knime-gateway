@@ -52,7 +52,10 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
@@ -152,6 +155,30 @@ public final class Project {
         return projectName + "_" + UUID.randomUUID();
     }
 
+    private static NodeContainer findNodeContainer(final WorkflowManager parent, final NodeIDEnt child) {
+        if (child.equals(NodeIDEnt.getRootID())) {
+            return parent;
+        }
+        return parent.findNodeContainer(child.toNodeID(parent));
+    }
+
+    private static WorkflowManager parseWfm(final NodeContainer nc) {
+        WorkflowManager wfm;
+        if (nc instanceof SubNodeContainer subNodeContainer) {
+            wfm = subNodeContainer.getWorkflowManager();
+        } else if (nc instanceof WorkflowManager metanodeWfm) {
+            wfm = metanodeWfm;
+        } else {
+            // ~TODO error handling in this class
+            //   if called from `load`, should not throw runtime exception
+            throw new IllegalStateException("The node id '" + nc.getID() + "' doesn't reference a sub workflow.");
+        }
+        if (wfm.isEncrypted() && !wfm.isUnlocked()) {
+            throw new IllegalStateException("Workflow is locked and cannot be accessed.");
+        }
+        return wfm;
+    }
+
     /**
      * @return the name of the project
      */
@@ -166,52 +193,68 @@ public final class Project {
         return m_id;
     }
 
-    /**
-     * Get the {@link WorkflowManager} from cache or load it
-     *
-     * @return The workflow manager of the project of the current state
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
-     */
-    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager()
+    public Optional<WorkflowManager> getWorkflowManager(final VersionId version) {
+        return this.m_projectWfmCache.getWorkflowManager(version);
+    }
+
+    public Optional<WorkflowManager> getWorkflowManager() {
+        return getWorkflowManager(VersionId.currentState());
+    }
+
+    public Optional<WorkflowManager> getWorkflowManager(final NodeIDEnt workflowId) {
+        return getWorkflowManager(VersionId.currentState(), workflowId);
+    }
+
+    // ~todo this should be property of WorkflowManager
+    public Optional<WorkflowManager> getWorkflowManager(final VersionId version, final NodeIDEnt workflowId) {
+        return this.m_projectWfmCache.getWorkflowManager(version).map(wfm -> findNodeContainer(wfm, workflowId))
+            .map(Project::parseWfm);
+    }
+
+    public WorkflowManager loadWorkflowManager(final VersionId version)
         throws ServiceCallException, LoggedOutException, NetworkException {
-        return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(VersionId.currentState()));
+        return this.m_projectWfmCache.loadWorkflowManager(version);
     }
 
-    /**
-     * Get the {@link WorkflowManager} for the version specified from cache or load it
-     *
-     * @param version The version id
-     * @return The workflow manager of the project of a given {@link VersionId}.
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
-     */
-    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version)
+    public WorkflowManager loadWorkflowManager() throws ServiceCallException, LoggedOutException, NetworkException {
+        return this.m_projectWfmCache.loadWorkflowManager(VersionId.currentState());
+    }
+
+    // ~todo this should be property of WorkflowManager
+    public WorkflowManager loadWorkflowManager(final VersionId version, final NodeIDEnt workflowId)
         throws ServiceCallException, LoggedOutException, NetworkException {
-        return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version));
+        var wfm = this.m_projectWfmCache.loadWorkflowManager(version);
+        try {
+            return parseWfm(findNodeContainer(wfm, workflowId));
+            // ~todo avoid runtime ex
+        } catch (RuntimeException e) {
+            throw new WorkflowLoadException(e);
+        }
     }
 
-    /**
-     * Get the {@link WorkflowManager} from cache if it is already loaded
-     *
-     * @return The root workflow manager of the project of the current state, or empty if that workflow manager is not
-     *         yet loaded.
+    // ~todo this should be property of WorkflowManager?
+    //    would also allow to remove the getNC methods
+    //    but the problem is that we need the wfm instance to map NodeIDEnt to NodeID, so we cannot do that directly fluently
+    //    ( would need .flatMap(wfm -> wfm.tryGetNodeContainer(idEnt.toNodeID(wfm)) )
+    /*
+            projectManager.getProject(rootWorkflowID.toString()).orElseThrow()
+                    .getWorkflowManager()
+                    .flatMap(wfm -> wfm.tryGetNodeContainer(nodeID.toNodeID(wfm)));
      */
-    public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
-        return this.m_projectWfmCache.getWorkflowManagerIfLoaded(VersionId.currentState());
+    // ~todo in some cases precursors of this would throw NodeNotFoundException, but I doubt that type is relevant anyway
+    public Optional<NodeContainer> getNodeContainer(final VersionId version, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) {
+        return getWorkflowManager(version, workflowId).map(wfm -> findNodeContainer(wfm, nodeId));
     }
 
-    /**
-     * Get the {@link WorkflowManager} for the version specified from cache if it is already loaded
-     *
-     * @param version The version id
-     * @return The root workflow manager of the project of a given {@link VersionId}, or empty if that workflow manager
-     *         is not yet loaded.
-     */
-    public Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
-        return this.m_projectWfmCache.getWorkflowManagerIfLoaded(version);
+    // ~todo this should be property of WorkflowManager
+    public Optional<NodeContainer> getNodeContainer(final VersionId version, final NodeIDEnt nodeId) {
+        return getWorkflowManager(version).map(wfm -> findNodeContainer(wfm, nodeId));
+    }
+
+    // ~todo this should be property of WorkflowManager
+    public Optional<NodeContainer> getNodeContainer(final NodeIDEnt nodeID) {
+        return getNodeContainer(VersionId.currentState(), nodeID);
     }
 
     /**
@@ -265,24 +308,15 @@ public final class Project {
      * TODO NXT-3607 Projects can be immutable (NOSONAR)
      *
      * @param loader -
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
-    public void setWfmLoader(final WorkflowManagerLoader loader)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    public void setWfmLoader(final WorkflowManagerLoader loader) {
         var previousCache = m_projectWfmCache;
-        if (previousCache.contains(VersionId.currentState())) {
-            // for full generality one would have to carry over other cached instances too.
-            // However, this case (only current-version available) is the only circumstance in which this method is called.
-            // This is acceptable since this method will be removed with NXT-3607.
-            m_projectWfmCache = new ProjectWfmCache( //
-                previousCache.getWorkflowManager(VersionId.currentState()), //
-                loader //
-            );
-        } else {
-            m_projectWfmCache = new ProjectWfmCache(loader);
-        }
+        // for full generality one would have to carry over other cached instances too.
+        // However, this case (only current-version available) is the only circumstance in which this method is called.
+        // This is acceptable since this method will be removed with NXT-3607.
+        m_projectWfmCache = previousCache.getWorkflowManager(VersionId.currentState()) //
+            .map(wfm -> new ProjectWfmCache(wfm, loader)) //
+            .orElseGet(() -> new ProjectWfmCache(loader));
     }
 
     @Override

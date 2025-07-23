@@ -124,7 +124,7 @@ public final class ProjectManager {
         return localSpace.toLocalAbsolutePath(itemId) //
             .flatMap(WorkflowServiceProjects::getProjectIdAt) //
             .flatMap(this::getProject) //
-            .flatMap(originalProject -> originalProject.getWorkflowManagerIfLoaded().map(wfm -> {
+            .flatMap(originalProject -> originalProject.getWorkflowManager().map(wfm -> {
                 var newOrigin = new Origin(spaceProviderId, spaceId, itemId, projectType);
                 var updatedProject = Project.of(originalProject, newOrigin);
                 this.addProject(updatedProject);
@@ -201,6 +201,12 @@ public final class ProjectManager {
             .orElse(VersionId.currentState());
 
         return thisProject.equals(projectId) && thisVersion.equals(versionId);
+    }
+
+    public void assertIsActive(final String projectId, final VersionId version) {
+        if (!isActiveProjectVersion(projectId, version)) {
+            throw new ProjectVersionException("Project " + projectId + " is not active.");
+        }
     }
 
     /**
@@ -368,7 +374,7 @@ public final class ProjectManager {
     @SuppressWarnings("java:S1602")
     public Map<String, Boolean> getDirtyProjectsMap() {
         return projects().map(project -> {
-            return project.getWorkflowManagerIfLoaded() //
+            return project.getWorkflowManager() //
                 .map(wfm -> Pair.create(project.getID(), wfm.isDirty())) //
                 .orElseGet(() -> Pair.create(project.getID(), false));
         }).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
@@ -474,4 +480,14 @@ public final class ProjectManager {
 
     }
 
+    /**
+     * Exception thrown when the project version is not the expected one.
+     */
+    @SuppressWarnings("serial")
+    public static class ProjectVersionException extends RuntimeException {
+
+        ProjectVersionException(final String message) {
+            super(message);
+        }
+    }
 }

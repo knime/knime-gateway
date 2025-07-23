@@ -62,7 +62,6 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.shared.workflow.def.AnnotationDataDef;
 
 /**
@@ -89,8 +88,9 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
-        m_annotationId = DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), m_annotationIdEnt);
+        throws ServiceCallException {
+        // todo can we unify with AbstractPartBasedWorkflowCommand?
+        m_annotationId = m_annotationIdEnt.toAnnotationId(getWorkflowManager());
         final var annotation = getWorkflowAnnotation(getWorkflowManager(), m_annotationId);
         m_previousAnnotationData = annotation.getData().clone();
         return executeInternal(annotation, m_previousAnnotationData);

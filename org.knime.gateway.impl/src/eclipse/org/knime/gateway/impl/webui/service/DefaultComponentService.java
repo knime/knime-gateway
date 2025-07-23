@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.util.NoSuchElementException;
+
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
@@ -55,9 +57,9 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 
@@ -70,6 +72,8 @@ public class DefaultComponentService implements ComponentService {
 
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
+
+    private final ProjectManager m_projectManager = ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -106,15 +110,16 @@ public class DefaultComponentService implements ComponentService {
 
         try {
             var version = VersionId.parse(versionId);
-
-            var nc = ServiceUtilities.assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
+            final var nc = m_projectManager.getProject(projectId).orElseThrow() //
+                    .getWorkflowManager(version)
+                    .getNodeContainer(version, workflowId, nodeId).orElseThrow();
             if (nc instanceof SubNodeContainer snc) {
                 return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
             }
 
             throw new ServiceCallException(
                 "No Component for " + projectId + ", " + workflowId + ", " + nodeId + " found.");
-        } catch (NodeNotFoundException | IllegalArgumentException ex) {
+        } catch (NoSuchElementException | IllegalArgumentException ex) {
             throw new ServiceCallException("Could not get component description. " + ex.getMessage(), ex);
         }
     }

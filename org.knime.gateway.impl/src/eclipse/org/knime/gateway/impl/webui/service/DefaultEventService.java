@@ -63,10 +63,6 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
@@ -142,8 +138,7 @@ public final class DefaultEventService implements EventService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException, ServiceCallException,
-        LoggedOutException, NetworkException, NodeNotFoundException, NotASubWorkflowException {
+    public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException, ServiceCallException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
 
@@ -158,9 +153,8 @@ public final class DefaultEventService implements EventService {
                         DefaultServiceContext.getProjectId().map(SpaceProvidersManager.Key::of) //
                             .orElse(SpaceProvidersManager.Key.defaultKey()) //
                     );
-                    var dependencies =
-                        new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
-                            spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
+                    var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager,
+                        m_preferencesProvider, spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
                     return new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, dependencies);
                 });
             } else {

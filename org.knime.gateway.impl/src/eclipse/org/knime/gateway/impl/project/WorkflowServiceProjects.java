@@ -91,7 +91,7 @@ public final class WorkflowServiceProjects {
         return projectManager.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE).stream() //
             .filter(projectId -> { //
                 return projectManager.getProject(projectId) //
-                    .flatMap(Project::getWorkflowManagerIfLoaded).filter(wfm -> isAtPath(wfm, absolutePath)) //
+                    .flatMap(Project::getWorkflowManager).filter(wfm -> isAtPath(wfm, absolutePath)) //
                     .isPresent(); //
             }) //
             .findFirst();

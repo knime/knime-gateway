@@ -52,8 +52,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -74,33 +72,28 @@ abstract class HigherOrderCommand extends AbstractWorkflowCommand implements Wit
      * will also be the result of this higher-order command.
      *
      * <ul>
-     *     <li>Guaranteed to be called before {@link #getChangesToWaitFor()} and {@link #buildEntity(String)}</li>
-     *     <li>
-     *         Guaranteed to be called before {@link #execute(WorkflowKey)}, i.e. some initialisation of the higher-
-     *         order command may happen in this method.
-     *     </li>
+     * <li>Guaranteed to be called before {@link #getChangesToWaitFor()} and {@link #buildEntity(String)}</li>
+     * <li>Guaranteed to be called before {@link #execute(WorkflowKey)}, i.e. some initialisation of the higher- order
+     * command may happen in this method.</li>
      * </ul>
      *
      * @param wfKey represents the workflow this command operates on
      *
      * @return the command that returns a result or an empty optional if this higher order command doesn't return any
      *         result
-     * @throws NetworkException
-     * @throws LoggedOutException
+     * 
      * @throws ServiceCallException
      */
     protected abstract Optional<WithResult> preExecuteToGetResultProvidingCommand(WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException;
+        throws ServiceCallException;
 
     /**
      * @param wfKey represents the workflow this command operates on
      * @return {@code true} if this higher-order command returns a result, otherwise {@code false}
-     * @throws NetworkException
-     * @throws LoggedOutException
+     * 
      * @throws ServiceCallException
      */
-    final boolean preExecuteToDetermineWhetherProvidesResult(final WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    final boolean preExecuteToDetermineWhetherProvidesResult(final WorkflowKey wfKey) throws ServiceCallException {
         m_resultProvidingCommand = preExecuteToGetResultProvidingCommand(wfKey).orElse(null);
         if (m_resultProvidingCommand instanceof HigherOrderCommand hoc) {
             m_resultProvidingCommand = hoc.preExecuteToGetResultProvidingCommand(wfKey).orElse(null);

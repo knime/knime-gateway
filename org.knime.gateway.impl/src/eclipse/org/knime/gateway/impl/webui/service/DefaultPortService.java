@@ -49,7 +49,6 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.impl.webui.service.DefaultNodeService.createInitialSelectionSupplier;
-import static org.knime.gateway.impl.webui.service.ServiceUtilities.assertProjectIdAndGetNodeContainer;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -75,6 +74,8 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutExcep
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**
@@ -86,6 +87,8 @@ public class DefaultPortService implements PortService {
 
     private final SelectionEventBus m_selectionEventBus =
         ServiceDependencies.getServiceDependency(SelectionEventBus.class, false);
+
+    private final ProjectManager m_projectManager = ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -104,9 +107,9 @@ public class DefaultPortService implements PortService {
     public PortViewEnt getPortView(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx) throws NodeNotFoundException,
         ServiceCallException, LoggedOutException, NetworkException, InvalidRequestException {
-
         var version = VersionId.parse(versionId);
-        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        var nc = m_projectManager.getProject(projectId).orElseThrow().getNodeContainer(version, workflowId, nodeId).orElseThrow();
         var outPort = nc.getOutPort(portIdx);
 
         if (outPort.getPortObject() == InactiveBranchPortObject.INSTANCE) {
@@ -142,7 +145,8 @@ public class DefaultPortService implements PortService {
         final NodeIDEnt nodeId, final Integer portIdx, final Integer rowIdx, final Integer colIdx)
         throws NodeNotFoundException, ServiceCallException, LoggedOutException, NetworkException {
         var version = VersionId.parse(versionId);
-        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        var nc = m_projectManager.getProject(projectId).orElseThrow().getNodeContainer(version, workflowId, nodeId).orElseThrow();
         return new DataValueViewEnt(DataValueWrapper.of(nc, portIdx, rowIdx, colIdx),
             DataValueViewManager.getInstance());
     }
@@ -160,9 +164,9 @@ public class DefaultPortService implements PortService {
         final NodeIDEnt nodeId, final Integer portIdx, final Integer viewIdx, final String serviceType,
         final String body) throws NodeNotFoundException, ServiceCallException, LoggedOutException, NetworkException,
         InvalidRequestException {
-
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         var version = VersionId.parse(versionId);
-        var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
+        var nc = m_projectManager.getProject(projectId).orElseThrow().getNodeContainer(version, workflowId, nodeId).orElseThrow();
         var portViewManager = PortViewManager.getInstance();
 
         if ("initial_data".equals(serviceType)) {
@@ -184,9 +188,9 @@ public class DefaultPortService implements PortService {
         var version = VersionId.parse(versionId);
         NodeContainer nc;
         try {
-            nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, version, nodeId);
+            DefaultServiceContext.assertWorkflowProjectId(projectId);
+            nc = m_projectManager.getProject(projectId).orElseThrow().getNodeContainer(version, workflowId, nodeId).orElseThrow();
         } catch (NoSuchElementException e) {
-            // in case there is no project for the given id
             throw new InvalidRequestException(e.getMessage(), e);
         }
 
@@ -206,8 +210,10 @@ public class DefaultPortService implements PortService {
         throws NodeNotFoundException, ServiceCallException, LoggedOutException, NetworkException {
 
         var version = VersionId.parse(versionId);
-        ServiceUtilities.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
-            nc -> NodePortWrapper.of(nc, portIdx, viewIdx));
+
+        var nc = m_projectManager.getProject(projectId).orElseThrow().getNodeContainer(version, workflowId, nodeId).orElseThrow();
+        DefaultServiceUtil.updateDataPointSelection(nc, mode, selection,
+            toWrap -> NodePortWrapper.of(toWrap, portIdx, viewIdx));
     }
 
 }

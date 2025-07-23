@@ -50,15 +50,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.knime.core.node.workflow.WorkflowLock;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
  * A higher-order workflow command that is composed of a sequence of other workflow commands of which any next command
@@ -97,16 +91,10 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException {
         m_wfKey = wfKey;
-        WorkflowManager wfm;
-        try {
-            wfm = WorkflowUtil.getWorkflowManager(wfKey);
-        } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-            throw new ServiceCallException(ex.getMessage(), ex);
-        }
         var isWorkflowModified = false;
-        try (WorkflowLock lock = wfm.lock()) {
+        try (WorkflowLock lock = getWorkflowManager().lock()) {
             for (var command : m_commands) {
                 if (command.execute(wfKey)) {
                     isWorkflowModified = true;
@@ -117,7 +105,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public void undo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public void undo() throws ServiceCallException {
         var iterator = m_commands.listIterator(m_commands.size());
         while (iterator.hasPrevious()) {
             iterator.previous().undo();
@@ -125,12 +113,12 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public void redo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public void redo() throws ServiceCallException {
         execute(m_wfKey);
     }
 
     @Override
-    public boolean canUndo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean canUndo() {
         for (final var cmd : m_commands) {
             if (!cmd.canUndo()) {
                 return false;
@@ -140,7 +128,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public boolean canRedo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean canRedo() {
         for (final var cmd : m_commands) {
             if (!cmd.canRedo()) {
                 return false;

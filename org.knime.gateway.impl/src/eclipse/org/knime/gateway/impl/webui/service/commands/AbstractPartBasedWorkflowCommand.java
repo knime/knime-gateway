@@ -48,7 +48,6 @@ package org.knime.gateway.impl.webui.service.commands;
 
 import static java.util.Arrays.stream;
 import static org.knime.gateway.api.util.CoreUtil.getConnection;
-import static org.knime.gateway.impl.service.util.DefaultServiceUtil.entityToConnectionID;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,7 +55,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -76,7 +74,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
  * Workflow command based on workflow parts (i.e. nodes and annotations).
@@ -93,23 +90,23 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
 
     private Map<ConnectionID, List<Integer>> m_bendpointsQueried;
 
-    private boolean m_partsChecked = false;
-
+    private boolean m_partsChecked;
 
     protected AbstractPartBasedWorkflowCommand(final PartBasedCommandEnt commandEnt) {
         m_commandEnt = commandEnt;
     }
 
     /**
-     * Check whether the workflow parts affected by this command are available (i.e. part of the workflow).
-     * To avoid already performing modifications to the workflow and only then realising some workflow part is not
-     * present, you may call this method at the beginning of {@link AbstractPartBasedWorkflowCommand#execute()} and,
-     * going forward, assume that all workflow parts are available.
+     * Check whether the workflow parts affected by this command are available (i.e. part of the workflow). To avoid
+     * already performing modifications to the workflow and only then realising some workflow part is not present, you
+     * may call this method at the beginning of the command execution and, going forward, assume that all workflow parts
+     * are available.
+     * 
      * @throws NetworkException
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    private void checkPartsPresentElseThrow() throws ServiceCallException, LoggedOutException, NetworkException {
+    private void checkPartsPresentElseThrow() throws ServiceCallException {
         if (m_partsChecked) {
             return;
         }
@@ -201,8 +198,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    protected final Set<NodeContainer> getNodeContainers()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    protected final Set<NodeContainer> getNodeContainers() throws ServiceCallException {
         checkPartsPresentElseThrow();
         return stream(getNodeIDs()) //
             .map(id -> CoreUtil.getNodeContainer(id, getWorkflowManager()).orElseThrow()) //
@@ -216,8 +212,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    protected final Set<WorkflowAnnotation> getAnnotations()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    protected final Set<WorkflowAnnotation> getAnnotations() throws ServiceCallException {
         checkPartsPresentElseThrow();
         return getAnnotations(getAnnotationIDs());
     }
@@ -244,35 +239,31 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
         return m_nodesQueried;
     }
 
-    protected final WorkflowAnnotationID[] getAnnotationIDs()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    protected final WorkflowAnnotationID[] getAnnotationIDs() {
         if (m_annotationsQueried == null) {
             final var idEnts = m_commandEnt.getAnnotationIds();
             m_annotationsQueried = new WorkflowAnnotationID[idEnts.size()];
             for (var i = 0; i < idEnts.size(); i++) {
                 final var id = idEnts.get(i);
-                m_annotationsQueried[i] = DefaultServiceUtil.entityToAnnotationID(getWorkflowKey().getProjectId(), id);
+                m_annotationsQueried[i] = id.toAnnotationId(getWorkflowManager());
             }
         }
         return m_annotationsQueried;
     }
 
-    protected final Map<ConnectionID, List<Integer>> getBendpoints()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    protected final Map<ConnectionID, List<Integer>> getBendpoints() {
         if (m_bendpointsQueried == null) {
             if (m_commandEnt.getConnectionBendpoints() == null) {
                 m_bendpointsQueried = Map.of();
             } else {
-                var projId = getWorkflowKey().getProjectId();
                 m_bendpointsQueried = new LinkedHashMap<>();
-                for (final Entry<String, List<Integer>> e : m_commandEnt.getConnectionBendpoints().entrySet()) {
-                    final var connectionId = entityToConnectionID(projId, new ConnectionIDEnt(e.getKey()));
+                for (final var e : m_commandEnt.getConnectionBendpoints().entrySet()) {
+                    var connectionId = (new ConnectionIDEnt(e.getKey())).toConnectionId(getWorkflowManager());
                     m_bendpointsQueried.put(connectionId, e.getValue());
                 }
             }
         }
         return m_bendpointsQueried;
     }
-
 
 }

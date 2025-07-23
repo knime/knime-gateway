@@ -128,7 +128,7 @@ public class LocalWorkflowLoader implements WorkflowLoader {
             .setId(projectId)//
             .setOrigin(createOriginForTesting())
             .build();
-        var loadedWfm = project.getFromCacheOrLoadWorkflowManager().orElseThrow();
+        var loadedWfm = project.loadWorkflowManager();
         addToProjectManager(loadedWfm, workflow.getName(), projectId, project);
     }
 

@@ -63,6 +63,7 @@ import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt.TranslateCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.testing.helper.webui.TranslateCommandTestHelper;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -83,7 +84,7 @@ public class TranslateTest {
     @Test
     public void testThatNodeAreNotDirtyAfterTranslate() throws Exception {
         var wp = WorkflowCommandsTest.createEmptyWorkflowProject();
-        var wfm = wp.getFromCacheOrLoadWorkflowManager().orElseThrow();
+        var wfm = wp.loadWorkflowManager();
         var nc = WorkflowManagerUtil.createAndAddNode(wfm, NodeFactoryProvider.getInstance() //
             .getNodeFactory("org.knime.base.node.util.sampledata.SampleDataNodeFactory").get());
         nc.setUIInformation(NodeUIInformation.builder().setNodeLocation(0, 0, 0, 0).build());
@@ -94,7 +95,7 @@ public class TranslateTest {
         TranslateCommandEnt translate = builder(TranslateCommandEntBuilder.class)
             .setNodeIds(List.of(new NodeIDEnt(nc.getID()))).setKind(KindEnum.TRANSLATE)
             .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
-        var commands = new WorkflowCommands(5);
+        var commands = new WorkflowCommands(5, ProjectManager.getInstance());
         commands.execute(new WorkflowKey(wp.getID(), NodeIDEnt.getRootID()), translate);
         assertThat(nc.getUIInformation().getBounds(), is(new int[]{10, 10, 0, 0}));
         assertThat(nc.isDirty(), is(false));

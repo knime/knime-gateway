@@ -48,6 +48,7 @@ package org.knime.gateway.api.entity;
 import java.util.Objects;
 
 import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.core.node.workflow.WorkflowManager;
 
 /**
  * Represents a (workflow) annotation id as used by gateway entities and services. Equivalent to the core's
@@ -102,6 +103,10 @@ public final class AnnotationIDEnt {
      */
     public NodeIDEnt getNodeIDEnt() {
         return m_nodeId;
+    }
+
+    public WorkflowAnnotationID toAnnotationId(final WorkflowManager parent) {
+        return new WorkflowAnnotationID(this.getNodeIDEnt().toNodeID(parent), this.getIndex());
     }
 
     /**

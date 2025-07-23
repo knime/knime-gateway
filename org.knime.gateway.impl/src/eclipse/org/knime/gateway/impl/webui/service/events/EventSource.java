@@ -120,9 +120,7 @@ public abstract class EventSource<T, E> {
      * @throws ServiceCallException
      * @throws IllegalArgumentException if object describing the event type isn't valid
      */
-    public abstract Optional<E> addEventListenerAndGetInitialEventFor(T eventTypeEnt, String projectId)
-        throws ServiceCallException, LoggedOutException, NetworkException, NodeNotFoundException,
-        NotASubWorkflowException;
+    public abstract Optional<E> addEventListenerAndGetInitialEventFor(T eventTypeEnt, String projectId);
 
     /**
      * Little helper to assert that the project id equals the expected one (see also {@link DefaultServiceContext}).
@@ -150,8 +148,8 @@ public abstract class EventSource<T, E> {
      *
      * @throws IllegalArgumentException if object describing the event type isn't valid
      */
-    public void addEventListenerFor(final T eventTypeEnt, final String projectId) throws ServiceCallException,
-        LoggedOutException, NetworkException, NodeNotFoundException, NotASubWorkflowException {
+    public void addEventListenerFor(final T eventTypeEnt, final String projectId) throws ServiceCallException
+        {
         // make sure the returned event is the first being send!
         synchronized (m_sendEventLock) {
             addEventListenerAndGetInitialEventFor(eventTypeEnt, projectId).ifPresent(e -> sendEvent(e, projectId));

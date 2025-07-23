@@ -60,10 +60,7 @@ import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.CopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyResultEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat;
 import org.knime.shared.workflow.storage.clipboard.SystemClipboardFormat.ObfuscatorException;
@@ -130,7 +127,7 @@ class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         var projectId = getWorkflowKey().getProjectId();
         var wfm = getWorkflowManager();
         var nodeIds = m_commandEnt.getNodeIds().stream()//
@@ -140,7 +137,7 @@ class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
         final var idEnts = m_commandEnt.getAnnotationIds();
         final var annotationIDs = new WorkflowAnnotationID[idEnts.size()];
         for (var i = 0; i < idEnts.size(); i++) {
-            annotationIDs[i] = DefaultServiceUtil.entityToAnnotationID(projectId, idEnts.get(i));
+            annotationIDs[i] = idEnts.get(i).toAnnotationId(getWorkflowManager());
         }
         var workflowCopyContent = WorkflowCopyContent.builder()//
                 .setNodeIDs(nodeIds)//

@@ -53,7 +53,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,7 +74,6 @@ import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
  * Workflow command to delete nodes, connections or workflow annotations.
@@ -142,7 +140,7 @@ final class Delete extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         var wfm = getWorkflowManager();
         String projectId = getWorkflowKey().getProjectId();
         Set<NodeID> nodesToDelete = m_nodeIdsQueried.stream()
@@ -189,10 +187,10 @@ final class Delete extends AbstractWorkflowCommand {
 
         final Map<ConnectionID, int[]> bendpointsToDelete = new LinkedHashMap<>();
         if (m_bendpointsIndicesQueried != null) {
-            for (final Entry<String, List<Integer>> e : m_bendpointsIndicesQueried.entrySet()) {
+            for (final var e : m_bendpointsIndicesQueried.entrySet()) {
                 if (!e.getValue().isEmpty()) {
                     bendpointsToDelete.put(
-                        DefaultServiceUtil.entityToConnectionID(projectId, new ConnectionIDEnt(e.getKey())),
+                        (new ConnectionIDEnt(e.getKey())).toConnectionId(getWorkflowManager()),
                         e.getValue().stream().mapToInt(Integer::intValue).toArray());
                 }
             }

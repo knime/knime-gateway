@@ -139,11 +139,11 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     public void testRedoCommandOrder() throws Exception {
         Project wp = createEmptyWorkflowProject();
 
-        WorkflowCommands commands = new WorkflowCommands(5);
+        WorkflowCommands commands = new WorkflowCommands(5, ProjectManager.getInstance());
         WorkflowMiddleware workflowMiddleware = new WorkflowMiddleware(ProjectManager.getInstance(), null);
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
 
-        var wfm = wp.getFromCacheOrLoadWorkflowManager().orElseThrow();
+        var wfm = wp.loadWorkflowManager();
         var sleepNodeClassname = "org.knime.base.node.flowcontrol.sleep.SleepNodeFactory";
 
         var n1 = addNodeDirectly(sleepNodeClassname, wfm);
@@ -174,7 +174,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     public void testUndoAndRedoStackSizes() throws Exception {
         Project wp = createEmptyWorkflowProject();
 
-        WorkflowCommands commands = new WorkflowCommands(5);
+        WorkflowCommands commands = new WorkflowCommands(5, ProjectManager.getInstance());
         TranslateCommandEnt commandEntity = builder(TranslateCommandEntBuilder.class).setKind(KindEnum.TRANSLATE)
             .setTranslation(builder(XYEntBuilder.class).setX(10).setY(10).build()).build();
         WorkflowKey wfKey = new WorkflowKey(wp.getID(), NodeIDEnt.getRootID());
@@ -240,7 +240,7 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
     @Test
     public void testUndoAndRedoWhileWorkflowIsExecuting() throws Exception {
         var wp = createEmptyWorkflowProject();
-        var wfm = wp.getFromCacheOrLoadWorkflowManager().orElseThrow();
+        var wfm = wp.loadWorkflowManager();
         var waitNodeID = WorkflowManagerUtil.createAndAddNode(wfm,
             FileNativeNodeContainerPersistor.loadNodeFactory("org.knime.base.node.flowcontrol.sleep.SleepNodeFactory"))
             .getID();

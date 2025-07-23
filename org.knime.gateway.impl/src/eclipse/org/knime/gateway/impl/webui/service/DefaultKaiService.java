@@ -59,12 +59,10 @@ import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.service.KaiService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.WorkflowUtil;
 import org.knime.gateway.impl.webui.entity.DefaultKaiUiStringsEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiWelcomeMessagesEnt;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
@@ -93,15 +91,16 @@ public final class DefaultKaiService implements KaiService {
         public void execute(final KaiCommand kaiCommand)
             throws ServiceCallException, LoggedOutException, NetworkException {
             WorkflowCommand command = new KaiCommandAdapter(kaiCommand);
+            final var wfm = m_projectManager.getProject(m_workflowKey.getProjectId()).orElseThrow().getWorkflowManager().orElseThrow();
+            command.setWorkflowManager(wfm);  // todo: transitional
             var commands = m_workflowMiddleware.getCommands();
             commands.setCommandToExecute(command);
             commands.execute(m_workflowKey, null);
         }
 
         @Override
-        public void executeWorkflowAction(final Consumer<WorkflowManager> workflowAction) throws ServiceCallException,
-            LoggedOutException, NetworkException, NodeNotFoundException, NotASubWorkflowException {
-            var wfm = WorkflowUtil.getWorkflowManager(m_workflowKey);
+        public void executeWorkflowAction(final Consumer<WorkflowManager> workflowAction) {
+            final var wfm = m_projectManager.getProject(m_workflowKey.getProjectId()).orElseThrow().getWorkflowManager().orElseThrow();
             workflowAction.accept(wfm);
         }
     }
@@ -115,7 +114,7 @@ public final class DefaultKaiService implements KaiService {
         }
 
         @Override
-        protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+        protected boolean executeWithWorkflowLockAndContext() {
             return m_kaiCommand.execute(getWorkflowManager());
         }
 
@@ -135,6 +134,8 @@ public final class DefaultKaiService implements KaiService {
 
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
+
+    private final ProjectManager m_projectManager = ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     /**
      * @return the singleton instance of this service

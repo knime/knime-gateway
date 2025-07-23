@@ -90,7 +90,7 @@ class ProjectWfmCache {
             (removedVersion, removedWfm) -> disposeWorkflowManager(removedWfm));
     }
 
-    Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
+    Optional<WorkflowManager> getWorkflowManager(final VersionId version) {
         if (version instanceof VersionId.Fixed fixedVersion) {
             return Optional.ofNullable(m_fixedVersions.get(fixedVersion));
         } else if (version.isCurrentState()) {
@@ -105,7 +105,7 @@ class ProjectWfmCache {
         }
     }
 
-    WorkflowManager getWorkflowManager(final VersionId version)
+    WorkflowManager loadWorkflowManager(final VersionId version)
         throws ServiceCallException, LoggedOutException, NetworkException {
         if (version instanceof VersionId.Fixed fixedVersion) {
             if (m_wfmLoader == null) {

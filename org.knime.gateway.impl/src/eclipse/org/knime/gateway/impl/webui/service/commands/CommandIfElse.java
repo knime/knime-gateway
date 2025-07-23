@@ -50,14 +50,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
-import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
  * Higher-order command that executes either one of the child commands based on a given predicate. Other properties are
@@ -93,13 +87,8 @@ abstract class CommandIfElse extends HigherOrderCommand {
 
     @Override
     public Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException {
-        WorkflowManager wfm;
-        try {
-            wfm = WorkflowUtil.getWorkflowManager(wfKey);
-        } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-            throw new ServiceExceptions.ServiceCallException(ex.getMessage(), ex);
-        }
+        throws ServiceCallException {
+        WorkflowManager wfm = getWorkflowManager();
         var takeLeft = m_predicate.apply(wfm);
         m_activeCommand = Boolean.TRUE.equals(takeLeft) ? m_leftCommand : m_rightCommand;
         if (m_activeCommand instanceof WithResult withResult) {
@@ -111,22 +100,22 @@ abstract class CommandIfElse extends HigherOrderCommand {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         return m_activeCommand.execute(getWorkflowKey());
     }
 
     @Override
-    public void undo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public void undo() throws ServiceCallException {
         m_activeCommand.undo();
     }
 
     @Override
-    public boolean canUndo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean canUndo() {
         return m_activeCommand.canUndo();
     }
 
     @Override
-    public boolean canRedo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean canRedo() {
         return m_activeCommand.canRedo();
     }
 }

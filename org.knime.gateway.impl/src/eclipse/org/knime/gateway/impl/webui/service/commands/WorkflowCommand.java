@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -81,7 +82,7 @@ public interface WorkflowCommand {
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    boolean execute(WorkflowKey wfKey) throws ServiceCallException, LoggedOutException, NetworkException;
+    boolean execute(WorkflowKey wfKey) throws ServiceCallException;
 
     /**
      * Whether the command can be undone. Must be a rather light operation because it's potentially called repeatedly
@@ -92,7 +93,7 @@ public interface WorkflowCommand {
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    boolean canUndo() throws ServiceCallException, LoggedOutException, NetworkException;
+    boolean canUndo();
 
     /**
      * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey)} has been called before
@@ -102,7 +103,7 @@ public interface WorkflowCommand {
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    void undo() throws ServiceCallException, LoggedOutException, NetworkException;
+    void undo() throws ServiceCallException;
 
     /**
      * Whether the command can be redone. Must be a rather light operation because it's potentially called repeatedly
@@ -113,7 +114,7 @@ public interface WorkflowCommand {
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    boolean canRedo() throws ServiceCallException, LoggedOutException, NetworkException;
+    boolean canRedo();
 
     /**
      * Re-does this command. Guaranteed to be called only if {@link #undo()} has been called before already.
@@ -122,6 +123,8 @@ public interface WorkflowCommand {
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    void redo() throws ServiceCallException, LoggedOutException, NetworkException;
+    void redo() throws ServiceCallException;
 
+    // todo: transitional
+    void setWorkflowManager(WorkflowManager wfm);
 }

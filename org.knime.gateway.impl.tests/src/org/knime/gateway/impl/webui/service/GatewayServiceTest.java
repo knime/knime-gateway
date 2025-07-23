@@ -189,7 +189,7 @@ public abstract class GatewayServiceTest {
         final ProjectManager instance = ProjectManager.getInstance();
         final Project project = instance.getProject(wfId) //
                 .orElseThrow(() -> new IllegalStateException("No project for id " + wfId));
-        return project.getWorkflowManagerIfLoaded() //
+        return project.getWorkflowManager() //
                 .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId));
     }
 

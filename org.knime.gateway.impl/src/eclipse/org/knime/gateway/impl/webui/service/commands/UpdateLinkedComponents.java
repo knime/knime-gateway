@@ -77,9 +77,7 @@ import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.Update
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
-import org.knime.gateway.impl.webui.WorkflowKey;
 
 /**
  * Updates linked components and returns the update success.
@@ -113,12 +111,12 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         if (m_nodeIdEnts.isEmpty()) {
             throw new ServiceCallException("No component IDs passed for <%s>".formatted(getWorkflowKey()));
         }
 
-        final var components = getLinkedComponents(m_nodeIdEnts, getWorkflowKey());
+        final var components = getLinkedComponents(m_nodeIdEnts, getWorkflowManager());
 
         if (components.size() != m_nodeIdEnts.size()) {
             throw new ServiceCallException(
@@ -180,10 +178,11 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     private static List<SubNodeContainer> getLinkedComponents(final List<NodeIDEnt> nodeIdEnts,
-        final WorkflowKey wfKey) throws ServiceCallException, LoggedOutException, NetworkException {
+        final WorkflowManager wfm) {
         final List<SubNodeContainer> linked = new ArrayList<>();
         for (final var nodeIdEnt : nodeIdEnts) {
-            if (DefaultServiceUtil.getNodeContainer(wfKey.getProjectId(), nodeIdEnt) instanceof SubNodeContainer snc
+            var nc = wfm.findNodeContainer(nodeIdEnt.toNodeID(wfm));
+            if (nc instanceof SubNodeContainer snc
                     && snc.getTemplateInformation().getRole() == Role.Link) {
                 linked.add(snc);
             }

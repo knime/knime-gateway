@@ -108,14 +108,18 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, NetworkException, LoggedOutException {
+        throws ServiceCallException {
         var wfm = getWorkflowManager();
         // Add node
         var positionEnt = m_commandEnt.getPosition();
         var factoryKeyEnt = m_commandEnt.getNodeFactory();
         var url = parseURL(m_commandEnt.getUrl());
         if (url == null && m_commandEnt.getSpaceItemReference() != null && m_spaceProviders != null) {
-            url = getUrlFromSpaceItemReference(m_commandEnt.getSpaceItemReference());
+            try {
+                url = getUrlFromSpaceItemReference(m_commandEnt.getSpaceItemReference());
+            } catch (NetworkException | LoggedOutException e) {
+                throw new ServiceCallException("Failed to resolve space item reference", e);
+            }
         }
 
         if (factoryKeyEnt == null && url != null && m_nodeFactoryProvider != null) {

@@ -46,8 +46,6 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import static org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeContainer;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +87,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.kai.CodeKaiHandler;
 import org.knime.gateway.impl.webui.kai.CodeKaiHandler.ProjectId;
@@ -110,6 +109,9 @@ public final class DefaultNodeService implements NodeService {
     private final CodeKaiHandler m_codeKaiHandler =
         ServiceDependencies.getServiceDependency(CodeKaiHandler.class, false);
 
+    private final ProjectManager m_projectManager =
+        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -125,14 +127,12 @@ public final class DefaultNodeService implements NodeService {
 
     @Override
     public void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final List<NodeIDEnt> nodeIds,
-        final String action) throws ServiceCallException, LoggedOutException, NetworkException, NodeNotFoundException,
-        OperationNotAllowedException {
-
+        final String action) throws ServiceCallException, NodeNotFoundException, OperationNotAllowedException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
+        m_projectManager.assertIsActive(projectId, VersionId.currentState());
+        var wfm = m_projectManager.getProject(projectId).orElseThrow().getWorkflowManager(workflowId).orElseThrow();
         try {
-            DefaultServiceUtil.changeNodeStates(projectId, workflowId, action,
-                nodeIds.toArray(new NodeIDEnt[nodeIds.size()]));
+            CoreUtil.changeNodeStates(wfm, action, nodeIds.toArray(new NodeIDEnt[0]));
         } catch (IllegalArgumentException e) {
             throw new NodeNotFoundException(e.getMessage(), e);
         } catch (IllegalStateException e) {
@@ -144,17 +144,16 @@ public final class DefaultNodeService implements NodeService {
     public void changeLoopState(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String action) throws ServiceCallException, LoggedOutException, NetworkException,
         OperationNotAllowedException, NodeNotFoundException {
-
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
+        m_projectManager.assertIsActive(projectId, VersionId.currentState());
         try {
-            var nc = getNodeContainer(projectId, workflowId, nodeId);
-            if (nc instanceof NativeNodeContainer nnc) {
-                if (nnc.isModelCompatibleTo(LoopEndNode.class)) {
-                    changeLoopState(action, nnc);
-                    return;
-                }
+            var nc = m_projectManager.getProject(projectId).orElseThrow() //
+                .getNodeContainer(VersionId.currentState(), workflowId, nodeId).orElseThrow();
+            if (nc instanceof NativeNodeContainer nnc && nnc.isModelCompatibleTo(LoopEndNode.class)) {
+                changeLoopState(action, nnc);
+                return;
             }
+
             throw new OperationNotAllowedException("The action to change the loop state is not applicable for "
                 + nc.getNameWithID() + ". Not a loop end node.");
         } catch (IllegalArgumentException e) {
@@ -224,7 +223,7 @@ public final class DefaultNodeService implements NodeService {
      * Convenience function if native node container is available.
      *
      * @param nnc native node container
-     * @param projectId project id, can be null. Only used in {@link PerNodeWrapperEventEmitter} and if null default
+     * @param projectId project id, can be null. Only used in {@code PerNodeWrapperEventEmitter} and if null default
      *            `projectWfm.getNameWithID()` will be used
      * @return node view
      * @throws NodeNotFoundException
@@ -279,23 +278,11 @@ public final class DefaultNodeService implements NodeService {
 
     }
 
-    private static <T> T getNC(final String projectId, final NodeIDEnt workflowId, final VersionId versionId,
-        final NodeIDEnt nodeId, final Class<T> ncClass) throws NodeNotFoundException, ServiceCallException,
-        LoggedOutException, NetworkException, InvalidRequestException {
-
-        NodeContainer nc;
-        try {
-            nc = getNodeContainer(projectId, workflowId, versionId, nodeId);
-        } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
-        }
-
-        if (!ncClass.isAssignableFrom(nc.getClass())) {
-            throw new InvalidRequestException(
-                "The requested node " + nc.getNameWithID() + " is not a " + ncClass.getName());
-        }
-
-        return ncClass.cast(nc);
+    private <T> T getNC(final String projectId, final NodeIDEnt workflowId, final VersionId versionId,
+        final NodeIDEnt nodeId, final Class<T> ncClass) {
+        return m_projectManager.getProject(projectId).orElseThrow()//
+            .getWorkflowManager(versionId, workflowId) //
+            .map(wfm -> wfm.getNodeContainer(nodeId.toNodeID(wfm), ncClass , true )).orElseThrow();
     }
 
     @Override
@@ -357,8 +344,10 @@ public final class DefaultNodeService implements NodeService {
         final NodeIDEnt nodeId, final String mode, final List<String> selection)
         throws NodeNotFoundException, ServiceCallException, LoggedOutException, NetworkException {
         var version = VersionId.parse(versionId);
-        ServiceUtilities.updateDataPointSelection(projectId, workflowId, version, nodeId, mode, selection,
-            NodeWrapper::of);
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        var nc = m_projectManager.getProject(projectId).orElseThrow().getNodeContainer(version, workflowId, nodeId)
+            .orElseThrow();
+        DefaultServiceUtil.updateDataPointSelection(nc, mode, selection, NodeWrapper::of);
     }
 
     @Override

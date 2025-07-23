@@ -61,10 +61,7 @@ import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ActionEnum;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
  * Moves workflow annotations through the workflow's z-plane.
@@ -92,12 +89,13 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
+        // TODO this could become an AbstractWorkflowAnnotationCommand?
         final var wfm = getWorkflowManager();
         final var workflowKey = getWorkflowKey();
         final List<WorkflowAnnotationID> annotationIds = new ArrayList<>();
         for (final var idEnt : m_commandEnt.getAnnotationIds()) {
-            annotationIds.add(DefaultServiceUtil.entityToAnnotationID(workflowKey.getProjectId(), idEnt));
+            annotationIds.add(idEnt.toAnnotationId(getWorkflowManager()));
         }
         final var annotations = getAnnotions(wfm, annotationIds);
         final var action = m_commandEnt.getAction();

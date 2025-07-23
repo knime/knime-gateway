@@ -48,6 +48,7 @@ package org.knime.gateway.api.entity;
 import java.util.Objects;
 
 import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.WorkflowManager;
 
 /**
  * Represents a connection id as used by gateway entities and services. Equivalent to the core's
@@ -87,6 +88,10 @@ public final class ConnectionIDEnt {
         String[] split = s.split("_");
         m_destNodeID = new NodeIDEnt(split[0]);
         m_destPortIdx = Integer.parseInt(split[1]);
+    }
+
+    public ConnectionID toConnectionId(final WorkflowManager parent) {
+        return new ConnectionID(this.getDestNodeIDEnt().toNodeID(parent), this.getDestPortIdx());
     }
 
     /**

@@ -57,10 +57,10 @@ class ProjectWfmCacheTest {
         var instance = new ProjectWfmCache(ignored -> null);
         Assertions.assertFalse(instance.contains(VersionId.currentState()));
         Assertions.assertFalse(instance.contains(someVersion()));
-        instance.getWorkflowManager(VersionId.currentState());
+        instance.loadWorkflowManager(VersionId.currentState());
         Assertions.assertTrue(instance.contains(VersionId.currentState()));
         Assertions.assertFalse(instance.contains(someVersion()));
-        instance.getWorkflowManager(VersionId.currentState());
+        instance.loadWorkflowManager(VersionId.currentState());
         Assertions.assertTrue(instance.contains(VersionId.currentState()));
     }
 

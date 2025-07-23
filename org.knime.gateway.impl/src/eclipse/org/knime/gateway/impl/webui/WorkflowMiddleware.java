@@ -95,7 +95,6 @@ import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.Scope;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
-import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
@@ -150,9 +149,11 @@ public final class WorkflowMiddleware {
      */
     final Map<WorkflowKey, WorkflowState> m_workflowStateCache = new ConcurrentHashMap<>();
 
-    private final WorkflowCommands m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW);
+    private final WorkflowCommands m_commands;
 
     private final SpaceProvidersManager m_spaceProvidersManager;
+
+    private final ProjectManager m_projectManager;
 
     /**
      * @param projectManager
@@ -170,8 +171,10 @@ public final class WorkflowMiddleware {
     @SuppressWarnings("java:S1176") // javadoc
     public WorkflowMiddleware(final ProjectManager projectManager, final SpaceProvidersManager spaceProvidersManager) {
         m_spaceProvidersManager = spaceProvidersManager;
+        m_projectManager = projectManager;
         projectManager.addProjectRemovedListener(
             projectId -> clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId)));
+        m_commands = new WorkflowCommands(UNDO_AND_REDO_STACK_SIZE_PER_WORKFLOW, projectManager);
     }
 
     /**
@@ -303,7 +306,7 @@ public final class WorkflowMiddleware {
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
         final PatchEntCreator patchEntCreator, final String snapshotId, final boolean includeInteractionInfo)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+         {
         var buildContextBuilder = WorkflowBuildContext.builder()//
             .includeInteractionInfo(includeInteractionInfo);
         final var ws = getWorkflowState(wfKey);
@@ -420,10 +423,11 @@ public final class WorkflowMiddleware {
 
     private WorkflowState createWorkflowStateAndEventuallyClearCache(final WorkflowKey wfKey)
         throws ServiceCallException, LoggedOutException, NetworkException {
-
-        final String projectId = wfKey.getProjectId();
-        final var wfm = WorkflowManagerResolver.load(projectId, wfKey.getWorkflowId(), wfKey.getVersionId());
-        final SpaceProviders spaceProviders = m_spaceProvidersManager == null ? null
+        final var projectId = wfKey.getProjectId();
+        final var wfm = m_projectManager.getProject(wfKey.projectId()).orElseThrow()
+            .loadWorkflowManager(wfKey.getVersionId(), wfKey.getWorkflowId());
+        final var spaceProviders = m_spaceProvidersManager == null //
+            ? null //
             : m_spaceProvidersManager.getSpaceProviders(Key.of(projectId));
         if (!wfm.isProject()) {
             final var nc = getNodeContainerOf(wfm); // component or metanode

@@ -48,8 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service.events;
 
-import static org.knime.gateway.impl.service.util.DefaultServiceUtil.assertProjectVersion;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +56,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.function.FailableRunnable;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.service.GatewayException;
@@ -72,15 +69,12 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutExcep
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.CallThrottle.CallState;
 import org.knime.gateway.impl.service.util.PatchEntCreator;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
-import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.WorkflowUtil;
 
 /**
  * An event source that emits events whenever something changes in a particular workflow.
@@ -88,8 +82,6 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz
  */
 public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEventTypeEnt, CompositeEventEnt> {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowChangedEventSource.class);
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
@@ -109,7 +101,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         super(eventConsumer);
         m_workflowMiddleware = workflowMiddleware;
         m_projectManager = projectManager;
-        m_projectManager.addProjectRemovedListener(projectId -> extracted(projectId));
+        m_projectManager.addProjectRemovedListener(this::extracted);
     }
 
     private void extracted(final String projectId) {
@@ -132,24 +124,23 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     /**
      * {@inheritDoc}
+     * 
      * @throws NotASubWorkflowException
      * @throws NodeNotFoundException
      * @throws NetworkException
      * @throws LoggedOutException
-     * @throws ServiceCallException
      * @throws NoSuchElementException
      */
     @SuppressWarnings("resource")
     @Override
-    public Optional<CompositeEventEnt> addEventListenerAndGetInitialEventFor(
-        final WorkflowChangedEventTypeEnt wfEventType, final String projectId) throws ServiceCallException,
-        LoggedOutException, NetworkException, NodeNotFoundException, NotASubWorkflowException {
+    public Optional<CompositeEventEnt>
+        addEventListenerAndGetInitialEventFor(final WorkflowChangedEventTypeEnt wfEventType, final String projectId) {
         assertValidProjectId(projectId, wfEventType.getProjectId());
-        assertProjectVersion(wfEventType.getProjectId(), VersionId.currentState());
+        m_projectManager.assertIsActive(projectId, VersionId.currentState());
         var workflowKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         var workflowChangesListener = m_workflowMiddleware.getWorkflowChangesListener(workflowKey);
 
-        WorkflowUtil.assertWorkflowExists(workflowKey);
+        final var wfm = m_projectManager.getProject(projectId).orElseThrow().getWorkflowManager().orElseThrow();
 
         // create very first changed event to be sent first (and thus catch up with the most recent
         // workflow version)
@@ -162,10 +153,12 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
         // add and keep track of callback added to the workflow changes listener (if not already)
         m_workflowChangesCallbacks.computeIfAbsent(workflowKey, wfKey -> {
-            var latestSnapshotId =
-                workflowChangedEvent == null ? wfEventType.getSnapshotId() : workflowChangedEvent.getSnapshotId();
+            var latestSnapshotId = workflowChangedEvent == null //
+                ? wfEventType.getSnapshotId() //
+                : workflowChangedEvent.getSnapshotId();
             try {
-                final var callback = createWorkflowChangesCallback(workflowKey, new PatchEntCreator(latestSnapshotId));
+                final var callback =
+                    createWorkflowChangesCallback(workflowKey, wfm, new PatchEntCreator(latestSnapshotId));
                 workflowChangesListener.addWorkflowChangeCallback(callback);
                 return callback;
             } catch (GatewayException ex) {
@@ -184,10 +177,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     }
 
     private FailableRunnable<GatewayException> createWorkflowChangesCallback(final WorkflowKey wfKey,
-        final PatchEntCreator patchEntCreator) throws GatewayException {
-
-        // No version needed, only current state
-        var wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId());
+        final WorkflowManager wfm, final PatchEntCreator patchEntCreator) throws GatewayException {
         return () -> {
             preEventCreation();
             var workflowChangedEvent = m_workflowMiddleware.buildWorkflowChangedEvent(wfKey, patchEntCreator,

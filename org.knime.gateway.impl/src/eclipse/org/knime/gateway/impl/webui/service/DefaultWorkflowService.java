@@ -88,12 +88,9 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.WorkflowUtil;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
@@ -133,10 +130,9 @@ public final class DefaultWorkflowService implements WorkflowService {
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final Boolean includeInteractionInfo)
         throws ServiceCallException, LoggedOutException, NetworkException, NodeNotFoundException {
-
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var version = VersionId.parse(versionId);
         final var wfKey = new WorkflowKey(projectId, workflowId, version);
-        final var wfm = ServiceUtilities.assertProjectIdAndGetWorkflowManager(wfKey);
         final var buildContext = WorkflowBuildContext.builder();
         buildContext.setVersion(version);
         // TODO NXT-3605 remove `includeInteractionInfo` (NOSONAR)
@@ -153,11 +149,13 @@ public final class DefaultWorkflowService implements WorkflowService {
         } else {
             buildContext.includeInteractionInfo(false);
         }
+
         if (version.isCurrentState()) {
             return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         } else {
             // fixed versions are not editable,
             // we do not need to cache state, execute commands, provide change events etc. for these
+            final var wfm = m_projectManager.getProject(projectId).orElseThrow().loadWorkflowManager(version);
             var workflowEntity = EntityFactory.Workflow.buildWorkflowEnt(wfm, buildContext);
             return builder(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class) //
                 .setSnapshotId(null) //
@@ -171,8 +169,8 @@ public final class DefaultWorkflowService implements WorkflowService {
         throws ServiceCallException, LoggedOutException, NetworkException, NodeNotFoundException,
         NotASubWorkflowException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        final var wfKey = new WorkflowKey(projectId, workflowId);
-        final var wfm = WorkflowUtil.getWorkflowManager(wfKey);
+        final var wfm = m_projectManager.getProject(projectId).orElseThrow() //
+                .getWorkflowManager(VersionId.currentState(), workflowId).orElseThrow();
         try {
             final var linkedComponentsToStateMap = CoreUtil.getLinkedComponentToStateMap(wfm);
             final var candidateList = linkedComponentsToStateMap.keySet().stream().toList();
@@ -201,7 +199,8 @@ public final class DefaultWorkflowService implements WorkflowService {
             return;
         }
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        final var wfm = SaveProjectHelper.assertIsWorkflowProjectAndNotExecting(projectId);
+        var wfm = m_projectManager.getProject(projectId).orElseThrow().getWorkflowManager(VersionId.currentState()).orElseThrow();
+        SaveProjectHelper.assertIsWorkflowProjectAndNotExecuting(wfm);
         if (!wfm.isDirty()) {
             return; // Nothing to do if the workflow is not dirty
         }
@@ -210,11 +209,10 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-
-    public void disposeVersion(final String projectId, final String versionParameter) throws ServiceCallException {
+    public void disposeVersion(final String projectId, final String version) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         m_projectManager.getProject(projectId)
-            .ifPresent(project -> project.disposeCachedWfm(VersionId.parse(versionParameter)));
+            .ifPresent(project -> project.disposeCachedWfm(VersionId.parse(version)));
         m_workflowMiddleware.clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId));
     }
 
@@ -222,7 +220,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException, LoggedOutException, NetworkException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
+        m_projectManager.assertIsActive(projectId, VersionId.currentState());
         var spaceProviders = m_spaceProvidersManager == null ? null : //
             m_spaceProvidersManager.getSpaceProviders( //
                 DefaultServiceContext.getProjectId().map(Key::of) //
@@ -236,7 +234,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws ServiceCallException, LoggedOutException, NetworkException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
+        m_projectManager.assertIsActive(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
     }
 
@@ -244,7 +242,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
         throws ServiceCallException, LoggedOutException, NetworkException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
+        m_projectManager.assertIsActive(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
     }
 
@@ -256,13 +254,12 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     /**
-     * This temporary helper class will become obsolete with NXT-3634
+     * This temporary helper class will become obsolete with NXT-3634 (Progress UI for saving workflows)
      */
     private static final class SaveProjectHelper {
 
-        private static WorkflowManager assertIsWorkflowProjectAndNotExecting(final String projectId)
-            throws ServiceCallException, LoggedOutException, NetworkException {
-            var wfm = WorkflowManagerResolver.get(projectId);
+        private static void assertIsWorkflowProjectAndNotExecuting(WorkflowManager wfm)
+            throws ServiceCallException {
             if (wfm.isComponentProjectWFM()) {
                 throw new ServiceCallException("Not supported for component projects");
             }
@@ -272,8 +269,6 @@ public final class DefaultWorkflowService implements WorkflowService {
             if (isExecutionInProgress) {
                 throw new ServiceCallException("Workflow is currently executing");
             }
-
-            return wfm;
         }
 
         /**

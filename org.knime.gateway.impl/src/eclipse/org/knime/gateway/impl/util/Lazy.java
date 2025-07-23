@@ -45,6 +45,7 @@
  */
 package org.knime.gateway.impl.util;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -120,6 +121,18 @@ public final class Lazy {
                 }
             }
             return result;
+        }
+
+        public V getOrThrow() throws NoSuchElementException {
+            if (this.isInitialized()) {
+                try {
+                    return get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                throw new NoSuchElementException("Value not yet initialised. Call get() to initialise it first.");
+            }
         }
 
         /**

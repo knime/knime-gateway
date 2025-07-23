@@ -55,7 +55,6 @@ import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
 /**
  * Workflow command to update the label of a native node, component or metanode.
@@ -89,9 +88,9 @@ class UpdateNodeLabel extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         var nodeId = m_commandEnt.getNodeId();
-        var nc = DefaultServiceUtil.getNodeContainer(getWorkflowKey().getProjectId(), nodeId);
+        var nc = getWorkflowManager().findNodeContainer(nodeId.toNodeID(getWorkflowManager()));
         var newLabel = m_commandEnt.getLabel();
 
         // Keep node annotation and node annotation data to undo

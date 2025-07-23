@@ -60,7 +60,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 
 /**
@@ -82,11 +81,10 @@ class AddBendpoint extends AbstractWorkflowCommand implements WithResult {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
 
         var wfm = getWorkflowManager();
-        var connectionId =
-            DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_commandEnt.getConnectionId());
+        var connectionId = m_commandEnt.getConnectionId().toConnectionId(getWorkflowManager());
         m_connection = CoreUtil.getConnection(connectionId, wfm).orElseThrow(
             () -> new ServiceExceptions.ServiceCallException("Connection not found: " + connectionId));
         var connectionUIInfo = m_connection.getUIInfo();

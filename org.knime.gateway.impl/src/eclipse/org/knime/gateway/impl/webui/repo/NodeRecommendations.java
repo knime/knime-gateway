@@ -63,12 +63,13 @@ import org.knime.core.ui.workflowcoach.NodeRecommendationManager;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager.NodeRecommendation;
 import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.DefaultServiceUtil;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.NodeRelation;
 
 /**
@@ -85,15 +86,19 @@ public class NodeRecommendations {
 
     private final NodeRepository m_nodeRepo;
 
+    private final ProjectManager m_projectManager;
+
     private boolean m_nodeRecommendationManagerIsInitialized;
 
     /**
      * Creates a new instance
      *
      * @param nodeRepo The node repository to retrieve the suggested nodes
+     * @param projectManager
      */
-    public NodeRecommendations(final NodeRepository nodeRepo) {
+    public NodeRecommendations(final NodeRepository nodeRepo, ProjectManager projectManager) {
         m_nodeRepo = nodeRepo;
+        m_projectManager = projectManager;
     }
 
     /**
@@ -133,7 +138,10 @@ public class NodeRecommendations {
 
         var searchSuccessors = nodeRelation == null || nodeRelation == NodeRelation.SUCCESSORS;
         // This `null` is evaluated in `NodeRecommendationManager#getNodeRecommendationFor(...)`
-        var nc = nodeId == null ? null : DefaultServiceUtil.getNodeContainer(projectId, workflowId, nodeId);
+        var nc = nodeId == null //
+            ? null //
+            : m_projectManager.getProject(projectId).orElseThrow() //
+                .getNodeContainer(VersionId.currentState(), workflowId, nodeId).orElseThrow();
 
         var result = removeDuplicates(Stream.concat( //
             getRecommendationsFor(nc, searchSuccessors), //
