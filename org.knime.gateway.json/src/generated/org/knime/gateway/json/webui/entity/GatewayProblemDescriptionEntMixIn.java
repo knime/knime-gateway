@@ -81,6 +81,10 @@ public interface GatewayProblemDescriptionEntMixIn extends GatewayProblemDescrip
     public String getCode();
     
     @Override
+    @JsonProperty("details")
+    public java.util.List<String> getDetails();
+    
+    @Override
     @JsonProperty("canCopy")
     public Boolean isCanCopy();
     
@@ -107,6 +111,10 @@ public interface GatewayProblemDescriptionEntMixIn extends GatewayProblemDescrip
         @Override
         @JsonProperty("code")
         public GatewayProblemDescriptionEntMixInBuilder setCode(final String code);
+        
+        @Override
+        @JsonProperty("details")
+        public GatewayProblemDescriptionEntMixInBuilder setDetails(final java.util.List<String> details);
         
         @Override
         @JsonProperty("canCopy")

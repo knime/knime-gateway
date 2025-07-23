@@ -57,6 +57,7 @@ import java.util.Map;
  *
  * @param title
  * @param code
+ * @param details
  * @param canCopy
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -65,6 +66,7 @@ import java.util.Map;
 public record DefaultGatewayProblemDescriptionEnt(
     String title,
     String code,
+    java.util.List<String> details,
     Boolean canCopy, 
     Map<String, String> additionalProperties) implements GatewayProblemDescriptionEnt {
 
@@ -90,6 +92,11 @@ public record DefaultGatewayProblemDescriptionEnt(
     }
     
     @Override
+    public java.util.List<String> getDetails() {
+        return details;
+    }
+    
+    @Override
     public Boolean isCanCopy() {
         return canCopy;
     }
@@ -108,6 +115,8 @@ public record DefaultGatewayProblemDescriptionEnt(
 
         private String m_code;
 
+        private java.util.List<String> m_details;
+
         private Boolean m_canCopy;
 
         private Map<String, String> m_additionalProperties;
@@ -121,6 +130,12 @@ public record DefaultGatewayProblemDescriptionEnt(
         @Override
         public DefaultGatewayProblemDescriptionEntBuilder setCode(String code) {
              m_code = code;
+             return this;
+        }
+
+        @Override
+        public DefaultGatewayProblemDescriptionEntBuilder setDetails(java.util.List<String> details) {
+             m_details = details;
              return this;
         }
 
@@ -141,6 +156,7 @@ public record DefaultGatewayProblemDescriptionEnt(
             return new DefaultGatewayProblemDescriptionEnt(
                 immutable(m_title),
                 immutable(m_code),
+                immutable(m_details),
                 immutable(m_canCopy), 
                 immutable(m_additionalProperties));
         }

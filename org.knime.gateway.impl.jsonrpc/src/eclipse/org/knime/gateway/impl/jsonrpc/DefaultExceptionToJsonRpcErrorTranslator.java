@@ -102,7 +102,7 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
 
     private static GatewayProblemDescriptionEnt knownToEntity(final GatewayException gatewayException) {
         return builder(GatewayProblemDescriptionEntBuilder.class) //
-                .setTitle(gatewayException.getMessage()) //
+                .setTitle(gatewayException.getTitle()) //
                 .setCode(gatewayException.getClass().getSimpleName()) //
                 .setCanCopy(gatewayException.isCanCopy()) //
                 .setAdditionalProperties(gatewayException.getAdditionalProperties()) //
@@ -111,7 +111,7 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
 
     private static GatewayProblemDescriptionEnt unknownToEntity(final Throwable throwable) {
         return builder(GatewayProblemDescriptionEntBuilder.class) //
-            .setTitle(throwable.getMessage()) //
+            .setTitle(throwable.getMessage()) // TODO real title and message as detail
             .setCode(throwable.getClass().getSimpleName()) //
             .setCanCopy(true) //
             .setAdditionalProperties(Map.of( //
