@@ -9,26 +9,23 @@
   "
   >
     <foreignObject
+      th:data-annotation-id="${annotation.id}"
       th:x="${annotation.bounds.x}"
       th:y="${annotation.bounds.y}"
       th:width="${annotation.bounds.width}"
       th:height="${annotation.bounds.height}"
-      th:data-annotation-id="${annotation.id}"
     >
       <div
         th:if="${isRichTextAnnotation}"
+        xmlns="http://www.w3.org/1999/xhtml"
         class="annotation rich-text-annotation"
-        th:utext="${utils.cleanHtml(annotation.text.value)}"
+        th:utext="${annotationUtils.cleanHtml(annotation.text.value)}"
         th:style="${style}"
-        xmlns="http://www.w3.org/1999/xhtml"
       ></div>
-      <div
+      <th:block
         th:unless="${isRichTextAnnotation}"
-        class="annotation legacy-annotation"
-        th:utext="${annotation.text.value}"
-        th:style="${style}"
-        xmlns="http://www.w3.org/1999/xhtml"
-      ></div>
+        th:insert="fragments/annotations/legacyAnnotation :: render(${annotation}, ${style})"
+      ></th:block>
     </foreignObject>
   </th:block>
 </html>

@@ -76,7 +76,7 @@ public class ShapeConstants {
         METANODE_LABEL_OFFSET_Y,
         NODE_LABEL_OFFSET_Y,
         WORKFLOW_ANNOTATION_PADDING,
-        ANNOTATIONS_FONT_SIZE_POINT_TO_PIXEL_FACTOR
+        LEGACY_ANNOTATIONS_FONT_SIZE_POINT_TO_PIXEL_FACTOR
     }
 
     /* Size values are made available as a map, because static fields are not easily accessible for ThymeLeaf */
@@ -109,7 +109,7 @@ public class ShapeConstants {
         VALUES.put(ShapeKey.METANODE_LABEL_OFFSET_Y, 32.0 + 8.0); // NODE_SIZE + NODE_ANNOTATION_MARGIN_TOP
         VALUES.put(ShapeKey.NODE_LABEL_OFFSET_Y, 32.0 + 8.0 + 12.0 + 8.0); // NODE_SIZE + NODE_ANNOTATION_MARGIN_TOP + NODE_STATUS_HEIGHT + NODE_STATUS_MARGIN_TOP
         VALUES.put(ShapeKey.WORKFLOW_ANNOTATION_PADDING, 3.0);
-        VALUES.put(ShapeKey.ANNOTATIONS_FONT_SIZE_POINT_TO_PIXEL_FACTOR, 1.3333);
+        VALUES.put(ShapeKey.LEGACY_ANNOTATIONS_FONT_SIZE_POINT_TO_PIXEL_FACTOR, 1.3333);
 
         SHAPES = VALUES.entrySet().stream().collect(Collectors.toUnmodifiableMap(
             entry -> entry.getKey().name(),

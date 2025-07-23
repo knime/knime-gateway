@@ -59,12 +59,14 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowSaveHook;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
+import org.knime.gateway.impl.webui.preview.util.AnnotationUtils;
 import org.knime.gateway.impl.webui.preview.util.ColorConstants;
 import org.knime.gateway.impl.webui.preview.util.ConnectorUtils;
+import org.knime.gateway.impl.webui.preview.util.LegacyAnnotationUtils;
 import org.knime.gateway.impl.webui.preview.util.NodeUtils;
 import org.knime.gateway.impl.webui.preview.util.PortUtils;
 import org.knime.gateway.impl.webui.preview.util.ShapeConstants;
-import org.knime.gateway.impl.webui.preview.util.TemplateUtils;
+import org.knime.gateway.impl.webui.preview.util.TextUtils;
 import org.knime.gateway.impl.webui.preview.util.WorkflowBoundsCalculator;
 import org.knime.gateway.impl.webui.preview.util.WorkflowBoundsCalculator.BoundingBox;
 import org.thymeleaf.TemplateEngine;
@@ -116,10 +118,12 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
         context.setVariable("colors", ColorConstants.COLORS);
         context.setVariable("shapes", ShapeConstants.SHAPES);
 
+        context.setVariable("textUtils", new TextUtils());
         context.setVariable("nodeUtils", new NodeUtils(workflowEnt.getNodeTemplates()));
         context.setVariable("connectorUtils", new ConnectorUtils());
         context.setVariable("portUtils", new PortUtils());
-        context.setVariable("utils", new TemplateUtils());
+        context.setVariable("annotationUtils", new AnnotationUtils());
+        context.setVariable("legacyAnnotationUtils", new LegacyAnnotationUtils());
 
         var templateEngine = new TemplateEngine();
         templateEngine.addTemplateResolver(templateResolver);

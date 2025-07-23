@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   15 Jul 2025 (albrecht): created
+ *   15 Jul 2025 (jschroeter): created
  */
 package org.knime.gateway.impl.webui.preview.util;
 
@@ -53,7 +53,7 @@ package org.knime.gateway.impl.webui.preview.util;
  *
  * @author Jakob Schröter, KNIME GmbH, Konstanz, Germany
  */
-public class TemplateUtils {
+public class AnnotationUtils {
 
     /**
      * Convert HTML to valid XHTML, to be SVG compatible
@@ -62,23 +62,10 @@ public class TemplateUtils {
      */
     public static String cleanHtml(final String html) {
         // TODO make this more robust & support other elements? Maybe even use a HTML sanitizer?
-        var cleanHtml = html.replace("<hr>", "<hr />");
+        String cleanHtml = html.replace("<hr>", "<hr />");
         return cleanHtml;
-
     }
 
-    public static String getTruncatedValue(final String value, final int maxLength) {
-        if (value == null) {
-            return null;
-        }
-
-        if (maxLength > 0) {
-            return value.length() > maxLength ? value.substring(0, maxLength) + "..." : value;
-        } else {
-            return value;
-        }
-    }
-
-    public TemplateUtils() {
+    public AnnotationUtils() {
     }
 }
