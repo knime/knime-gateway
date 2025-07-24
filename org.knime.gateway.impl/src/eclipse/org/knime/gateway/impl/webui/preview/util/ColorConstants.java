@@ -121,7 +121,7 @@ public final class ColorConstants {
     );
 
     public static final Map<String, String> CONNECTOR_COLORS = Map.ofEntries(
-        Map.entry("default", KNIME_COLORS.get("SilverSand")),
+        Map.entry("default", KNIME_COLORS.get("StoneGray")),
         Map.entry("flowVariable", PORT_COLORS.get("flowVariable"))
     );
 

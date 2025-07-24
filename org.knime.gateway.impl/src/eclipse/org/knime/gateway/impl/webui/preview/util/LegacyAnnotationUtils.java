@@ -57,13 +57,12 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey;
 
-@SuppressWarnings("javadoc")
-
 /**
- * Utils for legacy annotations to be used in templates
+ * Utility functions for legacy annotations to be used in templates
  *
  * @author Jakob Schröter, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings({"javadoc", "hiding"})
 public class LegacyAnnotationUtils {
     private static class NormalizedResult {
         public List<StyleRangeEnt> normalized;
@@ -76,7 +75,7 @@ public class LegacyAnnotationUtils {
         }
     }
 
-    private static class TextRange {
+    public static class TextRange {
         private final String text;
 
         private final StyleRangeEnt styleRange;
@@ -221,8 +220,5 @@ public class LegacyAnnotationUtils {
         }
 
         return style;
-    }
-
-    public LegacyAnnotationUtils() {
     }
 }

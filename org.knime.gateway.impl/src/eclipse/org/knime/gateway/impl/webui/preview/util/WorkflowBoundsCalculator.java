@@ -65,9 +65,11 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
 /**
+ * Utility class that given a set of nodes, connections and annotations calculates the effective bounds of a workflow
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("javadoc")
 public class WorkflowBoundsCalculator {
 
     private static final int WORKFLOW_PADDING = 10;
@@ -78,8 +80,7 @@ public class WorkflowBoundsCalculator {
     private static final double NODE_HEIGHT =
             ShapeConstants.get(NODE_NAME_LINE_HEIGHT) + ShapeConstants.get(NODE_NAME_MARGIN) + ShapeConstants.get(NODE_SIZE);
 
-    public record BoundingBox(int minX, int minY, int width, int height) {
-    }
+    public record BoundingBox(int minX, int minY, int width, int height) {}
 
     private static class Extents {
         double minX = Double.POSITIVE_INFINITY;

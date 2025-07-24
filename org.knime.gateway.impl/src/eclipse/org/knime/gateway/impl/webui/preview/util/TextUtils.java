@@ -49,10 +49,11 @@
 package org.knime.gateway.impl.webui.preview.util;
 
 /**
- * Utils to be used in templates
+ * Text utils to be used in templates
  *
  * @author Jakob Schröter, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("javadoc")
 public class TextUtils {
 
     public static String getTruncatedValue(final String value, final int maxLength) {
@@ -65,8 +66,5 @@ public class TextUtils {
         } else {
             return value;
         }
-    }
-
-    public TextUtils() {
     }
 }

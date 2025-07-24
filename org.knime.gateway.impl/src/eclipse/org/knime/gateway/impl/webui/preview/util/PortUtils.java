@@ -65,6 +65,7 @@ import org.knime.gateway.impl.webui.entity.DefaultPortTypeEnt.DefaultPortTypeEnt
 import org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey;
 
 /**
+ * Utility functions for rendering node ports on workflow previews
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
@@ -81,7 +82,7 @@ public final class PortUtils {
         /* DEFAULT PORT TYPES */
         var tablePortBuilder = new DefaultPortTypeEntBuilder();
         tablePortBuilder.setKind(PortTypeEnt.KindEnum.TABLE);
-        tablePortBuilder.setName("KNIME Data Table");
+        tablePortBuilder.setName("Data Table");
         tablePortBuilder.setColor(ColorConstants.PORT_COLORS.get("table"));
         TABLE_PORT_TYPE = tablePortBuilder.build();
         var flowVariablePortBuilder = new DefaultPortTypeEntBuilder();
@@ -94,17 +95,20 @@ public final class PortUtils {
     private static String TRIANGLE_PATH = null;
     private static String INACTIVE_PATH = null;
 
-    private final Map<String, PortTypeEnt> m_portTemplates;
+    private static Map<String, PortTypeEnt> PORT_TEMPLATES = null;
 
     public PortUtils() {
-        var availablePortTypes = PortTypeRegistry.getInstance().availablePortTypes();
-        m_portTemplates = availablePortTypes.stream().distinct()
-            .collect(Collectors.toMap(
-                CoreUtil::getPortTypeId,
-                pt -> EntityFactory.PortType.buildPortTypeEnt(pt, availablePortTypes, false)
-            ));
-        m_portTemplates.put("org.knime.core.node.BufferedDataTable", TABLE_PORT_TYPE);
-        m_portTemplates.put("org.knime.core.node.port.flowvariable.FlowVariablePortObject", FLOW_VARIABLE_PORT_TYPE);
+        if (PORT_TEMPLATES == null) {
+            // initialize port templates only once, but lazily
+            var availablePortTypes = PortTypeRegistry.getInstance().availablePortTypes();
+            PORT_TEMPLATES = availablePortTypes.stream().distinct()
+                .collect(Collectors.toMap(
+                    CoreUtil::getPortTypeId,
+                    pt -> EntityFactory.PortType.buildPortTypeEnt(pt, availablePortTypes, false)
+                ));
+            PORT_TEMPLATES.put("org.knime.core.node.BufferedDataTable", TABLE_PORT_TYPE);
+            PORT_TEMPLATES.put("org.knime.core.node.port.flowvariable.FlowVariablePortObject", FLOW_VARIABLE_PORT_TYPE);
+        }
     }
 
     private static boolean isMetanode(final NodeEnt.KindEnum nodeKind) {
@@ -173,16 +177,18 @@ public final class PortUtils {
         return !isMickeyMousePort || port.getConnectedVia().size() > 0; // don't display unconnected flow variable ports
     }
 
+    @SuppressWarnings("static-method") // should not be static to ensure m_portTemplates was initialized by constructor
     public PortTypeEnt.KindEnum getPortType(final NodePortEnt port) {
-        if (m_portTemplates.containsKey(port.getTypeId())) {
-            return m_portTemplates.get(port.getTypeId()).getKind();
+        if (PORT_TEMPLATES.containsKey(port.getTypeId())) {
+            return PORT_TEMPLATES.get(port.getTypeId()).getKind();
         }
         return PortTypeEnt.KindEnum.OTHER;
     }
 
+    @SuppressWarnings("static-method") // should not be static to ensure m_portTemplates was initialized by constructor
     public String getPortColor(final NodePortEnt port) {
-        if (m_portTemplates.containsKey(port.getTypeId())) {
-            return m_portTemplates.get(port.getTypeId()).getColor();
+        if (PORT_TEMPLATES.containsKey(port.getTypeId())) {
+            return PORT_TEMPLATES.get(port.getTypeId()).getColor();
         } else {
             return ColorConstants.PORT_COLORS.get("generic");
         }

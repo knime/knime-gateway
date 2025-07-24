@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 
 /**
+ * Utility functions for rendering nodes on workflow previews
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */

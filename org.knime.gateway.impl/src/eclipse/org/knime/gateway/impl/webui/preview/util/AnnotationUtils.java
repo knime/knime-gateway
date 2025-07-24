@@ -49,7 +49,7 @@
 package org.knime.gateway.impl.webui.preview.util;
 
 /**
- * Utils to be used in templates
+ * Utility functions for rendering annotations on workflow previews
  *
  * @author Jakob Schröter, KNIME GmbH, Konstanz, Germany
  */
@@ -64,8 +64,5 @@ public class AnnotationUtils {
         // TODO make this more robust & support other elements? Maybe even use a HTML sanitizer?
         String cleanHtml = html.replace("<hr>", "<hr />");
         return cleanHtml;
-    }
-
-    public AnnotationUtils() {
     }
 }

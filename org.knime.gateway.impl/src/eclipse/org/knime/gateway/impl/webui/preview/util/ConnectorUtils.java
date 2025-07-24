@@ -48,13 +48,16 @@
  */
 package org.knime.gateway.impl.webui.preview.util;
 
+import java.util.Locale;
+
 import org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey;
 
 /**
+ * Utility functions for rendering connections on workflow previews
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("javadoc")
+@SuppressWarnings({"javadoc", "hiding"})
 public final class ConnectorUtils {
 
     private static final double PORT_SIZE = ShapeConstants.get(ShapeKey.PORT_SIZE);
@@ -86,7 +89,7 @@ public final class ConnectorUtils {
         }
     }
 
-    public static BezierPoints getBezier(
+    private static BezierPoints getBezier(
         double x1,
         final double y1,
         double x2,
@@ -122,6 +125,7 @@ public final class ConnectorUtils {
         BezierPoints bp = getBezier(x1, y1, x2, y2, offsetStart, offsetEnd);
 
         return String.format(
+            Locale.US,
             "M%.2f,%.2f C%.2f,%.2f %.2f,%.2f %.2f,%.2f",
             bp.start.x, bp.start.y,
             bp.control1.x, bp.control1.y,

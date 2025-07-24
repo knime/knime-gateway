@@ -76,6 +76,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 /**
+ * Workflow save hook, which generates and saves a preview of the current state of the workflow as an SVG image
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -134,6 +135,8 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
             // TODO minify output? input.replaceAll("(?m)^\\s*$\\n?", "").replaceAll("\\R", "");
             templateEngine.process("workflow", context, writer);
         }
+
+        //TODO: remove everything below
 
         long endTime = System.nanoTime();
         long durationInNanoseconds = endTime - startTime;
