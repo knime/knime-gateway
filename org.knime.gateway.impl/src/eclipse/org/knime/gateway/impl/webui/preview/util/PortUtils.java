@@ -54,7 +54,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortTypeRegistry;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt.KindEnum;
@@ -75,7 +77,9 @@ public final class PortUtils {
     private static final double NODE_SIZE = ShapeConstants.get(ShapeKey.NODE_SIZE);
     private static final double PORT_SIZE = ShapeConstants.get(ShapeKey.PORT_SIZE);
 
+    static final String TABLE_PORT_TYPE_ID = BufferedDataTable.class.getCanonicalName();
     private static final PortTypeEnt TABLE_PORT_TYPE;
+    static final String FLOW_VARIABLE_TYPE_ID = FlowVariablePortObject.class.getCanonicalName();
     private static final PortTypeEnt FLOW_VARIABLE_PORT_TYPE;
 
     static {
@@ -106,8 +110,8 @@ public final class PortUtils {
                     CoreUtil::getPortTypeId,
                     pt -> EntityFactory.PortType.buildPortTypeEnt(pt, availablePortTypes, false)
                 ));
-            PORT_TEMPLATES.put("org.knime.core.node.BufferedDataTable", TABLE_PORT_TYPE);
-            PORT_TEMPLATES.put("org.knime.core.node.port.flowvariable.FlowVariablePortObject", FLOW_VARIABLE_PORT_TYPE);
+            PORT_TEMPLATES.put(TABLE_PORT_TYPE_ID, TABLE_PORT_TYPE);
+            PORT_TEMPLATES.put(FLOW_VARIABLE_TYPE_ID, FLOW_VARIABLE_PORT_TYPE);
         }
     }
 
@@ -127,7 +131,7 @@ public final class PortUtils {
      * @param isOutPort true for an output port, false for an input port
      * @return double[] with [x-shift, y-shift]
      */
-    private static double[] portShift(int portIndex, int portCount, final NodeEnt.KindEnum nodeKind, final boolean isOutPort) {
+    static double[] portShift(int portIndex, int portCount, final NodeEnt.KindEnum nodeKind, final boolean isOutPort) {
         double x = isOutPort ? NODE_SIZE + PORT_SIZE / 2 : -PORT_SIZE / 2;
 
         if (isMetanode(nodeKind)) {

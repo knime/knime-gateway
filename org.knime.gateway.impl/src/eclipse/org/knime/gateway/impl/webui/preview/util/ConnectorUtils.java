@@ -48,8 +48,14 @@
  */
 package org.knime.gateway.impl.webui.preview.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import org.knime.gateway.api.webui.entity.ConnectionEnt;
+import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey;
 
 /**
@@ -57,7 +63,7 @@ import org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey;
  *
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings({"javadoc", "hiding"})
+@SuppressWarnings({"javadoc"})
 public final class ConnectorUtils {
 
     private static final double PORT_SIZE = ShapeConstants.get(ShapeKey.PORT_SIZE);
@@ -65,28 +71,65 @@ public final class ConnectorUtils {
     private static final double DELTA_X1 = PORT_SIZE / 2 - 0.5;
     private static final double DELTA_X2 = PORT_SIZE / 2 - 0.5;
 
-    public static class Point {
-        public final double x;
-        public final double y;
-
-        public Point(final double x, final double y) {
-            this.x = x;
-            this.y = y;
+    public record Point(double x, double y) {
+        public Point(final XYEnt xy) {
+            this(xy.getX(), xy.getY());
         }
     }
 
-    public static class BezierPoints {
-        public final Point start;
-        public final Point control1;
-        public final Point control2;
-        public final Point end;
+    public record PathSegment (Point start, Point end, boolean isStart, boolean isEnd) {}
 
-        public BezierPoints(final Point start, final Point control1, final Point control2, final Point end) {
-            this.start = start;
-            this.control1 = control1;
-            this.control2 = control2;
-            this.end = end;
+    public record BezierPoints(Point start, Point control1, Point control2, Point end) {}
+
+    private final Map<String, NodeEnt> m_nodes;
+
+    public ConnectorUtils(final Map<String, NodeEnt> nodes) {
+        m_nodes = nodes;
+    }
+
+    public boolean isFlowVariableConnection(final ConnectionEnt connection) {
+        var sourceNode = m_nodes.get(connection.getSourceNode().toString());
+        if (sourceNode != null) {
+            try {
+                var sourcePort = sourceNode.getOutPorts().get(connection.getSourcePort());
+                return sourcePort.getTypeId().equals(PortUtils.FLOW_VARIABLE_TYPE_ID);
+            } catch (Exception e) { /* do nothing, return false */ }
         }
+        return false;
+    }
+
+    public List<PathSegment> getPathSegments(final ConnectionEnt connection) {
+        var sourceNode = m_nodes.get(connection.getSourceNode().toString());
+        var targetNode = m_nodes.get(connection.getDestNode().toString());
+        var startPosition = getRegularNodePortPosition(connection.getSourcePort(), true, sourceNode);
+        var endPosition = getRegularNodePortPosition(connection.getDestPort(), false, targetNode);
+        var bendpoints = connection.getBendpoints();
+
+        // simple case just connect two nodes
+        if (bendpoints == null || bendpoints.isEmpty()) {
+            return List.of(new PathSegment(startPosition, endPosition, true, true));
+        }
+
+        // otherwise create a segment per bendpoint including start and end positions
+        var segments = new ArrayList<PathSegment>();
+        var previous = startPosition;
+        for (int i = 0; i < bendpoints.size(); i++) {
+            var current = new Point(bendpoints.get(i));
+            segments.add(new PathSegment(previous, current, i == 0, false));
+            previous = current;
+        }
+        segments.add(new PathSegment(previous, endPosition, false, true));
+        return segments;
+    }
+
+    private static Point getRegularNodePortPosition(final int portIndex, final boolean isSourceNode, final NodeEnt node) {
+        if (node == null) {
+            return new Point(0, 0);
+        }
+        var allPorts = isSourceNode ? node.getOutPorts().size() : node.getInPorts().size();
+        var shift = PortUtils.portShift(portIndex, allPorts, node.getKind(), isSourceNode);
+        var nodePosition = node.getPosition();
+        return new Point(nodePosition.getX() + shift[0], nodePosition.getY() + shift[1]);
     }
 
     private static BezierPoints getBezier(
@@ -114,7 +157,12 @@ public final class ConnectorUtils {
         return new BezierPoints(start, control1, control2, end);
     }
 
-    public static String getBezierPathString(
+    public static String getBezierPathString(final PathSegment segment) {
+        return getBezierPathString(segment.start.x, segment.start.y, segment.end.x, segment.end.y,
+            !segment.isStart, !segment.isEnd);
+    }
+
+    private static String getBezierPathString(
         final double x1,
         final double y1,
         final double x2,

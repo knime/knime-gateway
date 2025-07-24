@@ -1,5 +1,9 @@
 <svg xmlns:th="http://www.thymeleaf.org">
 <th:block th:fragment="render(connection)">
-  <g class="connection" th:attr="data-connector-id=${connection.id}" />
+  <g class="connection" th:attr="data-connector-id=${connection.id}" th:with="segments=${connectorUtils.getPathSegments(connection)},isFlowVariableConnection=${connectorUtils.isFlowVariableConnection(connection)}">
+    <th:block th:each="segment,iter : ${segments}">
+      <th:block th:insert="fragments/connectors/connectorPathSegment :: render(${segment}, ${isFlowVariableConnection}, ${iter.index}, ${iter.index == segments.size() - 1})" />
+    </th:block>
+  </g>
 </th:block>
 </svg>

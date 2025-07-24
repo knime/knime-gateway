@@ -51,13 +51,13 @@ package org.knime.gateway.impl.webui.preview.util;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey;
 
-@SuppressWarnings("javadoc")
 
 /**
- * Utils to be used in templates
+ * Utility functions to render labels on workflow previews
  *
  * @author Jakob Schröter, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("javadoc")
 public class LabelUtils {
 
     public static Integer calculatePortOffset(final NodeEnt node) {

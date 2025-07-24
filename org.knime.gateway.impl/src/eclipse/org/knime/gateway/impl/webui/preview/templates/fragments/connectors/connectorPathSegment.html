@@ -1,0 +1,10 @@
+<svg xmlns:th="http://www.thymeleaf.org">
+  <th:block th:fragment="render(segment,isFlowVariableConnection,index,isLastSegment)">
+    <path
+    th:d="${connectorUtils.getBezierPathString(segment)}"
+    fill="none"
+    stroke-width="1"
+    th:stroke="${isFlowVariableConnection ? colors.connectorColors.flowVariable : colors.connectorColors.default}"
+  />
+  </th:block>
+</svg>

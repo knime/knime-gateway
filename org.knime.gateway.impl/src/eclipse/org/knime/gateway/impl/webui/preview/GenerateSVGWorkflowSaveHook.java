@@ -123,7 +123,7 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
 
         context.setVariable("textUtils", new TextUtils());
         context.setVariable("nodeUtils", new NodeUtils(workflowEnt.getNodeTemplates()));
-        context.setVariable("connectorUtils", new ConnectorUtils());
+        context.setVariable("connectorUtils", new ConnectorUtils(workflowEnt.getNodes()));
         context.setVariable("portUtils", new PortUtils());
         context.setVariable("labelUtils", new LabelUtils());
         context.setVariable("annotationUtils", new AnnotationUtils());
