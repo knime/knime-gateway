@@ -117,6 +117,10 @@ public class NodeUtils {
         return getNodeOrTemplateProperty(node, "type");
     }
 
+    public static Boolean isMetanode(final NodeEnt node) {
+        return node.getKind() == NodeEnt.KindEnum.METANODE;
+    }
+
     public String getNodeName(final NodeEnt node) {
         return getNodeOrTemplateProperty(node, "name");
     }

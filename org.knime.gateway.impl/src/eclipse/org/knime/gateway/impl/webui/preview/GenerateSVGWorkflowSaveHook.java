@@ -62,6 +62,7 @@ import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.impl.webui.preview.util.AnnotationUtils;
 import org.knime.gateway.impl.webui.preview.util.ColorConstants;
 import org.knime.gateway.impl.webui.preview.util.ConnectorUtils;
+import org.knime.gateway.impl.webui.preview.util.LabelUtils;
 import org.knime.gateway.impl.webui.preview.util.LegacyAnnotationUtils;
 import org.knime.gateway.impl.webui.preview.util.NodeUtils;
 import org.knime.gateway.impl.webui.preview.util.PortUtils;
@@ -123,12 +124,14 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
         context.setVariable("nodeUtils", new NodeUtils(workflowEnt.getNodeTemplates()));
         context.setVariable("connectorUtils", new ConnectorUtils());
         context.setVariable("portUtils", new PortUtils());
+        context.setVariable("labelUtils", new LabelUtils());
         context.setVariable("annotationUtils", new AnnotationUtils());
         context.setVariable("legacyAnnotationUtils", new LegacyAnnotationUtils());
 
         var templateEngine = new TemplateEngine();
         templateEngine.addTemplateResolver(templateResolver);
         try (Writer writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
+            // TODO minify output? input.replaceAll("(?m)^\\s*$\\n?", "").replaceAll("\\R", "");
             templateEngine.process("workflow", context, writer);
         }
 
