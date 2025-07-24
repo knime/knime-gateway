@@ -92,6 +92,7 @@ public final class PortUtils {
     }
 
     private static String TRIANGLE_PATH = null;
+    private static String INACTIVE_PATH = null;
 
     private final Map<String, PortTypeEnt> m_portTemplates;
 
@@ -198,14 +199,14 @@ public final class PortUtils {
     public static String getTrianglePath() {
         // Lazy initialization
         if (TRIANGLE_PATH == null) {
-            double portSize = ShapeConstants.get(ShapeKey.PORT_SIZE);
             double strokeWidth = ShapeConstants.get(ShapeKey.PORT_STROKE_WIDTH);
+            double halfSize = PORT_SIZE / 2;
 
             // Define triangle points relative to the center
-            double x1 = -portSize / 2;
-            double y1 = -portSize / 2;
-            double x2 = portSize / 2;
-            double y3 = portSize / 2;
+            double x1 = -halfSize;
+            double y1 = -halfSize;
+            double x2 = halfSize;
+            double y3 = halfSize;
 
             // Constants to keep triangle within bounds including stroke
             double d = Math.sqrt(5) / 2;
@@ -221,5 +222,21 @@ public final class PortUtils {
             TRIANGLE_PATH = String.format(Locale.US, "%.3f,%.3f %.3f,0 %.3f,%.3f", x1, y1, x2, x1, y3);
         }
         return TRIANGLE_PATH;
+    }
+
+    public static String getInactivePath() {
+        if (INACTIVE_PATH == null) {
+            double halfSize = PORT_SIZE / 2;
+            // This draws an x as large as the port size
+            INACTIVE_PATH = String.format(
+                Locale.US,
+                "M-%.1f,-%.1f l%.1f,%.1f m-%.1f,0 l%.1f,-%.1f",
+                halfSize, halfSize,
+                PORT_SIZE, PORT_SIZE,
+                PORT_SIZE,
+                PORT_SIZE, PORT_SIZE
+            );
+        }
+        return INACTIVE_PATH;
     }
 }

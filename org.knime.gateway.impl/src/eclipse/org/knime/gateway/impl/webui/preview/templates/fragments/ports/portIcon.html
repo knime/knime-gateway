@@ -8,21 +8,18 @@
     trianglePath=${portUtils.getTrianglePath()},
     fillColor=${filled == true ? color : 'transparent'}
   ">
-  
     <!--/* Table port (triangle) */-->
     <polygon th:if="${type == 'table'}"
              th:attr="points=${trianglePath},
                       fill=${fillColor},
                       stroke=${color},
                       stroke-width=${strokeWidth}" />
-
     <!--/* Flow variable port (circle) */-->
     <circle th:if="${type == 'flowVariable'}"
             th:attr="r=${portSize / 2 - strokeWidth / 2},
                      fill=${fillColor},
                      stroke=${color},
                      stroke-width=${strokeWidth}" />
-
     <!--/* Default (square) */-->
     <rect th:if="${type != 'table' and type != 'flowVariable'}"
           th:attr="width=${portSize - strokeWidth},

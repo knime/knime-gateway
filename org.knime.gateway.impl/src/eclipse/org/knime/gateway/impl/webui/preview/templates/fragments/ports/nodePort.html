@@ -1,7 +1,21 @@
 <svg xmlns:th="https://www.thymeleaf.org">
-  <th:block th:fragment="nodePort(direction, port, relativePosition)">
+  <th:block th:fragment="nodePort(direction, port, relativePosition)" th:with="portSize=${shapes.PORT_SIZE}">
     <g th:transform="'translate(' + ${relativePosition[0]} + ',' + ${relativePosition[1]} +')'">
       <th:block th:insert="fragments/ports/portIcon :: portIcon(${port})" />
+      <!--/* X outline */-->
+      <path
+        th:if="${port.inactive}"
+        stroke-width="3"
+        th:stroke="${colors.portColors.inactiveOutline}"
+        th:d="${portUtils.getInactivePath()}"
+      />
+      <!--/* X */-->
+      <path
+        th:if="${port.inactive}"
+        stroke-width="1.5"
+        th:stroke="${colors.portColors.inactive}"
+        th:d="${portUtils.getInactivePath()}"
+      />
     </g>
   </th:block>
 </svg>
