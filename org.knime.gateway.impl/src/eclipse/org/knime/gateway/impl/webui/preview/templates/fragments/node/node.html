@@ -3,7 +3,6 @@
     <g
       th:attr="transform='translate(' + ${node.position.x} + ',' + ${node.position.y} + ')'"
       th:attrappend="data-node-id=${node.id}"
-      class="node-wrapper"
     >
       <th:block th:insert="fragments/node/nodeLabel :: nodeLabel(node=${node})" />
       <th:block th:insert="fragments/node/torso/nodeTorso :: nodeTorso(

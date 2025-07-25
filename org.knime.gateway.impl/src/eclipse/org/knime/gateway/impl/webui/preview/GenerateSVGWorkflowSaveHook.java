@@ -132,7 +132,7 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
         var templateEngine = new TemplateEngine();
         templateEngine.addTemplateResolver(templateResolver);
         try (Writer writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
-            // TODO minify output? input.replaceAll("(?m)^\\s*$\\n?", "").replaceAll("\\R", "");
+            // TODO minify output e.g. via postprocessing? input.replaceAll("(?m)^\\s*$\\n?", "").replaceAll("\\R", "");
             templateEngine.process("workflow", context, writer);
         }
 

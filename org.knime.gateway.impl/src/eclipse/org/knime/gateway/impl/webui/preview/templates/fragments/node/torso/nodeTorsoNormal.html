@@ -8,9 +8,9 @@
         componentTransform=${'translate(' + offset + ',' + offset + ') scale(' + scaleFactor + ') translate(-' + offset + ',-' + offset + ')'}
     ">
     <g>
-      <path class="bg" th:attr="d=${backgroundPath}, fill=${isComponent} ? ${componentColor} : ${backgroundColor}" />
-      <path class="bg" th:if="${isComponent} and ${type} != null" th:attr="d=${backgroundPath}, fill=${backgroundColor}, transform=${componentTransform}" />
-      <image th:if="${icon != null}" x="8" y="8" width="16" height="16" th:attr="'xlink:href'=${icon}" pointer-events="none" />
+      <path th:attr="d=${backgroundPath}, fill=${isComponent} ? ${componentColor} : ${backgroundColor}" />
+      <path th:if="${isComponent} and ${type} != null" th:attr="d=${backgroundPath}, fill=${backgroundColor}, transform=${componentTransform}" />
+      <image th:if="${icon != null}" x="8" y="8" width="16" height="16" th:attr="'xlink:href'=${icon}" />
     </g>
   </th:block>
 </svg>
