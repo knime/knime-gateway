@@ -64,6 +64,8 @@ import org.knime.gateway.impl.webui.preview.util.ShapeConstants.ShapeKey;
  */
 @SuppressWarnings({"javadoc", "hiding"})
 public class LegacyAnnotationUtils {
+    private static Integer DEFAULT_FONT_SIZE = 12;
+
     private static class NormalizedResult {
         public List<StyleRangeEnt> normalized;
 
@@ -98,6 +100,7 @@ public class LegacyAnnotationUtils {
         var builder = new DefaultStyleRangeEntBuilder();
         builder.setStart(start);
         builder.setLength(length);
+        builder.setFontSize(DEFAULT_FONT_SIZE); // TODO check why this is needed
         return builder.build();
     }
 
@@ -192,8 +195,8 @@ public class LegacyAnnotationUtils {
     }
 
     public static String getWrapperStyle(final WorkflowAnnotationEnt annotation) {
-        String style = LegacyAnnotationUtils
-            .getFontSizeCSS(annotation.getDefaultFontSize() != null ? annotation.getDefaultFontSize() : 12);
+        String style = LegacyAnnotationUtils.getFontSizeCSS(
+            annotation.getDefaultFontSize() != null ? annotation.getDefaultFontSize() : DEFAULT_FONT_SIZE);
         if (annotation.getTextAlign() != null) {
             style += "text-align:" + annotation.getTextAlign() + ";";
         }
