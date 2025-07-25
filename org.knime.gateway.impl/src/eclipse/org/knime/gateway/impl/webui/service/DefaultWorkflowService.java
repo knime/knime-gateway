@@ -51,8 +51,6 @@ package org.knime.gateway.impl.webui.service;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,7 +61,6 @@ import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.ui.component.CheckForComponentUpdatesUtil;
@@ -186,7 +183,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public void saveProject(final String projectId, final String workflowPreviewSvg) throws ServiceCallException {
+    public void saveProject(final String projectId) throws ServiceCallException {
         if (DefaultServiceContext.getProjectId().isEmpty()) {
             // only to be called from browser environment and this value is only set in browser environment
             NodeLogger.getLogger(DefaultWorkflowService.class)
@@ -198,7 +195,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         if (!wfm.isDirty()) {
             return; // Nothing to do if the workflow is not dirty
         }
-        final var context = SaveProjectHelper.saveToDisk(wfm, workflowPreviewSvg);
+        final var context = SaveProjectHelper.saveToDisk(wfm);
         SaveProjectHelper.uploadToHub(context, m_spaceProvidersManager);
     }
 
@@ -273,7 +270,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         /**
          * TODO NXT-3634: Headless save until we can provide proper UI; de-duplicate from SaveProject (NOSONAR)
          */
-        private static WorkflowContextV2 saveToDisk(final WorkflowManager wfm, final String workflowPreviewSvg)
+        private static WorkflowContextV2 saveToDisk(final WorkflowManager wfm)
             throws ServiceCallException {
             final var context = wfm.getContextV2();
             var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
@@ -283,13 +280,6 @@ public final class DefaultWorkflowService implements WorkflowService {
             } catch (IOException | CanceledExecutionException | LockFailedException e) {
                 throw new ServiceCallException("Could not save workflow", e);
             }
-            try {
-                Files.writeString(localWorkflowPath.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE), workflowPreviewSvg,
-                    StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                throw new ServiceCallException("Could not save workflow SVG", e);
-            }
-
             return context;
         }
 
