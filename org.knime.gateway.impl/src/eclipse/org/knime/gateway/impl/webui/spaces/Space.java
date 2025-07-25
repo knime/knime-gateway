@@ -593,6 +593,18 @@ public interface Space {
     }
 
     /**
+     * TODO ...
+     *
+     * @param itemId
+     * @param versionId
+     * @throws UnsupportedOperationException
+     */
+    default void restoreItemVersion(final String itemId, final VersionId versionId)
+        throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Cannot call this method on spaces other than Hub spaces.");
+    }
+
+    /**
      * Generates unique space item names, preserves file extensions.
      *
      * @param taken predicate for determining whether a name is already taken in a space

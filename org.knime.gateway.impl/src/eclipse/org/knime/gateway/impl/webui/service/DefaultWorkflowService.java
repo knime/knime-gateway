@@ -126,6 +126,13 @@ public final class DefaultWorkflowService implements WorkflowService {
         //
     }
 
+    /**
+     * TODO: This is not really the project ID, but what is it?
+     */
+    private static Key projectId() {
+        return DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
+    }
+
     @Override
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId, final String versionId,
         final Boolean includeInteractionInfo) throws NotASubWorkflowException, NodeNotFoundException {
@@ -203,7 +210,6 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-
     public void disposeVersion(final String projectId, final String versionParameter) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         m_projectManager.getProject(projectId)
@@ -211,19 +217,32 @@ public final class DefaultWorkflowService implements WorkflowService {
         m_workflowMiddleware.clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public void restoreVersion(final String projectId, final String versionId) throws ServiceCallException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        final var project = m_projectManager.getProject(projectId).orElseThrow(); // No specific version needed here
+        final var origin = project.getOrigin().orElseThrow();
+
+        // Don't be confused, this has more to do with browser/desktop than with the project ID itself.
+        final var spaceProviders = Optional.ofNullable(m_spaceProvidersManager) //
+            .map(mgr -> mgr.getSpaceProviders(projectId())) //
+            .orElseThrow();
+
+        final var space = spaceProviders.getSpace(origin.providerId(), origin.spaceId());
+        space.restoreItemVersion(origin.itemId(), VersionId.parse(versionId));
+
+        // TODO Dispose the version
+        //m_projectManager.getProject(projectId).ifPresent(project -> project.disposeCachedWfm(version));
+        //m_workflowMiddleware.clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId));
+    }
+
     @Override
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
-        var spaceProviders = m_spaceProvidersManager == null ? null : //
-            m_spaceProvidersManager.getSpaceProviders( //
-                DefaultServiceContext.getProjectId().map(Key::of) //
-                    .orElse(Key.defaultKey()) //
-            );
+        var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
+        var spaceProviders = m_spaceProvidersManager == null ? null : m_spaceProvidersManager.getSpaceProviders(key);
         return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
             m_workflowMiddleware, m_nodeFactoryProvider, spaceProviders);
     }
@@ -298,9 +317,8 @@ public final class DefaultWorkflowService implements WorkflowService {
          */
         private static void uploadToHub(final WorkflowContextV2 context, final SpaceProvidersManager spaceProvidersManager)
             throws ServiceCallException {
-            final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
             final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
-                .map(mgr -> mgr.getSpaceProviders(key)) //
+                .map(mgr -> mgr.getSpaceProviders(projectId())) //
                 .orElseThrow();
             final var spaceProvider = spaceProviders.getAllSpaceProviders().stream().findFirst().orElseThrow();
 
