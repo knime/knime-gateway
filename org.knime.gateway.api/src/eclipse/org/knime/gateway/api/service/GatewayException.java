@@ -51,7 +51,12 @@ package org.knime.gateway.api.service;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.knime.core.node.NodeLogger;
 
 /**
  * Describes <b>"known"/"expected" exceptions</b>. As a superset of checked exceptions, "known" exceptions represent
@@ -69,6 +74,10 @@ import java.util.stream.Collectors;
 public abstract class GatewayException extends Exception {
 
     private static final long serialVersionUID = 1L;
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(GatewayException.class);
+
+    private static final Set<String> BUILT_IN_PROPERTIES = Set.of("status", "title", "details");
 
     private final Map<String, String> m_properties = new LinkedHashMap<>();
 
@@ -92,6 +101,24 @@ public abstract class GatewayException extends Exception {
     protected GatewayException(final Map<String, String> properties) {
         m_properties.putAll(properties);
         m_canCopy = Boolean.parseBoolean(m_properties.get("canCopy"));
+    }
+
+    /**
+     * Gets the status code of the exception as per "Problem Details” / RFC9457 standard.
+     *
+     * @return Exception title property if present or {@code null} if not present
+     * @since 5.6
+     */
+    public OptionalInt getStatus() {
+        final var statusStr = m_properties.get("status");
+        if (!StringUtils.isBlank(statusStr)) {
+            try {
+                return OptionalInt.of(Integer.parseInt(statusStr));
+            } catch (final NumberFormatException e) {
+                LOGGER.debug("Could not parse status code", e);
+            }
+        }
+        return OptionalInt.empty();
     }
 
     /**
@@ -144,8 +171,8 @@ public abstract class GatewayException extends Exception {
      * @return Key-values pairs of additional properties, excluding "title" and "details".
      */
     public Map<String, String> getAdditionalProperties() {
-        return m_properties.entrySet().stream()
-            .filter(entry -> !entry.getKey().equals("title") && !entry.getKey().equals("details"))
+        return m_properties.entrySet().stream() //
+            .filter(entry -> !BUILT_IN_PROPERTIES.contains(entry.getKey())) //
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

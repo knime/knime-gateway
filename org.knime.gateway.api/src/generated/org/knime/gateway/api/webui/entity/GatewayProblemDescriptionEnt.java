@@ -78,6 +78,12 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
   public String getCode();
 
   /**
+   * HTTP response status code (if applicable).
+   * @return status 
+   **/
+  public Integer getStatus();
+
+  /**
    * List of details (\&quot;user-facing stack trace\&quot;) of the problem.
    * @return details 
    **/
@@ -102,6 +108,7 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
       var e = (GatewayProblemDescriptionEnt)other;
       valueConsumer.accept("title", Pair.create(getTitle(), e.getTitle()));
       valueConsumer.accept("code", Pair.create(getCode(), e.getCode()));
+      valueConsumer.accept("status", Pair.create(getStatus(), e.getStatus()));
       valueConsumer.accept("details", Pair.create(getDetails(), e.getDetails()));
       valueConsumer.accept("canCopy", Pair.create(isCanCopy(), e.isCanCopy()));
   }
@@ -126,6 +133,14 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         GatewayProblemDescriptionEntBuilder setCode(String code);
+        
+        /**
+         * HTTP response status code (if applicable).
+         * 
+         * @param status the property value,  
+         * @return this entity builder for chaining
+         */
+        GatewayProblemDescriptionEntBuilder setStatus(Integer status);
         
         /**
          * List of details (\&quot;user-facing stack trace\&quot;) of the problem.

@@ -81,6 +81,10 @@ public interface GatewayProblemDescriptionEntMixIn extends GatewayProblemDescrip
     public String getCode();
     
     @Override
+    @JsonProperty("status")
+    public Integer getStatus();
+    
+    @Override
     @JsonProperty("details")
     public java.util.List<String> getDetails();
     
@@ -111,6 +115,10 @@ public interface GatewayProblemDescriptionEntMixIn extends GatewayProblemDescrip
         @Override
         @JsonProperty("code")
         public GatewayProblemDescriptionEntMixInBuilder setCode(final String code);
+        
+        @Override
+        @JsonProperty("status")
+        public GatewayProblemDescriptionEntMixInBuilder setStatus(final Integer status);
         
         @Override
         @JsonProperty("details")

@@ -198,9 +198,20 @@
                 <message_argument value="setLastEdit(OffsetDateTime)"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt"/>
+                <message_argument value="getStatus()"/>
+            </message_arguments>
+        </filter>
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setMetadataType(EditableMetadataEnt.MetadataTypeEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getStatus()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -209,6 +220,12 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder"/>
                 <message_argument value="setHasView(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt.GatewayProblemDescriptionEntBuilder"/>
+                <message_argument value="setStatus(Integer)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -685,6 +702,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setVersion(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setStatus(Integer)"/>
             </message_arguments>
         </filter>
     </resource>

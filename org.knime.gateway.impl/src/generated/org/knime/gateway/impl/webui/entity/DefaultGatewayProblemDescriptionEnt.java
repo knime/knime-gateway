@@ -57,6 +57,7 @@ import java.util.Map;
  *
  * @param title
  * @param code
+ * @param status
  * @param details
  * @param canCopy
  *
@@ -66,6 +67,7 @@ import java.util.Map;
 public record DefaultGatewayProblemDescriptionEnt(
     String title,
     String code,
+    Integer status,
     java.util.List<String> details,
     Boolean canCopy, 
     Map<String, String> additionalProperties) implements GatewayProblemDescriptionEnt {
@@ -92,6 +94,11 @@ public record DefaultGatewayProblemDescriptionEnt(
     }
     
     @Override
+    public Integer getStatus() {
+        return status;
+    }
+    
+    @Override
     public java.util.List<String> getDetails() {
         return details;
     }
@@ -115,6 +122,8 @@ public record DefaultGatewayProblemDescriptionEnt(
 
         private String m_code;
 
+        private Integer m_status;
+
         private java.util.List<String> m_details;
 
         private Boolean m_canCopy;
@@ -130,6 +139,12 @@ public record DefaultGatewayProblemDescriptionEnt(
         @Override
         public DefaultGatewayProblemDescriptionEntBuilder setCode(String code) {
              m_code = code;
+             return this;
+        }
+
+        @Override
+        public DefaultGatewayProblemDescriptionEntBuilder setStatus(Integer status) {
+             m_status = status;
              return this;
         }
 
@@ -156,6 +171,7 @@ public record DefaultGatewayProblemDescriptionEnt(
             return new DefaultGatewayProblemDescriptionEnt(
                 immutable(m_title),
                 immutable(m_code),
+                immutable(m_status),
                 immutable(m_details),
                 immutable(m_canCopy), 
                 immutable(m_additionalProperties));
