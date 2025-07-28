@@ -232,7 +232,7 @@ final class LocalSpaceItemChangeNotifier implements SpaceProvider.SpaceItemChang
         } catch (final MutableServiceCallException ex) {
             final var sce = new ServiceCallException("Failed to resolve local item", ex);
             ex.copyContextTo(sce);
-            throw new IllegalStateException(sce); // TODO
+            throw new IllegalStateException(sce);
         }
         var isSibling = createFilter(file -> {
             // Avoid reporting changes in subdirectories.

@@ -535,6 +535,10 @@ public final class LocalSpace implements Space {
         try {
             FileUtil.unzip(source, destination);
             final File[] topLevelContents = destination.listFiles();
+            if (topLevelContents == null) {
+                throw new MutableServiceCallException(
+                        List.of("Could not extract archive '%s':  %s".formatted(source, "An I/O error occurred")), null);
+            }
             if (topLevelContents.length != 1) {
                 final List<String> items = Arrays.stream(topLevelContents).map(File::getName).toList();
                 throw new MutableServiceCallException(
