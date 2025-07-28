@@ -10,7 +10,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.undercouch.bson4jackson.BsonFactory;
 
 /**
- * Utility class around Jackson's {@link ObjectMapper}. It set's up an {@link ObjectMapper}.
+ * Utility class around Jackson's {@link ObjectMapper}. It sets up an {@link ObjectMapper}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

@@ -379,7 +379,7 @@ public final class AppStateEntityFactory {
             try {
                 var localSpace = (LocalSpace)spaceProviders.getSpace(origin.providerId(), origin.spaceId());
                 return localSpace.getAncestorItemIds(origin.itemId());
-            } catch (final NetworkException | LoggedOutException e) { // TODO
+            } catch (final NetworkException | LoggedOutException e) {
                 throw new IllegalStateException(e);
             } catch (final MutableServiceCallException e) { // NOSONAR
                 throw new IllegalStateException(e.toGatewayException("Failed to determine ancestor item IDs"));

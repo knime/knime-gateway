@@ -152,7 +152,7 @@ public class WorkflowChangesListener implements Closeable {
                 try {
                     callback.run();
                 } catch (GatewayException ex) {
-                    LOGGER.error(ex); // TODO
+                    LOGGER.error(ex); // TODO NXT-3938 the throw can be avoided
                 }
             }
             m_postProcessCallbacks.forEach(Runnable::run);
