@@ -96,18 +96,18 @@ public class LegacyAnnotationUtils {
         }
     }
 
-    private static StyleRangeEnt buildSimpleStyleRange(final int start, final int length) {
+    private static StyleRangeEnt buildSimpleStyleRange(final int start, final int length, final int fontSize) {
         var builder = new DefaultStyleRangeEntBuilder();
         builder.setStart(start);
         builder.setLength(length);
-        builder.setFontSize(DEFAULT_FONT_SIZE); // TODO check why this is needed
+        builder.setFontSize(fontSize);
         return builder.build();
     }
 
-    private static List<StyleRangeEnt> getFallback(final String text) {
+    private static List<StyleRangeEnt> getFallback(final String text, final Integer defaultFontSize) {
         List<StyleRangeEnt> fallback = new ArrayList<>();
 
-        fallback.add(buildSimpleStyleRange(0, text.length()));
+        fallback.add(buildSimpleStyleRange(0, text.length(), defaultFontSize));
         return fallback;
     }
 
@@ -115,11 +115,9 @@ public class LegacyAnnotationUtils {
      * Normalize a given styleRange list: 1. handle empty list 2. return fallback if format is not supported
      * (overlapping ranges) 3. fill gaps between ranges
      *
-     * @param styleRanges List of StyleRange
-     * @param text String
      * @return NormalizedResult Normalized styleRange list, and a flag indicating whether the input range was valid
      */
-    private static NormalizedResult normalize(final List<StyleRangeEnt> styleRanges, final String text) {
+    private static NormalizedResult normalize(final List<StyleRangeEnt> styleRanges, final String text, final Integer defaultFontSize) {
         List<StyleRangeEnt> normalized = new ArrayList<>(styleRanges);
         normalized.sort(Comparator.comparingInt(a -> a.getStart()));
 
@@ -130,7 +128,7 @@ public class LegacyAnnotationUtils {
 
         // handle empty range list
         if (normalized.size() == 0) {
-            return new NormalizedResult(getFallback(text), true);
+            return new NormalizedResult(getFallback(text, defaultFontSize), true);
         }
 
         // validate overlapping ranges (not supported)
@@ -139,13 +137,13 @@ public class LegacyAnnotationUtils {
             StyleRangeEnt nextRange = (i + 1 < normalized.size()) ? normalized.get(i + 1) : null;
             if (range.getLength() < 0 || range.getStart() < 0 || range.getStart() + range.getLength() > text.length()
                 || (nextRange != null && range.getStart() + range.getLength() > nextRange.getStart())) {
-                return new NormalizedResult(getFallback(text), false);
+                return new NormalizedResult(getFallback(text, defaultFontSize), false);
             }
         }
 
         // fill gap at start
         if (normalized.get(0).getStart() != 0) {
-            normalized.add(0, buildSimpleStyleRange(0, normalized.get(0).getStart()));
+            normalized.add(0, buildSimpleStyleRange(0, normalized.get(0).getStart(), defaultFontSize));
         }
 
         // fill gaps in between
@@ -155,7 +153,7 @@ public class LegacyAnnotationUtils {
                 StyleRangeEnt lastRange = filled.get(filled.size() - 1);
                 int lastEnd = lastRange.getStart() + lastRange.getLength();
                 if (lastEnd < range.getStart()) {
-                    filled.add(buildSimpleStyleRange(lastEnd, range.getStart() - lastEnd));
+                    filled.add(buildSimpleStyleRange(lastEnd, range.getStart() - lastEnd, defaultFontSize));
                 }
             }
             filled.add(range);
@@ -166,7 +164,7 @@ public class LegacyAnnotationUtils {
         StyleRangeEnt lastRange = normalized.get(normalized.size() - 1);
         int lastEnd = lastRange.getStart() + lastRange.getLength();
         if (lastEnd < text.length()) {
-            normalized.add(buildSimpleStyleRange(lastEnd, text.length() - lastEnd));
+            normalized.add(buildSimpleStyleRange(lastEnd, text.length() - lastEnd, defaultFontSize));
         }
 
         return new NormalizedResult(normalized, true);
@@ -174,13 +172,10 @@ public class LegacyAnnotationUtils {
 
     /**
      * Apply styleRanges to a given text
-     *
-     * @param styleRanges List of StyleRange
-     * @param text String
      * @return List<TextRange> An array of text chunks with style info
      */
-    public static List<TextRange> applyStyleRanges(final List<StyleRangeEnt> styleRanges, final String text) {
-        NormalizedResult norm = normalize(styleRanges, text);
+    public static List<TextRange> applyStyleRanges(final List<StyleRangeEnt> styleRanges, final String text, final Integer defaultFontSize) {
+        NormalizedResult norm = normalize(styleRanges, text, defaultFontSize != null ? defaultFontSize : DEFAULT_FONT_SIZE);
         List<TextRange> textRanges = new ArrayList<>();
         for (StyleRangeEnt styleRange : norm.normalized) {
             String chunk = text.substring(styleRange.getStart(), styleRange.getStart() + styleRange.getLength());
