@@ -99,10 +99,13 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param serviceProvider
      * @param workflowLoader
      * @param workflowExecutor
+     * @param projectManager
      */
     public ComponentServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
-        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
-        super(ComponentServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor,
+        final ProjectManager projectManager) {
+        super(ComponentServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor,
+            projectManager);
     }
 
     /**
@@ -166,7 +169,7 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
             cs().getComponentDescription(projectId, getRootID(), VersionId.currentState().toString(), nodeId);
 
         var version = VersionId.parse("2");
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+        loadVersionAndSetActive(projectId, version);
 
         // Earlier version
         var versionCompDesc = cs().getComponentDescription(projectId, getRootID(), version.toString(), nodeId);

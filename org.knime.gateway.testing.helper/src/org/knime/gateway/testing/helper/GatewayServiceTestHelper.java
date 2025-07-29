@@ -47,6 +47,8 @@ package org.knime.gateway.testing.helper;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.util.VersionId;
+import org.knime.gateway.impl.project.ProjectManager;
 
 /**
  * Helper to test service implementations. This is usually done by loading a workflow, optionally executing it and then
@@ -64,17 +66,7 @@ public class GatewayServiceTestHelper {
 
     private final Class<?> m_testClass;
 
-    /**
-     * Creates a new abstract service test.
-     *
-     * @param testClass the test class carrying out the actual test
-     * @param entityResultChecker logic to check whether the returned entities are the expected ones
-     * @param workflowLoader logic to load a workflow
-     */
-    protected GatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
-        final WorkflowLoader workflowLoader) {
-        this(testClass, entityResultChecker, workflowLoader, null);
-    }
+    private final ProjectManager m_projectManager;
 
     /**
      * Creates a new abstract service test.
@@ -83,13 +75,15 @@ public class GatewayServiceTestHelper {
      * @param entityResultChecker logic to check whether the returned entities are the expected ones
      * @param workflowLoader logic to load a workflow
      * @param workflowExecutor logic to execute a workflow, can be <code>null</code> if not required by the test
+     * @param projectManager to enable project versions, can be <code>null</code> if not required by the test
      */
     protected GatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
-        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor, final ProjectManager projectManager) {
         m_testClass = testClass;
         m_workflowLoader = workflowLoader;
         m_workflowExecutor = workflowExecutor;
         m_entityResultChecker = entityResultChecker;
+        m_projectManager = projectManager;
     }
 
     /**
@@ -101,6 +95,31 @@ public class GatewayServiceTestHelper {
      */
     protected String loadWorkflow(final TestWorkflow workflow) throws Exception {
         return m_workflowLoader.loadWorkflow(workflow);
+    }
+
+    /**
+     * Make sure a project version is set active
+     *
+     * @param projectId
+     * @param versionId
+     */
+    protected void setVersionActive(final String projectId, final VersionId versionId) {
+        m_projectManager.setProjectActive(projectId, versionId);
+    }
+
+    /**
+     * Make sure a certain project version is loaded and set as active.
+     *
+     * @param projectId the project ID to load the version from
+     * @param versionId the version to load
+     * @throws Exception if loading fails
+     */
+    protected void loadVersionAndSetActive(final String projectId, final VersionId versionId) throws Exception {
+        m_projectManager.getProject(projectId) //
+            .map(project -> project.getFromCacheOrLoadWorkflowManager(versionId)) //
+            .orElseThrow(() -> new IllegalStateException(
+                "Could not load project for id <%s> and version <%s>".formatted(projectId, versionId)));
+        setVersionActive(projectId, versionId);
     }
 
     /**

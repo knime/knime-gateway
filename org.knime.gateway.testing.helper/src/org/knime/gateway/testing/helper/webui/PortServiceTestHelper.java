@@ -62,6 +62,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -85,10 +86,13 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param serviceProvider
      * @param workflowLoader
      * @param workflowExecutor
+     * @param projectManager
      */
     public PortServiceTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
-        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
-        super(NodeServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor,
+        final ProjectManager projectManager) {
+        super(NodeServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor,
+            projectManager);
     }
 
     /**
@@ -165,7 +169,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
             ObjectMapperUtil.getInstance().getObjectMapper().convertValue(currentStatePortView, JsonNode.class);
 
         var version = VersionId.parse("2");
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+        loadVersionAndSetActive(projectId, version);
 
         // Earlier version
         var earlierVersionPortView =
@@ -288,7 +292,7 @@ public class PortServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var currentStateDataNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(currentStateData);
 
         var version = VersionId.parse("2");
-        ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), false);
+        loadVersionAndSetActive(projectId, version);
 
         // Earlier version
         var earlierVersionInitialData =

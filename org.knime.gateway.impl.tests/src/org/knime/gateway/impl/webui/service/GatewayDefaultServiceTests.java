@@ -101,6 +101,8 @@ public class GatewayDefaultServiceTests {
 
     private final ServiceProvider m_serviceProvider;
 
+    private final ProjectManager m_projectManager;
+
 
     /**
      * Makes sure the org.knime.js.core plugin is activated which in turn registers the
@@ -130,7 +132,7 @@ public class GatewayDefaultServiceTests {
 
             @Override
             public void executeWorkflowAsync(final String wfId) throws Exception {
-                ProjectManager.getInstance() //
+                m_projectManager //
                     .getProject(wfId) //
                     .flatMap(Project::getWorkflowManagerIfLoaded) //
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
@@ -139,7 +141,7 @@ public class GatewayDefaultServiceTests {
 
             @Override
             public void executeWorkflow(final String wfId) throws Exception {
-                ProjectManager.getInstance() //
+                m_projectManager //
                     .getProject(wfId) //
                     .flatMap(Project::getWorkflowManagerIfLoaded) //
                     .orElseThrow(() -> new IllegalStateException("No workflow for id " + wfId)) //
@@ -189,6 +191,7 @@ public class GatewayDefaultServiceTests {
             }
         };
         m_gatewayTestName = gatewayTestName;
+        m_projectManager = ProjectManager.getInstance();
     }
 
     /**
@@ -199,7 +202,7 @@ public class GatewayDefaultServiceTests {
     @Test
     public void test() throws Exception {
         GATEWAY_TESTS.get(m_gatewayTestName).runGatewayTest(resultChecker, m_serviceProvider, m_workflowLoader,
-            m_workflowExecutor);
+            m_workflowExecutor, m_projectManager);
     }
 
     /**
@@ -221,7 +224,7 @@ public class GatewayDefaultServiceTests {
     @SuppressWarnings("javadoc")
     @Before
     public void setupServiceDependencies() {
-        ServiceDependencies.setServiceDependency(ProjectManager.class, ProjectManager.getInstance());
+        ServiceDependencies.setServiceDependency(ProjectManager.class, m_projectManager);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
             new WorkflowMiddleware(ProjectManager.getInstance(), null));
         ServiceDependencies.setServiceDependency(AppStateUpdater.class, null);

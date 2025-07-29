@@ -84,6 +84,7 @@ import org.knime.gateway.api.webui.service.NodeService;
 import org.knime.gateway.api.webui.service.PortService;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowSnapshotEnt;
 import org.knime.gateway.json.util.JsonUtil;
 import org.knime.gateway.testing.helper.GatewayServiceTestHelper;
@@ -270,11 +271,12 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      * @param entityResultChecker
      * @param serviceProvider
      * @param workflowLoader
+     * @param workflowExecutor
      */
     protected WebUIGatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
-        final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader) {
-        super(testClass, entityResultChecker, workflowLoader);
-        m_serviceProvider = serviceProvider;
+        final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader,
+        final WorkflowExecutor workflowExecutor) {
+        this(testClass, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor, null);
     }
 
     /**
@@ -283,11 +285,12 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      * @param serviceProvider
      * @param workflowLoader
      * @param workflowExecutor
+     * @param projectManager
      */
     protected WebUIGatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
         final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader,
-        final WorkflowExecutor workflowExecutor) {
-        super(testClass, entityResultChecker, workflowLoader, workflowExecutor);
+        final WorkflowExecutor workflowExecutor, final ProjectManager projectManager) {
+        super(testClass, entityResultChecker, workflowLoader, workflowExecutor, projectManager);
         m_serviceProvider = serviceProvider;
     }
 
