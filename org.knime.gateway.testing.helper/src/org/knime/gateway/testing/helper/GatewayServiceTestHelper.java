@@ -69,6 +69,20 @@ public class GatewayServiceTestHelper {
     private final ProjectManager m_projectManager;
 
     /**
+     * Creates a new abstract service test, only needed in 'knime-com-gateway', since {@link ProjectManager} is not
+     * available there.
+     *
+     * @param testClass the test class carrying out the actual test
+     * @param entityResultChecker logic to check whether the returned entities are the expected ones
+     * @param workflowLoader logic to load a workflow
+     * @param workflowExecutor logic to execute a workflow, can be <code>null</code> if not required by the test
+     */
+    protected GatewayServiceTestHelper(final Class<?> testClass, final ResultChecker entityResultChecker,
+        final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
+        this(testClass, entityResultChecker, workflowLoader, workflowExecutor, null);
+    }
+
+    /**
      * Creates a new abstract service test.
      *
      * @param testClass the test class carrying out the actual test
