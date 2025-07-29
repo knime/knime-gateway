@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.api" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.6.0"/>
+                <message_argument value="5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.api.webui.entity.ConnectableEnt">
         <filter id="305324134">
             <message_arguments>
@@ -680,6 +688,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/service/ComponentEditorService.java" type="org.knime.gateway.api.webui.service.ComponentEditorService">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.ComponentEditorService"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/service/ComponentService.java" type="org.knime.gateway.api.webui.service.ComponentService">
         <filter id="1110441988">
             <message_arguments>
@@ -943,6 +958,12 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
+                <message_argument value="saveProject(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
                 <message_argument value="saveProject(String, String)"/>
             </message_arguments>
         </filter>
@@ -950,6 +971,12 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
                 <message_argument value="getWorkflow(String, NodeIDEnt, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
+                <message_argument value="saveProject(String, String)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -960,6 +987,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getWorkflow(String, NodeIDEnt, String, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="saveProject(String)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
