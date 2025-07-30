@@ -955,6 +955,12 @@
                 <message_argument value="getWorkflow(String, NodeIDEnt, String, Boolean)"/>
             </message_arguments>
         </filter>
+        <filter comment="ignored" id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
+                <message_argument value="restoreVersion(String, String)"/>
+            </message_arguments>
+        </filter>
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.WorkflowService"/>
@@ -987,6 +993,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getWorkflow(String, NodeIDEnt, String, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="ignored" id="1211105284">
+            <message_arguments>
+                <message_argument value="restoreVersion(String, String)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
