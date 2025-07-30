@@ -142,8 +142,8 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
 
         var templateEngine = new TemplateEngine();
         templateEngine.addTemplateResolver(templateResolver);
+        templateEngine.addDialect(new WhiteSpaceRemovalDialect());
         try (Writer writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8)) {
-            // TODO NXT-3962 minify output e.g. via postprocessing? input.replaceAll("(?m)^\\s*$\\n?", "").replaceAll("\\R", "");
             templateEngine.process("workflow", context, writer);
         }
     }
