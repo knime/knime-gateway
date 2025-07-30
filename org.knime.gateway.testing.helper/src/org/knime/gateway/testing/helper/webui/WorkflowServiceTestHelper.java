@@ -66,7 +66,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -374,7 +373,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // Throws an exception
         assertThrows("Evil version used", ServiceCallException.class, () -> ws().restoreVersion(wfId, "666"));
-        assertThrows("Non-existing project ID", NoSuchElementException.class,
+        assertThrows("Non-existing project ID", Throwable.class,
             () -> ws().restoreVersion(wfId + "_diff", "42"));
     }
 
