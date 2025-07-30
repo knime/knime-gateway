@@ -48,7 +48,7 @@
  */
 package org.knime.gateway.impl.webui.preview.util;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
@@ -56,6 +56,7 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 
 /**
  * Utility functions for rendering nodes on workflow previews
@@ -142,35 +143,26 @@ public final class NodeUtils {
         return ColorConstants.NODE_COLORS.getOrDefault(nullSafeType, ColorConstants.KNIME_COLORS.get("HibiscusDark"));
     }
 
-    public enum ExecutionStateEnum {
-            IDLE, CONFIGURED, EXECUTED, HALTED
+    private static final boolean[] DEFAULT_TRAFFIC_LIGHT = new boolean[]{false, false, false};
+    private static final Map<ExecutionStateEnum, boolean[]> TRAFFIC_LIGHT_MAPPER =
+        new EnumMap<>(ExecutionStateEnum.class);
+    static {
+        TRAFFIC_LIGHT_MAPPER.put(ExecutionStateEnum.IDLE, new boolean[]{true, false, false});
+        TRAFFIC_LIGHT_MAPPER.put(ExecutionStateEnum.CONFIGURED, new boolean[]{false, true, false});
+        TRAFFIC_LIGHT_MAPPER.put(ExecutionStateEnum.EXECUTED, new boolean[]{false, false, true});
+        TRAFFIC_LIGHT_MAPPER.put(ExecutionStateEnum.HALTED, new boolean[]{false, false, true});
     }
 
     /**
      * @param executionState the execution state of a node
      * @return a boolean array for the values of the traffic light in the form [red, yellow, green]
      */
-    public static boolean[] getTrafficLight(final String executionState) {
-        boolean[] defaultTrafficLight = new boolean[]{false, false, false};
-
-        Map<ExecutionStateEnum, boolean[]> stateMapper = new HashMap<>(4);
-        stateMapper.put(ExecutionStateEnum.IDLE, new boolean[]{true, false, false});
-        stateMapper.put(ExecutionStateEnum.CONFIGURED, new boolean[]{false, true, false});
-        stateMapper.put(ExecutionStateEnum.EXECUTED, new boolean[]{false, false, true});
-        stateMapper.put(ExecutionStateEnum.HALTED, new boolean[]{false, false, true});
-
-        if (executionState != null) {
-            try {
-                ExecutionStateEnum stateEnum = ExecutionStateEnum.valueOf(executionState);
-                if (stateMapper.containsKey(stateEnum)) {
-                    return stateMapper.get(stateEnum);
-                }
-            } catch (IllegalArgumentException e) {
-                // thrown by valueOf, return null
-            }
-            return null;
+    public static boolean[] getTrafficLight(final ExecutionStateEnum executionState) {
+        if (executionState != null && TRAFFIC_LIGHT_MAPPER.containsKey(executionState)) {
+            return TRAFFIC_LIGHT_MAPPER.get(executionState);
+        } else {
+            return DEFAULT_TRAFFIC_LIGHT;
         }
-        return defaultTrafficLight;
     }
 
     private static final String[] activeColorNames = new String[]{"red", "yellow", "green"};

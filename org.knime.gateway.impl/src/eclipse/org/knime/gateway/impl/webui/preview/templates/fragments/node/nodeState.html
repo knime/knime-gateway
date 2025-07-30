@@ -1,7 +1,7 @@
 <svg xmlns:th="https://www.thymeleaf.org">
-  <th:block th:fragment="nodeState(state)" th:with="executionState=${{state.executionState}}, 
-    error=${state.error},
-    warning=${state.warning},
+  <th:block th:fragment="nodeState(state)" th:with="executionState=${state != null ? state.executionState : null}, 
+    error=${state != null ? state.error : null},
+    warning=${state != null ? state.warning : null},
     trafficLight=${nodeUtils.getTrafficLight(executionState)}
   ">
     <g th:transform="'translate(0, ' + ${shapes.NODE_SIZE + shapes.NODE_STATUS_MARGIN_TOP} + ')'">
@@ -33,8 +33,8 @@
       </th:block>
     </g>
     <text
-      th:if="${trafficLight == null and executionState == 'QUEUED'}"
-      th:with="loopStatus=${{state.loopStatus}}"
+      th:if="${trafficLight == null and #strings.equals(executionState, 'QUEUED')}"
+      th:with="loopStatus=${state != null ? #strings.toString(state.loopStatus) : null}"
       th:x="${shapes.nodeSize} / 2"
       th:fill="${colors.textDefault}"
       text-anchor="middle"
