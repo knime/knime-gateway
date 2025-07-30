@@ -45,6 +45,7 @@ public final class GatewayTestCollection {
         AddComponentCommandTestHelper.class, //
         AlignNodesCommandTestHelper.class, //
         BendpointsTestHelper.class, //
+        CollapseExpandCommandsTestHelper.class, //
         ComponentServiceTestHelper.class, //
         ConnectCommandsTestHelper.class, //
         CutCopyPasteCommandsTestHelper.class, //
@@ -58,6 +59,7 @@ public final class GatewayTestCollection {
         SpaceServiceTestHelper.class, //
         StreamingExecutionTestHelper.class, //
         TranslateCommandTestHelper.class, //
+        WorkflowCommandTestHelper.class, //
         WorkflowServiceTestHelper.class //
     );
 

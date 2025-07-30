@@ -404,7 +404,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param isReachable
      * @return
      */
-    private static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
+    static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
         final Space... spaces) {
         return new SpaceProvider() {
 
