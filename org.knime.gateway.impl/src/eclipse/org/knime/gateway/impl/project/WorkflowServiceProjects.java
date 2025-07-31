@@ -88,7 +88,7 @@ public final class WorkflowServiceProjects {
     @SuppressWarnings({"java:S1602"}) // braces around 1-expression lambda
     public static Optional<String> getProjectIdAt(final Path absolutePath) {
         var projectManager = ProjectManager.getInstance();
-        return projectManager.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE).stream() //
+        return projectManager.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE) //
             .filter(projectId -> { //
                 return projectManager.getProject(projectId) //
                     .flatMap(Project::getWorkflowManagerIfLoaded).filter(wfm -> isAtPath(wfm, absolutePath)) //

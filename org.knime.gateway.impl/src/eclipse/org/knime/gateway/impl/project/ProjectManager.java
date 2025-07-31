@@ -207,7 +207,7 @@ public final class ProjectManager {
      * @return the IDs of all registered projects
      */
     public List<String> getProjectIds() {
-        return getProjectIds(ProjectConsumerType.UI);
+        return getProjectIds(ProjectConsumerType.UI).toList();
     }
 
     /**
@@ -215,11 +215,10 @@ public final class ProjectManager {
      * @return The IDs of the registered projects. Since it's a 'LinkedHashMap', the order of the entries is guaranteed
      *         to be the insertion order.
      */
-    List<String> getProjectIds(final ProjectConsumerType consumerType) {
+    Stream<String> getProjectIds(final ProjectConsumerType consumerType) {
         return m_projectsMap.entrySet().stream()
             .filter(e -> consumerType.isUI() ? e.getValue().hasUIConsumer : (e.getValue().numNonUIConsumer > 0)) //
-            .map(Entry::getKey) //
-            .toList();
+            .map(Entry::getKey);
     }
 
     /**
