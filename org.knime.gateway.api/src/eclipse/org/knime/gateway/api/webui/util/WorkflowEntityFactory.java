@@ -61,6 +61,7 @@ import org.knime.core.node.missing.MissingNodeFactory;
 import org.knime.core.node.port.MetaPortInfo;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.util.NodeExecutionJobManagerPool;
+import org.knime.core.node.wizard.WizardNodeFactoryExtension;
 import org.knime.core.node.wizard.page.WizardPageUtil;
 import org.knime.core.node.workflow.AbstractNodeExecutionJobManager;
 import org.knime.core.node.workflow.AnnotationData.StyleRange;
@@ -606,7 +607,7 @@ public final class WorkflowEntityFactory {
      */
     private static boolean hasNodeView(final NodeContainer nc, final int currentDepth) {
         if (nc instanceof NativeNodeContainer nnc) {
-            return NodeViewManager.hasNodeView(nnc);
+            return NodeViewManager.hasNodeView(nnc) || nnc.getNode().getFactory() instanceof WizardNodeFactoryExtension;
         } else if (nc instanceof WorkflowManager) {
             return false;
         } else if (nc instanceof SubNodeContainer snc) {
