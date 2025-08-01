@@ -113,14 +113,21 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     protected boolean executeWithWorkflowLockAndContext()
         throws ServiceCallException {
         if (m_nodeIdEnts.isEmpty()) {
-            throw new ServiceCallException("No component IDs passed for <%s>".formatted(getWorkflowKey()));
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to update component(s)") //
+                .withDetails("No component IDs passed for <%s>".formatted(getWorkflowKey())) //
+                .canCopy(false) //
+                .build();
         }
 
         final var components = getLinkedComponents(m_nodeIdEnts, getWorkflowKey());
 
         if (components.size() != m_nodeIdEnts.size()) {
-            throw new ServiceCallException(
-                "Not all of the nodes <%s> are linked components".formatted(m_nodeIdEnts));
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to update component(s)") //
+                .withDetails("Not all of the nodes <%s> are linked components".formatted(m_nodeIdEnts)) //
+                .canCopy(false) //
+                .build();
         }
 
         m_updateLogs = components.stream()//

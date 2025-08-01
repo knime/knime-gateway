@@ -50,7 +50,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -96,7 +95,12 @@ abstract class CommandIfElse extends HigherOrderCommand {
         try {
             wfm = WorkflowUtil.getWorkflowManager(wfKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-            throw new ServiceExceptions.ServiceCallException(ex.getMessage(), ex);
+            throw ServiceCallException.builder() //
+                .withTitle("Workflow not found") //
+                .withDetails("No workflow found for key " + wfKey + ": " + ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         }
         var takeLeft = m_predicate.apply(wfm);
         m_activeCommand = Boolean.TRUE.equals(takeLeft) ? m_leftCommand : m_rightCommand;

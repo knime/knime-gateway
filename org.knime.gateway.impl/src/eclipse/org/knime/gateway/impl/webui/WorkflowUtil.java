@@ -92,9 +92,19 @@ public final class WorkflowUtil {
             // No version needed, only current state
             wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId());
         } catch (IllegalArgumentException ex) {
-            throw new NodeNotFoundException(ex.getMessage(), ex);
+            throw NodeNotFoundException.builder() //
+                .withTitle("Workflow not found") //
+                .withDetails(ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         } catch (IllegalStateException ex) {
-            throw new NotASubWorkflowException(ex.getMessage(), ex);
+            throw NotASubWorkflowException.builder() //
+                .withTitle("ID does not identify a sub-workflow") //
+                .withDetails(ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         }
         return wfm;
     }

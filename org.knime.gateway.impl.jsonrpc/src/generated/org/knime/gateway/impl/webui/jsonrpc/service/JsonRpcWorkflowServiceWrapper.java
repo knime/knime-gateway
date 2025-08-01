@@ -189,7 +189,7 @@ public class JsonRpcWorkflowServiceWrapper implements WorkflowService {
             data = "ServiceCallException" /*per convention the data property contains the exception name*/)
     })
     public void saveProject(@JsonRpcParam(value="projectId") String projectId)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException {
-        m_service.get().saveProject(projectId);
+        m_service.get().saveProject(projectId);    
     }
 
 	/**

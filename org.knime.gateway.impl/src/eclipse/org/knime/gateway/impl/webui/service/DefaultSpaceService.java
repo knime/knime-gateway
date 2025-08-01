@@ -73,6 +73,7 @@ import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
@@ -108,22 +109,26 @@ public class DefaultSpaceService implements SpaceService {
         return DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
     }
 
+    private SpaceProvider getSpaceProvider(final String spaceProviderId) throws MutableServiceCallException {
+        if (spaceProviderId == null || spaceProviderId.isBlank()) {
+            throw new MutableServiceCallException(List.of("The space provider ID must not be null or empty."), false);
+        }
+
+        try {
+            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
+        } catch (final NoSuchElementException e) {
+            throw new MutableServiceCallException(
+                List.of("The space provider with ID '%s' does not exist.".formatted(spaceProviderId)), true, e);
+        }
+    }
+
     @Override
     public List<SpaceGroupEnt> getSpaceGroups(final String spaceProviderId)
         throws ServiceCallException, NetworkException, LoggedOutException {
-        if (spaceProviderId == null || spaceProviderId.isBlank()) {
-            throw new ServiceCallException("Invalid space-provider-id (empty/null)");
-        }
         try {
-            final var spaceProvider =
-                m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
-            return spaceProvider.toEntity();
-        } catch (NoSuchElementException e) {
-            throw new ServiceCallException(e.getMessage(), e);
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("Failed to fetch space groups", e);
-            e.copyContextTo(sce);
-            throw sce;
+            return getSpaceProvider(spaceProviderId).toEntity();
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("Failed to fetch space groups");
         }
     }
 
@@ -131,16 +136,16 @@ public class DefaultSpaceService implements SpaceService {
     public WorkflowGroupContentEnt listWorkflowGroup(final String spaceId, final String spaceProviderId,
         final String workflowGroupId) throws ServiceCallException, NetworkException, LoggedOutException {
         try {
-            final var spaceProvider =
-                m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
-            final var space = spaceProvider.getSpace(spaceId);
-            return space.listWorkflowGroup(workflowGroupId);
-        } catch (NoSuchElementException e) {
-            throw new ServiceCallException(e.getMessage(), e);
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("Failed to fetch folder contents", e);
-            e.copyContextTo(sce);
-            throw sce;
+            return getSpaceProvider(spaceProviderId).getSpace(spaceId).listWorkflowGroup(workflowGroupId);
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("Failed to fetch folder contents");
+        } catch (final NoSuchElementException e) {
+            throw ServiceCallException.builder() //
+                .withTitle("Folder not found") //
+                .withDetails("The folder with ID '%s' does not exist.".formatted(workflowGroupId)) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 
@@ -148,14 +153,9 @@ public class DefaultSpaceService implements SpaceService {
     public List<Object> listJobsForWorkflow(final String spaceId, final String spaceProviderId, final String workflowId)
         throws ServiceCallException, LoggedOutException, NetworkException {
         try {
-            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
-                .listJobsForWorkflow(workflowId);
-        } catch (NoSuchElementException e) {
-            throw new ServiceCallException("Problem fetching jobs", e);
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("Failed to fetch jobs", e);
-            e.copyContextTo(sce);
-            throw sce;
+            return getSpaceProvider(spaceProviderId).getSpace(spaceId).listJobsForWorkflow(workflowId);
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("Failed to fetch jobs");
         }
     }
 
@@ -163,13 +163,9 @@ public class DefaultSpaceService implements SpaceService {
     public void deleteJobsForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
         final String jobId) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
-            final var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId)
-                .getSpace(spaceId);
-            space.deleteJobsForWorkflow(itemId, List.of(jobId));
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("An error occurred while deleting a job", e);
-            e.copyContextTo(sce);
-            throw sce;
+            getSpaceProvider(spaceProviderId).getSpace(spaceId).deleteJobsForWorkflow(itemId, List.of(jobId));
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("An error occurred while deleting a job");
         }
     }
 
@@ -177,14 +173,9 @@ public class DefaultSpaceService implements SpaceService {
     public List<Object> listSchedulesForWorkflow(final String spaceId, final String spaceProviderId,
         final String workflowId) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
-            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
-                .listSchedulesForWorkflow(workflowId);
-        } catch (NoSuchElementException e) {
-            throw new ServiceCallException("Problem fetching jobs", e);
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("Failed to list schedules", e);
-            e.copyContextTo(sce);
-            throw sce;
+            return getSpaceProvider(spaceProviderId).getSpace(spaceId).listSchedulesForWorkflow(workflowId);
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("Failed to list schedules");
         }
     }
 
@@ -192,12 +183,9 @@ public class DefaultSpaceService implements SpaceService {
     public void deleteSchedulesForWorkflow(final String spaceId, final String spaceProviderId, final String itemId,
         final String scheduleId) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
-            final var space = m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId);
-            space.deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("An error occurred while deleting a schedule", e);
-            e.copyContextTo(sce);
-            throw sce;
+            getSpaceProvider(spaceProviderId).getSpace(spaceId).deleteSchedulesForWorkflow(itemId, List.of(scheduleId));
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("An error occurred while deleting a schedule");
         }
     }
 
@@ -205,17 +193,16 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceEnt createSpace(final String spaceProviderId, final String spaceGroupName)
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
-            return m_spaceProvidersManager.getSpaceProviders(projectId()) //
-                .getSpaceProvider(spaceProviderId) //
-                .getSpaceGroup(spaceGroupName) //
-                .createSpace() //
-                .toEntity();
-        } catch (NoSuchElementException | UnsupportedOperationException e) {
-            throw new ServiceCallException(e.getMessage(), e);
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("An error occurred while creating the space", e);
-            e.copyContextTo(sce);
-            throw sce;
+            return getSpaceProvider(spaceProviderId).getSpaceGroup(spaceGroupName).createSpace().toEntity();
+        } catch (final NoSuchElementException | UnsupportedOperationException e) {
+            throw ServiceCallException.builder() //
+                .withTitle("Space creation failed") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("An error occurred while creating the space");
         }
     }
 
@@ -224,21 +211,22 @@ public class DefaultSpaceService implements SpaceService {
         final String name)
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
-            final var item = m_spaceProvidersManager.getSpaceProviders(projectId()) //
-                .getSpace(spaceProviderId, spaceId) //
-                .createWorkflow(workflowGroupId, name);
+            final var item = getSpaceProvider(spaceProviderId).getSpace(spaceId).createWorkflow(workflowGroupId, name);
             if (GlobalNodeStats.isEnabled()) {
                 NodeTimer.GLOBAL_TIMER.incWorkflowCreate(
                     m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId)
                         .getType() == TypeEnum.LOCAL ? WorkflowType.LOCAL : WorkflowType.REMOTE);
             }
             return item;
-        } catch (NoSuchElementException e) {
-            throw new ServiceCallException("Problem fetching space items", e);
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("An error occurred while creating the workflow", e);
-            e.copyContextTo(sce);
-            throw sce;
+        } catch (final NoSuchElementException e) {
+            throw ServiceCallException.builder() //
+                .withTitle("An error occurred while creating the workflow") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("An error occurred while creating the workflow");
         }
     }
 
@@ -247,14 +235,16 @@ public class DefaultSpaceService implements SpaceService {
         final Boolean softDelete)
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
-            m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
-                .deleteItems(spaceItemIds, softDelete);
-        } catch (NoSuchElementException | UnsupportedOperationException e) {
-            throw new ServiceCallException(e.getMessage(), e);
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("An error occurred while deleting item(s)", e);
-            e.copyContextTo(sce);
-            throw sce;
+            getSpaceProvider(spaceProviderId).getSpace(spaceId).deleteItems(spaceItemIds, softDelete);
+        } catch (final NoSuchElementException | UnsupportedOperationException e) {
+            throw ServiceCallException.builder() //
+                .withTitle("An error occurred while deleting item(s)") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("An error occurred while deleting item(s)");
         }
     }
 
@@ -262,14 +252,16 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceItemEnt createWorkflowGroup(final String spaceId, final String spaceProviderId, final String itemId)
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
-            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
-                .createWorkflowGroup(itemId);
-        } catch (NoSuchElementException | UnsupportedOperationException e) {
-            throw new ServiceCallException(e.getMessage(), e);
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("An error occurred while creating the folder", e);
-            e.copyContextTo(sce);
-            throw sce;
+            return getSpaceProvider(spaceProviderId).getSpace(spaceId).createWorkflowGroup(itemId);
+        } catch (final NoSuchElementException | UnsupportedOperationException e) {
+            throw ServiceCallException.builder() //
+                .withTitle("An error occurred while creating the folder") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("An error occurred while creating the folder");
         }
     }
 
@@ -283,9 +275,9 @@ public class DefaultSpaceService implements SpaceService {
             return;
         }
 
+        final var title = "An error occurred while %sing item(s)".formatted(Boolean.TRUE.equals(copy) ? "copy" : "mov");
         try {
-            var spaceProvider =
-                m_spaceProvidersManager.getSpaceProviders(projectId()).getSpaceProvider(spaceProviderId);
+            var spaceProvider = getSpaceProvider(spaceProviderId);
             var destinationSpace = spaceProvider.getSpace(destSpaceId);
             var sourceSpace = spaceProvider.getSpace(spaceId);
 
@@ -296,9 +288,12 @@ public class DefaultSpaceService implements SpaceService {
             if (sourceSpace instanceof LocalSpace localSpace) {
                 var workflowsToClose = checkForWorkflowsToClose(getOpenWorkflowIds(localSpace), itemIds, localSpace);
                 if (!workflowsToClose.isEmpty()) {
-                    throw new ServiceCallException(
-                        "Not all items can be moved. The following workflows need to be closed first: "
-                            + workflowsToClose);
+                    throw ServiceCallException.builder() //
+                        .withTitle("Open workflows found") //
+                        .withDetails("Not all items can be moved. The following workflows need to be closed first: "
+                            + workflowsToClose) //
+                        .canCopy(false) //
+                        .build();
                 }
             }
 
@@ -306,14 +301,16 @@ public class DefaultSpaceService implements SpaceService {
                 NameCollisionHandling.of(collisionHandling).orElse(NameCollisionHandling.NOOP);
 
             destinationSpace.moveOrCopyItems(itemIds, destWorkflowGroupItemId, actualCollisionHandling, copy);
-        } catch (NoSuchElementException | IllegalArgumentException e) {
+        } catch (final NoSuchElementException | IllegalArgumentException e) {
             // should never happen
-            throw new ServiceCallException(e.getMessage(), e);
-        } catch (MutableServiceCallException e) {
-            final var op = Boolean.TRUE.equals(copy) ? "copy" : "mov";
-            final var sce = new ServiceCallException("An error occurred while %sing item(s)".formatted(op), e);
-            e.copyContextTo(sce);
-            throw sce;
+            throw ServiceCallException.builder() //
+                .withTitle(title) //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException(title);
         }
     }
 
@@ -321,16 +318,17 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceItemEnt renameItem(final String spaceProviderId, final String spaceId, final String itemId,
         final String newName) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
-            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
-                .renameItem(itemId, newName);
-        } catch (NoSuchElementException e) {
-            throw new ServiceCallException("Could not access space", e);
-        } catch (OperationNotAllowedException e) {
-            throw new ServiceCallException(e.getMessage(), e);
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("An error occurred while renaming item", e);
-            e.copyContextTo(sce);
-            throw sce;
+            return getSpaceProvider(spaceProviderId).getSpace(spaceId).renameItem(itemId, newName);
+        } catch (final OperationNotAllowedException e) {
+            throw ServiceCallException.builder() //
+                .withTitle(e.getTitle()) //
+                .withDetails(e.getDetails()) //
+                .canCopy(e.isCanCopy()) //
+                .withAdditionalProps(e.getAdditionalProperties()) //
+                .withCause(e) //
+                .build();
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("An error occurred while renaming item");
         }
     }
 
@@ -338,16 +336,17 @@ public class DefaultSpaceService implements SpaceService {
     public SpaceEnt renameSpace(final String spaceProviderId, final String spaceId, final String spaceName)
         throws ServiceCallException, LoggedOutException, NetworkException {
         try {
-            return m_spaceProvidersManager.getSpaceProviders(projectId()).getSpace(spaceProviderId, spaceId)
-                .renameSpace(spaceName);
-        } catch (NoSuchElementException e) {
-            throw new ServiceCallException("Could not access space", e);
-        } catch (OperationNotAllowedException e) {
-            throw new ServiceCallException(e.getMessage(), e);
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("An error occurred while renaming space", e);
-            e.copyContextTo(sce);
-            throw sce;
+            return getSpaceProvider(spaceProviderId).getSpace(spaceId).renameSpace(spaceName);
+        } catch (final OperationNotAllowedException e) {
+            throw ServiceCallException.builder() //
+                .withTitle(e.getTitle()) //
+                .withDetails(e.getDetails()) //
+                .canCopy(e.isCanCopy()) //
+                .withAdditionalProps(e.getAdditionalProperties()) //
+                .withCause(e) //
+                .build();
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("An error occurred while renaming space");
         }
     }
 
@@ -361,13 +360,15 @@ public class DefaultSpaceService implements SpaceService {
                 if (destinationItemId.isPresent()) {
                     checkForDestinationContainingSource(itemId, sourceSpace, destinationItemId.get(), destinationSpace,
                         itemName);
-                    throw new CollisionException(
-                        "An item with name '%s' already exists at the target location".formatted(itemName));
+                    throw CollisionException.builder() //
+                        .withTitle("Name collision") //
+                        .withDetails("An item with name '%s' already exists at the target location" //
+                            .formatted(itemName)) //
+                        .canCopy(false) //
+                        .build();
                 }
-            } catch (MutableServiceCallException e) {
-                final var sce = new ServiceCallException("An error occurred while checking for name collisions", e);
-                e.copyContextTo(sce);
-                throw sce;
+            } catch (final MutableServiceCallException e) { // NOSONAR
+                throw e.toGatewayException("An error occurred while checking for name collisions");
             }
         }
     }
@@ -379,17 +380,19 @@ public class DefaultSpaceService implements SpaceService {
             return; // Different spaces, no collision
         }
 
+        final var title = "An error occurred while checking target folder";
         try {
             var ancestorItemIds = sourceSpace.getAncestorItemIds(sourceItemId);
             if (ancestorItemIds.contains(destinationItemId)) {
-                throw new ServiceCallException(
-                    "The item with name '%s' can't overwrite itself (the destination item contains the source item)."
-                        .formatted(itemName));
+                throw ServiceCallException.builder() //
+                    .withTitle(title) //
+                    .withDetails(("The item with name '%s' can't overwrite itself"
+                        + " (the destination item contains the source item).").formatted(itemName)) //
+                    .canCopy(false) //
+                    .build();
             }
-        } catch (MutableServiceCallException e) {
-            final var sce = new ServiceCallException("An error occurred while checking target folder", e);
-            e.copyContextTo(sce);
-            throw sce;
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException(title);
         }
     }
 
@@ -416,10 +419,8 @@ public class DefaultSpaceService implements SpaceService {
                     || localSpace.getAncestorItemIds(workflowId).stream().anyMatch(itemIds::contains)) {
                     toClose.add(workflowId);
                 }
-            } catch (MutableServiceCallException e) {
-                final var sce = new ServiceCallException("An error occurred while scanning open workflows", e);
-                e.copyContextTo(sce);
-                throw sce;
+            } catch (final MutableServiceCallException e) { // NOSONAR
+                throw e.toGatewayException("An error occurred while scanning open workflows");
             }
         }
         return toClose;

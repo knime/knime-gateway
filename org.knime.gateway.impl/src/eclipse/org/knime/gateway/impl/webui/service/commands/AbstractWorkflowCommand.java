@@ -93,7 +93,12 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
         try {
             m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
-            throw new ServiceCallException("Could not find workflow", ex);
+            throw ServiceCallException.builder() //
+                .withTitle("Workflow not found") //
+                .withDetails("No workflow found for key " + wfKey + ": " + ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         }
         m_wfKey = wfKey;
         return executeInternal();

@@ -130,8 +130,11 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
         throws ServiceCallException {
         final var workflowAnnotation = wfm.getWorkflowAnnotations(annotationId)[0];
         if (workflowAnnotation == null) {
-            throw new ServiceCallException(
-                "No workflow annotation found for id " + (new AnnotationIDEnt(annotationId)));
+            throw ServiceCallException.builder() //
+                .withTitle("Annotation not found") //
+                .withDetails("No workflow annotation found for id " + (new AnnotationIDEnt(annotationId))) //
+                .canCopy(false) //
+                .build();
         }
         return workflowAnnotation;
     }
@@ -178,7 +181,12 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
         try {
             return Integer.decode(hexString);
         } catch (NumberFormatException e) {
-            throw new ServiceCallException("Invalid hex string <" + hexString + ">", e);
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to parse color") //
+                .withDetails("Invalid hex string <" + hexString + ">") //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 

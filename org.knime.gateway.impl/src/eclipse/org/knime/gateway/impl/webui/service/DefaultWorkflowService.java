@@ -51,8 +51,6 @@ package org.knime.gateway.impl.webui.service;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,7 +61,6 @@ import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.ui.component.CheckForComponentUpdatesUtil;
@@ -188,7 +185,12 @@ public final class DefaultWorkflowService implements WorkflowService {
                 })//
                 .toList();
         } catch (IllegalStateException | InterruptedException e) { // NOSONAR
-            throw new InvalidRequestException("Could not determine updatable node IDs", e);
+            throw InvalidRequestException.builder()
+                .withTitle("Could not retrieve linked components") //
+                .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 
@@ -264,13 +266,21 @@ public final class DefaultWorkflowService implements WorkflowService {
             throws ServiceCallException, LoggedOutException, NetworkException {
             var wfm = WorkflowManagerResolver.get(projectId);
             if (wfm.isComponentProjectWFM()) {
-                throw new ServiceCallException("Not supported for component projects");
+                throw ServiceCallException.builder() //
+                    .withTitle("Not supported for component projects") //
+                    .withDetails("Saving component projects is not supported in this context.") //
+                    .canCopy(false) //
+                    .build();
             }
 
             var isExecutionInProgress = wfm.getNodeContainerState().isExecutionInProgress()
                 || wfm.getNodeContainerState().isExecutingRemotely();
             if (isExecutionInProgress) {
-                throw new ServiceCallException("Workflow is currently executing");
+                throw ServiceCallException.builder() //
+                    .withTitle("Workflow is currently executing") //
+                    .withDetails("Cannot save workflow while it is executing.") //
+                    .canCopy(false) //
+                    .build();
             }
 
             return wfm;
@@ -287,7 +297,12 @@ public final class DefaultWorkflowService implements WorkflowService {
             try {
                 wfm.save(localWorkflowPath.toFile(), new ExecutionMonitor(), true);
             } catch (IOException | CanceledExecutionException | LockFailedException e) {
-                throw new ServiceCallException("Could not save workflow", e);
+                throw ServiceCallException.builder() //
+                    .withTitle("Could not save workflow") //
+                    .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
+                    .canCopy(true) //
+                    .withCause(e) //
+                    .build();
             }
             return context;
         }
@@ -303,7 +318,11 @@ public final class DefaultWorkflowService implements WorkflowService {
             // (b) In Browser, this info is not given (because ultimately the context is constructed off a
             //     HubJobExecutorInfo and not a AnalyticsPlatformExecutorInfo)
             if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
-                throw new ServiceCallException("Unsupported location type: " + context.getLocationType());
+                throw ServiceCallException.builder() //
+                    .withTitle("Unsupported location type") //
+                    .withDetails("The workflow is not stored in a Hub space: " + context.getLocationType()) //
+                    .canCopy(false) //
+                    .build();
             }
 
             final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
@@ -320,7 +339,5 @@ public final class DefaultWorkflowService implements WorkflowService {
                 throw ex.toGatewayException("Upload failed");
             }
         }
-
     }
-
 }

@@ -141,7 +141,12 @@ public final class DefaultNodeRepositoryService implements NodeRepositoryService
         try {
             return m_nodeCategories.getCategoryEnt(categoryPath);
         } catch (NoSuchElementException e) {
-            throw new ServiceExceptions.NoSuchElementException("The requested category could not be found.", e);
+            throw ServiceExceptions.NoSuchElementException.builder() //
+                .withTitle("Node category not found") //
+                .withDetails("The requested category could not be found: " + e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 

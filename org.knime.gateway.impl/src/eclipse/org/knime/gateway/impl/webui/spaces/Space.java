@@ -294,7 +294,11 @@ public interface Space {
      */
     default SpaceEnt renameSpace(final String newName)
         throws OperationNotAllowedException, NetworkException, LoggedOutException, MutableServiceCallException {
-        throw new OperationNotAllowedException("Renaming of spaces is not supported in this provider");
+        throw OperationNotAllowedException.builder() //
+            .withTitle("Failed to rename space") //
+            .withDetails("Renaming of spaces is not supported in this provider") //
+            .canCopy(true) //
+            .build();
     }
 
     /**
@@ -603,7 +607,7 @@ public interface Space {
      * @param itemId The item to get the dialog for
      */
     default void openPermissionsDialogForItem(final String itemId) {
-        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other than 'ServerSpaces'.");
+        throw new UnsupportedOperationException("Cannot call this method on spaces other than Server spaces.");
     }
 
     /**
@@ -612,7 +616,7 @@ public interface Space {
      * @param itemId The item to get the dialog for
      */
     default void openRemoteExecution(final String itemId) {
-        throw new UnsupportedOperationException("Cannot call this method on 'Spaces' other than 'ServerSpaces'.");
+        throw new UnsupportedOperationException("Cannot call this method on spaces other than Server spaces.");
     }
 
     /**
@@ -657,7 +661,11 @@ public interface Space {
      */
     default TransferResult uploadFrom(final LocalSpace sourceSpace, final List<String> itemIds,
         final String targetItemId, final boolean excludeData) throws OperationNotAllowedException {
-        throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
+        throw OperationNotAllowedException.builder() //
+            .withTitle("Failed to upload items") //
+            .withDetails("Cannot call this method on spaces other than Hub spaces.") //
+            .canCopy(true) //
+            .build();
     }
 
     /**
@@ -671,7 +679,11 @@ public interface Space {
      */
     default TransferResult downloadInto(final List<String> itemIds, final LocalSpace targetSpace,
         final String targetItemId) throws OperationNotAllowedException {
-        throw new OperationNotAllowedException("Cannot call this method on spaces other than Hub spaces.");
+        throw OperationNotAllowedException.builder() //
+            .withTitle("Failed to download items") //
+            .withDetails("Cannot call this method on spaces other than Hub spaces.") //
+            .canCopy(true) //
+            .build();
     }
 
     /**

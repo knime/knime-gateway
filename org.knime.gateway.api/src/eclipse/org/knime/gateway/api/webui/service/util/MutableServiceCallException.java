@@ -65,17 +65,40 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
 @SuppressWarnings("serial")
 public final class MutableServiceCallException extends Exception {
 
+    private final int m_status;
+
     private final Deque<String> m_details = new ArrayDeque<>();
 
     private final Map<String, String> m_additional = new HashMap<>();
 
-    public MutableServiceCallException(final List<String> details) {
-        this(details, null);
+    private final boolean m_canCopy;
+
+    private static String createMessage(final String title, final Iterable<String> details) {
+        final var sb = new StringBuilder(title);
+        details.forEach(detail -> sb.append(" * " + detail));
+        return sb.toString();
     }
 
-    public MutableServiceCallException(final List<String> details, final Throwable cause) {
-        super(cause);
-        m_details.addAll(details);
+    public MutableServiceCallException(final int status, final List<String> details, final boolean canCopy) {
+        this(status, details, canCopy, null);
+    }
+
+    public MutableServiceCallException(final List<String> details, final boolean canCopy) {
+        this(-1, details, canCopy);
+    }
+
+    public MutableServiceCallException(final List<String> details, final boolean canCopy, final Throwable cause) {
+        this(-1, details, canCopy, cause);
+    }
+
+    public MutableServiceCallException(final int status, final List<String> details, final boolean canCopy,
+            final Throwable cause) {
+        super(createMessage(MutableServiceCallException.class.getSimpleName() + ", details:", details), cause);
+        m_status = status;
+        if (details != null) {
+            m_details.addAll(details);
+        }
+        m_canCopy = canCopy;
     }
 
     public MutableServiceCallException addDetails(final String... detailsLines) {
@@ -97,9 +120,14 @@ public final class MutableServiceCallException extends Exception {
     }
 
     public ServiceCallException toGatewayException(final String title) {
-        final var sce = new ServiceCallException(title, this);
-        copyContextTo(sce);
-        return sce;
+        return ServiceCallException.builder() //
+            .withTitle(title) //
+            .withDetails(m_details) //
+            .canCopy(m_canCopy) //
+            .withStatusCode(m_status) //
+            .withCause(this) //
+            .withAdditionalProps(m_additional) //
+            .build();
     }
 
     public void copyContextTo(final ServiceCallException ex) {
@@ -109,9 +137,7 @@ public final class MutableServiceCallException extends Exception {
             ex.addProperty("details", "");
         } else {
             ex.addProperty("details", m_details.stream().collect(Collectors.joining("\n")));
-            final var sb = new StringBuilder(title);
-            m_details.forEach(detail -> sb.append(" * " + detail));
-            ex.addProperty("message", sb.toString());
+            ex.addProperty("message", createMessage(title, m_details));
         }
         m_additional.forEach(ex::addProperty);
     }

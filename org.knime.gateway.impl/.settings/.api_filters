@@ -138,6 +138,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/WorkflowManagerLoader.java" type="org.knime.gateway.impl.project.WorkflowManagerLoader">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.WorkflowManagerLoader"/>
+                <message_argument value="fetch(Origin, VersionId, SpaceProviders, ExecutionMonitor)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/project/WorkflowServiceProjects.java" type="org.knime.gateway.impl.project.WorkflowServiceProjects">
         <filter id="338792546">
             <message_arguments>
@@ -217,6 +225,18 @@
         </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/service/util/WorkflowChangesListener.java" type="org.knime.gateway.impl.service.util.WorkflowChangesListener">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.service.util.WorkflowChangesListener"/>
+                <message_argument value="addWorkflowChangeCallback(Runnable)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.service.util.WorkflowChangesListener"/>
+                <message_argument value="removeCallback(Runnable)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="notifyWorkflowListener(WorkflowEvent)"/>
@@ -250,6 +270,20 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.service.util.WorkflowManagerResolver"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/AppStateUpdater.java" type="org.knime.gateway.impl.webui.AppStateUpdater">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.AppStateUpdater"/>
+                <message_argument value="addAppStateChangedListener(Runnable)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.AppStateUpdater"/>
+                <message_argument value="removeAppStateChangedListener(Runnable)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -366,6 +400,14 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
                 <message_argument value="nodeCollections()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/AbstractKaiHandler.java" type="org.knime.gateway.impl.webui.kai.AbstractKaiHandler">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.AbstractKaiHandler"/>
+                <message_argument value="getEventConsumer(String)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1149,9 +1191,32 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultGatewayProblemDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt"/>
+                <message_argument value="DefaultGatewayProblemDescriptionEnt(String, String, Boolean, Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultGatewayProblemDescriptionEnt(String, String, Integer, List&lt;String&gt;, Boolean, Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultGatewayProblemDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt$DefaultGatewayProblemDescriptionEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setDetails(List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setStatus(Integer)"/>
             </message_arguments>
         </filter>
     </resource>

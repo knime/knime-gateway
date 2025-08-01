@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.service.util;
 
 import org.knime.gateway.api.service.GatewayException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,253 +60,250 @@ public final class ServiceExceptions {
     * If a Gateway service call failed for some reason.
     */
     public static class ServiceCallException extends GatewayException {
-        
-        public ServiceCallException(String message) {
-            super(false);
-            addProperty("message", message);
+
+        private static final long serialVersionUID = 1L;
+
+        private ServiceCallException(final int status, final String title, final List<String> details,
+            final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+            super(status, title, details, additionalProps, canCopy, cause);
         }
 
-        public ServiceCallException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
+        /**
+         * @return
+         */
+        public static NeedsTitle<ServiceCallException> builder() {
+            return new Builder<ServiceCallException>() {
+                @Override
+                public ServiceCallException build() {
+                    return new ServiceCallException(m_statusCode, m_title, m_details, m_additionalProps, m_canCopy, m_cause);
+                }
+            };
         }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public ServiceCallException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
     }
 
    /**
     * If a Gateway service call failed due to a network error.
     */
     public static class NetworkException extends GatewayException {
-        
-        public NetworkException(String message) {
-            super(false);
-            addProperty("message", message);
+
+        private static final long serialVersionUID = 1L;
+
+        private NetworkException(final int status, final String title, final List<String> details,
+            final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+            super(status, title, details, additionalProps, canCopy, cause);
         }
 
-        public NetworkException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
+        /**
+         * @return
+         */
+        public static NeedsTitle<NetworkException> builder() {
+            return new Builder<NetworkException>() {
+                @Override
+                public NetworkException build() {
+                    return new NetworkException(m_statusCode, m_title, m_details, m_additionalProps, m_canCopy, m_cause);
+                }
+            };
         }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public NetworkException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
     }
 
    /**
     * A description for a given node could not be determined.
     */
     public static class NodeDescriptionNotAvailableException extends GatewayException {
-        
-        public NodeDescriptionNotAvailableException(String message) {
-            super(false);
-            addProperty("message", message);
+
+        private static final long serialVersionUID = 1L;
+
+        private NodeDescriptionNotAvailableException(final int status, final String title, final List<String> details,
+            final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+            super(status, title, details, additionalProps, canCopy, cause);
         }
 
-        public NodeDescriptionNotAvailableException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
+        /**
+         * @return
+         */
+        public static NeedsTitle<NodeDescriptionNotAvailableException> builder() {
+            return new Builder<NodeDescriptionNotAvailableException>() {
+                @Override
+                public NodeDescriptionNotAvailableException build() {
+                    return new NodeDescriptionNotAvailableException(m_statusCode, m_title, m_details, m_additionalProps, m_canCopy, m_cause);
+                }
+            };
         }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public NodeDescriptionNotAvailableException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
     }
 
    /**
     * The requested node was not found.
     */
     public static class NodeNotFoundException extends GatewayException {
-        
-        public NodeNotFoundException(String message) {
-            super(false);
-            addProperty("message", message);
+
+        private static final long serialVersionUID = 1L;
+
+        private NodeNotFoundException(final int status, final String title, final List<String> details,
+            final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+            super(status, title, details, additionalProps, canCopy, cause);
         }
 
-        public NodeNotFoundException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
+        /**
+         * @return
+         */
+        public static NeedsTitle<NodeNotFoundException> builder() {
+            return new Builder<NodeNotFoundException>() {
+                @Override
+                public NodeNotFoundException build() {
+                    return new NodeNotFoundException(m_statusCode, m_title, m_details, m_additionalProps, m_canCopy, m_cause);
+                }
+            };
         }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public NodeNotFoundException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
     }
 
    /**
     * The requested element was not found.
     */
     public static class NoSuchElementException extends GatewayException {
-        
-        public NoSuchElementException(String message) {
-            super(false);
-            addProperty("message", message);
+
+        private static final long serialVersionUID = 1L;
+
+        private NoSuchElementException(final int status, final String title, final List<String> details,
+            final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+            super(status, title, details, additionalProps, canCopy, cause);
         }
 
-        public NoSuchElementException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
+        /**
+         * @return
+         */
+        public static NeedsTitle<NoSuchElementException> builder() {
+            return new Builder<NoSuchElementException>() {
+                @Override
+                public NoSuchElementException build() {
+                    return new NoSuchElementException(m_statusCode, m_title, m_details, m_additionalProps, m_canCopy, m_cause);
+                }
+            };
         }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public NoSuchElementException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
     }
 
    /**
     * The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
     */
     public static class NotASubWorkflowException extends GatewayException {
-        
-        public NotASubWorkflowException(String message) {
-            super(false);
-            addProperty("message", message);
+
+        private static final long serialVersionUID = 1L;
+
+        private NotASubWorkflowException(final int status, final String title, final List<String> details,
+            final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+            super(status, title, details, additionalProps, canCopy, cause);
         }
 
-        public NotASubWorkflowException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
+        /**
+         * @return
+         */
+        public static NeedsTitle<NotASubWorkflowException> builder() {
+            return new Builder<NotASubWorkflowException>() {
+                @Override
+                public NotASubWorkflowException build() {
+                    return new NotASubWorkflowException(m_statusCode, m_title, m_details, m_additionalProps, m_canCopy, m_cause);
+                }
+            };
         }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public NotASubWorkflowException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
     }
 
    /**
     * If the request is invalid for a reason.
     */
     public static class InvalidRequestException extends GatewayException {
-        
-        public InvalidRequestException(String message) {
-            super(false);
-            addProperty("message", message);
+
+        private static final long serialVersionUID = 1L;
+
+        private InvalidRequestException(final int status, final String title, final List<String> details,
+            final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+            super(status, title, details, additionalProps, canCopy, cause);
         }
 
-        public InvalidRequestException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
+        /**
+         * @return
+         */
+        public static NeedsTitle<InvalidRequestException> builder() {
+            return new Builder<InvalidRequestException>() {
+                @Override
+                public InvalidRequestException build() {
+                    return new InvalidRequestException(m_statusCode, m_title, m_details, m_additionalProps, m_canCopy, m_cause);
+                }
+            };
         }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public InvalidRequestException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
     }
 
    /**
     * If the an operation is not allowed, e.g., because it&#39;s not applicable.
     */
     public static class OperationNotAllowedException extends GatewayException {
-        
-        public OperationNotAllowedException(String message) {
-            super(false);
-            addProperty("message", message);
+
+        private static final long serialVersionUID = 1L;
+
+        private OperationNotAllowedException(final int status, final String title, final List<String> details,
+            final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+            super(status, title, details, additionalProps, canCopy, cause);
         }
 
-        public OperationNotAllowedException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
+        /**
+         * @return
+         */
+        public static NeedsTitle<OperationNotAllowedException> builder() {
+            return new Builder<OperationNotAllowedException>() {
+                @Override
+                public OperationNotAllowedException build() {
+                    return new OperationNotAllowedException(m_statusCode, m_title, m_details, m_additionalProps, m_canCopy, m_cause);
+                }
+            };
         }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public OperationNotAllowedException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
     }
 
    /**
     * If there was a collision, e.g. due to naming conflicts
     */
     public static class CollisionException extends GatewayException {
-        
-        public CollisionException(String message) {
-            super(false);
-            addProperty("message", message);
+
+        private static final long serialVersionUID = 1L;
+
+        private CollisionException(final int status, final String title, final List<String> details,
+            final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+            super(status, title, details, additionalProps, canCopy, cause);
         }
 
-        public CollisionException(String message, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            initCause(cause);
+        /**
+         * @return
+         */
+        public static NeedsTitle<CollisionException> builder() {
+            return new Builder<CollisionException>() {
+                @Override
+                public CollisionException build() {
+                    return new CollisionException(m_statusCode, m_title, m_details, m_additionalProps, m_canCopy, m_cause);
+                }
+            };
         }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public CollisionException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
     }
 
    /**
     * If a web request could not be authorized because the space provider isn&#39;t logged in
     */
     public static class LoggedOutException extends GatewayException {
-        
-        public LoggedOutException(String message, String spaceProviderId) {
-            super(false);
-            addProperty("message", message);
-            addProperty("spaceProviderId", spaceProviderId);
+
+        private static final long serialVersionUID = 1L;
+
+        private LoggedOutException(final int status, final String title, final List<String> details,
+            final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+            super(status, title, details, additionalProps, canCopy, cause);
         }
 
-        public LoggedOutException(String message, String spaceProviderId, Throwable cause) {
-            super(false);
-            addProperty("message", message);
-            addProperty("spaceProviderId", spaceProviderId);
-            initCause(cause);
+        /**
+         * @return
+         */
+        public static NeedsTitle<LoggedOutException> builder(final String spaceProviderId) {
+            return new Builder<LoggedOutException>() {
+                @Override
+                public LoggedOutException build() {
+                    withAdditionalProp("spaceProviderId", spaceProviderId);
+                    return new LoggedOutException(m_statusCode, m_title, m_details, m_additionalProps, m_canCopy, m_cause);
+                }
+            };
         }
-
-       /**
-        * "De-serialises" the exception from a gateway-problem-description properties. For testing purposes only.
-        */
-        public LoggedOutException(Map<String, String> gatewayProblemDescription) {
-            super(gatewayProblemDescription);
-        }
-
     }
-
-    
 }

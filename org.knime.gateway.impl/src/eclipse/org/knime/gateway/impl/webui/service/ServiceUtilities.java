@@ -103,7 +103,12 @@ final class ServiceUtilities {
             return org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeContainer(projectId, workflowId,
                versionId, nodeId);
         } catch (IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
+            throw NodeNotFoundException.builder() //
+                .withTitle("Failed to resolve node") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 
@@ -121,7 +126,12 @@ final class ServiceUtilities {
         try {
             return org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(wfKey);
         } catch (NoSuchElementException | IllegalArgumentException e) {
-            throw new NodeNotFoundException(e.getMessage(), e);
+            throw NodeNotFoundException.builder() //
+                .withTitle("Failed to resolve workflow") //
+                .withDetails(e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
         }
     }
 

@@ -48,8 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 
@@ -77,9 +75,7 @@ public interface WorkflowCommand {
      * @param wfKey references the workflow to execute the command for
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command didn't do any change to the workflow
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
+     * @throws ServiceCallException -
      */
     boolean execute(WorkflowKey wfKey) throws ServiceCallException;
 
@@ -88,19 +84,14 @@ public interface WorkflowCommand {
      * (on every/many workflow changes).
      *
      * @return {@code false} if the undo operation can't be carried out
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
-    boolean canUndo() ;
+    boolean canUndo();
 
     /**
      * Undoes this command. Guaranteed to be called only if {@link #execute(WorkflowKey)} has been called before
      * already.
      *
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
+     * @throws ServiceCallException -
      */
     void undo() throws ServiceCallException;
 
@@ -109,17 +100,12 @@ public interface WorkflowCommand {
      * (on every/many workflow changes).
      *
      * @return {@code false} if the redo operation can't be carried out
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
-    boolean canRedo() ;
+    boolean canRedo();
 
     /**
      * Re-does this command. Guaranteed to be called only if {@link #undo()} has been called before already.
      *
-     * @throws NetworkException
-     * @throws LoggedOutException
      * @throws ServiceCallException
      */
     void redo() throws ServiceCallException;

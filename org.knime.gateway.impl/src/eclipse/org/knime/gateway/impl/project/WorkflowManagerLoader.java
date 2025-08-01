@@ -65,7 +65,6 @@ import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
@@ -92,11 +91,8 @@ public interface WorkflowManagerLoader {
      *
      * @param version the version to load
      * @return the loaded instance, <code>null</code> if loading failed.
-     * @throws ServiceCallException -
-     * @throws LoggedOutException -
-     * @throws NetworkException -
      */
-    WorkflowManager load(final VersionId version) ;
+    WorkflowManager load(final VersionId version);
 
     /**
      * Utility to load a {@code WorkflowManager} instance from a given path.

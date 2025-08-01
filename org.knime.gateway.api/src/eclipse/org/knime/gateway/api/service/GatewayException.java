@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.api.service;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.util.CheckUtils;
 
 /**
  * Describes <b>"known"/"expected" exceptions</b>. As a superset of checked exceptions, "known" exceptions represent
@@ -77,30 +79,69 @@ public abstract class GatewayException extends Exception {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(GatewayException.class);
 
-    private static final Set<String> BUILT_IN_PROPERTIES = Set.of("status", "title", "details");
+    private static final String STATUS_KEY = "status";
+
+    private static final String TITLE_KEY = "title";
+
+    private static final String DETAILS_KEY = "details";
+
+    private static final Set<String> BUILT_IN_PROPERTIES = Set.of(STATUS_KEY, TITLE_KEY, DETAILS_KEY);
 
     private final Map<String, String> m_properties = new LinkedHashMap<>();
 
     private final boolean m_canCopy;
 
-    /**
-     * New instance to represent any known exceptions to be passed to FE.
-     *
-     * @param canCopy Boolean indicating whether exception properties can be copied.
-     */
-    protected GatewayException(final boolean canCopy) {
-        m_canCopy = canCopy;
+    private static String createMessage(final String title, final List<String> details) {
+        final var sb = new StringBuilder(title);
+        if (details != null) {
+            details.forEach(detail -> sb.append("\n * ").append(detail));
+        }
+        return sb.toString();
     }
 
     /**
-     * New {@code GatewayException} to represent de-serialised GatewayPoblemDescription schema. For testing purposes
-     * only.
      *
-     * @param properties -
+     * @param maps
+     * @return
+     * @since 5.6
      */
-    protected GatewayException(final Map<String, String> properties) {
-        m_properties.putAll(properties);
-        m_canCopy = Boolean.parseBoolean(m_properties.get("canCopy"));
+    protected static Map<String, String> merge(final Map<String, String>... maps) {
+        final Map<String, String> merged = new LinkedHashMap<>();
+        for (final var map : maps) {
+            if (map != null) {
+                merged.putAll(map);
+            }
+        }
+        return merged;
+    }
+
+    /**
+     * Creates an exception meant to be sent to the front end.
+     *
+     * @param status status code, {@code -1} if not applicable
+     * @param title issue title, not {@code null}
+     * @param details issue details, may be {@code null}
+     * @param additionalProps additional properties, may be {@code null}
+     * @param canCopy flag indicating whether the problem description is supposed to be copyable
+     * @param cause cause of the problem, may be {@code null}
+     * @since 5.6
+     */
+    protected GatewayException(final int status, final String title, final List<String> details,
+        final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
+        super(createMessage(title, details), cause);
+
+        // add the additional properties first so they are overwritten by the built-in ones
+        if (additionalProps != null) {
+            m_properties.putAll(additionalProps);
+        }
+
+        if (status >= 0) {
+            m_properties.put(STATUS_KEY, Integer.toString(status));
+        }
+        m_properties.put(TITLE_KEY, CheckUtils.checkArgumentNotNull(title));
+        m_properties.put(DETAILS_KEY, details == null ? ""
+            : details.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("\n")));
+        m_canCopy = canCopy;
     }
 
     /**
@@ -110,7 +151,7 @@ public abstract class GatewayException extends Exception {
      * @since 5.6
      */
     public OptionalInt getStatus() {
-        final var statusStr = m_properties.get("status");
+        final var statusStr = m_properties.get(STATUS_KEY);
         if (!StringUtils.isBlank(statusStr)) {
             try {
                 return OptionalInt.of(Integer.parseInt(statusStr));
@@ -127,7 +168,7 @@ public abstract class GatewayException extends Exception {
      * @return Exception title property if present or {@code null} if not present
      */
     public String getTitle() {
-        return m_properties.get("title");
+        return m_properties.get(TITLE_KEY);
     }
 
     /**
@@ -137,7 +178,8 @@ public abstract class GatewayException extends Exception {
      * @since 5.6
      */
     public List<String> getDetails() {
-        return m_properties.get("details").lines().toList();
+        final var detailsString = m_properties.get(DETAILS_KEY);
+        return StringUtils.isBlank(detailsString) ? List.of() : detailsString.lines().toList();
     }
 
     /**
@@ -147,11 +189,6 @@ public abstract class GatewayException extends Exception {
      */
     public boolean isCanCopy() {
         return m_canCopy;
-    }
-
-    @Override
-    public String getMessage() {
-        return m_properties.get("message");
     }
 
     /**
@@ -176,4 +213,104 @@ public abstract class GatewayException extends Exception {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    /**
+     *
+     *
+     * @since 5.6
+     */
+    public interface NeedsTitle<T extends GatewayException> {
+        NeedsDetails<T> withTitle(String title);
+    }
+
+    /**
+     *
+     *
+     * @since 5.6
+     */
+    public interface NeedsDetails<T extends GatewayException> {
+        NeedsCopyFlag<T> withDetails(Collection<String> details);
+        default NeedsCopyFlag<T> withDetails(final String... details) {
+            return withDetails(List.of(details));
+        }
+    }
+
+    /**
+     *
+     *
+     * @since 5.6
+     */
+    public interface NeedsCopyFlag<T extends GatewayException> {
+        FinalStage<T> canCopy(boolean canCopy);
+    }
+
+    /**
+     *
+     *
+     * @since 5.6
+     */
+    public interface FinalStage<T> {
+        FinalStage<T> withAdditionalProps(Map<String, String> additionalProps);
+        FinalStage<T> withAdditionalProp(String key, String value);
+        FinalStage<T> withStatusCode(int statusCode);
+        FinalStage<T> withCause(Throwable cause);
+        T build();
+    }
+
+    /**
+     * asd.
+     *
+     * @since 5.6
+     */
+    protected abstract static class Builder<T extends GatewayException>
+    implements NeedsTitle<T>, NeedsDetails<T>, NeedsCopyFlag<T>, FinalStage<T> {
+
+        protected int m_statusCode = -1;
+        protected String m_title;
+        protected List<String> m_details;
+        protected final Map<String, String> m_additionalProps = new LinkedHashMap<>();
+        protected boolean m_canCopy;
+        protected Throwable m_cause;
+
+        @Override
+        public NeedsDetails<T> withTitle(final String title) {
+            m_title = CheckUtils.checkArgumentNotNull(title);
+            return this;
+        }
+
+        @Override
+        public NeedsCopyFlag<T> withDetails(final Collection<String> details) {
+            m_details = List.copyOf(CheckUtils.checkArgumentNotNull(details));
+            return this;
+        }
+
+        @Override
+        public FinalStage<T> canCopy(final boolean canCopy) {
+            m_canCopy = canCopy;
+            return this;
+        }
+
+        @Override
+        public FinalStage<T> withAdditionalProp(final String key, final String value) {
+            m_additionalProps.put(key, value);
+            return this;
+        }
+
+        @Override
+        public FinalStage<T> withAdditionalProps(final Map<String, String> additionalProps) {
+            m_additionalProps.putAll(additionalProps);
+            return this;
+        }
+
+        @Override
+        public FinalStage<T> withStatusCode(final int statusCode) {
+            m_statusCode = statusCode;
+            return this;
+        }
+
+        @Override
+        public FinalStage<T> withCause(final Throwable cause) {
+            m_cause = cause;
+            return this;
+        }
+    }
 }

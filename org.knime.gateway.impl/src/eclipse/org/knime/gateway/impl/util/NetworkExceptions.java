@@ -117,9 +117,18 @@ public final class NetworkExceptions {
             return mapToNetworkException(cause, errorMessage);
         } catch (InterruptedException | CancellationException e) {
             Thread.currentThread().interrupt();
-            throw new NetworkException("The request was interrupted. ", e);
+            throw NetworkException.builder() //
+                .withTitle("Network call was interrupted") //
+                .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
+                .canCopy(false) //
+                .build();
         } catch (TimeoutException e) {
-            throw new NetworkException("The request timed out. " + errorMessage, e);
+            throw NetworkException.builder() //
+                .withTitle("Network call timed out") //
+                .withDetails() //
+                .canCopy(false) //
+                .withCause(e) //
+                .build();
         }
     }
 
@@ -130,14 +139,30 @@ public final class NetworkExceptions {
             throwableToInspect = throwable.getCause();
         }
         if (throwableToInspect instanceof ResourceAccessException) {
-            throw new NetworkException(message, throwableToInspect);
+            throw NetworkException.builder() //
+                .withTitle("Network call failed") //
+                .withDetails(throwableToInspect.getMessage()) //
+                .canCopy(true) //
+                .withCause(throwableToInspect) //
+                .build();
         }
+
         // Network-related exceptions such as the below may appear wrapped in runtime exceptions
-        if (throwableToInspect instanceof SocketException) {
-            throw new NetworkException(message + "No connection.", throwableToInspect);
+        if (throwableToInspect instanceof SocketException se) {
+            throw NetworkException.builder() //
+                .withTitle("Network connectivity problem") //
+                .withDetails(se.getClass().getSimpleName() + ": " + se.getMessage()) //
+                .canCopy(true) //
+                .withCause(se) //
+                .build();
         }
-        if (throwableToInspect instanceof UnknownHostException) {
-            throw new NetworkException(message + "Host could not be found.", throwableToInspect);
+        if (throwableToInspect instanceof UnknownHostException uhe) {
+            throw NetworkException.builder() //
+                .withTitle("Network connectivity problem") //
+                .withDetails(uhe.getMessage()) //
+                .canCopy(true) //
+                .withCause(uhe) //
+                .build();
         }
         throw throwable;
     }

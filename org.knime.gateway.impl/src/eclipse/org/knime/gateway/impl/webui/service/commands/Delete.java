@@ -146,8 +146,11 @@ final class Delete extends AbstractWorkflowCommand {
         Set<NodeID> nodesToDelete = m_nodeIdsQueried.stream()
             .map(id -> id.toNodeID(wfm)).collect(Collectors.toSet());
         if (!canRemoveAllNodes(wfm, nodesToDelete)) {
-            throw new ServiceCallException(
-                "Some nodes can't be deleted or don't exist. Delete operation aborted.");
+            throw ServiceCallException.builder() //
+                .withTitle("Delete operation aborted") //
+                .withDetails("Some nodes can't be deleted or don't exist.") //
+                .canCopy(false) //
+                .build();
         }
 
         // Connections are identified by their destination node ID and port. Connections to metanode outputs are
@@ -161,7 +164,11 @@ final class Delete extends AbstractWorkflowCommand {
             .map(wfm::getConnection).collect(Collectors.toCollection(HashSet::new));
 
         if (m_connectionsDeleted.size() != m_connectionIdsQueried.size()) {
-            throw new ServiceCallException("Some connections don't exist. Delete operation aborted.");
+            throw ServiceCallException.builder() //
+                .withTitle("Delete operation aborted") //
+                .withDetails("Some connections don't exist.") //
+                .canCopy(false) //
+                .build();
         }
 
         // add all connections that have a to-be-deleted-node as source _or_ destination (but _not_ both)
@@ -171,7 +178,11 @@ final class Delete extends AbstractWorkflowCommand {
         }
 
         if (!CoreUtil.canRemoveConnections(m_connectionsDeleted, wfm)) {
-            throw new ServiceCallException("Some connections can't be deleted. Delete operation aborted.");
+            throw ServiceCallException.builder() //
+                .withTitle("Delete operation aborted") //
+                .withDetails("Some connections can't be deleted.") //
+                .canCopy(false) //
+                .build();
         }
 
         var annotationIDsToDelete =
@@ -179,7 +190,11 @@ final class Delete extends AbstractWorkflowCommand {
                 .toArray(size -> new WorkflowAnnotationID[size]);
         WorkflowCopyContent content = createWorkflowCopyContent(nodesToDelete, annotationIDsToDelete);
         if (!checkThatAllWorkflowAnnotationsExist(wfm, content.getAnnotationIDs())) {
-            throw new ServiceCallException("Some workflow annotations don't exist. Delete operation aborted.");
+            throw ServiceCallException.builder() //
+                .withTitle("Delete operation aborted") //
+                .withDetails("Some workflow annotations don't exist.") //
+                .canCopy(false) //
+                .build();
         }
 
         m_copy = wfm.copy(true, content);

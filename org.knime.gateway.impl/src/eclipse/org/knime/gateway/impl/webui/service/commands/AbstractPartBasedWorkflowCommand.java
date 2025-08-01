@@ -72,7 +72,6 @@ import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -145,9 +144,12 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
 
         if (!(nodesNotFound.isEmpty() && annotationsNotFound.isEmpty() && connectionsNotFound.isEmpty()
             && bendpointsNotFound.isEmpty())) {
-            String message =
-                printMissingParts(nodesNotFound, annotationsNotFound, connectionsNotFound, bendpointsNotFound);
-            throw new ServiceExceptions.ServiceCallException(message);
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to execute command") //
+                .withDetails(
+                    printMissingParts(nodesNotFound, annotationsNotFound, connectionsNotFound, bendpointsNotFound)) //
+                .canCopy(true) //
+                .build();
         }
 
         m_partsChecked = true;

@@ -95,7 +95,11 @@ public class DefaultComponentService implements ComponentService {
         } else if ("retry".equals(action)) {
             componentLoader.rerunLoadJob(placeholderId);
         } else {
-            throw new ServiceCallException("Unknown action: " + action);
+            throw ServiceCallException.builder() //
+                .withTitle("Unknown action") //
+                .withDetails("Unknown component loading action: " + action) //
+                .canCopy(false) //
+                .build();
         }
     }
 
@@ -112,10 +116,18 @@ public class DefaultComponentService implements ComponentService {
                 return EntityFactory.Workflow.buildComponentNodeDescriptionEnt(snc);
             }
 
-            throw new ServiceCallException(
-                "No Component for " + projectId + ", " + workflowId + ", " + nodeId + " found.");
+            throw ServiceCallException.builder() //
+                .withTitle("Component not found") //
+                .withDetails("No Component for " + projectId + ", " + workflowId + ", " + nodeId + " found.") //
+                .canCopy(false) //
+                .build();
         } catch (NodeNotFoundException | IllegalArgumentException ex) {
-            throw new ServiceCallException("Could not get component description. " + ex.getMessage(), ex);
+            throw ServiceCallException.builder() //
+                .withTitle("Component description not found") //
+                .withDetails("Could not get component description. " + ex.getMessage()) //
+                .canCopy(true) //
+                .withCause(ex) //
+                .build();
         }
     }
 

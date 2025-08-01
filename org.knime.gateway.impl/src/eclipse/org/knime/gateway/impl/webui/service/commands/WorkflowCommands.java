@@ -248,8 +248,11 @@ public final class WorkflowCommands {
                 command = m_workflowCommandToExecute;
                 m_workflowCommandToExecute = null;
             } else {
-                throw new ServiceCallException("Command of type " + commandEnt.getClass().getSimpleName()
-                    + " cannot be executed. Unknown command.");
+                throw ServiceCallException.builder() //
+                    .withTitle("Unknown command") //
+                    .withDetails("Command of type " + commandEnt.getClass().getSimpleName() + " cannot be executed.") //
+                    .canCopy(true) //
+                    .build();
             }
         }
         return command;
@@ -315,7 +318,12 @@ public final class WorkflowCommands {
                 // Only set a snapshot id if there is a workflow change to wait for
                 latestSnapshotId = workflowMiddleware.getLatestSnapshotId(wfKey).orElse(null);
             } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
-                throw new ServiceCallException("Interrupted while waiting corresponding workflow change", e);
+                throw ServiceCallException.builder() //
+                    .withTitle("Command execution interrupted") //
+                    .withDetails("Interrupted while waiting corresponding workflow change") //
+                    .canCopy(true) //
+                    .withCause(e) //
+                    .build();
             }
         }
         return ((WithResult)command).buildEntity(latestSnapshotId);
@@ -348,7 +356,11 @@ public final class WorkflowCommands {
         if (undoStack != null && !undoStack.isEmpty()) {
             undoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_redoStacks)).undo();
         } else {
-            throw new ServiceCallException("No command to undo");
+            throw ServiceCallException.builder() //
+                .withTitle("No command to undo") //
+                .withDetails() //
+                .canCopy(false) //
+                .build();
         }
     }
 
@@ -380,7 +392,11 @@ public final class WorkflowCommands {
         if (redoStack != null && !redoStack.isEmpty()) {
             redoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_undoStacks)).redo();
         } else {
-            throw new ServiceCallException("No command to redo");
+            throw ServiceCallException.builder() //
+                .withTitle("No command to redo") //
+                .withDetails() //
+                .canCopy(false) //
+                .build();
         }
     }
 
