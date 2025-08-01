@@ -303,7 +303,7 @@ public final class WorkflowMiddleware {
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
         final PatchEntCreator patchEntCreator, final String snapshotId, final boolean includeInteractionInfo)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+         {
         var buildContextBuilder = WorkflowBuildContext.builder()//
             .includeInteractionInfo(includeInteractionInfo);
         final var ws = getWorkflowState(wfKey);

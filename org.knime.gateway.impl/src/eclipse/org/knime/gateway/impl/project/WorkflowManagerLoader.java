@@ -96,7 +96,7 @@ public interface WorkflowManagerLoader {
      * @throws LoggedOutException -
      * @throws NetworkException -
      */
-    WorkflowManager load(final VersionId version) throws ServiceCallException, LoggedOutException, NetworkException;
+    WorkflowManager load(final VersionId version) ;
 
     /**
      * Utility to load a {@code WorkflowManager} instance from a given path.

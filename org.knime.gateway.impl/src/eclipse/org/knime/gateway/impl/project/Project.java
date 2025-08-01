@@ -170,12 +170,8 @@ public final class Project {
      * Get the {@link WorkflowManager} from cache or load it
      *
      * @return The workflow manager of the project of the current state
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
-    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager() {
         return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(VersionId.currentState()));
     }
 
@@ -184,12 +180,9 @@ public final class Project {
      *
      * @param version The version id
      * @return The workflow manager of the project of a given {@link VersionId}.
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
     public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+         {
         return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version));
     }
 
@@ -269,8 +262,7 @@ public final class Project {
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    public void setWfmLoader(final WorkflowManagerLoader loader)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    public void setWfmLoader(final WorkflowManagerLoader loader) {
         var previousCache = m_projectWfmCache;
         if (previousCache.contains(VersionId.currentState())) {
             // for full generality one would have to carry over other cached instances too.

@@ -58,8 +58,6 @@ import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 
@@ -87,13 +85,13 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
     }
 
     @Override
-    public boolean canRedo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean canRedo()  {
         return getWorkflowManager().canCollapseNodesIntoMetaNode(getNodeIDs(), getAnnotationIDs()) == null;
     }
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         var wfm = getWorkflowManager();
         stream(getNodeIDs()).filter(wfm::canResetNode).forEach(wfm::resetAndConfigureNode);
 

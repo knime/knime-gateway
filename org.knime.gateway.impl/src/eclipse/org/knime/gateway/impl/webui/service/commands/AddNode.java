@@ -60,6 +60,7 @@ import java.util.Set;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.NodeRelationEnum;
 import org.knime.gateway.api.webui.entity.AddNodeResultEnt;
@@ -69,8 +70,6 @@ import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt.NodeFactoryKeyEntBuilder;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -108,7 +107,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, NetworkException, LoggedOutException {
+        throws ServiceCallException {
         var wfm = getWorkflowManager();
         // Add node
         var positionEnt = m_commandEnt.getPosition();
@@ -174,8 +173,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         }
     }
 
-    private URL getUrlFromSpaceItemReference(final SpaceItemReferenceEnt spaceItemId)
-        throws NetworkException, LoggedOutException, ServiceCallException {
+    private URL getUrlFromSpaceItemReference(final SpaceItemReferenceEnt spaceItemId) {
         final var spaceProviderId = spaceItemId.getProviderId();
         final var spaceId = spaceItemId.getSpaceId();
         final var itemId = spaceItemId.getItemId();
@@ -186,10 +184,8 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
             NodeLogger.getLogger(AddNode.class).warn("Failed to resolve item ID " + itemId
                 + " to URL in " + spaceProviderId, ex);
             return null;
-        } catch (MutableServiceCallException ex) {
-            final var sce = new ServiceCallException("Failed to construct URL of node to add", ex);
-            ex.copyContextTo(sce);
-            throw sce;
+        } catch (GatewayException | MutableServiceCallException ex) {
+            return null;
         }
     }
 

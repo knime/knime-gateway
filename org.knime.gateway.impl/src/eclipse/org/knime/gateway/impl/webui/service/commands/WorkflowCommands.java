@@ -329,7 +329,7 @@ public final class WorkflowCommands {
      * @throws ServiceCallException
      */
     public synchronized boolean canUndo(final WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+         {
         final var topCommand = Optional.ofNullable(m_undoStacks.get(wfKey)).flatMap(CommandStack::peek).orElse(null);
         return topCommand != null && topCommand.canUndo();
     }
@@ -361,8 +361,7 @@ public final class WorkflowCommands {
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    public synchronized boolean canRedo(final WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    public synchronized boolean canRedo(final WorkflowKey wfKey) {
         final var topCommand = Optional.ofNullable(m_redoStacks.get(wfKey)).flatMap(CommandStack::peek).orElse(null);
         return topCommand != null && topCommand.canRedo();
     }

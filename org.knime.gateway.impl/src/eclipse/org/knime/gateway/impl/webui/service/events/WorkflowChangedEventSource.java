@@ -132,8 +132,6 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     /**
      * {@inheritDoc}
-     * @throws NotASubWorkflowException
-     * @throws NodeNotFoundException
      * @throws NetworkException
      * @throws LoggedOutException
      * @throws ServiceCallException
@@ -142,14 +140,17 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     @SuppressWarnings("resource")
     @Override
     public Optional<CompositeEventEnt> addEventListenerAndGetInitialEventFor(
-        final WorkflowChangedEventTypeEnt wfEventType, final String projectId) throws ServiceCallException,
-        LoggedOutException, NetworkException, NodeNotFoundException, NotASubWorkflowException {
+        final WorkflowChangedEventTypeEnt wfEventType, final String projectId) {
         assertValidProjectId(projectId, wfEventType.getProjectId());
         assertProjectVersion(wfEventType.getProjectId(), VersionId.currentState());
         var workflowKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
         var workflowChangesListener = m_workflowMiddleware.getWorkflowChangesListener(workflowKey);
 
-        WorkflowUtil.assertWorkflowExists(workflowKey);
+        try {
+            WorkflowUtil.assertWorkflowExists(workflowKey);
+        } catch (NodeNotFoundException | NotASubWorkflowException ex) {
+            throw new IllegalArgumentException(ex.getMessage(), ex);
+        }
 
         // create very first changed event to be sent first (and thus catch up with the most recent
         // workflow version)

@@ -109,7 +109,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    private void checkPartsPresentElseThrow() throws ServiceCallException, LoggedOutException, NetworkException {
+    private void checkPartsPresentElseThrow() throws ServiceCallException {
         if (m_partsChecked) {
             return;
         }
@@ -202,7 +202,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
      * @throws ServiceCallException
      */
     protected final Set<NodeContainer> getNodeContainers()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         checkPartsPresentElseThrow();
         return stream(getNodeIDs()) //
             .map(id -> CoreUtil.getNodeContainer(id, getWorkflowManager()).orElseThrow()) //
@@ -217,7 +217,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
      * @throws ServiceCallException
      */
     protected final Set<WorkflowAnnotation> getAnnotations()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         checkPartsPresentElseThrow();
         return getAnnotations(getAnnotationIDs());
     }
@@ -244,8 +244,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
         return m_nodesQueried;
     }
 
-    protected final WorkflowAnnotationID[] getAnnotationIDs()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    protected final WorkflowAnnotationID[] getAnnotationIDs() {
         if (m_annotationsQueried == null) {
             final var idEnts = m_commandEnt.getAnnotationIds();
             m_annotationsQueried = new WorkflowAnnotationID[idEnts.size()];
@@ -257,8 +256,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
         return m_annotationsQueried;
     }
 
-    protected final Map<ConnectionID, List<Integer>> getBendpoints()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    protected final Map<ConnectionID, List<Integer>> getBendpoints() {
         if (m_bendpointsQueried == null) {
             if (m_commandEnt.getConnectionBendpoints() == null) {
                 m_bendpointsQueried = Map.of();

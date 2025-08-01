@@ -51,8 +51,6 @@ import java.util.function.Function;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -93,7 +91,7 @@ abstract class CommandIfElse extends HigherOrderCommand {
 
     @Override
     public Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException  {
         WorkflowManager wfm;
         try {
             wfm = WorkflowUtil.getWorkflowManager(wfKey);
@@ -111,22 +109,22 @@ abstract class CommandIfElse extends HigherOrderCommand {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         return m_activeCommand.execute(getWorkflowKey());
     }
 
     @Override
-    public void undo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public void undo() throws ServiceCallException {
         m_activeCommand.undo();
     }
 
     @Override
-    public boolean canUndo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean canUndo()  {
         return m_activeCommand.canUndo();
     }
 
     @Override
-    public boolean canRedo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean canRedo() {
         return m_activeCommand.canRedo();
     }
 }

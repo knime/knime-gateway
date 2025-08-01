@@ -52,8 +52,6 @@ import org.knime.core.node.workflow.AnnotationData.StyleRange;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeAnnotationData;
 import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 
@@ -89,7 +87,7 @@ class UpdateNodeLabel extends AbstractWorkflowCommand {
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         var nodeId = m_commandEnt.getNodeId();
         var nc = DefaultServiceUtil.getNodeContainer(getWorkflowKey().getProjectId(), nodeId);
         var newLabel = m_commandEnt.getLabel();

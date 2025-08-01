@@ -52,8 +52,6 @@ import java.util.Optional;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -97,7 +95,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException {
         m_wfKey = wfKey;
         WorkflowManager wfm;
         try {
@@ -117,7 +115,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public void undo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public void undo() throws ServiceCallException {
         var iterator = m_commands.listIterator(m_commands.size());
         while (iterator.hasPrevious()) {
             iterator.previous().undo();
@@ -125,12 +123,12 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public void redo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public void redo() throws ServiceCallException {
         execute(m_wfKey);
     }
 
     @Override
-    public boolean canUndo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean canUndo() {
         for (final var cmd : m_commands) {
             if (!cmd.canUndo()) {
                 return false;
@@ -140,7 +138,7 @@ abstract class CommandSequence extends HigherOrderCommand {
     }
 
     @Override
-    public boolean canRedo() throws ServiceCallException, LoggedOutException, NetworkException {
+    public boolean canRedo()  {
         for (final var cmd : m_commands) {
             if (!cmd.canRedo()) {
                 return false;

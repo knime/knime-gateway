@@ -97,7 +97,7 @@ public final class DefaultServiceUtil {
      * @throws NoSuchElementException if there is no project for the id registered
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt nodeId)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        {
         return findNodeContainer(getProjectWfm(projectId), nodeId);
     }
 
@@ -117,7 +117,7 @@ public final class DefaultServiceUtil {
      */
     public static NodeContainer getNodeContainer(final String projectId, final VersionId versionId,
         final NodeIDEnt nodeId)
-        throws NoSuchElementException, ServiceCallException, LoggedOutException, NetworkException {
+        throws NoSuchElementException {
         var parent = WorkflowManagerResolver.get(projectId, versionId);
         return findNodeContainer(parent, nodeId);
     }
@@ -141,7 +141,7 @@ public final class DefaultServiceUtil {
 
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
-        final NodeIDEnt nodeInSubWorkflow) throws ServiceCallException, LoggedOutException, NetworkException {
+        final NodeIDEnt nodeInSubWorkflow)  {
         var subWorkflow = WorkflowManagerResolver.get(projectId, subWorkflowId);
         return findNodeContainer(subWorkflow, nodeInSubWorkflow);
     }
@@ -164,7 +164,7 @@ public final class DefaultServiceUtil {
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
         final VersionId versionId, final NodeIDEnt nodeInSubWorkflow)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+         {
         var subWorkflow = WorkflowManagerResolver.get(projectId, subWorkflowId, versionId);
         return findNodeContainer(subWorkflow, nodeInSubWorkflow);
     }
@@ -180,7 +180,7 @@ public final class DefaultServiceUtil {
      * @throws ServiceCallException
      */
     public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+         {
         return WorkflowManagerResolver.get(projectId, workflowId, VersionId.currentState());
     }
 
@@ -194,7 +194,7 @@ public final class DefaultServiceUtil {
      * @throws ServiceCallException
      * @since 5.5
      */
-    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) throws ServiceCallException, LoggedOutException, NetworkException {
+    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)  {
         return WorkflowManagerResolver.get(wfKey.getProjectId(),  wfKey.workflowId(), wfKey.getVersionId());
     }
 
@@ -213,7 +213,7 @@ public final class DefaultServiceUtil {
      */
     @SuppressWarnings("javadoc")
     public static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final String rootWorkflowID,
-        final NodeIDEnt nodeID) throws ServiceCallException, LoggedOutException, NetworkException {
+        final NodeIDEnt nodeID)  {
         return Pair.create( //
             getProjectWfm(rootWorkflowID), //
             getNodeContainer(rootWorkflowID, nodeID) //
@@ -232,7 +232,7 @@ public final class DefaultServiceUtil {
      * @throws ServiceCallException
      */
     public static NodeID entityToNodeID(final String projectId, final NodeIDEnt nodeID)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+         {
         return nodeID.toNodeID(getProjectWfm(projectId));
     }
 
@@ -247,7 +247,7 @@ public final class DefaultServiceUtil {
      * @throws ServiceCallException
      */
     public static WorkflowAnnotationID entityToAnnotationID(final String rootWorkflowID,
-        final AnnotationIDEnt annotationID) throws ServiceCallException, LoggedOutException, NetworkException {
+        final AnnotationIDEnt annotationID)  {
         var nodeID = entityToNodeID(rootWorkflowID, annotationID.getNodeIDEnt());
         return new WorkflowAnnotationID(nodeID, annotationID.getIndex());
     }
@@ -263,7 +263,7 @@ public final class DefaultServiceUtil {
      * @throws ServiceCallException
      */
     public static ConnectionID entityToConnectionID(final String rootWorkflowID, final ConnectionIDEnt connectionID)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+         {
         return new ConnectionID(entityToNodeID(rootWorkflowID, connectionID.getDestNodeIDEnt()),
             connectionID.getDestPortIdx());
     }
@@ -288,7 +288,7 @@ public final class DefaultServiceUtil {
      *             successors or the provided action is unknown
      */
     public static void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final String action,
-        final NodeIDEnt... nodeIdEnts) throws ServiceCallException, LoggedOutException, NetworkException {
+        final NodeIDEnt... nodeIdEnts)  {
         NodeID[] nodeIDs = null;
         var wfm = WorkflowManagerResolver.get(projectId, workflowId); // No version is needed.
         if (nodeIdEnts != null && nodeIdEnts.length != 0) {
@@ -318,7 +318,7 @@ public final class DefaultServiceUtil {
      * @throws ServiceCallException
      */
     public static NodeContainer changeNodeState(final String projectId, final NodeIDEnt nodeId, final String action)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+         {
         var nc = getNodeContainer(projectId, nodeId);
         if (nc instanceof SubNodeContainer subNodeContainer) {
             doChangeNodeStates(subNodeContainer.getWorkflowManager(), action);

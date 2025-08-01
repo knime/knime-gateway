@@ -55,9 +55,6 @@ import org.knime.core.util.LRUCache;
 import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.util.Lazy;
 
 /**
@@ -105,8 +102,7 @@ class ProjectWfmCache {
         }
     }
 
-    WorkflowManager getWorkflowManager(final VersionId version)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    WorkflowManager getWorkflowManager(final VersionId version) {
         if (version instanceof VersionId.Fixed fixedVersion) {
             if (m_wfmLoader == null) {
                 throw new IllegalArgumentException(
@@ -125,18 +121,8 @@ class ProjectWfmCache {
         } else {
             try {
                 return m_currentState.get();
-            } catch (GatewayException ex) {
-                if (ex instanceof ServiceCallException sce) {
-                    throw sce;
-                } else if (ex instanceof LoggedOutException loe) {
-                    throw loe;
-                } else if (ex instanceof NetworkException ne) {
-                    throw ne;
-                } else {
-                    throw new IllegalStateException(
-                        "Unexpected exception type (%s): %s".formatted(ex.getClass().getSimpleName(), ex.getMessage()),
-                        ex);
-                }
+            } catch (GatewayException e) {
+                throw new RuntimeException(e);
             }
         }
     }

@@ -85,7 +85,6 @@ import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.FileUtil;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.AddNodeCommandEnt.AddNodeCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.CollapseCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.ContainerTypeEnum;
@@ -403,12 +402,8 @@ public class WorkflowCommandsTest extends GatewayServiceTest {
         AtomicInteger eventConsumerCalls = new AtomicInteger();
         EventConsumer eventConsumer = (n, e) -> {
             eventConsumerCalls.addAndGet(1);
-            try {
-                commands.canRedo(wfKey);
-                commands.canUndo(wfKey);
-            } catch (GatewayException ex) {
-                throw new IllegalStateException(ex);
-            }
+            commands.canRedo(wfKey);
+            commands.canUndo(wfKey);
         };
         ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
         ServiceDependencies.setServiceDependency(WorkflowMiddleware.class, workflowMiddleware);

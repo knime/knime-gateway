@@ -74,8 +74,6 @@ import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.StatusEnum;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsResultEnt.UpdateLinkedComponentsResultEntBuilder;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -113,7 +111,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
     @Override
     protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         if (m_nodeIdEnts.isEmpty()) {
             throw new ServiceCallException("No component IDs passed for <%s>".formatted(getWorkflowKey()));
         }
@@ -180,7 +178,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     private static List<SubNodeContainer> getLinkedComponents(final List<NodeIDEnt> nodeIdEnts,
-        final WorkflowKey wfKey) throws ServiceCallException, LoggedOutException, NetworkException {
+        final WorkflowKey wfKey) {
         final List<SubNodeContainer> linked = new ArrayList<>();
         for (final var nodeIdEnt : nodeIdEnts) {
             if (DefaultServiceUtil.getNodeContainer(wfKey.getProjectId(), nodeIdEnt) instanceof SubNodeContainer snc

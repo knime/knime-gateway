@@ -90,17 +90,16 @@ abstract class HigherOrderCommand extends AbstractWorkflowCommand implements Wit
      * @throws ServiceCallException
      */
     protected abstract Optional<WithResult> preExecuteToGetResultProvidingCommand(WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException;
+        throws ServiceCallException;
 
     /**
      * @param wfKey represents the workflow this command operates on
      * @return {@code true} if this higher-order command returns a result, otherwise {@code false}
-     * @throws NetworkException
      * @throws LoggedOutException
      * @throws ServiceCallException
      */
     final boolean preExecuteToDetermineWhetherProvidesResult(final WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         m_resultProvidingCommand = preExecuteToGetResultProvidingCommand(wfKey).orElse(null);
         if (m_resultProvidingCommand instanceof HigherOrderCommand hoc) {
             m_resultProvidingCommand = hoc.preExecuteToGetResultProvidingCommand(wfKey).orElse(null);
