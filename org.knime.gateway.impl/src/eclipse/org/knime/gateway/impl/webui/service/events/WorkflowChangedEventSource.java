@@ -53,12 +53,10 @@ import static org.knime.gateway.impl.service.util.DefaultServiceUtil.assertProje
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.function.FailableRunnable;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.service.GatewayException;
@@ -68,11 +66,8 @@ import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBui
 import org.knime.gateway.api.webui.entity.ProjectDirtyStateEventEnt.ProjectDirtyStateEventEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.CallThrottle.CallState;
 import org.knime.gateway.impl.service.util.PatchEntCreator;
@@ -88,8 +83,6 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz
  */
 public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEventTypeEnt, CompositeEventEnt> {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowChangedEventSource.class);
 
     private final WorkflowMiddleware m_workflowMiddleware;
 
@@ -109,7 +102,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         super(eventConsumer);
         m_workflowMiddleware = workflowMiddleware;
         m_projectManager = projectManager;
-        m_projectManager.addProjectRemovedListener(projectId -> extracted(projectId));
+        m_projectManager.addProjectRemovedListener(this::extracted);
     }
 
     private void extracted(final String projectId) {
@@ -132,10 +125,6 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     /**
      * {@inheritDoc}
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
-     * @throws NoSuchElementException
      */
     @SuppressWarnings("resource")
     @Override
@@ -170,7 +159,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
                 workflowChangesListener.addWorkflowChangeCallback(callback);
                 return callback;
             } catch (GatewayException ex) {
-                throw ExceptionUtils.asRuntimeException(ex); // TODO
+                throw ExceptionUtils.asRuntimeException(ex); // TODO exception handling
             }
         });
 
