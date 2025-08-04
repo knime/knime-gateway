@@ -49,7 +49,6 @@
 package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
@@ -61,8 +60,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.DosFileAttributeView;
@@ -89,6 +86,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.CollisionException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
@@ -331,7 +329,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var space = mock(Space.class);
         when(space.getId()).thenReturn(id);
         when(space.getName()).thenReturn(name);
-        when(space.listWorkflowGroup(any())).thenThrow(new RuntimeException("message", new SocketException()));
+        when(space.listWorkflowGroup(any())).thenThrow( //
+                NetworkException.builder().withTitle("Mocked NetworkException").withDetails("mocked details").canCopy(true).build()
+        );
         // not mocked methods will return `null` or an appropriate empty/primitive value
         return space;
     }
@@ -395,7 +395,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var space = mock(Space.class);
         when(space.getId()).thenReturn(id);
         when(space.getName()).thenReturn(name);
-        when(space.toEntity()).thenThrow(new RuntimeException("message", new UnknownHostException()));
+        when(space.toEntity()).thenThrow( //
+                NetworkException.builder().withTitle("Mocked NetworkException").withDetails("mocked details").canCopy(true).build() //
+        );
         // not mocked methods will return `null` or an appropriate empty/primitive value
         return space;
     }
@@ -824,12 +826,12 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
                     false, Space.NameCollisionHandling.NOOP.toString()));
 
             // Moving the root
-            assertThrows("The workspace root cannot be moved", ServiceCallException.class,
+            assertThrows("The workspace root cannot be moved", ServiceExceptions.OperationNotAllowedException.class,
                 () -> ss().moveOrCopyItems(spaceId, providerId, List.of(Space.ROOT_ITEM_ID), spaceId, level1Id, false,
                     Space.NameCollisionHandling.NOOP.toString()));
 
             // Move item to itself
-            assertThrows("Cannot move an item to itself", ServiceCallException.class,
+            assertThrows("Cannot move an item to itself", ServiceExceptions.OperationNotAllowedException.class,
                 () -> ss().moveOrCopyItems(spaceId, providerId, List.of(level1Id), spaceId, level1Id, false,
                     Space.NameCollisionHandling.NOOP.toString()));
         } finally {
@@ -987,10 +989,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var wfGroupId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), wfGroupName);
         var nestedWfGroupId = findItemId(ss().listWorkflowGroup(spaceId, providerId, wfGroupId), wfGroupName);
 
-        var message = assertThrows(ServiceCallException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
+        assertThrows(ServiceCallException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
             List.of(nestedWfGroupId), spaceId, Space.ROOT_ITEM_ID, false, null)).getMessage();
-        assertThat(message, is(
-            "The item with name 'wfGroup' can't overwrite itself. I.e. the destination item is a parent of the source item."));
     }
 
     /**

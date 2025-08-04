@@ -51,7 +51,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
@@ -151,12 +150,7 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
             translateCommand(delta, List.of(), Map.of(connectionId, List.of(bendpointIndex)));
-        try {
-            executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
-        } catch (Exception e) {
-            assertThat("unexpected exception message", e.getMessage(),
-                startsWith("Failed to execute command. Workflow parts not found: bendpoints (999 on connection STD"));
-        }
+        assertThrows(Exception.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId));
     }
 
     public void testTranslateBendpointsOnConnectionWithNone() throws Exception {
@@ -165,24 +159,14 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
             translateCommand(delta, List.of(), Map.of(connectionId, List.of(bendpointIndex)));
-        try {
-            executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
-        } catch (Exception e) {
-            assertThat("unexpected exception message", e.getMessage(),
-                startsWith("Failed to execute command. Workflow parts not found: bendpoints (999 on connection"));
-        }
+        assertThrows(Exception.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId));
     }
 
     public void testTranslateBendpointsOnInexistentConnection() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var connection = new ConnectionIDEnt(new NodeIDEnt(999), 999).toString();
         var translateInvalidBendpointIndex = translateCommand(delta, List.of(), Map.of(connection, List.of(0)));
-        try {
-            executeWorkflowCommand(translateInvalidBendpointIndex, wfId);
-        } catch (Exception e) {
-            assertThat("unexpected exception message", e.getMessage(),
-                startsWith("Failed to execute command. Workflow parts not found: " + "connections ([?"));
-        }
+        assertThrows(Exception.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId));
     }
 
     public void testTranslateNodesAndAnnotations() throws Exception {

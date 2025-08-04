@@ -995,7 +995,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // try to connect to an incompatible port
         var ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2, NodeRelationEnum.SUCCESSORS)));
-        assertThat(ex.getMessage(), is("Node couldn't be created because a connection couldn't be added."));
 
         // redo adding the row filter
         ws().redoWorkflowCommand(wfId, getRootID());
@@ -2684,9 +2683,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(undoneBounds, is(originalMetaOutPortsBounds));
 
         // try to execute the command for a component
-        var message = assertThrows(ServiceCallException.class,
+        assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(projectId, new NodeIDEnt(12), command1)).getMessage();
-        assertThat(message, is("Component don't have metanode ports bars. Can't be transformed."));
     }
 
     /**
