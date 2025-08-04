@@ -1,0 +1,13 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="render(type)">
+    <g transform="translate(20, 0)" th:with="backgroundColor=${colors.nodeBackgroundColors.get(type)}, black=${colors.knimeColors.Black}">
+      <rect th:if="${backgroundColor != null}"
+        x="1" y="5" rx="1" ry="1" width="4" height="4"
+        th:fill="${backgroundColor}" />
+      <path d="M7.5 3H9.5V8H6.5" th:stroke="${black}" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M4 8H2V3H5" th:stroke="${black}" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M4 1.5L5.5 3L4 4.5" th:stroke="${black}" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M7.5 9.5L6 8L7.5 6.5" th:stroke="${black}" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+  </th:block>
+</svg>

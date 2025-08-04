@@ -1,0 +1,13 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="render">
+    <path th:attr="transform='translate(21, 21)', 
+      d='M0.5,5.5 h1 m2,0 h1 m2,0 h1.2 M5.80957 2.40625L8.90332 5.5L5.80957 8.59375',
+      fill='none',
+      stroke=${colors.streamingDecorator},
+      stroke-linecap='round',
+      stroke-linejoin='round'" />
+    
+    <!--/* Inside of streaming components an x is used on the canvas to indicate non-streamable nodes.
+           Since we are only providing previews for top level items this does not need to be rendered here. */-->
+  </th:block>
+</svg>

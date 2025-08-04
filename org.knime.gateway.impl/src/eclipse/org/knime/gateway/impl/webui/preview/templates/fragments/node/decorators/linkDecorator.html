@@ -1,0 +1,14 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="render(type)">
+    <g transform="translate(0, 21)" th:with="backgroundColor=${type == null ? null : colors.nodeBackgroundColors.get(type)}">
+      
+      <!--/* Colored Background. This makes sure the arrow is well visible even if it overlaps with the node icon */-->
+      <rect th:if="${backgroundColor != null}"
+        x="5" y="0" rx="1" ry="1" width="6" height="6" th:fill="${backgroundColor}" />
+        
+      <!--/* Arrow symbol. On the canvas we denote also broken, up to date or outdated status with the arrow, 
+             in the preview this status cannot be determined, so we always show the same symbol */-->
+      <path d="M2.43 8.57L9.5 1.5M5 1.5L9.5 1.5L9.5 6" fill="none" stroke-linejoin="round" th:stroke="${colors.linkDecorator}" />
+    </g>
+  </th:block>
+</svg>
