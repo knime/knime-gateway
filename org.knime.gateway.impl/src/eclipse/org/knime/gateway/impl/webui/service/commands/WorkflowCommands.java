@@ -144,7 +144,7 @@ public final class WorkflowCommands {
      * @throws ServiceCallException
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         return execute(wfKey, commandEnt, null, null, null);
     }
 
@@ -166,7 +166,7 @@ public final class WorkflowCommands {
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
-        final SpaceProviders spaceProviders) throws ServiceCallException, LoggedOutException, NetworkException {
+        final SpaceProviders spaceProviders) throws ServiceCallException  {
         var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders, workflowMiddleware);
 
         var hasResult = hasCommandResult(wfKey, command);
@@ -259,7 +259,7 @@ public final class WorkflowCommands {
     }
 
     private static boolean hasCommandResult(final WorkflowKey wfKey, final WorkflowCommand command)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         if (command instanceof WithResult) {
             var hasResult = true;
             if (command instanceof HigherOrderCommand hoc) {
@@ -282,7 +282,7 @@ public final class WorkflowCommands {
     }
 
     private synchronized void executeCommandAndModifyCommandStacks(final WorkflowKey wfKey,
-        final WorkflowCommand command) throws ServiceCallException, LoggedOutException, NetworkException {
+        final WorkflowCommand command) throws ServiceCallException {
         var undoStack = getOrCreateCommandStackFor(wfKey, m_undoStacks);
         var redoStack = getOrCreateCommandStackFor(wfKey, m_redoStacks);
 
@@ -351,7 +351,7 @@ public final class WorkflowCommands {
      * @throws ServiceCallException
      */
     public synchronized void undo(final WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         var undoStack = m_undoStacks.get(wfKey);
         if (undoStack != null && !undoStack.isEmpty()) {
             undoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_redoStacks)).undo();
@@ -387,7 +387,7 @@ public final class WorkflowCommands {
      * @throws ServiceCallException
      */
     public synchronized void redo(final WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException {
         var redoStack = m_redoStacks.get(wfKey);
         if (redoStack != null && !redoStack.isEmpty()) {
             redoStack.getHeadAndTransferTo(getOrCreateCommandStackFor(wfKey, m_undoStacks)).redo();

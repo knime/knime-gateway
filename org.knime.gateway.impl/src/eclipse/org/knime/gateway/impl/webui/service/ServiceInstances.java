@@ -131,7 +131,7 @@ public final class ServiceInstances {
                 return new LazyInitializer<S>() {
 
                     @Override
-                    protected S initialize() throws ConcurrentException {
+                    protected S initialize() {
                         try {
                             return defaultServiceClass.getDeclaredConstructor().newInstance();
                         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException

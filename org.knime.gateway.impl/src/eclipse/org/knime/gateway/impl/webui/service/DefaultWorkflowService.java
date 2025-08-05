@@ -166,8 +166,7 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(final String projectId, final NodeIDEnt workflowId)
-        throws ServiceCallException, LoggedOutException, NetworkException, NodeNotFoundException,
-        NotASubWorkflowException, InvalidRequestException {
+        throws NodeNotFoundException, NotASubWorkflowException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var wfKey = new WorkflowKey(projectId, workflowId);
         final var wfm = WorkflowUtil.getWorkflowManager(wfKey);
@@ -185,8 +184,7 @@ public final class DefaultWorkflowService implements WorkflowService {
                 })//
                 .toList();
         } catch (IllegalStateException | InterruptedException e) { // NOSONAR
-            throw InvalidRequestException.builder()
-                .withTitle("Could not retrieve linked components") //
+            throw InvalidRequestException.builder().withTitle("Could not retrieve linked components") //
                 .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
                 .canCopy(true) //
                 .withCause(e) //
@@ -195,7 +193,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public void saveProject(final String projectId) throws ServiceCallException, ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException {
+    public void saveProject(final String projectId)
+        throws ServiceCallException, ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException {
         if (DefaultServiceContext.getProjectId().isEmpty()) {
             // only to be called from browser environment and this value is only set in browser environment
             NodeLogger.getLogger(DefaultWorkflowService.class)
@@ -212,7 +211,6 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-
     public void disposeVersion(final String projectId, final String versionParameter) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         m_projectManager.getProject(projectId)
@@ -222,7 +220,7 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
-        final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException, LoggedOutException, NetworkException {
+        final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         var spaceProviders = m_spaceProvidersManager == null ? null : //
@@ -235,16 +233,14 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-    public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
     }
 
     @Override
-    public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
@@ -263,7 +259,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     private static final class SaveProjectHelper {
 
         private static WorkflowManager assertIsWorkflowProjectAndNotExecting(final String projectId)
-            throws ServiceCallException, LoggedOutException, NetworkException {
+            throws ServiceCallException {
             var wfm = WorkflowManagerResolver.get(projectId);
             if (wfm.isComponentProjectWFM()) {
                 throw ServiceCallException.builder() //
@@ -289,8 +285,7 @@ public final class DefaultWorkflowService implements WorkflowService {
         /**
          * TODO NXT-3634: Headless save until we can provide proper UI; de-duplicate from SaveProject (NOSONAR)
          */
-        private static WorkflowContextV2 saveToDisk(final WorkflowManager wfm)
-            throws ServiceCallException {
+        private static WorkflowContextV2 saveToDisk(final WorkflowManager wfm) throws ServiceCallException {
             final var context = wfm.getContextV2();
             var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
 
@@ -327,8 +322,8 @@ public final class DefaultWorkflowService implements WorkflowService {
 
             final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
             final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
-                    .map(mgr -> mgr.getSpaceProviders(key)) //
-                    .orElseThrow();
+                .map(mgr -> mgr.getSpaceProviders(key)) //
+                .orElseThrow();
             final var spaceProvider = spaceProviders.getAllSpaceProviders().stream().findFirst().orElseThrow();
             try {
                 final var space = spaceProvider.getSpace(hubInfo.getSpaceItemId());

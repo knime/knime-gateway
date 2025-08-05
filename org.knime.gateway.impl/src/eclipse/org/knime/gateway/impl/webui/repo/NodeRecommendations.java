@@ -116,7 +116,7 @@ public class NodeRecommendations {
     public List<NodeTemplateEnt> getNodeRecommendations(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final Integer portIdx, final Integer nodesLimit, final NodeRelation nodeRelation,
         final Boolean fullTemplateInfo)
-        throws OperationNotAllowedException, ServiceCallException, LoggedOutException, NetworkException {
+        throws OperationNotAllowedException  {
         if (!m_nodeRecommendationManagerIsInitialized) {
             m_nodeRecommendationManagerIsInitialized = initializeNodeRecommendationManager(m_nodeRepo);
         }

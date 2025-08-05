@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.function.FailableRunnable;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.EntityBuilderManager;
@@ -154,13 +153,9 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         m_workflowChangesCallbacks.computeIfAbsent(workflowKey, wfKey -> {
             var latestSnapshotId =
                 workflowChangedEvent == null ? wfEventType.getSnapshotId() : workflowChangedEvent.getSnapshotId();
-            try {
-                final var callback = createWorkflowChangesCallback(workflowKey, new PatchEntCreator(latestSnapshotId));
-                workflowChangesListener.addWorkflowChangeCallback(callback);
-                return callback;
-            } catch (GatewayException ex) {
-                throw ExceptionUtils.asRuntimeException(ex); // TODO exception handling
-            }
+            final var callback = createWorkflowChangesCallback(workflowKey, new PatchEntCreator(latestSnapshotId));
+            workflowChangesListener.addWorkflowChangeCallback(callback);
+            return callback;
         });
 
         if (workflowChangedEvent == null) {
@@ -174,7 +169,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
     }
 
     private FailableRunnable<GatewayException> createWorkflowChangesCallback(final WorkflowKey wfKey,
-        final PatchEntCreator patchEntCreator) throws GatewayException {
+        final PatchEntCreator patchEntCreator)  {
 
         // No version needed, only current state
         var wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId());
@@ -227,7 +222,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      *         argument
      * @throws GatewayException
      */
-    public boolean checkWorkflowChangesListenerCallbackState(final CallState state) throws GatewayException {
+    public boolean checkWorkflowChangesListenerCallbackState(final CallState state)  {
         for (final var k : m_workflowChangesCallbacks.keySet()) {
             if (m_workflowMiddleware.getWorkflowChangesListener(k).getCallState() == state) {
                 return true;

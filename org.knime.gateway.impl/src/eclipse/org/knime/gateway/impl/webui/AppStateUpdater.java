@@ -52,9 +52,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang3.function.FailableRunnable;
-import org.knime.core.node.NodeLogger;
-import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
@@ -72,9 +69,7 @@ import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
  */
 public final class AppStateUpdater {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(AppStateUpdater.class);
-
-    private final Set<FailableRunnable<GatewayException>> m_listeners = new HashSet<>();
+    private final Set<Runnable> m_listeners = new HashSet<>();
 
     private AppStateEnt m_lastAppState;
 
@@ -97,11 +92,7 @@ public final class AppStateUpdater {
      */
     public void updateAppState() {
         for (final var listener : m_listeners) {
-            try {
-                listener.run();
-            } catch (GatewayException ex) {
-                LOGGER.error(ex);
-            }
+            listener.run();
         }
     }
 
@@ -111,7 +102,7 @@ public final class AppStateUpdater {
      * @param callback The callback to be called with the new application state
      * @since 5.6
      */
-    public void addAppStateChangedListener(final FailableRunnable<GatewayException> callback) {
+    public void addAppStateChangedListener(final Runnable callback) {
         m_listeners.add(callback);
     }
 
@@ -121,7 +112,7 @@ public final class AppStateUpdater {
      * @param callback The callback to be removed from the set of listeners.
      * @since 5.6
      */
-    public void removeAppStateChangedListener(final FailableRunnable<GatewayException> callback) {
+    public void removeAppStateChangedListener(final Runnable callback) {
         m_listeners.remove(callback);
     }
 

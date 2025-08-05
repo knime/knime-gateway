@@ -59,7 +59,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowEvent;
@@ -408,18 +407,11 @@ public final class WorkflowMiddleware {
      */
     @SuppressWarnings("java:S1130") // `GatewayException` is actually thrown sneakily from the mapping function
     private WorkflowState getWorkflowState(final WorkflowKey wfKey) {
-        return m_workflowStateCache.computeIfAbsent(wfKey, k -> {
-            try {
-                return createWorkflowStateAndEventuallyClearCache(k);
-            } catch (GatewayException ex) {
-                // thrown through `ConcurrentHashMap#computeIfAbsent(...)` and out of the surrounding method
-                throw ExceptionUtils.asRuntimeException(ex);
-            }
-        });
+        return m_workflowStateCache.computeIfAbsent(wfKey, this::createWorkflowStateAndEventuallyClearCache);
     }
 
     private WorkflowState createWorkflowStateAndEventuallyClearCache(final WorkflowKey wfKey)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+         {
 
         final String projectId = wfKey.getProjectId();
         final var wfm = WorkflowManagerResolver.load(projectId, wfKey.getWorkflowId(), wfKey.getVersionId());
