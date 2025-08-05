@@ -53,9 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.function.FailableRunnable;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -75,7 +73,7 @@ public final class WorkflowMonitorStateChangedEventSource
 
     // In a multi-user scenario we will need to keep track of the callbacks
     // per 'user/client' instead of per workflow - see NXT-2599
-    private final Map<String, FailableRunnable<GatewayException>> m_workflowChangeCallbacks = new HashMap<>();
+    private final Map<String, Runnable> m_workflowChangeCallbacks = new HashMap<>();
 
     /**
      * @param eventConsumer
@@ -109,9 +107,9 @@ public final class WorkflowMonitorStateChangedEventSource
         return Optional.ofNullable(initialEvent);
     }
 
-    private FailableRunnable<GatewayException> createChangeCallback(final String projectId, final WorkflowKey wfKey,
+    private Runnable createChangeCallback(final String projectId, final WorkflowKey wfKey,
         final PatchEntCreator patchEntCreator) {
-        FailableRunnable<GatewayException> callback = () -> {
+        Runnable callback = () -> {
             var event = m_workflowMiddleware.buildWorkflowMonitorStateChangeEventEnt(wfKey,
                 patchEntCreator.getLastSnapshotId(), patchEntCreator);
             if (event != null) {

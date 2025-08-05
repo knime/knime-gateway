@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.function.FailableRunnable;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.EntityBuilderManager;
 import org.knime.gateway.api.service.GatewayException;
@@ -87,7 +86,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     // In a multi-user scenario we will need to keep track of the callbacks
     // per 'user/client' instead of per workflow - see NXT-2599
-    private final Map<WorkflowKey, FailableRunnable<GatewayException>> m_workflowChangesCallbacks = new HashMap<>();
+    private final Map<WorkflowKey, Runnable> m_workflowChangesCallbacks = new HashMap<>();
 
     private final ProjectManager m_projectManager;
 
@@ -168,7 +167,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         }
     }
 
-    private FailableRunnable<GatewayException> createWorkflowChangesCallback(final WorkflowKey wfKey,
+    private Runnable createWorkflowChangesCallback(final WorkflowKey wfKey,
         final PatchEntCreator patchEntCreator)  {
 
         // No version needed, only current state

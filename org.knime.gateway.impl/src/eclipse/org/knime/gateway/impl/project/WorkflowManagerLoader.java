@@ -133,7 +133,7 @@ public interface WorkflowManagerLoader {
         final ExecutionMonitor monitor) {
         try {
             return space.toLocalAbsolutePath(monitor, origin.itemId(), version);
-        } catch (CanceledExecutionException | NetworkException | LoggedOutException // TODO
+        } catch (CanceledExecutionException | NetworkException | LoggedOutException
                 | MutableServiceCallException e) {
             NodeLogger.getLogger(WorkflowManagerLoader.class).error(e);
             return Optional.empty();

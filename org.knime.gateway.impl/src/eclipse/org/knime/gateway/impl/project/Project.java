@@ -54,9 +54,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.VersionId;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
  * A workflow or component project.
@@ -258,9 +255,6 @@ public final class Project {
      * TODO NXT-3607 Projects can be immutable (NOSONAR)
      *
      * @param loader -
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
     public void setWfmLoader(final WorkflowManagerLoader loader) {
         var previousCache = m_projectWfmCache;

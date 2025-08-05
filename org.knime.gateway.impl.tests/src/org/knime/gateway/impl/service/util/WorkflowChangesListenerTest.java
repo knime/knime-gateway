@@ -60,7 +60,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang3.function.FailableRunnable;
 import org.awaitility.Awaitility;
 import org.awaitility.Duration;
 import org.junit.Test;
@@ -72,7 +71,6 @@ import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener.Scope;
 import org.knime.testing.node.SourceNodeTestFactory;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -98,11 +96,11 @@ public class WorkflowChangesListenerTest {
 
         assertThat(workflowChangesListener.m_isListening, is(false));
 
-        FailableRunnable<GatewayException> callback = () -> {
+        Runnable callback = () -> {
         };
         workflowChangesListener.addWorkflowChangeCallback(callback);
         assertThat(workflowChangesListener.m_isListening, is(true));
-        FailableRunnable<GatewayException> callback2 = () -> {
+        Runnable callback2 = () -> {
         };
         workflowChangesListener.addWorkflowChangeCallback(callback2);
         assertThat(workflowChangesListener.m_isListening, is(true));
@@ -136,12 +134,10 @@ public class WorkflowChangesListenerTest {
         var wfm = createEmptyWorkflow();
 
         var workflowChangesListener = new WorkflowChangesListener(wfm, Set.of(Scope.EVERYTHING), false);
-        var callback = mock(FailableRunnable.class);
+        var callback = mock(Runnable.class);
         workflowChangesListener.addWorkflowChangeCallback(callback);
 
-        modifyWorkflowAndVerifyCallback(wfm, callback, mod -> switch (mod) {
-            default -> true;
-        });
+        modifyWorkflowAndVerifyCallback(wfm, callback, mod -> true);
 
         disposeWorkflow(wfm);
     }
@@ -157,7 +153,7 @@ public class WorkflowChangesListenerTest {
         var wfm = createEmptyWorkflow();
 
         var workflowChangesListener = new WorkflowChangesListener(wfm, Set.of(Scope.NODE_MESSAGES), false);
-        var callback = mock(FailableRunnable.class);
+        var callback = mock(Runnable.class);
         workflowChangesListener.addWorkflowChangeCallback(callback);
 
         modifyWorkflowAndVerifyCallback(wfm, callback, mod -> {
@@ -172,7 +168,7 @@ public class WorkflowChangesListenerTest {
     }
 
     private static void modifyWorkflowAndVerifyCallback(final WorkflowManager wfm,
-        final FailableRunnable<GatewayException> callbackMock, final Predicate<Modification> callbackExpected) {
+        final Runnable callbackMock, final Predicate<Modification> callbackExpected) {
         var annoId = wfm.addWorkflowAnnotation(new AnnotationData(), 0).getID();
         verify(callbackMock, callbackExpected.test(Modification.OTHER));
         wfm.removeAnnotation(annoId);
@@ -204,7 +200,7 @@ public class WorkflowChangesListenerTest {
         verify(callbackMock, callbackExpected.test(Modification.REMOVE_NODE));
     }
 
-    private static void verify(final FailableRunnable<GatewayException> callbackMock, final boolean callbackExpected) {
+    private static void verify(final Runnable callbackMock, final boolean callbackExpected) {
         Awaitility.await().atMost(Duration.FIVE_SECONDS)
             .untilAsserted(() -> Mockito.verify(callbackMock, callbackExpected ? atLeast(1) : times(0)).run());
         Mockito.clearInvocations(callbackMock);
@@ -235,24 +231,16 @@ public class WorkflowChangesListenerTest {
 
         var workflowChangesListenerRecursive = new WorkflowChangesListener(wfm, Set.of(Scope.EVERYTHING), true);
         var workflowChangesListenerNonRecursive = new WorkflowChangesListener(wfm, Set.of(Scope.EVERYTHING), false);
-        var callbackRecursive = mock(FailableRunnable.class);
-        var callbackNonRecursive = mock(FailableRunnable.class);
+        var callbackRecursive = mock(Runnable.class);
+        var callbackNonRecursive = mock(Runnable.class);
         workflowChangesListenerRecursive.addWorkflowChangeCallback(callbackRecursive);
         workflowChangesListenerNonRecursive.addWorkflowChangeCallback(callbackNonRecursive);
 
-        modifyWorkflowAndVerifyCallback(metanode, callbackNonRecursive, mod -> switch (mod) {
-            default -> false;
-        });
-        modifyWorkflowAndVerifyCallback(metanode, callbackRecursive, mod -> switch (mod) {
-            default -> true;
-        });
+        modifyWorkflowAndVerifyCallback(metanode, callbackNonRecursive, mod -> false);
+        modifyWorkflowAndVerifyCallback(metanode, callbackRecursive, mod -> true);
 
-        modifyWorkflowAndVerifyCallback(componentWfm, callbackNonRecursive, mod -> switch (mod) {
-            default -> false;
-        });
-        modifyWorkflowAndVerifyCallback(componentWfm, callbackRecursive, mod -> switch (mod) {
-            default -> true;
-        });
+        modifyWorkflowAndVerifyCallback(componentWfm, callbackNonRecursive, mod -> false);
+        modifyWorkflowAndVerifyCallback(componentWfm, callbackRecursive, mod -> true);
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }

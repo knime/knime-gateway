@@ -65,9 +65,6 @@ import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.WorkflowKey;
@@ -90,9 +87,6 @@ public final class DefaultServiceUtil {
      * @param projectId id of the root workflow (project)
      * @param nodeId the id of the actual node
      * @return the node container
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no project for the id registered
      */
@@ -108,9 +102,6 @@ public final class DefaultServiceUtil {
      * @param versionId the version of the project
      * @param nodeId the id of the actual node
      * @return the node container
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no project for the id registered
      * @since 5.5
@@ -131,9 +122,6 @@ public final class DefaultServiceUtil {
      * @param subWorkflowId the id of the sub workflow
      * @param nodeInSubWorkflow the id of the node in the sub workflow
      * @return the node container, never null
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      * @throws NoSuchElementException if there is no workflow manager for the id registered
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
@@ -154,9 +142,6 @@ public final class DefaultServiceUtil {
      * @param versionId the version of the project
      * @param nodeInSubWorkflow the id of the node in the sub workflow
      * @return the node container, never null
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      * @throws NoSuchElementException if there is no workflow manager for the id registered
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
@@ -175,9 +160,6 @@ public final class DefaultServiceUtil {
      * @param projectId -
      * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
      * @return -
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
     public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId)
          {
@@ -189,9 +171,6 @@ public final class DefaultServiceUtil {
      *
      * @param wfKey identifying the {@link WorkflowManager} instance
      * @return -
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      * @since 5.5
      */
     public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)  {
@@ -205,9 +184,6 @@ public final class DefaultServiceUtil {
      * @param rootWorkflowID the id of the root workflow
      * @param nodeID the id of the node requested
      * @return a pair of {@link WorkflowManager} and {@link NodeContainer} instances
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no root workflow for the given root workflow id
      */
@@ -227,9 +203,6 @@ public final class DefaultServiceUtil {
      * @param nodeID the node id entity
      *
      * @return the {@link NodeID} instance
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
     public static NodeID entityToNodeID(final String projectId, final NodeIDEnt nodeID)
          {
@@ -242,9 +215,6 @@ public final class DefaultServiceUtil {
      * @param rootWorkflowID id of the root(!) workflow the annotations belongs to
      * @param annotationID the annotation id entity to convert
      * @return the {@link WorkflowAnnotationID} instance
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
     public static WorkflowAnnotationID entityToAnnotationID(final String rootWorkflowID,
         final AnnotationIDEnt annotationID)  {
@@ -258,9 +228,6 @@ public final class DefaultServiceUtil {
      * @param rootWorkflowID id of the workflow the connection belongs to
      * @param connectionID the id entity to convert
      * @return the {@link ConnectionID} instance
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
     public static ConnectionID entityToConnectionID(final String rootWorkflowID, final ConnectionIDEnt connectionID)
          {
@@ -278,9 +245,6 @@ public final class DefaultServiceUtil {
      *            level (i.e. all must have the same prefix). If no node ids are given, the state of the workflow itself
      *            (referenced by projectId and workflowId) is changed.
      *
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      * @throws NoSuchElementException if there is no workflow for the given root workflow id
      * @throws IllegalArgumentException if the is no node for one of the given node ids or the given node ids don't
      *             refer to the same workflow level (i.e. don't have the exact same prefix)
@@ -313,9 +277,6 @@ public final class DefaultServiceUtil {
      * @param nodeId the id of the node to change the state for
      * @param action the action to change the node state; 'reset', 'cancel' or 'execute'
      * @return the node the state has been changed for
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      */
     public static NodeContainer changeNodeState(final String projectId, final NodeIDEnt nodeId, final String action)
          {
