@@ -104,8 +104,8 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
     }
 
     @Override
-    public Optional<CompositeEventEnt> addEventListenerAndGetInitialEventFor(
-        final AppStateChangedEventTypeEnt eventTypeEnt, final String projectId) {
+    public Optional<CompositeEventEnt>
+        addEventListenerAndGetInitialEventFor(final AppStateChangedEventTypeEnt eventTypeEnt, final String projectId) {
         Runnable appStateChangedListener = this::checkForAppStateChangeAndSendEvent;
         m_appStateUpdater.addAppStateChangedListener(appStateChangedListener);
         m_removeAppStateChangedListener =
@@ -129,7 +129,7 @@ public class AppStateChangedEventSource extends EventSource<AppStateChangedEvent
         }
     }
 
-    private void handleProgressEvent(final ProgressEvent progressEvent)  {
+    private void handleProgressEvent(final ProgressEvent progressEvent) {
         if (progressEvent.isDone()) {
             checkForAppStateChangeAndSendEvent();
         }

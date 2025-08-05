@@ -90,8 +90,7 @@ public final class DefaultServiceUtil {
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws NoSuchElementException if there is no project for the id registered
      */
-    public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt nodeId)
-        {
+    public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt nodeId) {
         return findNodeContainer(getProjectWfm(projectId), nodeId);
     }
 
@@ -107,8 +106,7 @@ public final class DefaultServiceUtil {
      * @since 5.5
      */
     public static NodeContainer getNodeContainer(final String projectId, final VersionId versionId,
-        final NodeIDEnt nodeId)
-        throws NoSuchElementException {
+        final NodeIDEnt nodeId) throws NoSuchElementException {
         var parent = WorkflowManagerResolver.get(projectId, versionId);
         return findNodeContainer(parent, nodeId);
     }
@@ -126,10 +124,10 @@ public final class DefaultServiceUtil {
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
-
+     * 
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
-        final NodeIDEnt nodeInSubWorkflow)  {
+        final NodeIDEnt nodeInSubWorkflow) {
         var subWorkflow = WorkflowManagerResolver.get(projectId, subWorkflowId);
         return findNodeContainer(subWorkflow, nodeInSubWorkflow);
     }
@@ -148,8 +146,7 @@ public final class DefaultServiceUtil {
      *             or the workflow is encrypted
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
-        final VersionId versionId, final NodeIDEnt nodeInSubWorkflow)
-         {
+        final VersionId versionId, final NodeIDEnt nodeInSubWorkflow) {
         var subWorkflow = WorkflowManagerResolver.get(projectId, subWorkflowId, versionId);
         return findNodeContainer(subWorkflow, nodeInSubWorkflow);
     }
@@ -161,8 +158,7 @@ public final class DefaultServiceUtil {
      * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
      * @return -
      */
-    public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId)
-         {
+    public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
         return WorkflowManagerResolver.get(projectId, workflowId, VersionId.currentState());
     }
 
@@ -173,8 +169,8 @@ public final class DefaultServiceUtil {
      * @return -
      * @since 5.5
      */
-    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)  {
-        return WorkflowManagerResolver.get(wfKey.getProjectId(),  wfKey.workflowId(), wfKey.getVersionId());
+    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) {
+        return WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.workflowId(), wfKey.getVersionId());
     }
 
     /**
@@ -189,7 +185,7 @@ public final class DefaultServiceUtil {
      */
     @SuppressWarnings("javadoc")
     public static Pair<WorkflowManager, NodeContainer> getRootWfmAndNc(final String rootWorkflowID,
-        final NodeIDEnt nodeID)  {
+        final NodeIDEnt nodeID) {
         return Pair.create( //
             getProjectWfm(rootWorkflowID), //
             getNodeContainer(rootWorkflowID, nodeID) //
@@ -204,8 +200,7 @@ public final class DefaultServiceUtil {
      *
      * @return the {@link NodeID} instance
      */
-    public static NodeID entityToNodeID(final String projectId, final NodeIDEnt nodeID)
-         {
+    public static NodeID entityToNodeID(final String projectId, final NodeIDEnt nodeID) {
         return nodeID.toNodeID(getProjectWfm(projectId));
     }
 
@@ -217,7 +212,7 @@ public final class DefaultServiceUtil {
      * @return the {@link WorkflowAnnotationID} instance
      */
     public static WorkflowAnnotationID entityToAnnotationID(final String rootWorkflowID,
-        final AnnotationIDEnt annotationID)  {
+        final AnnotationIDEnt annotationID) {
         var nodeID = entityToNodeID(rootWorkflowID, annotationID.getNodeIDEnt());
         return new WorkflowAnnotationID(nodeID, annotationID.getIndex());
     }
@@ -229,8 +224,7 @@ public final class DefaultServiceUtil {
      * @param connectionID the id entity to convert
      * @return the {@link ConnectionID} instance
      */
-    public static ConnectionID entityToConnectionID(final String rootWorkflowID, final ConnectionIDEnt connectionID)
-         {
+    public static ConnectionID entityToConnectionID(final String rootWorkflowID, final ConnectionIDEnt connectionID) {
         return new ConnectionID(entityToNodeID(rootWorkflowID, connectionID.getDestNodeIDEnt()),
             connectionID.getDestPortIdx());
     }
@@ -252,7 +246,7 @@ public final class DefaultServiceUtil {
      *             successors or the provided action is unknown
      */
     public static void changeNodeStates(final String projectId, final NodeIDEnt workflowId, final String action,
-        final NodeIDEnt... nodeIdEnts)  {
+        final NodeIDEnt... nodeIdEnts) {
         NodeID[] nodeIDs = null;
         var wfm = WorkflowManagerResolver.get(projectId, workflowId); // No version is needed.
         if (nodeIdEnts != null && nodeIdEnts.length != 0) {
@@ -278,8 +272,7 @@ public final class DefaultServiceUtil {
      * @param action the action to change the node state; 'reset', 'cancel' or 'execute'
      * @return the node the state has been changed for
      */
-    public static NodeContainer changeNodeState(final String projectId, final NodeIDEnt nodeId, final String action)
-         {
+    public static NodeContainer changeNodeState(final String projectId, final NodeIDEnt nodeId, final String action) {
         var nc = getNodeContainer(projectId, nodeId);
         if (nc instanceof SubNodeContainer subNodeContainer) {
             doChangeNodeStates(subNodeContainer.getWorkflowManager(), action);

@@ -90,7 +90,7 @@ abstract class CommandIfElse extends HigherOrderCommand {
 
     @Override
     public Optional<WithResult> preExecuteToGetResultProvidingCommand(final WorkflowKey wfKey)
-        throws ServiceCallException  {
+        throws ServiceCallException {
         WorkflowManager wfm;
         try {
             wfm = WorkflowUtil.getWorkflowManager(wfKey);
@@ -112,8 +112,7 @@ abstract class CommandIfElse extends HigherOrderCommand {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         return m_activeCommand.execute(getWorkflowKey());
     }
 
@@ -123,7 +122,7 @@ abstract class CommandIfElse extends HigherOrderCommand {
     }
 
     @Override
-    public boolean canUndo()  {
+    public boolean canUndo() {
         return m_activeCommand.canUndo();
     }
 

@@ -298,8 +298,7 @@ public final class LocalSpace implements Space {
     }
 
     @Override
-    public void deleteItems(final List<String> itemIds, final boolean softDelete)
-        throws MutableServiceCallException {
+    public void deleteItems(final List<String> itemIds, final boolean softDelete) throws MutableServiceCallException {
 
         // Check if the root is part of the IDs
         if (itemIds.contains(Space.ROOT_ITEM_ID)) {
@@ -366,9 +365,10 @@ public final class LocalSpace implements Space {
                 .formatted(ex.getClass().getSimpleName(), ex.getMessage())), true, ex);
         }
         if (isExistingDifferentFile) {
-            throw new MutableServiceCallException(List.of(
-                "There already exists a %s with that name. Pick a different name or rename the other item first."
-                .formatted(getReadableFileType(destinationPath))), false, null);
+            throw new MutableServiceCallException(List
+                .of("There already exists a %s with that name. Pick a different name or rename the other item first."
+                    .formatted(getReadableFileType(destinationPath))),
+                false, null);
         }
 
         // Otherwise, we are either changing case or have no collision.
@@ -448,7 +448,6 @@ public final class LocalSpace implements Space {
 
     /**
      * @throws MutableServiceCallException
-     * @throws IOException
      * @see this#resolveWithNameCollisions(Path, String, NameCollisionHandling, Supplier)
      */
     private Path resolveWithNameCollisions(final String parentId, final Path filePath,
@@ -462,8 +461,8 @@ public final class LocalSpace implements Space {
     /**
      * Resolve the given {@code fileName} against the given {@code parentPath}, resolving name collisions as according
      * to {@code requestedStrategy}
+     * 
      * @throws MutableServiceCallException
-     * @throws IOException
      */
     @SuppressWarnings("java:S1151")
     private Path resolveWithNameCollisions(final Path parentPath, final String fileName,
@@ -522,8 +521,8 @@ public final class LocalSpace implements Space {
         try {
             tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
         } catch (IOException ex) {
-            throw new MutableServiceCallException(List.of("Could not create temp directory: " + ex.getMessage()),
-                true, ex);
+            throw new MutableServiceCallException(List.of("Could not create temp directory: " + ex.getMessage()), true,
+                ex);
         }
 
         final var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
@@ -564,8 +563,8 @@ public final class LocalSpace implements Space {
             if (topLevelContents.length != 1) {
                 final List<String> items = Arrays.stream(topLevelContents).map(File::getName).toList();
                 throw new MutableServiceCallException(
-                    List.of("Expected '%s' to have a single root folder, found %s".formatted(source, items)),
-                    false, null);
+                    List.of("Expected '%s' to have a single root folder, found %s".formatted(source, items)), false,
+                    null);
             }
             return topLevelContents[0];
         } catch (final IOException ex) {
@@ -625,8 +624,8 @@ public final class LocalSpace implements Space {
 
         if (Files.exists(destPath)) {
             throw new MutableServiceCallException(
-                List.of("Attempting to overwrite '%s', name collision handling went wrong.".formatted(destPath)),
-                false, null);
+                List.of("Attempting to overwrite '%s', name collision handling went wrong.".formatted(destPath)), false,
+                null);
         }
 
         if (copy) {
@@ -641,7 +640,7 @@ public final class LocalSpace implements Space {
 
         try {
             try { // NOSONAR
-                // Moving within the same file system, simple move can be applied
+                  // Moving within the same file system, simple move can be applied
                 return Files.move(srcPath, destPath, StandardCopyOption.ATOMIC_MOVE);
             } catch (final AtomicMoveNotSupportedException e) { // NOSONAR no need to log or rethrow
                 // Moving across different file systems, simple move isn't possible
@@ -764,8 +763,8 @@ public final class LocalSpace implements Space {
             .filter(id -> !m_spaceItemPathAndTypeCache.containsKey(id))//
             .collect(Collectors.joining(", "));
         if (!unknownItemIds.isEmpty()) {
-            throw new MutableServiceCallException(List.of(String.format("Unknown item ids: %s", unknownItemIds)),
-                false, null);
+            throw new MutableServiceCallException(List.of(String.format("Unknown item ids: %s", unknownItemIds)), false,
+                null);
         }
     }
 
@@ -794,10 +793,10 @@ public final class LocalSpace implements Space {
 
         if (detail != null) {
             throw OperationNotAllowedException.builder() //
-            .withTitle("Invalid name") //
-            .withDetails(detail) //
-            .canCopy(false) //
-            .build();
+                .withTitle("Invalid name") //
+                .withDetails(detail) //
+                .canCopy(false) //
+                .build();
         }
     }
 
@@ -840,8 +839,6 @@ public final class LocalSpace implements Space {
      */
     public Optional<Pair<IPath, Collision>> checkForCollision(final String workflowGroupId, final IPath path,
         final TypeEnum newItemType) throws MutableServiceCallException {
-        // TODO set context in callers
-
         var currentId = workflowGroupId; // NOSONAR: assignment is useful
         var current = getAbsolutePath(workflowGroupId);
         var currentType = getItemType(workflowGroupId);

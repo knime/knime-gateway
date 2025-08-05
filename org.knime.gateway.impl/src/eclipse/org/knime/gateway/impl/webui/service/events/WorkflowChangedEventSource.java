@@ -126,8 +126,8 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      */
     @SuppressWarnings("resource")
     @Override
-    public Optional<CompositeEventEnt> addEventListenerAndGetInitialEventFor(
-        final WorkflowChangedEventTypeEnt wfEventType, final String projectId) {
+    public Optional<CompositeEventEnt>
+        addEventListenerAndGetInitialEventFor(final WorkflowChangedEventTypeEnt wfEventType, final String projectId) {
         assertValidProjectId(projectId, wfEventType.getProjectId());
         assertProjectVersion(wfEventType.getProjectId(), VersionId.currentState());
         var workflowKey = new WorkflowKey(wfEventType.getProjectId(), wfEventType.getWorkflowId());
@@ -167,8 +167,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         }
     }
 
-    private Runnable createWorkflowChangesCallback(final WorkflowKey wfKey,
-        final PatchEntCreator patchEntCreator)  {
+    private Runnable createWorkflowChangesCallback(final WorkflowKey wfKey, final PatchEntCreator patchEntCreator) {
 
         // No version needed, only current state
         var wfm = WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.getWorkflowId());
@@ -221,7 +220,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      *         argument
      * @throws GatewayException
      */
-    public boolean checkWorkflowChangesListenerCallbackState(final CallState state)  {
+    public boolean checkWorkflowChangesListenerCallbackState(final CallState state) {
         for (final var k : m_workflowChangesCallbacks.keySet()) {
             if (m_workflowMiddleware.getWorkflowChangesListener(k).getCallState() == state) {
                 return true;

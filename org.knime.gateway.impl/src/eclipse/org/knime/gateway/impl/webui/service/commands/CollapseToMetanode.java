@@ -78,10 +78,10 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
     public void undo() throws ServiceExceptions.ServiceCallException {
         if (!m_metaNodeCollapseResult.canUndo()) {
             throw ServiceCallException.builder() //
-            .withTitle("Can't undo metanode creation") //
-            .withDetails() //
-            .canCopy(false) //
-            .build();
+                .withTitle("Can't undo metanode creation") //
+                .withDetails() //
+                .canCopy(false) //
+                .build();
         }
 
         m_metaNodeCollapseResult.undo();
@@ -89,13 +89,12 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
     }
 
     @Override
-    public boolean canRedo()  {
+    public boolean canRedo() {
         return getWorkflowManager().canCollapseNodesIntoMetaNode(getNodeIDs(), getAnnotationIDs()) == null;
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
         stream(getNodeIDs()).filter(wfm::canResetNode).forEach(wfm::resetAndConfigureNode);
 

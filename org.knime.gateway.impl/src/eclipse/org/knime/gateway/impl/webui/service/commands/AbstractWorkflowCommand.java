@@ -89,7 +89,7 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
     }
 
     @Override
-    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException  {
+    public boolean execute(final WorkflowKey wfKey) throws ServiceCallException {
         try {
             m_wfm = WorkflowUtil.getWorkflowManager(wfKey);
         } catch (NodeNotFoundException | NotASubWorkflowException ex) {
@@ -112,8 +112,7 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
         }
     }
 
-    private boolean executeWithWorkflowLockAndContextInternal()
-        throws ServiceCallException {
+    private boolean executeWithWorkflowLockAndContextInternal() throws ServiceCallException {
         NodeContext.pushContext(m_wfm);
         try (WorkflowLock lock = m_wfm.lock()) {
             return executeWithWorkflowLockAndContext();
@@ -150,8 +149,7 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
      * @throws LoggedOutException
      * @throws ServiceCallException If the command could not be executed
      */
-    protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException  {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -169,12 +167,12 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
     }
 
     @Override
-    public boolean canUndo()  {
+    public boolean canUndo() {
         return true;
     }
 
     @Override
-    public boolean canRedo()  {
+    public boolean canRedo() {
         return true;
     }
 

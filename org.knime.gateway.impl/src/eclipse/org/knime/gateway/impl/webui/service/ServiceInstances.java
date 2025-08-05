@@ -165,7 +165,7 @@ public final class ServiceInstances {
             } catch (ConcurrentException ex) {
                 throw new IllegalStateException(ex);
             } catch (GatewayException ex) {
-                LOGGER.error(ex); // TODO
+                LOGGER.error("Could not dispose service instance", ex);
             }
         });
         SERVICE_INITIALIZERS.clear();

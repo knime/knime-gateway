@@ -106,7 +106,7 @@ class ProjectWfmCache {
         if (version instanceof VersionId.Fixed fixedVersion) {
             if (m_wfmLoader == null) {
                 throw new IllegalArgumentException(
-                        "No workflow loader set for this project (required for dynamically loading some version)");
+                    "No workflow loader set for this project (required for dynamically loading some version)");
             }
 
             // TODO is this unsynchronized not-quite-LRU map the right class to use?

@@ -51,11 +51,8 @@ package org.knime.gateway.impl.webui;
 import java.util.NoSuchElementException;
 
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 
@@ -78,15 +75,12 @@ public final class WorkflowUtil {
      *
      * @param wfKey
      * @return the workflow manager
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      * @throws NoSuchElementException
      * @throws NodeNotFoundException
      * @throws NotASubWorkflowException
      */
-    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) throws NoSuchElementException,
-         NodeNotFoundException, NotASubWorkflowException {
+    public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)
+        throws NoSuchElementException, NodeNotFoundException, NotASubWorkflowException {
         WorkflowManager wfm;
         try {
             // No version needed, only current state
@@ -117,13 +111,10 @@ public final class WorkflowUtil {
      * @param wfKey
      * @throws NotASubWorkflowException
      * @throws NodeNotFoundException
-     * @throws NetworkException
-     * @throws LoggedOutException
-     * @throws ServiceCallException
      * @throws NoSuchElementException
      */
-    public static void assertWorkflowExists(final WorkflowKey wfKey) throws NoSuchElementException,
-         NodeNotFoundException, NotASubWorkflowException {
+    public static void assertWorkflowExists(final WorkflowKey wfKey)
+        throws NoSuchElementException, NodeNotFoundException, NotASubWorkflowException {
         getWorkflowManager(wfKey);
     }
 
