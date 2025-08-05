@@ -4,7 +4,7 @@
       th:attrappend="data-node-id=${node.id}">
       <th:block th:insert="fragments/node/nodeLabel :: nodeLabel(node=${node})" />
       <th:block th:insert="fragments/node/torso/nodeTorso :: nodeTorso(
-          type=${type}, kind=${{node.kind}}, icon=${nodeUtils.getNodeIcon(node)}
+          type=${type}, kind=${{node.kind}}, icon=${nodeUtils.getNodeIcon(node)}, executionState=${node.state == null ? null : node.state.executionState}
           )" />
       <th:block th:insert="fragments/node/decorators/nodeDecorators :: render(${node}, ${type}, ${{node.kind}})" />
       <th:block th:if="${{node.kind}} != 'metanode'" th:insert="fragments/node/nodeState :: nodeState(state=${node.state})" />
