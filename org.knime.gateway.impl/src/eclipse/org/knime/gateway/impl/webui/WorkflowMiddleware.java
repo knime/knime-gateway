@@ -66,6 +66,7 @@ import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
@@ -446,7 +447,11 @@ public final class WorkflowMiddleware {
 
         private CachedDependentNodeProperties m_depNodeProperties;
 
+        //private CachedDependentNodeProperties m_parentDepNodeProperties;
+
         private WorkflowChangesListener m_changesListener;
+
+        private WorkflowChangesListener m_parentChangesListener = null;
 
         private WorkflowChangesListener m_changesListenerForWorkflowMonitor;
 
@@ -460,6 +465,10 @@ public final class WorkflowMiddleware {
         DependentNodeProperties getDependentNodeProperties() {
             if (m_depNodeProperties == null) {
                 m_depNodeProperties = new CachedDependentNodeProperties(m_wfm, changesListener());
+                if (CoreUtil.isComponentWFM(m_wfm) || CoreUtil.isMetanodeWFM(m_wfm)) {
+                    m_depNodeProperties =
+                        new CachedDependentNodeProperties(m_wfm, changesListener(), parentChangesListener());
+                }
             }
             return m_depNodeProperties.get();
         }
@@ -469,6 +478,13 @@ public final class WorkflowMiddleware {
                 m_changesListener = new WorkflowChangesListener(m_wfm);
             }
             return m_changesListener;
+        }
+
+        WorkflowChangesListener parentChangesListener() {
+            if (m_parentChangesListener == null) {
+                m_parentChangesListener = new WorkflowChangesListener(CoreUtil.getWorkflowParent(m_wfm));
+            }
+            return m_parentChangesListener;
         }
 
         WorkflowChangesListener changesListenerForWorkflowMonitor() {
@@ -513,7 +529,11 @@ public final class WorkflowMiddleware {
 
         private final WorkflowChangesTracker m_tracker;
 
+        private WorkflowChangesTracker m_parentTracker = null;
+
         private final WorkflowChangesListener m_wfChangesListener;
+
+        private WorkflowChangesListener m_parentListener;
 
         private final WorkflowManager m_wfm;
 
@@ -521,6 +541,15 @@ public final class WorkflowMiddleware {
             m_wfm = wfm;
             m_wfChangesListener = wfChangesListener;
             m_tracker = m_wfChangesListener.createWorkflowChangeTracker();
+        }
+
+        public CachedDependentNodeProperties(final WorkflowManager wfm, final WorkflowChangesListener wfChangesListener,
+            final WorkflowChangesListener parentWfChangesListener) {
+            m_wfm = wfm;
+            m_wfChangesListener = wfChangesListener;
+            m_tracker = m_wfChangesListener.createWorkflowChangeTracker();
+            m_parentListener = parentWfChangesListener;
+            m_parentTracker = m_parentListener.createWorkflowChangeTracker();
         }
 
         @SuppressWarnings("java:S1176") // javadoc
@@ -532,6 +561,16 @@ public final class WorkflowMiddleware {
                 t.reset();
                 return nodeStateChanges || nodeOrConnectionAddedOrRemoved;
             });
+            if (m_parentTracker != null) {
+                recompute = recompute || m_parentTracker.invoke(t -> {
+                    var nodeStateChanges = t.hasOccurredAtLeastOne(WorkflowChange.NODE_STATE_UPDATED);
+                    var nodeOrConnectionAddedOrRemoved =
+                        t.hasOccurredAtLeastOne(WorkflowChange.NODE_ADDED, WorkflowChange.NODE_REMOVED,
+                            WorkflowChange.CONNECTION_ADDED, WorkflowChange.CONNECTION_REMOVED);
+                    t.reset();
+                    return nodeStateChanges || nodeOrConnectionAddedOrRemoved;
+                });
+            }
             if (Boolean.TRUE.equals(recompute)) {
                 m_dependentNodeProperties = DependentNodeProperties.determineDependentNodeProperties(m_wfm);
             }
