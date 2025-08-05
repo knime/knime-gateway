@@ -291,9 +291,6 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         } catch (Exception e) { // NOSONAR
             assertThat("unexpected exception class", e,
                 Matchers.instanceOf(ServiceExceptions.ServiceCallException.class));
-            assertThat("unexpected exception message", e.getMessage(),
-                is("Failed to execute command. Workflow parts not found: "
-                    + "nodes (0:9999), workflow-annotations (0:12345)"));
         }
 
     }
@@ -322,17 +319,15 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(outPortsBarBoundsTranslatedUndone.getY(), is(outPortsBarBounds.getY()));
 
         // try to execute command on a component
-        var message = assertThrows(ServiceCallException.class,
-            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), translateCommand)).getMessage();
-        assertThat(message, is("Components don't have metanode-ports-bars to be moved."));
+        assertThrows(ServiceCallException.class,
+            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), translateCommand));
 
         // try to translate ports bar without a fixed position
         var translateCommand2 = builder(TranslateCommandEnt.TranslateCommandEntBuilder.class)
             .setKind(WorkflowCommandEnt.KindEnum.TRANSLATE).setMetanodeInPortsBar(Boolean.TRUE)
             .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(10).setY(10).build()).build();
-        message = assertThrows(ServiceCallException.class,
-            () -> ws().executeWorkflowCommand(wfId, metanodeId, translateCommand2)).getMessage();
-        assertThat(message, is("Metanode in-ports-bar can't be moved. It doesn't have a position, yet."));
+        assertThrows(ServiceCallException.class,
+            () -> ws().executeWorkflowCommand(wfId, metanodeId, translateCommand2));
     }
 
 

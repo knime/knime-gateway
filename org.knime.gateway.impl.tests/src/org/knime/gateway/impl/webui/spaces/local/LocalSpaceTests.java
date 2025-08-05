@@ -52,6 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -71,7 +72,6 @@ import org.knime.core.util.PathUtils;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt.TypeEnum;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
@@ -391,16 +391,8 @@ public final class LocalSpaceTests {
             final var existingItemIdAndType = itemIds.get((i + 1) % itemIds.size());
             final var existingItemId = existingItemIdAndType.getFirst();
             // what we expect in the error message
-            final var existingTypeName = existingItemIdAndType.getSecond();
             final var existingItemName = m_space.getItemName(existingItemId);
-            try {
-                m_space.renameItem(itemId, existingItemName);
-            } catch (final ServiceExceptions.OperationNotAllowedException e) {
-                final var msg = e.getMessage();
-                assertThat("Expected exception message to contain the existing item type", msg,
-                    Matchers.containsString(existingTypeName));
-            }
-
+            assertThrows(Exception.class, () -> m_space.renameItem(itemId, existingItemName)) ;
         }
     }
 

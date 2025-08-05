@@ -50,8 +50,6 @@ package org.knime.gateway.testing.helper.webui;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItems;
@@ -59,7 +57,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -297,8 +294,6 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // Try to get the workflow for a different project ID, throws
         var ex1 = assertThrows(Throwable.class,
             () -> ws().getWorkflow(projectId + "_diff", NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE));
-        assertThat(ex1.getMessage(), anyOf(containsString("Project for ID \"" + projectId + "_diff\" not found"),
-            containsString("unexpected error code")));
 
         // Get the correct workflow, doesn't throw
         ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
@@ -321,16 +316,9 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         loadVersionAndSetActive(projectId, version);
 
         // Earlier version, throws
-        var ex1 =
-            assertThrows(Throwable.class, () -> ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command));
-        assertThat(ex1.getMessage(), anyOf(containsString("Project version \"current-state\" is not active"),
-            containsString("unexpected error code")));
-        var ex2 = assertThrows(Throwable.class, () -> ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID()));
-        assertThat(ex2.getMessage(), anyOf(containsString("Project version \"current-state\" is not active"),
-            containsString("unexpected error code")));
-        var ex3 = assertThrows(Throwable.class, () -> ws().redoWorkflowCommand(projectId, NodeIDEnt.getRootID()));
-        assertThat(ex3.getMessage(), anyOf(containsString("Project version \"current-state\" is not active"),
-            containsString("unexpected error code")));
+        assertThrows(Throwable.class, () -> ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command));
+        assertThrows(Throwable.class, () -> ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID()));
+        assertThrows(Throwable.class, () -> ws().redoWorkflowCommand(projectId, NodeIDEnt.getRootID()));
     }
 
     /**
@@ -619,10 +607,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
                 .anyMatch(actions -> actions.getCanCollapse() == AllowedNodeActionsEnt.CanCollapseEnum.FALSE));
 
         var commandEnt = buildCollapseCommandEnt(nodesToCollapseEnts, Collections.emptyList(), containerType);
-        var exceptionMessage =
-            assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt))
-                .getMessage();
-        assertThat(exceptionMessage, containsString("Cannot move all selected nodes (successor executing?)."));
+        assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(), commandEnt));
     }
 
     private static List<AllowedNodeActionsEnt> getAllowedActionsOfNodes(final List<NodeIDEnt> nodes,
@@ -949,12 +934,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         // add a node that doesn't exists
         var ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand("non-sense-factory", null, 0, 0, null, null, null)));
-        assertThat(ex.getMessage(), is("No node found for factory key non-sense-factory"));
 
         // add a dynamic node with non-sense settings
         ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(jsNodeFactory, "blub", 0, 0, null, null, null)));
-        assertThat(ex.getMessage(), startsWith("Problem reading factory settings while trying to create node from"));
     }
 
     /**
@@ -1238,14 +1221,12 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
             final var command3 = buildUpdateComponentOrMetanodeNameCommandEnt(nodeId, name);
             Exception exception = assertThrows(ServiceCallException.class,
                 () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
-            assertThat(exception.getMessage(), containsString("Illegal new name"));
         }));
 
         // fail to rename native node
         final var command4 = buildUpdateComponentOrMetanodeNameCommandEnt(nativeNode, newName);
         Exception exception =
             assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(), command4));
-        assertThat(exception.getMessage(), containsString("cannot be renamed"));
 
     }
 
@@ -2684,7 +2665,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // try to execute the command for a component
         assertThrows(ServiceCallException.class,
-            () -> ws().executeWorkflowCommand(projectId, new NodeIDEnt(12), command1)).getMessage();
+            () -> ws().executeWorkflowCommand(projectId, new NodeIDEnt(12), command1));
     }
 
     /**

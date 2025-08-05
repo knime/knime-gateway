@@ -54,6 +54,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.After;
 import org.junit.Before;
@@ -312,34 +313,63 @@ public class GatewayJsonRpcWrapperServiceTests {
                 });
             return createExceptionInstance(gatewayProblemDescription);
         }
+        
+        private static List<String> getDetails(final Map<String, Object> gatewayProblemDescription) {
+            var details = (List<String>) gatewayProblemDescription.get("details");
+            return Objects.requireNonNullElseGet(details, List::of);
+        }
 
         private static Throwable createExceptionInstance(final Map<String, Object> gatewayProblemDescription) {
-
             var code = gatewayProblemDescription.get("code").toString();
             return switch (code) {
                 case "ServiceCallException" -> ServiceExceptions.ServiceCallException.builder()
                         .withTitle(gatewayProblemDescription.get("title").toString())
-                        .withDetails((List<String>) gatewayProblemDescription.get("details"))
+                        .withDetails(getDetails(gatewayProblemDescription))
                         .canCopy(Boolean.parseBoolean(gatewayProblemDescription.get("canCopy").toString()))
                         .build();
                 case "NetworkException" -> ServiceExceptions.NetworkException.builder()
                         .withTitle(gatewayProblemDescription.get("title").toString())
-                        .withDetails((List<String>) gatewayProblemDescription.get("details"))
+                        .withDetails(getDetails(gatewayProblemDescription))
                         .canCopy(Boolean.parseBoolean(gatewayProblemDescription.get("canCopy").toString()))
                         .build();
-                case "LoggedOutException" -> ServiceExceptions.LoggedOutException.builder("provider id")
+                case "NodeDescriptionNotAvailableException" -> ServiceExceptions.NodeDescriptionNotAvailableException.builder()
                         .withTitle(gatewayProblemDescription.get("title").toString())
-                        .withDetails((List<String>) gatewayProblemDescription.get("details"))
+                        .withDetails(getDetails(gatewayProblemDescription))
                         .canCopy(Boolean.parseBoolean(gatewayProblemDescription.get("canCopy").toString()))
                         .build();
-                case "CollisionException" -> ServiceExceptions.CollisionException.builder()
+                case "NodeNotFoundException" -> ServiceExceptions.NodeNotFoundException.builder()
                         .withTitle(gatewayProblemDescription.get("title").toString())
-                        .withDetails((List<String>) gatewayProblemDescription.get("details"))
+                        .withDetails(getDetails(gatewayProblemDescription))
+                        .canCopy(Boolean.parseBoolean(gatewayProblemDescription.get("canCopy").toString()))
+                        .build();
+                case "NoSuchElementException" -> ServiceExceptions.NoSuchElementException.builder()
+                        .withTitle(gatewayProblemDescription.get("title").toString())
+                        .withDetails(getDetails(gatewayProblemDescription))
+                        .canCopy(Boolean.parseBoolean(gatewayProblemDescription.get("canCopy").toString()))
+                        .build();
+                case "NotASubWorkflowException" -> ServiceExceptions.NotASubWorkflowException.builder()
+                        .withTitle(gatewayProblemDescription.get("title").toString())
+                        .withDetails(getDetails(gatewayProblemDescription))
+                        .canCopy(Boolean.parseBoolean(gatewayProblemDescription.get("canCopy").toString()))
+                        .build();
+                case "InvalidRequestException" -> ServiceExceptions.InvalidRequestException.builder()
+                        .withTitle(gatewayProblemDescription.get("title").toString())
+                        .withDetails(getDetails(gatewayProblemDescription))
                         .canCopy(Boolean.parseBoolean(gatewayProblemDescription.get("canCopy").toString()))
                         .build();
                 case "OperationNotAllowedException" -> ServiceExceptions.OperationNotAllowedException.builder()
                         .withTitle(gatewayProblemDescription.get("title").toString())
-                        .withDetails((List<String>) gatewayProblemDescription.get("details"))
+                        .withDetails(getDetails(gatewayProblemDescription))
+                        .canCopy(Boolean.parseBoolean(gatewayProblemDescription.get("canCopy").toString()))
+                        .build();
+                case "CollisionException" -> ServiceExceptions.CollisionException.builder()
+                        .withTitle(gatewayProblemDescription.get("title").toString())
+                        .withDetails(getDetails(gatewayProblemDescription))
+                        .canCopy(Boolean.parseBoolean(gatewayProblemDescription.get("canCopy").toString()))
+                        .build();
+                case "LoggedOutException" -> ServiceExceptions.LoggedOutException.builder("provider id")
+                        .withTitle(gatewayProblemDescription.get("title").toString())
+                        .withDetails(getDetails(gatewayProblemDescription))
                         .canCopy(Boolean.parseBoolean(gatewayProblemDescription.get("canCopy").toString()))
                         .build();
                 default -> {
