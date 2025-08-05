@@ -257,8 +257,6 @@ public abstract class GatewayException extends Exception {
     }
 
     /**
-     * asd.
-     *
      * @since 5.6
      */
     protected abstract static class Builder<T extends GatewayException>
