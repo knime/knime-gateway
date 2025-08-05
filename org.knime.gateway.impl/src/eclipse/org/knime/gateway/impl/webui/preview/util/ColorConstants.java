@@ -99,7 +99,7 @@ public final class ColorConstants {
         Map.entry("Manipulator", KNIME_COLORS.get("Yellow")),
         Map.entry("Metanode", KNIME_COLORS.get("StoneLight")),
         Map.entry("MetanodeSecondary", KNIME_COLORS.get("StoneGray")),
-        Map.entry("MetanodeState", KNIME_COLORS.get("Masala")),
+        Map.entry("MetanodeState", KNIME_COLORS.get("Black")),
         Map.entry("Other", KNIME_COLORS.get("Wood")),
         Map.entry("Predictor", KNIME_COLORS.get("Meadow")),
         Map.entry("QuickForm", KNIME_COLORS.get("Avocado")),
@@ -148,9 +148,7 @@ public final class ColorConstants {
         Map.entry("trafficLight", TRAFFIC_LIGHT),
 
         Map.entry("textDefault", KNIME_COLORS.get("Masala")),
-        Map.entry("linkDecorator", KNIME_COLORS.get("Black")),
-        Map.entry("streamingDecorator", KNIME_COLORS.get("Masala")),
-        Map.entry("lockDecorator", KNIME_COLORS.get("Black")),
+        Map.entry("decoratorColor", KNIME_COLORS.get("Black")),
         Map.entry("darkeningMask", "hsla(0, 0%, 0%, 33.3%)"),
 
         Map.entry("error", TRAFFIC_LIGHT.get("red")),
