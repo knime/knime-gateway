@@ -83,6 +83,11 @@ import org.knime.shared.workflow.def.AnnotationDataDef;
  */
 public final class EntityUtil {
 
+    /**
+     * "title" property of unexpected exceptions.
+     */
+    public final static String UNEXPECTED_TITLE = "An unexpected error occurred";
+
     private EntityUtil() {
         // utility class
     }
@@ -259,7 +264,7 @@ public final class EntityUtil {
      */
     public static GatewayProblemDescriptionEnt unknownToProblemDescription(final Throwable throwable) {
         return EntityBuilderManager.builder(GatewayProblemDescriptionEntBuilder.class) //
-            .setTitle("An unexpected error occurred") //
+            .setTitle(UNEXPECTED_TITLE) //
             .setCode(throwable.getClass().getSimpleName()) //
             .setDetails(List.of(throwable.getClass().getSimpleName() + ": " + throwable.getMessage())) //
             .setCanCopy(true) //
