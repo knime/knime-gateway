@@ -99,6 +99,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.project.WorkflowServiceProjects;
 import org.knime.gateway.impl.webui.spaces.Collision;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -291,6 +292,12 @@ public final class LocalSpace implements Space {
                 if (path == null) {
                     continue;
                 }
+
+                // `WorkflowServiceProjects` is a view on a subset of Projects in ProjectManager
+                // used as e.g. callees of "Call Workflow" nodes. Additionally, it is backed by
+                // an external cache of WorkflowManagers, from which items are removed only after
+                // an expiry timeout. This might prevent deletion of these files.
+                WorkflowServiceProjects.clearCached(path);
 
                 PathUtils.deleteDirectoryIfExists(path);
                 deletedItems.add(new DeletedItem(itemId, path));

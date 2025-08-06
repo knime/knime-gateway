@@ -50,6 +50,7 @@ package org.knime.gateway.impl.project;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
@@ -63,6 +64,8 @@ import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
 public final class WorkflowServiceProjects {
 
     private static Runnable removeAllProjectsCallback;
+
+    private static Consumer<Path> onClearCallback;
 
     private WorkflowServiceProjects() {
         // utility
@@ -121,12 +124,37 @@ public final class WorkflowServiceProjects {
     }
 
     /**
+     * Instruct the backing cache to dispose the project. The cache is expected to call {@link this#removeProject(Path)} in turn.
+     * <p>
+     * Note that there is no guarantee that after this call the element has in fact already been removed,
+     * this depends on the implementation of the cache.
+     * @param absolutePath -
+     *
+     * @since 5.7
+     */
+    public static void clearCached(final Path absolutePath) {
+        if (getProjectIdAt(absolutePath).isPresent()) {
+            onClearCallback.accept(absolutePath);
+        }
+    }
+
+    /**
      * Removes all workflow service projects from memory.
      */
     public static void removeAllProjects() {
         if (removeAllProjectsCallback != null) {
             removeAllProjectsCallback.run();
         }
+    }
+
+    /**
+     * Run a callback when {@link this#clearCached(Path)} is called.
+     * @param callback -
+     *
+     * @since 5.7
+     */
+    public static void setOnClearCallback(final Consumer<Path> callback) {
+        onClearCallback = callback;
     }
 
     /**
