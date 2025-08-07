@@ -66,6 +66,7 @@ import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.WorkflowChangedEventEnt;
@@ -466,7 +467,11 @@ public final class WorkflowMiddleware {
 
         WorkflowChangesListener changesListener() {
             if (m_changesListener == null) {
-                m_changesListener = new WorkflowChangesListener(m_wfm);
+                // Components and metanodes depend on node state changes in the parent.
+                // For example, a downstream node in the parent finishing execution affects
+                // the node states in the child.
+                var listenToParent = CoreUtil.getContainerType(m_wfm).isPresent();
+                m_changesListener = new WorkflowChangesListener(m_wfm, listenToParent);
             }
             return m_changesListener;
         }
