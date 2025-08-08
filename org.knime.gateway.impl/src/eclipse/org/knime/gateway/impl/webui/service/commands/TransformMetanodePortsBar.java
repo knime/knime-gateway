@@ -82,7 +82,7 @@ final class TransformMetanodePortsBar extends AbstractWorkflowCommand implements
         if (CoreUtil.isComponentWFM(wfm)) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to move ports bar") //
-                .withDetails("Components don't have metanode ports bars. Can't be transformed.") //
+                .withDetails("Components do not have metanode ports bars, command not applicable.") //
                 .canCopy(false) //
                 .build();
         }

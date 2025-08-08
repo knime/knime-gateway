@@ -198,7 +198,7 @@ public final class DefaultNodeService implements NodeService {
         } else {
             throw OperationNotAllowedException.builder() //
                 .withTitle("Operation not allowed") //
-                .withDetails("Unknown action '" + action + "'") //
+                .withDetails("Unknown action '" + action + "'.") //
                 .canCopy(true) //
                 .build();
         }
@@ -350,7 +350,7 @@ public final class DefaultNodeService implements NodeService {
             } else {
                 throw InvalidRequestException.builder() //
                     .withTitle("Invalid request") //
-                    .withDetails("Unknown service type '" + serviceType + "'") //
+                    .withDetails("Unknown service type '" + serviceType + "'.") //
                     .canCopy(true) //
                     .build();
             }
@@ -387,7 +387,7 @@ public final class DefaultNodeService implements NodeService {
         } else {
             throw InvalidRequestException.builder() //
                 .withTitle("Invalid request") //
-                .withDetails("Unknown target for node data service: " + extensionType) //
+                .withDetails("Unknown target for node data service: " + extensionType + ".") //
                 .canCopy(true) //
                 .build();
         }
@@ -410,7 +410,7 @@ public final class DefaultNodeService implements NodeService {
             try {
                 fac = CoreUtil.getNodeFactory(factoryKey.getClassName(), factoryKey.getSettings());
             } catch (NoSuchElementException | IOException e) { // NOSONAR: exceptions are handled
-                var message = "Could not read node description";
+                var message = "Failed to read node description";
                 NodeLogger.getLogger(this.getClass()).error(message + ": " + e.getMessage());
                 throw NodeNotFoundException.builder() //
                     .withTitle("Node not found") //
@@ -423,7 +423,7 @@ public final class DefaultNodeService implements NodeService {
             final var coreNode = CoreUtil.createNode(fac) // needed to init information on ports
                 .orElseThrow(() -> NodeDescriptionNotAvailableException.builder() //
                     .withTitle("Node description not available") //
-                    .withDetails("Could not create instance of node") //
+                    .withDetails("Failed to create instance of node.") //
                     .canCopy(true) //
                     .build());
             var description = EntityFactory.NodeTemplateAndDescription.buildNativeNodeDescriptionEnt(coreNode);

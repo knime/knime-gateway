@@ -110,7 +110,7 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
         if (component == null) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to update component link") //
-                .withDetails("Not a component: " + m_componentId) //
+                .withDetails("Not a component: " + m_componentId + ".") //
                 .canCopy(false) //
                 .build();
         }
@@ -119,14 +119,14 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
         if (templateInformation.getRole() == Role.Template) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to update component link") //
-                .withDetails("Cannot set link source on component template directly: " + m_componentId) //
+                .withDetails("Cannot set link source on component template directly: " + m_componentId + ".") //
                 .canCopy(false) //
                 .build();
         }
         if (templateInformation.getRole() != Role.Link) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to update component link") //
-                .withDetails("Component not linked: " + m_componentId) //
+                .withDetails("Component not linked: " + m_componentId + ".") //
                 .canCopy(false) //
                 .build();
         }

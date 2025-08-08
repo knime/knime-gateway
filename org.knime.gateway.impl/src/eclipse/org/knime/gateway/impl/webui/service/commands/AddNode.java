@@ -123,7 +123,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         if (factoryKeyEnt == null) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to add node") //
-                .withDetails("No node factory class given") //
+                .withDetails("No node factory class given.") //
                 .canCopy(false) //
                 .build();
         }

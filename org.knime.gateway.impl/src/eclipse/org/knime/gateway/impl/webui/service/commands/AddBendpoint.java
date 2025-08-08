@@ -87,7 +87,7 @@ class AddBendpoint extends AbstractWorkflowCommand implements WithResult {
         m_connection = CoreUtil.getConnection(connectionId, wfm) //
             .orElseThrow(() -> ServiceCallException.builder() //
                 .withTitle("Failed to add bendpoint") //
-                .withDetails("Connection not found: " + connectionId) //
+                .withDetails("Connection not found: " + connectionId + ".") //
                 .canCopy(false) //
                 .build());
         var connectionUIInfo = m_connection.getUIInfo();

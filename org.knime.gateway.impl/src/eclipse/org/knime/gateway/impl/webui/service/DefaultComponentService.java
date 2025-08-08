@@ -95,7 +95,7 @@ public class DefaultComponentService implements ComponentService {
         } else {
             throw ServiceCallException.builder() //
                 .withTitle("Unknown action") //
-                .withDetails("Unknown component loading action: " + action) //
+                .withDetails("Unknown component loading action: " + action + ".") //
                 .canCopy(false) //
                 .build();
         }
@@ -121,7 +121,7 @@ public class DefaultComponentService implements ComponentService {
         } catch (NodeNotFoundException | IllegalArgumentException ex) {
             throw ServiceCallException.builder() //
                 .withTitle("Component description not found") //
-                .withDetails("Could not get component description. " + ex.getMessage()) //
+                .withDetails("Failed to get component description. " + ex.getMessage() + ".") //
                 .canCopy(true) //
                 .withCause(ex) //
                 .build();

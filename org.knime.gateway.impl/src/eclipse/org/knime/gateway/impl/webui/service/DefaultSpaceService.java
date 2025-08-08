@@ -105,18 +105,11 @@ public class DefaultSpaceService implements SpaceService {
         //
     }
 
-    private SpaceProvider getSpaceProvider(final String spaceProviderId) throws MutableServiceCallException {
+    private SpaceProvider getSpaceProvider(final String spaceProviderId) {
         if (spaceProviderId == null || spaceProviderId.isBlank()) {
-            throw new MutableServiceCallException(List.of("The space provider ID must not be null or empty."), false);
+            throw new IllegalArgumentException("The space provider ID must not be null or empty.");
         }
-
-        try {
-            return m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
-                .getSpaceProvider(spaceProviderId);
-        } catch (final NoSuchElementException e) {
-            throw new MutableServiceCallException(
-                List.of("The space provider with ID '%s' does not exist.".formatted(spaceProviderId)), true, e);
-        }
+        return m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()).getSpaceProvider(spaceProviderId);
     }
 
     @Override
@@ -297,16 +290,6 @@ public class DefaultSpaceService implements SpaceService {
                 NameCollisionHandling.of(collisionHandling).orElse(NameCollisionHandling.NOOP);
 
             destinationSpace.moveOrCopyItems(itemIds, destWorkflowGroupItemId, actualCollisionHandling, copy);
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            // should never happen
-            final var title =
-                "An error occurred while %sing item(s)".formatted(Boolean.TRUE.equals(copy) ? "copy" : "mov");
-            throw ServiceCallException.builder() //
-                .withTitle(title) //
-                .withDetails(e.getMessage()) //
-                .canCopy(true) //
-                .withCause(e) //
-                .build();
         } catch (final MutableServiceCallException e) { // NOSONAR
             final var title =
                 "An error occurred while %sing item(s)".formatted(Boolean.TRUE.equals(copy) ? "copy" : "mov");
@@ -371,7 +354,7 @@ public class DefaultSpaceService implements SpaceService {
             if (ancestorItemIds.contains(destinationItemId)) {
                 throw ServiceCallException.builder() //
                     .withTitle(title) //
-                    .withDetails(("The item with name '%s' can't overwrite itself"
+                    .withDetails(("The item with name '%s' can not overwrite itself"
                         + " (the destination item contains the source item).").formatted(itemName)) //
                     .canCopy(false) //
                     .build();

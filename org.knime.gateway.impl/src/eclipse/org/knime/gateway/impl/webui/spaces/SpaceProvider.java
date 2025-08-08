@@ -136,7 +136,7 @@ public interface SpaceProvider {
     }
 
     /**
-     * Creates an entity representing the available spaces.
+     * Creates an entity representing the available spaces. This potentially fetches information from the remote.
      *
      * @return entity representing this space provider
      * @throws LoggedOutException

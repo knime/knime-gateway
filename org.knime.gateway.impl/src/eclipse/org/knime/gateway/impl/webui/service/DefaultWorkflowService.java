@@ -184,7 +184,7 @@ public final class DefaultWorkflowService implements WorkflowService {
                 })//
                 .toList();
         } catch (IllegalStateException | InterruptedException e) { // NOSONAR
-            throw InvalidRequestException.builder().withTitle("Could not retrieve linked components") //
+            throw InvalidRequestException.builder().withTitle("Failed to retrieve linked components") //
                 .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
                 .canCopy(true) //
                 .withCause(e) //
@@ -315,7 +315,7 @@ public final class DefaultWorkflowService implements WorkflowService {
                 wfm.save(localWorkflowPath.toFile(), new ExecutionMonitor(), true);
             } catch (IOException | CanceledExecutionException | LockFailedException e) {
                 throw ServiceCallException.builder() //
-                    .withTitle("Could not save workflow") //
+                    .withTitle("Failed to save workflow") //
                     .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
                     .canCopy(true) //
                     .withCause(e) //

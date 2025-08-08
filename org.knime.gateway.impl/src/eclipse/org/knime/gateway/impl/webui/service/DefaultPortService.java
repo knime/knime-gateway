@@ -187,7 +187,7 @@ public class DefaultPortService implements PortService {
         } else {
             throw InvalidRequestException.builder() //
                 .withTitle("Failed to call port data service") //
-                .withDetails("Unknown service type '" + serviceType + "'") //
+                .withDetails("Unknown service type '" + serviceType + "'.") //
                 .canCopy(true) //
                 .build();
         }

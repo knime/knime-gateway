@@ -83,7 +83,7 @@ class AddPort extends AbstractPortCommand<AddPortCommandEnt> implements WithResu
         } catch (NoSuchElementException e) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to add port") //
-                .withDetails("Could not determine new port index") //
+                .withDetails("Failed to determine new port index.") //
                 .canCopy(true) //
                 .withCause(e) //
                 .build();

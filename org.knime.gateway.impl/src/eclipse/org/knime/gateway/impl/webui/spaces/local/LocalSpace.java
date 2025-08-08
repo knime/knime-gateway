@@ -176,8 +176,7 @@ public final class LocalSpace implements Space {
             return EntityFactory.Space.buildLocalWorkflowGroupContentEnt(absolutePath, m_rootPath, this::getItemId,
                 m_spaceItemPathAndTypeCache::determineTypeOrGetFromCache, LocalSpace::isValidItem, ITEM_COMPARATOR);
         } catch (final IOException ex) {
-            throw new MutableServiceCallException(
-                List.of("Could not list folder '%s': %s".formatted(absolutePath, ex.getMessage())), true, ex);
+            throw new MutableServiceCallException(ex.getMessage(), true, ex).addDetails("Failed to list folder '%s'.".formatted(absolutePath));
         }
     }
 
@@ -189,7 +188,7 @@ public final class LocalSpace implements Space {
         try {
             parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         } catch (MutableServiceCallException ex) {
-            ex.addDetails("Could not determine parent folder for new workflow '%s'".formatted(workflowName));
+            ex.addDetails("Failed to determine parent folder for new workflow '%s'.".formatted(workflowName));
             throw ex;
         }
 
@@ -200,9 +199,7 @@ public final class LocalSpace implements Space {
             Files.createFile(workflowDir.resolve(WorkflowPersistor.WORKFLOW_FILE));
             return getSpaceItemEntFromPathAndUpdateCache(workflowDir);
         } catch (final IOException e) {
-            throw new MutableServiceCallException(
-                List.of("An error occurred while creating workflow '%s': %s".formatted(pathToCreate, e.getMessage())),
-                true, e);
+            throw new MutableServiceCallException(e.getMessage(), true, e).addDetails("Failed to create workflow '%s'.".formatted(pathToCreate));
         }
     }
 
@@ -212,7 +209,7 @@ public final class LocalSpace implements Space {
         try {
             parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         } catch (MutableServiceCallException ex) {
-            ex.addDetails("Could not determine parent folder");
+            ex.addDetails("Failed to determine parent folder.");
             throw ex;
         }
 
@@ -223,9 +220,7 @@ public final class LocalSpace implements Space {
             var directoryPath = Files.createDirectory(pathToCreate);
             return getSpaceItemEntFromPathAndUpdateCache(directoryPath);
         } catch (final IOException e) {
-            throw new MutableServiceCallException(
-                List.of("An error occurred while creating folder '%s': %s".formatted(pathToCreate, e.getMessage())),
-                true, e);
+            throw new MutableServiceCallException(e.getMessage(), true, e).addDetails("Failed to create folder '%s'.".formatted(pathToCreate));
         }
     }
 
@@ -331,8 +326,7 @@ public final class LocalSpace implements Space {
                 deletedItems.add(new DeletedItem(itemId, path));
             }
         } catch (final IOException e) {
-            throw new MutableServiceCallException(
-                List.of("An error occurred while deleting an item: %s".formatted(e.getMessage())), true, e);
+            throw new MutableServiceCallException(e.getMessage(), true, e).addDetails("Failed to delete item.");
         } finally {
             deletedItems.forEach(deletedItem -> {
                 m_spaceItemPathAndTypeCache.prunePath(deletedItem.path());
@@ -354,7 +348,7 @@ public final class LocalSpace implements Space {
         }
 
         final var sourcePath = toLocalAbsolutePath(itemId).orElseThrow(
-            () -> new MutableServiceCallException(List.of("Unknown item ID: '%s'".formatted(itemId)), true, null));
+            () -> new MutableServiceCallException("Unknown item ID: '%s'.".formatted(itemId), true, null));
         final var originalName = sourcePath.getFileName().toString();
         final var newName = queriedName.trim();
         assertValidItemNameOrThrow(newName);
@@ -375,27 +369,21 @@ public final class LocalSpace implements Space {
         try {
             isExistingDifferentFile = Files.exists(destinationPath) && !Files.isSameFile(sourcePath, destinationPath);
         } catch (final IOException ex) {
-            throw new MutableServiceCallException(List.of("Error while trying to check for name collision (%s): %s"
-                .formatted(ex.getClass().getSimpleName(), ex.getMessage())), true, ex);
+            throw new MutableServiceCallException(ex.getMessage(), true, ex).addDetails("Failed to check for name collision (%s).".formatted(ex.getClass().getSimpleName()));
         }
         if (isExistingDifferentFile) {
-            throw new MutableServiceCallException(List
-                .of("There already exists a %s with that name. Pick a different name or rename the other item first."
-                    .formatted(getReadableFileType(destinationPath))),
-                false, null);
+            throw new MutableServiceCallException("There already exists a %s with that name. Pick a different name or rename the other item first."
+                .formatted(getReadableFileType(destinationPath)), false, null);
         }
 
         // Otherwise, we are either changing case or have no collision.
         try {
             if (!sourcePath.toFile().renameTo(destinationPath.toFile())) {
-                throw new MutableServiceCallException(
-                    List.of("Check if the workflow folder or a contained folder is open by another application and if "
-                        + "there are sufficient permissions."),
-                    false, null);
+                throw new MutableServiceCallException("Check if the workflow folder or a contained folder is opened by another application and if "
+                    + "there are sufficient permissions.", false, null);
             }
         } catch (final SecurityException e) {
-            throw new MutableServiceCallException(
-                List.of("An error occurred while renaming item '%s': %s".formatted(itemId, e.getMessage())), true, e);
+            throw new MutableServiceCallException(e.getMessage(), true, e).addDetails("Failed to rename item '%s'.".formatted(itemId));
         }
 
         m_spaceItemPathAndTypeCache.update(itemId, sourcePath, destinationPath);
@@ -438,10 +426,8 @@ public final class LocalSpace implements Space {
         assertAllItemIdsExistOrElseThrow(Stream.concat(itemIds.stream(), Stream.of(destItemId)).toList());
         var destPathParent = getAbsolutePath(destItemId);
         if (m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(destPathParent) != TypeEnum.WORKFLOWGROUP) {
-            throw new MutableServiceCallException(
-                List.of("Cannot move space item '%s' to a location that is not a workflow group: '%s'"
-                    .formatted(destItemId, destPathParent)),
-                false, null);
+            throw new MutableServiceCallException("Can not move space item to a location that is not a workflow group. (Item ID: %s, destination: %s)."
+                .formatted(destItemId, destPathParent), false, null);
         }
 
         Map<String, Pair<Path, Path>> newItemIdToPathMap = new HashMap<>();
@@ -490,15 +476,13 @@ public final class LocalSpace implements Space {
                 try {
                     deleteItems(List.of(getItemId(destination)), false);
                 } catch (MutableServiceCallException ex) {
-                    ex.addDetails("There was an error overwriting \"%s\". Check that it is not currently open."
-                        .formatted(fileName));
+                                    ex.addDetails("Failed to overwrite \"%s\". Check that it is not currently open."
+                    .formatted(fileName));
                     throw ex;
                 } catch (Exception ex) { // NOSONAR
                     LOGGER.error(ex);
-                    throw new MutableServiceCallException(
-                        List.of("There was an error overwriting \"%s\". Check that it is not currently open."
-                            .formatted(fileName)),
-                        true, ex);
+                    throw new MutableServiceCallException(ex.getMessage(), true, ex).addDetails("Failed to overwrite \"%s\". Check that it is not currently open."
+                        .formatted(fileName));
                 }
                 yield destination;
             }
@@ -518,8 +502,7 @@ public final class LocalSpace implements Space {
         try {
             FileUtil.copy(srcPath.toFile(), destPath.toFile());
         } catch (final IOException ex) {
-            throw new MutableServiceCallException(
-                List.of("Copying item into workspace failed: %s".formatted(ex.getMessage())), true, ex);
+            throw new MutableServiceCallException(ex.getMessage(), true, ex).addDetails("Failed to copy item into workspace.");
         }
 
         return getSpaceItemEntFromPathAndUpdateCache(destPath);
@@ -540,10 +523,8 @@ public final class LocalSpace implements Space {
                 FileUtil.unzip(zipInput, destPath.toFile(), singleRootFolder ? 1 : 0);
             }
         } catch (final IOException ex) {
-            throw new MutableServiceCallException(
-                List.of("Moving item(s) to workspace failed: %s".formatted(ex.getMessage())), true, ex);
+            throw new MutableServiceCallException("Failed to move item(s) to workspace.", true, ex);
         }
-
         createMetaInfoFileFor.accept(destPath);
         return getSpaceItemEntFromPathAndUpdateCache(destPath);
     }
@@ -598,9 +579,7 @@ public final class LocalSpace implements Space {
             resolveWithNameCollisions(destPathParent, srcPath.getFileName().toString(), collisionHandling, uniqueName);
 
         if (Files.exists(destPath)) {
-            throw new MutableServiceCallException(
-                List.of("Attempting to overwrite '%s', name collision handling went wrong.".formatted(destPath)), false,
-                null);
+            throw new MutableServiceCallException("There already exists an item at the target location", true, null);
         }
 
         if (copy) {
@@ -608,8 +587,7 @@ public final class LocalSpace implements Space {
                 FileUtil.copyDir(srcPath.toFile(), destPath.toFile());
                 return destPath;
             } catch (final IOException e) {
-                throw new MutableServiceCallException(
-                    List.of("Copying '%s' to '%s' failed: %s".formatted(srcPath, destPath, e.getMessage())), true, e);
+                throw new MutableServiceCallException(e.getMessage(), true, e).addDetails("Failed to copy '%s' to '%s'.".formatted(srcPath, destPath));
             }
         }
 
@@ -624,8 +602,7 @@ public final class LocalSpace implements Space {
                 return destPath;
             }
         } catch (final IOException e) {
-            throw new MutableServiceCallException(
-                List.of("Failed to move '%s' to '%s': %s".formatted(srcPath, destPath, e.getMessage())), true, e);
+            throw new MutableServiceCallException(e.getMessage(), true, e).addDetails("Failed to move '%s' to '%s'.".formatted(srcPath, destPath));
         }
     }
 
@@ -647,17 +624,14 @@ public final class LocalSpace implements Space {
             uniqueName);
 
         if (Files.exists(destPath)) {
-            throw new MutableServiceCallException(
-                List.of(String.format("Attempting to overwrite '%s', name collision handling went wrong.", destPath)),
-                false, null);
+            throw new MutableServiceCallException("Attempting to overwrite '%s', name collision handling went wrong.".formatted(destPath), false, null);
         }
 
         try {
             Files.createDirectory(destPath);
             return destPath;
         } catch (final IOException ex) {
-            throw new MutableServiceCallException(
-                List.of("Could not create workflow directory: %s".formatted(ex.getMessage())), true, ex);
+            throw new MutableServiceCallException(ex.getMessage(), true, ex).addDetails("Failed to create workflow directory.");
         }
     }
 
@@ -670,8 +644,7 @@ public final class LocalSpace implements Space {
     private Path resolveItemPath(final String itemId) throws MutableServiceCallException {
         final var path = m_spaceItemPathAndTypeCache.getPath(itemId);
         if (path == null) {
-            throw new MutableServiceCallException(
-                List.of("Item ID '%s' is invalid for the local workspace".formatted(itemId)), false, null);
+            throw new MutableServiceCallException("Item ID '%s' is invalid for the local workspace.".formatted(itemId), false, null);
         }
         return path;
     }
@@ -680,9 +653,7 @@ public final class LocalSpace implements Space {
         final var absolutePath = resolveItemPath(workflowGroupItemId);
         final var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(absolutePath);
         if (type != TypeEnum.WORKFLOWGROUP) {
-            throw new MutableServiceCallException(
-                List.of("Expected item '%s' to be a folder, found '%s'".formatted(workflowGroupItemId, type)), false,
-                null);
+            throw new MutableServiceCallException("Expected item '%s' to be a folder, found '%s'.".formatted(workflowGroupItemId, type), false, null);
         }
         return absolutePath;
     }
@@ -738,8 +709,7 @@ public final class LocalSpace implements Space {
             .filter(id -> !m_spaceItemPathAndTypeCache.containsKey(id))//
             .collect(Collectors.joining(", "));
         if (!unknownItemIds.isEmpty()) {
-            throw new MutableServiceCallException(List.of(String.format("Unknown item ids: %s", unknownItemIds)), false,
-                null);
+            throw new MutableServiceCallException("Unknown item ids: %s.".formatted(unknownItemIds), false, null);
         }
     }
 

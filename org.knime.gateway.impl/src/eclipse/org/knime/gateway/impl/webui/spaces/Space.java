@@ -296,7 +296,7 @@ public interface Space {
         throws OperationNotAllowedException, NetworkException, LoggedOutException, MutableServiceCallException {
         throw OperationNotAllowedException.builder() //
             .withTitle("Failed to rename space") //
-            .withDetails("Renaming of spaces is not supported in this provider") //
+                            .withDetails("Renaming of spaces is not supported in this provider.") //
             .canCopy(true) //
             .build();
     }
@@ -663,7 +663,7 @@ public interface Space {
         final String targetItemId, final boolean excludeData) throws OperationNotAllowedException {
         throw OperationNotAllowedException.builder() //
             .withTitle("Failed to upload items") //
-            .withDetails("Cannot call this method on spaces other than Hub spaces.") //
+            .withDetails("Can not call this method on spaces other than Hub spaces.") //
             .canCopy(true) //
             .build();
     }
@@ -681,7 +681,7 @@ public interface Space {
         final String targetItemId) throws OperationNotAllowedException {
         throw OperationNotAllowedException.builder() //
             .withTitle("Failed to download items") //
-            .withDetails("Cannot call this method on spaces other than Hub spaces.") //
+            .withDetails("Can not call this method on spaces other than Hub spaces.") //
             .canCopy(true) //
             .build();
     }

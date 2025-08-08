@@ -94,7 +94,7 @@ final class EditNativeNodePorts implements EditPorts {
         var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId()) //
             .orElseThrow(() -> ServiceCallException.builder() //
                 .withTitle("Failed to add port") //
-                .withDetails("Unknown port type: " + addPortCommandEnt.getPortTypeId()) //
+                .withDetails("Unknown port type: " + addPortCommandEnt.getPortTypeId() + ".") //
                 .canCopy(false) //
                 .build());
         var groupName = addPortCommandEnt.getPortGroup();
@@ -140,7 +140,7 @@ final class EditNativeNodePorts implements EditPorts {
         var portConfig = CoreUtil.getCopyOfCreationConfig(m_wfm, getNodeId()).orElseThrow().getPortConfig()
             .orElseThrow(() -> ServiceCallException.builder() //
                 .withTitle("Failed to add port") //
-                .withDetails("Could not retrieve port config of node " + getNodeId()) //
+                .withDetails("Failed to retrieve port config of node " + getNodeId() + ".") //
                 .canCopy(false) //
                 .build());
         var portGroupIds = portConfig.getPortGroupNames();
