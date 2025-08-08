@@ -210,7 +210,7 @@ public final class NodeCreator {
             m_wfm.removeNode(nodeId);
             throw ServiceCallException.builder() //
                 .withTitle("Failed to create node") //
-                .withDetails("Node couldn't be created because a connection couldn't be added.") //
+                .withDetails("Node could not be created because a connection could not be added.") //
                 .canCopy(false) //
                 .build();
         }

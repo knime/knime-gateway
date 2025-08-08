@@ -111,13 +111,13 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
         var containedWfm = CoreUtil.getContainedWfm(nodeToExpand, wfm) //
             .orElseThrow(() -> ServiceCallException.builder() //
                 .withTitle(errorTitle) //
-                .withDetails("No container node with the supplied ID can be found in workflow") //
+                .withDetails("No container node with the supplied ID can be found in workflow.") //
                 .canCopy(false) //
                 .build());
         if (!containedWfm.isUnlocked()) {
             throw ServiceCallException.builder() //
                 .withTitle(errorTitle) //
-                .withDetails("Password-protected metanode/container needs to be unlocked first") //
+                .withDetails("Password-protected metanode/container needs to be unlocked first.") //
                 .canCopy(false) //
                 .build();
         }

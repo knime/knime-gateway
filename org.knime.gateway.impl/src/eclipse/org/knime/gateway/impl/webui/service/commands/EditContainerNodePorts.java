@@ -96,7 +96,7 @@ final class EditContainerNodePorts implements EditPorts {
         var newPortType = CoreUtil.getPortType(addPortCommandEnt.getPortTypeId()) //
             .orElseThrow(() -> ServiceCallException.builder() //
                 .withTitle("Failed to add port") //
-                .withDetails("Unknown port type: " + addPortCommandEnt.getPortTypeId()) //
+                .withDetails("Unknown port type: " + addPortCommandEnt.getPortTypeId() + ".") //
                 .canCopy(false) //
                 .build());
         var newMetaPortInfo = MetaPortInfo.builder() //
@@ -116,7 +116,7 @@ final class EditContainerNodePorts implements EditPorts {
         if (getContainerType() == CoreUtil.ContainerType.COMPONENT && indexToRemove == 0) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to remove port") //
-                .withDetails("Can't remove fixed flow variable port at index 0") //
+                .withDetails("Can not remove fixed flow variable port at index 0.") //
                 .canCopy(false) //
                 .build();
         }

@@ -83,6 +83,10 @@ public final class MutableServiceCallException extends Exception {
         this(status, details, canCopy, null);
     }
 
+    public MutableServiceCallException(final String firstDetail, final boolean canCopy, final Throwable cause ) {
+        this(List.of(firstDetail), canCopy, cause);
+    }
+
     public MutableServiceCallException(final List<String> details, final boolean canCopy) {
         this(-1, details, canCopy);
     }

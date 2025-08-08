@@ -125,7 +125,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         if (components.size() != m_nodeIdEnts.size()) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to update component(s)") //
-                .withDetails("Not all of the nodes <%s> are linked components".formatted(m_nodeIdEnts)) //
+                .withDetails("Not all of the nodes <%s> are linked components.".formatted(m_nodeIdEnts)) //
                 .canCopy(false) //
                 .build();
         }

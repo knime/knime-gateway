@@ -103,8 +103,8 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
 
         if (nodeIds.length == 0 && annoIDs.length == 0) {
             throw ServiceCallException.builder() //
-                .withTitle("Could not create metanode") //
-                .withDetails("No nodes and workflow annotations given to collapse into metanode or component") //
+                .withTitle("Failed to create metanode") //
+                .withDetails("No nodes and workflow annotations given to collapse into metanode or component.") //
                 .canCopy(false) //
                 .build();
         }
@@ -112,7 +112,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
         var cannotCollapseReason = getWorkflowManager().canCollapseNodesIntoMetaNode(nodeIds, annoIDs);
         if (cannotCollapseReason != null) {
             throw ServiceCallException.builder() //
-                .withTitle("Could not create metanode") //
+                .withTitle("Failed to create metanode") //
                 .withDetails(cannotCollapseReason) //
                 .canCopy(false) //
                 .build();

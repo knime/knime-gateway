@@ -100,7 +100,7 @@ final class Connect extends AbstractWorkflowCommand {
         if (m_newConnection == null) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to create connection") //
-                .withDetails("Connection couldn't be created") //
+                .withDetails("Connection could not be created.") //
                 .canCopy(false) //
                 .build();
         }

@@ -314,7 +314,7 @@ public final class WorkflowCommands {
             } catch (InterruptedException e) { // NOSONAR: Exception re-thrown
                 throw ServiceCallException.builder() //
                     .withTitle("Command execution interrupted") //
-                    .withDetails("Interrupted while waiting corresponding workflow change") //
+                    .withDetails("Interrupted while waiting corresponding workflow change.") //
                     .canCopy(true) //
                     .withCause(e) //
                     .build();

@@ -145,7 +145,7 @@ final class Delete extends AbstractWorkflowCommand {
         if (!canRemoveAllNodes(wfm, nodesToDelete)) {
             throw ServiceCallException.builder() //
                 .withTitle("Delete operation aborted") //
-                .withDetails("Some nodes can't be deleted or don't exist.") //
+                .withDetails("Some nodes can not be deleted or do not exist.") //
                 .canCopy(false) //
                 .build();
         }
@@ -163,7 +163,7 @@ final class Delete extends AbstractWorkflowCommand {
         if (m_connectionsDeleted.size() != m_connectionIdsQueried.size()) {
             throw ServiceCallException.builder() //
                 .withTitle("Delete operation aborted") //
-                .withDetails("Some connections don't exist.") //
+                .withDetails("Some connections do not exist.") //
                 .canCopy(false) //
                 .build();
         }
@@ -177,7 +177,7 @@ final class Delete extends AbstractWorkflowCommand {
         if (!CoreUtil.canRemoveConnections(m_connectionsDeleted, wfm)) {
             throw ServiceCallException.builder() //
                 .withTitle("Delete operation aborted") //
-                .withDetails("Some connections can't be deleted.") //
+                .withDetails("Some connections can not be deleted.") //
                 .canCopy(false) //
                 .build();
         }
@@ -189,7 +189,7 @@ final class Delete extends AbstractWorkflowCommand {
         if (!checkThatAllWorkflowAnnotationsExist(wfm, content.getAnnotationIDs())) {
             throw ServiceCallException.builder() //
                 .withTitle("Delete operation aborted") //
-                .withDetails("Some workflow annotations don't exist.") //
+                .withDetails("Some workflow annotations do not exist.") //
                 .canCopy(false) //
                 .build();
         }
