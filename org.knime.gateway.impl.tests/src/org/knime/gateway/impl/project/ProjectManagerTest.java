@@ -110,6 +110,17 @@ public class ProjectManagerTest {
         pm.removeProject(proj1a.getID(), ProjectConsumerType.WORKFLOW_SERVICE);
         assertThat(pm.getProjectIds(), is(List.of(proj2.getID())));
         assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE).toList(), is(List.of()));
+
+        // add/remove virtual projects
+        var proj3 = Project.builder().setWfm(wfm).build();
+        var proj4 = Project.builder().setWfm(wfm).build();
+        pm.addProject(proj3, ProjectConsumerType.VIRTUAL_WORKFLOW, false);
+        assertThat(pm.getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).toList(), is(List.of(proj3.getID())));
+        pm.addProject(proj4, ProjectConsumerType.VIRTUAL_WORKFLOW, false);
+        assertThat(pm.getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).toList(),
+            is(List.of(proj3.getID(), proj4.getID())));
+        pm.removeProject(proj3.getID(), ProjectConsumerType.VIRTUAL_WORKFLOW);
+        assertThat(pm.getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).toList(), is(List.of(proj4.getID())));
     }
 
 }

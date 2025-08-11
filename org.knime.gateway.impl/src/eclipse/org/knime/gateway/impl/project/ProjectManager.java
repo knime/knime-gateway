@@ -46,11 +46,13 @@
 package org.knime.gateway.impl.project;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -157,7 +159,7 @@ public final class ProjectManager {
             return; // No project active
         }
 
-        if (!projectInternal.hasUIConsumer) {
+        if (!projectInternal.hasConsumer(ProjectConsumerType.UI)) {
             throw new IllegalStateException("Projects hidden from the user can't be set active.");
         }
 
@@ -216,8 +218,8 @@ public final class ProjectManager {
      *         to be the insertion order.
      */
     Stream<String> getProjectIds(final ProjectConsumerType consumerType) {
-        return m_projectsMap.entrySet().stream()
-            .filter(e -> consumerType.isUI() ? e.getValue().hasUIConsumer : (e.getValue().numNonUIConsumer > 0)) //
+        return m_projectsMap.entrySet().stream() //
+            .filter(e -> e.getValue().hasConsumer(consumerType)) //
             .map(Entry::getKey);
     }
 
@@ -231,7 +233,7 @@ public final class ProjectManager {
     }
 
     private void addProject(final Project project, final VersionId activeVersion) {
-        addProject(project, ProjectConsumerType.UI, true, activeVersion);
+        addProject(project, ProjectConsumerType.UI, activeVersion, true);
     }
 
     /**
@@ -242,27 +244,23 @@ public final class ProjectManager {
      * @param replace whether to replace the project or not in case there is another project with the same id already
      */
     void addProject(final Project project, final ProjectConsumerType consumerType, final boolean replace) {
-        addProject(project, consumerType, replace, VersionId.currentState());
+        addProject(project, consumerType, VersionId.currentState(), replace);
     }
 
-    private void addProject(final Project project, final ProjectConsumerType consumerType, final boolean replace,
-        final VersionId activeVersion) {
-        var hasUIConsumer = consumerType.isUI();
-        var numNonUIConsumer = consumerType.isUI() ? 0 : 1;
+    private void addProject(final Project project, final ProjectConsumerType consumerType,
+        final VersionId activeVersion, final boolean replace) {
         var projectInternal = m_projectsMap.get(project.getID());
-        if (projectInternal != null) {
-            hasUIConsumer = hasUIConsumer || projectInternal.hasUIConsumer;
-            numNonUIConsumer =
-                consumerType.isUI() ? projectInternal.numNonUIConsumer : (projectInternal.numNonUIConsumer + 1);
-        }
-
-        if (projectInternal == null || replace) {
-            projectInternal = new ProjectInternal(project, hasUIConsumer, numNonUIConsumer, activeVersion);
+        if (projectInternal == null) {
+            projectInternal = new ProjectInternal(project, consumerType, activeVersion);
         } else {
-            projectInternal =
-                new ProjectInternal(projectInternal.project, hasUIConsumer, numNonUIConsumer, activeVersion);
+            var consumerTypes = new HashSet<>(projectInternal.consumerTypes);
+            consumerTypes.add(consumerType);
+            if (replace) {
+                projectInternal = new ProjectInternal(project, consumerTypes, activeVersion);
+            } else {
+                projectInternal = new ProjectInternal(projectInternal.project, consumerTypes, activeVersion);
+            }
         }
-
         m_projectsMap.put(project.getID(), projectInternal);
     }
 
@@ -288,12 +286,10 @@ public final class ProjectManager {
         if (projectInternal == null) {
             return;
         }
+        var updatedConsumers = new HashSet<>(projectInternal.consumerTypes);
+        updatedConsumers.remove(consumerType);
 
-        var updatedProjectInternal = consumerType.isUI() //
-            ? projectInternal.updateHasUIConsumer(false) //
-            : projectInternal.updateNumNonUIConsumer(projectInternal.numNonUIConsumer - 1);
-
-        if (!updatedProjectInternal.hasUIConsumer && updatedProjectInternal.numNonUIConsumer == 0) {
+        if (updatedConsumers.isEmpty()) {
             var removedProject = m_projectsMap.remove(projectId);
             if (removedProject != null) {
                 removedProject.project().dispose();
@@ -305,7 +301,8 @@ public final class ProjectManager {
                 m_activeProjectId = null; // To indicate there's no active project anymore
             }
         } else {
-            m_projectsMap.put(projectId, updatedProjectInternal);
+            m_projectsMap.put(projectId,
+                new ProjectInternal(projectInternal.project, updatedConsumers, projectInternal.activeVersion));
         }
     }
 
@@ -417,15 +414,14 @@ public final class ProjectManager {
     /**
      * Wrapper around {@link Project} to additional track the {@link ProjectConsumerType}s it is associated with.
      */
-    private record ProjectInternal(Project project, boolean hasUIConsumer, int numNonUIConsumer,
-        VersionId activeVersion) {
+    private record ProjectInternal(Project project, Set<ProjectConsumerType> consumerTypes, VersionId activeVersion) {
 
-        ProjectInternal updateHasUIConsumer(final boolean updatedHasUIConsumer) {
-            return new ProjectInternal(project, updatedHasUIConsumer, numNonUIConsumer, activeVersion);
+        ProjectInternal(final Project project, final ProjectConsumerType consumerType, final VersionId activeVersion) {
+            this(project, Set.of(consumerType), activeVersion);
         }
 
-        ProjectInternal updateNumNonUIConsumer(final int updatedNumNonUIConsumer) {
-            return new ProjectInternal(project, hasUIConsumer, updatedNumNonUIConsumer, activeVersion);
+        boolean hasConsumer(final ProjectConsumerType consumerType) {
+            return consumerTypes.contains(consumerType);
         }
 
     }
