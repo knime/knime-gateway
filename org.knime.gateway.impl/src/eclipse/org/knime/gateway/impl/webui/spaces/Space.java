@@ -599,7 +599,7 @@ public interface Space {
      * @param itemId the id of the item to restore
      * @param versionId the version to restore
      * @throws IOException if the restore failed
-     * @since 5.6
+     * @since 5.7
      */
     default void restoreItemVersion(final String itemId, final VersionId versionId) throws IOException {
         throw new UnsupportedOperationException("Cannot call this method on spaces other than Hub spaces.");

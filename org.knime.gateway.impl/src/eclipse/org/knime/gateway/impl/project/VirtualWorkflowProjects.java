@@ -93,6 +93,7 @@ public final class VirtualWorkflowProjects {
     /**
      * @param id -
      * @return whether the given id references a virtual project
+     * @since 5.7
      */
     public static boolean isVirtualProject(final String id) {
         return ProjectManager.getInstance().getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).anyMatch(id::equals);
