@@ -6,7 +6,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-2.0.16.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/thymeleaf-3.1.3.RELEASE.jar" sourcepath="lib/thymeleaf-3.1.3.RELEASE-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/unbescape-1.1.6.RELEASE.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
