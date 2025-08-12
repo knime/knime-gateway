@@ -9,3 +9,4 @@
 **/.polyglot.feature.xml
 **/.polyglot.META-INF
 *.jar
+.idea

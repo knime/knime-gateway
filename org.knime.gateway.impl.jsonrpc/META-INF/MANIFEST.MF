@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.knime.gateway.impl.jsonrpc;singleton:=true
 Bundle-Version: 5.8.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
 Export-Package: org.knime.gateway.impl.jsonrpc,
  org.knime.gateway.impl.webui.jsonrpc,
