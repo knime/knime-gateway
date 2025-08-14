@@ -101,7 +101,7 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
      * @throws IllegalArgumentException if the provided arguments are null
      * @throws IOException if writing the output to the specified file path fails
      */
-    private static void renderPreviewSVG(final WorkflowManager workflow, final Path filePath)
+    static void renderPreviewSVG(final WorkflowManager workflow, final Path filePath)
         throws IllegalArgumentException, IOException {
 
         CheckUtils.checkArgumentNotNull(workflow, "Workflow can not be null for preview generation");
