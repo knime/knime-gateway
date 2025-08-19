@@ -75,7 +75,6 @@ import org.knime.core.data.property.ColorHandler;
 import org.knime.core.data.property.ColorModel;
 import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ColorModelRange;
-import org.knime.core.internal.KNIMEPath;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -104,6 +103,7 @@ import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
 import org.knime.core.webui.page.Resource;
+import org.knime.core.workbench.KNIMEWorkspacePath;
 import org.knime.gateway.api.entity.RenderingConfigEnt.DefaultRenderingConfigEnt;
 import org.knime.gateway.api.entity.RenderingConfigEnt.ImageRenderingConfigEnt;
 import org.knime.gateway.api.entity.RenderingConfigEnt.RenderingConfigType;
@@ -184,7 +184,7 @@ class NodeViewEntTest {
 
         overwriteViewSettingWithFlowVariable(nnc);
         ent = NodeViewEnt.create(nnc, null);
-        checkViewSettings(ent, KNIMEPath.getWorkspaceDirPath().getAbsolutePath());
+        checkViewSettings(ent, KNIMEWorkspacePath.getWorkspaceDirPath().getAbsolutePath());
         checkOutgoingFlowVariable(nnc, "exposed_flow_variable", "exposed view settings value");
 
         nnc.setNodeMessage(NodeMessage.newWarning("node message"));
