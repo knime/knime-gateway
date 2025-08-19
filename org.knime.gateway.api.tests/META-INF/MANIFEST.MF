@@ -7,6 +7,7 @@ Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Fragment-Host: org.knime.gateway.api;bundle-version="[5.7.0,6.0.0)"
 Require-Bundle: org.knime.testing;bundle-version="[5.6.0,6.0.0)",
  org.knime.gateway.impl;bundle-version="[5.6.0,6.0.0)",
+ org.knime.core.workbench;bundle-version="[5.7.0,6.0.0)",
  org.awaitility;bundle-version="[3.0.0,4.0.0)",
  junit-jupiter-api;bundle-version="[5.9.2,6.0.0)",
  assertj-core;bundle-version="[3.22.0,4.0.0)",
