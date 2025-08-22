@@ -468,7 +468,7 @@ public final class LocalSpace implements Space {
 
             final var tmpSrcPath = contents[0].toPath();
             final var fileSuffixMatcher = KNWF_KNAR_FILE_EXTENSION.matcher(srcPath.getFileName().toString());
-            final var fileName = fileSuffixMatcher.replaceAll("");
+            final var fileName = fileSuffixMatcher.replaceAll("").trim();
             Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true);
             destPath = resolveWithNameCollisions(
                 workflowGroupItemId, tmpSrcPath.getParent().resolve(fileName), collisionHandling, uniqueName);
