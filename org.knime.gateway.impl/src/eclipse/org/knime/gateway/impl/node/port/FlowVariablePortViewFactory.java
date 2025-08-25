@@ -112,8 +112,9 @@ public final class FlowVariablePortViewFactory implements PortViewFactory<FlowVa
             public Page getPage() {
                 return Page.create().fromFile() //
                     .bundleClass(CoreUIPlugin.class) //
-                    .basePath("js-src/dist") //
-                    .relativeFilePath("TableView.js") //
+                    .basePath("js-src") //
+                    .relativeFilePath("dist/TableView.js") //
+                    .addResourceDirectory("dist") //
                     .getReusablePage("flowvariableview");
             }
 
