@@ -42,69 +42,79 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Operations on K-AI.
- *
+ * JSON payload containing the human-readable representation of the current workflow and selected nodes.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface KaiService extends GatewayService {
+public interface SuggestAnnotationPayloadEnt extends GatewayEntity {
+
+
+  /**
+   * Current workflow, including nodes, connections, annotations.
+   * @return context , never <code>null</code>
+   **/
+  public String getContext();
+
+  /**
+   * IDs of the selected nodes.
+   * @return selectedNodeIds , never <code>null</code>
+   **/
+  public java.util.List<String> getSelectedNodeIds();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (SuggestAnnotationPayloadEnt)other;
+      valueConsumer.accept("context", Pair.create(getContext(), e.getContext()));
+      valueConsumer.accept("selectedNodeIds", Pair.create(getSelectedNodeIds(), e.getSelectedNodeIds()));
+  }
 
     /**
-     * Aborts the currently running request to the given chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     *
-     * 
+     * The builder for the entity.
      */
-    void abortAiRequest(String kaiChainId) ;
+    public interface SuggestAnnotationPayloadEntBuilder extends GatewayEntityBuilder<SuggestAnnotationPayloadEnt> {
+
+        /**
+         * Current workflow, including nodes, connections, annotations.
+         * 
+         * @param context the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SuggestAnnotationPayloadEntBuilder setContext(String context);
         
-    /**
-     * Executes a K-AI quick action, such as suggesting an annotation for a node selection.
-     *
-     * @param kaiQuickActionRequest 
-     *
-     * @return the result
-     */
-    KaiQuickActionResponseEnt executeQuickAction(KaiQuickActionRequestEnt kaiQuickActionRequest) ;
+        /**
+         * IDs of the selected nodes.
+         * 
+         * @param selectedNodeIds the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        SuggestAnnotationPayloadEntBuilder setSelectedNodeIds(java.util.List<String> selectedNodeIds);
         
-    /**
-     * Fetches the disclaimer and welcome messages displayed in K-AI&#39;s chat interface.
-     *
-     *
-     * @return the result
-     */
-    KaiUiStringsEnt getUiStrings() ;
         
-    /**
-     * Sends a request to a chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     * @param kaiRequest 
-     *
-     * 
-     */
-    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
-        
-    /**
-     * Submits feedback for a chain.
-     *
-     * @param kaiFeedbackId Id of the K-AI feedback
-     * @param kaiFeedback 
-     *
-     * 
-     */
-    void submitFeedback(String kaiFeedbackId, KaiFeedbackEnt kaiFeedback) ;
-        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        SuggestAnnotationPayloadEnt build();
+    
+    }
+
 }

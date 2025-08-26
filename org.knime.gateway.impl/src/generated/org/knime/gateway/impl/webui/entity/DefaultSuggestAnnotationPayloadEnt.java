@@ -42,69 +42,87 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
+
+import org.knime.gateway.api.webui.entity.SuggestAnnotationPayloadEnt;
 
 /**
- * Operations on K-AI.
+ * JSON payload containing the human-readable representation of the current workflow and selected nodes.
+ *
+ * @param context
+ * @param selectedNodeIds
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface KaiService extends GatewayService {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultSuggestAnnotationPayloadEnt(
+    String context,
+    java.util.List<String> selectedNodeIds) implements SuggestAnnotationPayloadEnt {
 
     /**
-     * Aborts the currently running request to the given chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     *
-     * 
+     * Validation for required parameters not being {@code null}.
      */
-    void abortAiRequest(String kaiChainId) ;
-        
+    public DefaultSuggestAnnotationPayloadEnt {
+        if(context == null) {
+            throw new IllegalArgumentException("<context> must not be null.");
+        }
+        if(selectedNodeIds == null) {
+            throw new IllegalArgumentException("<selectedNodeIds> must not be null.");
+        }
+    }
+
+    @Override
+    public String getTypeID() {
+        return "SuggestAnnotationPayload";
+    }
+  
+    @Override
+    public String getContext() {
+        return context;
+    }
+    
+    @Override
+    public java.util.List<String> getSelectedNodeIds() {
+        return selectedNodeIds;
+    }
+    
     /**
-     * Executes a K-AI quick action, such as suggesting an annotation for a node selection.
-     *
-     * @param kaiQuickActionRequest 
-     *
-     * @return the result
+     * A builder for {@link DefaultSuggestAnnotationPayloadEnt}.
      */
-    KaiQuickActionResponseEnt executeQuickAction(KaiQuickActionRequestEnt kaiQuickActionRequest) ;
-        
-    /**
-     * Fetches the disclaimer and welcome messages displayed in K-AI&#39;s chat interface.
-     *
-     *
-     * @return the result
-     */
-    KaiUiStringsEnt getUiStrings() ;
-        
-    /**
-     * Sends a request to a chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     * @param kaiRequest 
-     *
-     * 
-     */
-    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
-        
-    /**
-     * Submits feedback for a chain.
-     *
-     * @param kaiFeedbackId Id of the K-AI feedback
-     * @param kaiFeedback 
-     *
-     * 
-     */
-    void submitFeedback(String kaiFeedbackId, KaiFeedbackEnt kaiFeedback) ;
-        
+    public static class DefaultSuggestAnnotationPayloadEntBuilder implements SuggestAnnotationPayloadEntBuilder {
+
+        private String m_context;
+
+        private java.util.List<String> m_selectedNodeIds = new java.util.ArrayList<>();
+
+        @Override
+        public DefaultSuggestAnnotationPayloadEntBuilder setContext(String context) {
+             if(context == null) {
+                 throw new IllegalArgumentException("<context> must not be null.");
+             }
+             m_context = context;
+             return this;
+        }
+
+        @Override
+        public DefaultSuggestAnnotationPayloadEntBuilder setSelectedNodeIds(java.util.List<String> selectedNodeIds) {
+             if(selectedNodeIds == null) {
+                 throw new IllegalArgumentException("<selectedNodeIds> must not be null.");
+             }
+             m_selectedNodeIds = selectedNodeIds;
+             return this;
+        }
+
+        @Override
+        public DefaultSuggestAnnotationPayloadEnt build() {
+            return new DefaultSuggestAnnotationPayloadEnt(
+                immutable(m_context),
+                immutable(m_selectedNodeIds));
+        }
+    
+    }
+
 }

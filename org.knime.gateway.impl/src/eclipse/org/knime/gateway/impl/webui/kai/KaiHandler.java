@@ -52,6 +52,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
 
 /**
  *
@@ -65,6 +67,8 @@ public interface KaiHandler {
      * @param request the user request
      */
     void onNewRequest(Request request);
+
+    KaiQuickActionResponseEnt onExecuteQuickAction(KaiQuickActionRequestEnt request);
 
     /**
      * Invoked if the user cancels the answer of the currently processed message.

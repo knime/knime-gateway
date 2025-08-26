@@ -42,82 +42,89 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.jsonrpc.service;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import com.googlecode.jsonrpc4j.JsonRpcError;
-import com.googlecode.jsonrpc4j.JsonRpcErrors;
-import com.googlecode.jsonrpc4j.JsonRpcMethod;
-import com.googlecode.jsonrpc4j.JsonRpcParam;
-import com.googlecode.jsonrpc4j.JsonRpcService;
+import org.knime.gateway.api.webui.entity.SuggestAnnotationResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResponseEnt;
 
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-
-import org.knime.gateway.api.webui.service.KaiService;
+import org.knime.gateway.api.webui.entity.SuggestAnnotationResponseEnt;
 
 /**
- * Json rpc annotated class that wraps another service and delegates the method calls. 
+ * Response from K-AI containing the suggested annotation content.
+ *
+ * @param quickActionId
+ * @param result
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonRpcService(value = "KaiService")
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
-public class JsonRpcKaiServiceWrapper implements KaiService {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultSuggestAnnotationResponseEnt(
+    QuickActionIdEnum quickActionId,
+    SuggestAnnotationResultEnt result) implements SuggestAnnotationResponseEnt {
 
-    private final java.util.function.Supplier<KaiService> m_service;
+    /**
+     * Validation for required parameters not being {@code null}.
+     */
+    public DefaultSuggestAnnotationResponseEnt {
+        if(quickActionId == null) {
+            throw new IllegalArgumentException("<quickActionId> must not be null.");
+        }
+        if(result == null) {
+            throw new IllegalArgumentException("<result> must not be null.");
+        }
+    }
+
+    @Override
+    public String getTypeID() {
+        return "SuggestAnnotationResponse";
+    }
+  
+    @Override
+    public QuickActionIdEnum getQuickActionId() {
+        return quickActionId;
+    }
     
-    public JsonRpcKaiServiceWrapper(java.util.function.Supplier<KaiService> service) {
-        m_service = service;
-    }
-
-	/**
-     * {@inheritDoc}
-     */
     @Override
-    @JsonRpcMethod(value = "abortAiRequest")
-    public void abortAiRequest(@JsonRpcParam(value="kaiChainId") String kaiChainId)  {
-        m_service.get().abortAiRequest(kaiChainId);    
+    public SuggestAnnotationResultEnt getResult() {
+        return result;
     }
-
-	/**
-     * {@inheritDoc}
+    
+    /**
+     * A builder for {@link DefaultSuggestAnnotationResponseEnt}.
      */
-    @Override
-    @JsonRpcMethod(value = "executeQuickAction")
-    public KaiQuickActionResponseEnt executeQuickAction(@JsonRpcParam(value="kaiQuickActionRequest") KaiQuickActionRequestEnt kaiQuickActionRequest)  {
-        return m_service.get().executeQuickAction(kaiQuickActionRequest);    
-    }
+    public static class DefaultSuggestAnnotationResponseEntBuilder implements SuggestAnnotationResponseEntBuilder {
 
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "getUiStrings")
-    public KaiUiStringsEnt getUiStrings()  {
-        return m_service.get().getUiStrings();    
-    }
+        private QuickActionIdEnum m_quickActionId;
 
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "makeAiRequest")
-    public void makeAiRequest(@JsonRpcParam(value="kaiChainId") String kaiChainId, @JsonRpcParam(value="kaiRequest") KaiRequestEnt kaiRequest)  {
-        m_service.get().makeAiRequest(kaiChainId, kaiRequest);    
-    }
+        private SuggestAnnotationResultEnt m_result;
 
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "submitFeedback")
-    public void submitFeedback(@JsonRpcParam(value="kaiFeedbackId") String kaiFeedbackId, @JsonRpcParam(value="kaiFeedback") KaiFeedbackEnt kaiFeedback)  {
-        m_service.get().submitFeedback(kaiFeedbackId, kaiFeedback);    
+        @Override
+        public DefaultSuggestAnnotationResponseEntBuilder setQuickActionId(QuickActionIdEnum quickActionId) {
+             if(quickActionId == null) {
+                 throw new IllegalArgumentException("<quickActionId> must not be null.");
+             }
+             m_quickActionId = quickActionId;
+             return this;
+        }
+
+        @Override
+        public DefaultSuggestAnnotationResponseEntBuilder setResult(SuggestAnnotationResultEnt result) {
+             if(result == null) {
+                 throw new IllegalArgumentException("<result> must not be null.");
+             }
+             m_result = result;
+             return this;
+        }
+
+        @Override
+        public DefaultSuggestAnnotationResponseEnt build() {
+            return new DefaultSuggestAnnotationResponseEnt(
+                immutable(m_quickActionId),
+                immutable(m_result));
+        }
+    
     }
 
 }

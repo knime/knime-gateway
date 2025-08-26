@@ -42,69 +42,87 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
+
 import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 
 /**
- * Operations on K-AI.
+ * Base schema for all K-AI quick action requests.
+ *
+ * @param projectId
+ * @param quickActionId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface KaiService extends GatewayService {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultKaiQuickActionRequestEnt(
+    String projectId,
+    QuickActionIdEnum quickActionId) implements KaiQuickActionRequestEnt {
 
     /**
-     * Aborts the currently running request to the given chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     *
-     * 
+     * Validation for required parameters not being {@code null}.
      */
-    void abortAiRequest(String kaiChainId) ;
-        
+    public DefaultKaiQuickActionRequestEnt {
+        if(projectId == null) {
+            throw new IllegalArgumentException("<projectId> must not be null.");
+        }
+        if(quickActionId == null) {
+            throw new IllegalArgumentException("<quickActionId> must not be null.");
+        }
+    }
+
+    @Override
+    public String getTypeID() {
+        return "KaiQuickActionRequest";
+    }
+  
+    @Override
+    public String getProjectId() {
+        return projectId;
+    }
+    
+    @Override
+    public QuickActionIdEnum getQuickActionId() {
+        return quickActionId;
+    }
+    
     /**
-     * Executes a K-AI quick action, such as suggesting an annotation for a node selection.
-     *
-     * @param kaiQuickActionRequest 
-     *
-     * @return the result
+     * A builder for {@link DefaultKaiQuickActionRequestEnt}.
      */
-    KaiQuickActionResponseEnt executeQuickAction(KaiQuickActionRequestEnt kaiQuickActionRequest) ;
-        
-    /**
-     * Fetches the disclaimer and welcome messages displayed in K-AI&#39;s chat interface.
-     *
-     *
-     * @return the result
-     */
-    KaiUiStringsEnt getUiStrings() ;
-        
-    /**
-     * Sends a request to a chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     * @param kaiRequest 
-     *
-     * 
-     */
-    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
-        
-    /**
-     * Submits feedback for a chain.
-     *
-     * @param kaiFeedbackId Id of the K-AI feedback
-     * @param kaiFeedback 
-     *
-     * 
-     */
-    void submitFeedback(String kaiFeedbackId, KaiFeedbackEnt kaiFeedback) ;
-        
+    public static class DefaultKaiQuickActionRequestEntBuilder implements KaiQuickActionRequestEntBuilder {
+
+        private String m_projectId;
+
+        private QuickActionIdEnum m_quickActionId;
+
+        @Override
+        public DefaultKaiQuickActionRequestEntBuilder setProjectId(String projectId) {
+             if(projectId == null) {
+                 throw new IllegalArgumentException("<projectId> must not be null.");
+             }
+             m_projectId = projectId;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiQuickActionRequestEntBuilder setQuickActionId(QuickActionIdEnum quickActionId) {
+             if(quickActionId == null) {
+                 throw new IllegalArgumentException("<quickActionId> must not be null.");
+             }
+             m_quickActionId = quickActionId;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiQuickActionRequestEnt build() {
+            return new DefaultKaiQuickActionRequestEnt(
+                immutable(m_projectId),
+                immutable(m_quickActionId));
+        }
+    
+    }
+
 }

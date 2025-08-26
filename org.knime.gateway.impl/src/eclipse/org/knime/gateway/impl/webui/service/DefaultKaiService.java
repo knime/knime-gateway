@@ -54,6 +54,8 @@ import java.util.function.Consumer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
+import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.service.KaiService;
@@ -199,6 +201,19 @@ public final class DefaultKaiService implements KaiService {
     public void submitFeedback(final String kaiFeedbackId, final KaiFeedbackEnt kaiFeedback) {
         getListener().ifPresent(l -> l.onFeedback(kaiFeedbackId, kaiFeedback.getProjectId(), kaiFeedback.isPositive(),
             kaiFeedback.getComment()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public KaiQuickActionResponseEnt executeQuickAction(final KaiQuickActionRequestEnt req) {
+        var projectId = req.getProjectId();
+        if (projectId == null || projectId.isBlank()) {
+            throw new IllegalArgumentException("projectId is required for quick actions");
+        }
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        return getListener().map(l -> l.onExecuteQuickAction(req)).orElse(null);
     }
 
 }

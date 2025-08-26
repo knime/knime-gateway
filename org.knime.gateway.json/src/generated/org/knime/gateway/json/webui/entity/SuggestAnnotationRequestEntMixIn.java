@@ -42,69 +42,74 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.entity.SuggestAnnotationPayloadEnt;
+import org.knime.gateway.json.webui.entity.KaiQuickActionRequestEntMixIn;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.SuggestAnnotationRequestEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSuggestAnnotationRequestEnt.DefaultSuggestAnnotationRequestEntBuilder;
 
 /**
- * Operations on K-AI.
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface KaiService extends GatewayService {
+
+@JsonDeserialize(builder=DefaultSuggestAnnotationRequestEntBuilder.class)
+@JsonSerialize(as=SuggestAnnotationRequestEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface SuggestAnnotationRequestEntMixIn extends SuggestAnnotationRequestEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("projectId")
+    public String getProjectId();
+    
+    @Override
+    @JsonProperty("quickActionId")
+    public QuickActionIdEnum getQuickActionId();
+    
+    @Override
+    @JsonProperty("payload")
+    public SuggestAnnotationPayloadEnt getPayload();
+    
 
     /**
-     * Aborts the currently running request to the given chain.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
-     * @param kaiChainId Id of a K-AI chain.
-     *
-     * 
+     * @author Martin Horn, University of Konstanz
      */
-    void abortAiRequest(String kaiChainId) ;
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface SuggestAnnotationRequestEntMixInBuilder extends SuggestAnnotationRequestEntBuilder {
+    
+        @Override
+        public SuggestAnnotationRequestEntMixIn build();
+    
+        @Override
+        @JsonProperty("projectId")
+        public SuggestAnnotationRequestEntMixInBuilder setProjectId(final String projectId);
         
-    /**
-     * Executes a K-AI quick action, such as suggesting an annotation for a node selection.
-     *
-     * @param kaiQuickActionRequest 
-     *
-     * @return the result
-     */
-    KaiQuickActionResponseEnt executeQuickAction(KaiQuickActionRequestEnt kaiQuickActionRequest) ;
+        @Override
+        @JsonProperty("quickActionId")
+        public SuggestAnnotationRequestEntMixInBuilder setQuickActionId(final QuickActionIdEnum quickActionId);
         
-    /**
-     * Fetches the disclaimer and welcome messages displayed in K-AI&#39;s chat interface.
-     *
-     *
-     * @return the result
-     */
-    KaiUiStringsEnt getUiStrings() ;
+        @Override
+        @JsonProperty("payload")
+        public SuggestAnnotationRequestEntMixInBuilder setPayload(final SuggestAnnotationPayloadEnt payload);
         
-    /**
-     * Sends a request to a chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     * @param kaiRequest 
-     *
-     * 
-     */
-    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
-        
-    /**
-     * Submits feedback for a chain.
-     *
-     * @param kaiFeedbackId Id of the K-AI feedback
-     * @param kaiFeedback 
-     *
-     * 
-     */
-    void submitFeedback(String kaiFeedbackId, KaiFeedbackEnt kaiFeedback) ;
-        
+    }
+
+
 }
+

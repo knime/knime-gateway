@@ -152,6 +152,10 @@ import org.knime.gateway.api.webui.entity.KaiFeedbackEnt.KaiFeedbackEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.KaiMessageEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt.KaiQuickActionRequestEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt.KaiQuickActionResponseEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt.KaiRequestEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt.KaiUiStringsEntBuilder;
@@ -278,6 +282,14 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
+import org.knime.gateway.api.webui.entity.SuggestAnnotationPayloadEnt.SuggestAnnotationPayloadEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSuggestAnnotationPayloadEnt;
+import org.knime.gateway.api.webui.entity.SuggestAnnotationRequestEnt.SuggestAnnotationRequestEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSuggestAnnotationRequestEnt;
+import org.knime.gateway.api.webui.entity.SuggestAnnotationResponseEnt.SuggestAnnotationResponseEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSuggestAnnotationResponseEnt;
+import org.knime.gateway.api.webui.entity.SuggestAnnotationResultEnt.SuggestAnnotationResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSuggestAnnotationResultEnt;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt.TemplateLinkEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt;
 import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt.TransformMetanodePortsBarCommandEntBuilder;
@@ -526,6 +538,12 @@ public class Interface2ImplMap {
         if(clazz == KaiMessageEntBuilder.class) {
             return (B)new DefaultKaiMessageEnt.DefaultKaiMessageEntBuilder();
         }        
+        if(clazz == KaiQuickActionRequestEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionRequestEnt.DefaultKaiQuickActionRequestEntBuilder();
+        }        
+        if(clazz == KaiQuickActionResponseEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionResponseEnt.DefaultKaiQuickActionResponseEntBuilder();
+        }        
         if(clazz == KaiRequestEntBuilder.class) {
             return (B)new DefaultKaiRequestEnt.DefaultKaiRequestEntBuilder();
         }        
@@ -714,6 +732,18 @@ public class Interface2ImplMap {
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();
+        }        
+        if(clazz == SuggestAnnotationPayloadEntBuilder.class) {
+            return (B)new DefaultSuggestAnnotationPayloadEnt.DefaultSuggestAnnotationPayloadEntBuilder();
+        }        
+        if(clazz == SuggestAnnotationRequestEntBuilder.class) {
+            return (B)new DefaultSuggestAnnotationRequestEnt.DefaultSuggestAnnotationRequestEntBuilder();
+        }        
+        if(clazz == SuggestAnnotationResponseEntBuilder.class) {
+            return (B)new DefaultSuggestAnnotationResponseEnt.DefaultSuggestAnnotationResponseEntBuilder();
+        }        
+        if(clazz == SuggestAnnotationResultEntBuilder.class) {
+            return (B)new DefaultSuggestAnnotationResultEnt.DefaultSuggestAnnotationResultEntBuilder();
         }        
         if(clazz == TemplateLinkEntBuilder.class) {
             return (B)new DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder();

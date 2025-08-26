@@ -42,69 +42,83 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Operations on K-AI.
- *
+ * Base schema for all K-AI quick action responses.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface KaiService extends GatewayService {
+public interface KaiQuickActionResponseEnt extends GatewayEntity {
+
+  /**
+   * The discriminator field for the quick action type.
+   */
+  public enum QuickActionIdEnum {
+    SUGGEST_ANNOTATION("suggest_annotation");
+
+    private String value;
+
+    QuickActionIdEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
+
+  /**
+   * The discriminator field for the quick action type.
+   * @return quickActionId , never <code>null</code>
+   **/
+  public QuickActionIdEnum getQuickActionId();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (KaiQuickActionResponseEnt)other;
+      valueConsumer.accept("quickActionId", Pair.create(getQuickActionId(), e.getQuickActionId()));
+  }
 
     /**
-     * Aborts the currently running request to the given chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     *
-     * 
+     * The builder for the entity.
      */
-    void abortAiRequest(String kaiChainId) ;
+    public interface KaiQuickActionResponseEntBuilder extends GatewayEntityBuilder<KaiQuickActionResponseEnt> {
+
+        /**
+         * The discriminator field for the quick action type.
+         * 
+         * @param quickActionId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiQuickActionResponseEntBuilder setQuickActionId(QuickActionIdEnum quickActionId);
         
-    /**
-     * Executes a K-AI quick action, such as suggesting an annotation for a node selection.
-     *
-     * @param kaiQuickActionRequest 
-     *
-     * @return the result
-     */
-    KaiQuickActionResponseEnt executeQuickAction(KaiQuickActionRequestEnt kaiQuickActionRequest) ;
         
-    /**
-     * Fetches the disclaimer and welcome messages displayed in K-AI&#39;s chat interface.
-     *
-     *
-     * @return the result
-     */
-    KaiUiStringsEnt getUiStrings() ;
-        
-    /**
-     * Sends a request to a chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     * @param kaiRequest 
-     *
-     * 
-     */
-    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
-        
-    /**
-     * Submits feedback for a chain.
-     *
-     * @param kaiFeedbackId Id of the K-AI feedback
-     * @param kaiFeedback 
-     *
-     * 
-     */
-    void submitFeedback(String kaiFeedbackId, KaiFeedbackEnt kaiFeedback) ;
-        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        KaiQuickActionResponseEnt build();
+    
+    }
+
 }
