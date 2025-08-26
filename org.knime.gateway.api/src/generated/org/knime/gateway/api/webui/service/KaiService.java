@@ -50,6 +50,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
+import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 
 /**
  * Operations on K-AI.
@@ -75,6 +76,14 @@ public interface KaiService extends GatewayService {
      * @return the result
      */
     KaiUiStringsEnt getUiStrings() ;
+        
+    /**
+     * Retrieves the current user&#39;s AI interaction usage and limits.
+     *
+     *
+     * @return the result
+     */
+    KaiUsageEnt getUsage() ;
         
     /**
      * Sends a request to a chain.

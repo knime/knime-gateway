@@ -156,6 +156,8 @@ import org.knime.gateway.api.webui.entity.KaiRequestEnt.KaiRequestEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt.KaiUiStringsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiUiStringsEnt;
+import org.knime.gateway.api.webui.entity.KaiUsageEnt.KaiUsageEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiUsageEnt;
 import org.knime.gateway.api.webui.entity.KaiWelcomeMessagesEnt.KaiWelcomeMessagesEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiWelcomeMessagesEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
@@ -531,6 +533,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == KaiUiStringsEntBuilder.class) {
             return (B)new DefaultKaiUiStringsEnt.DefaultKaiUiStringsEntBuilder();
+        }        
+        if(clazz == KaiUsageEntBuilder.class) {
+            return (B)new DefaultKaiUsageEnt.DefaultKaiUsageEntBuilder();
         }        
         if(clazz == KaiWelcomeMessagesEntBuilder.class) {
             return (B)new DefaultKaiWelcomeMessagesEnt.DefaultKaiWelcomeMessagesEntBuilder();

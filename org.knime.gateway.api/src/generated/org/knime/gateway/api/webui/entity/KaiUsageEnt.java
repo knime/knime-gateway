@@ -42,81 +42,79 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.jsonrpc.service;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
-import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 
-import com.googlecode.jsonrpc4j.JsonRpcError;
-import com.googlecode.jsonrpc4j.JsonRpcErrors;
-import com.googlecode.jsonrpc4j.JsonRpcMethod;
-import com.googlecode.jsonrpc4j.JsonRpcParam;
-import com.googlecode.jsonrpc4j.JsonRpcService;
+import java.util.function.BiConsumer;
 
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.core.util.Pair;
 
-import org.knime.gateway.api.webui.service.KaiService;
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Json rpc annotated class that wraps another service and delegates the method calls. 
- *
+ * Current AI interaction usage and limits for the authenticated user.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonRpcService(value = "KaiService")
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
-public class JsonRpcKaiServiceWrapper implements KaiService {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface KaiUsageEnt extends GatewayEntity {
 
-    private final java.util.function.Supplier<KaiService> m_service;
+
+  /**
+   * Maximum number of requests allowed.
+   * @return limit , never <code>null</code>
+   **/
+  public Integer getLimit();
+
+  /**
+   * Number of requests used.
+   * @return used , never <code>null</code>
+   **/
+  public Integer getUsed();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (KaiUsageEnt)other;
+      valueConsumer.accept("limit", Pair.create(getLimit(), e.getLimit()));
+      valueConsumer.accept("used", Pair.create(getUsed(), e.getUsed()));
+  }
+
+    /**
+     * The builder for the entity.
+     */
+    public interface KaiUsageEntBuilder extends GatewayEntityBuilder<KaiUsageEnt> {
+
+        /**
+         * Maximum number of requests allowed.
+         * 
+         * @param limit the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiUsageEntBuilder setLimit(Integer limit);
+        
+        /**
+         * Number of requests used.
+         * 
+         * @param used the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiUsageEntBuilder setUsed(Integer used);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        KaiUsageEnt build();
     
-    public JsonRpcKaiServiceWrapper(java.util.function.Supplier<KaiService> service) {
-        m_service = service;
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "abortAiRequest")
-    public void abortAiRequest(@JsonRpcParam(value="kaiChainId") String kaiChainId)  {
-        m_service.get().abortAiRequest(kaiChainId);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "getUiStrings")
-    public KaiUiStringsEnt getUiStrings()  {
-        return m_service.get().getUiStrings();    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "getUsage")
-    public KaiUsageEnt getUsage()  {
-        return m_service.get().getUsage();    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "makeAiRequest")
-    public void makeAiRequest(@JsonRpcParam(value="kaiChainId") String kaiChainId, @JsonRpcParam(value="kaiRequest") KaiRequestEnt kaiRequest)  {
-        m_service.get().makeAiRequest(kaiChainId, kaiRequest);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "submitFeedback")
-    public void submitFeedback(@JsonRpcParam(value="kaiFeedbackId") String kaiFeedbackId, @JsonRpcParam(value="kaiFeedback") KaiFeedbackEnt kaiFeedback)  {
-        m_service.get().submitFeedback(kaiFeedbackId, kaiFeedback);    
     }
 
 }

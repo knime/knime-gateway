@@ -42,81 +42,64 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.webui.jsonrpc.service;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
-
-import com.googlecode.jsonrpc4j.JsonRpcError;
-import com.googlecode.jsonrpc4j.JsonRpcErrors;
-import com.googlecode.jsonrpc4j.JsonRpcMethod;
-import com.googlecode.jsonrpc4j.JsonRpcParam;
-import com.googlecode.jsonrpc4j.JsonRpcService;
-
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-
-import org.knime.gateway.api.webui.service.KaiService;
+import org.knime.gateway.impl.webui.entity.DefaultKaiUsageEnt.DefaultKaiUsageEntBuilder;
 
 /**
- * Json rpc annotated class that wraps another service and delegates the method calls. 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@JsonRpcService(value = "KaiService")
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl.jsonrpc-config.json"})
-public class JsonRpcKaiServiceWrapper implements KaiService {
 
-    private final java.util.function.Supplier<KaiService> m_service;
+@JsonDeserialize(builder=DefaultKaiUsageEntBuilder.class)
+@JsonSerialize(as=KaiUsageEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface KaiUsageEntMixIn extends KaiUsageEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("limit")
+    public Integer getLimit();
     
-    public JsonRpcKaiServiceWrapper(java.util.function.Supplier<KaiService> service) {
-        m_service = service;
+    @Override
+    @JsonProperty("used")
+    public Integer getUsed();
+    
+
+    /**
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
+     */
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface KaiUsageEntMixInBuilder extends KaiUsageEntBuilder {
+    
+        @Override
+        public KaiUsageEntMixIn build();
+    
+        @Override
+        @JsonProperty("limit")
+        public KaiUsageEntMixInBuilder setLimit(final Integer limit);
+        
+        @Override
+        @JsonProperty("used")
+        public KaiUsageEntMixInBuilder setUsed(final Integer used);
+        
     }
 
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "abortAiRequest")
-    public void abortAiRequest(@JsonRpcParam(value="kaiChainId") String kaiChainId)  {
-        m_service.get().abortAiRequest(kaiChainId);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "getUiStrings")
-    public KaiUiStringsEnt getUiStrings()  {
-        return m_service.get().getUiStrings();    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "getUsage")
-    public KaiUsageEnt getUsage()  {
-        return m_service.get().getUsage();    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "makeAiRequest")
-    public void makeAiRequest(@JsonRpcParam(value="kaiChainId") String kaiChainId, @JsonRpcParam(value="kaiRequest") KaiRequestEnt kaiRequest)  {
-        m_service.get().makeAiRequest(kaiChainId, kaiRequest);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "submitFeedback")
-    public void submitFeedback(@JsonRpcParam(value="kaiFeedbackId") String kaiFeedbackId, @JsonRpcParam(value="kaiFeedback") KaiFeedbackEnt kaiFeedback)  {
-        m_service.get().submitFeedback(kaiFeedbackId, kaiFeedback);    
-    }
 
 }
+

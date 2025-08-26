@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 
 /**
  *
@@ -77,6 +78,11 @@ public interface KaiHandler {
      * @return the UI strings (disclaimer and welcome messages) in JSON format
      */
     UiStrings getUiStrings();
+
+    /**
+     * @return the AI interaction usage for current user.
+     */
+    KaiUsageEnt getUsage();
 
     /**
      * Invoked if the user provides feedback on one of K-AI's answers.
