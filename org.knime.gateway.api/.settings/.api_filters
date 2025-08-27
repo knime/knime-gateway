@@ -732,18 +732,12 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.KaiService"/>
-                <message_argument value="getUsage()"/>
-            </message_arguments>
-        </filter>
-        <filter id="404308958">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.service.KaiService"/>
-                <message_argument value="getUsage()"/>
+                <message_argument value="getUsage(String)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
             <message_arguments>
-                <message_argument value="getUsage()"/>
+                <message_argument value="getUsage(String)"/>
             </message_arguments>
         </filter>
     </resource>
