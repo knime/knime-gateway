@@ -58,8 +58,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
+import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiRequestEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiUsageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultXYEnt;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.kai.KaiHandler.CodeAssistant;
@@ -138,6 +140,22 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
     public void testAbortAiRequest() throws Exception {
         DefaultKaiService.getInstance().abortAiRequest("build");
         Mockito.verify(m_kaiHandler).onCancel("build");
+    }
+
+    /**
+     * Tests that the getUsage method correctly delegates to the listener.
+     *
+     * @throws Exception not thrown
+     */
+    @Test
+    public void testGetUsage() throws Exception {
+        var expectedUsage = new DefaultKaiUsageEnt(100, 25);
+        Mockito.when(m_kaiHandler.getUsage()).thenReturn(expectedUsage);
+        
+        KaiUsageEnt returnedUsage = DefaultKaiService.getInstance().getUsage();
+        
+        assertEquals(expectedUsage.getLimit(), returnedUsage.getLimit());
+        assertEquals(expectedUsage.getUsed(), returnedUsage.getUsed());
     }
 
 }
