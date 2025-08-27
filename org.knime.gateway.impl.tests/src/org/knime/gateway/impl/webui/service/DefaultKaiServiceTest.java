@@ -150,12 +150,15 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
     @Test
     public void testGetUsage() throws Exception {
         var expectedUsage = new DefaultKaiUsageEnt(100, 25);
-        Mockito.when(m_kaiHandler.getUsage()).thenReturn(expectedUsage);
-        
-        KaiUsageEnt returnedUsage = DefaultKaiService.getInstance().getUsage();
-        
+        String projectId = "bar";
+
+        Mockito.when(m_kaiHandler.getUsage(projectId)).thenReturn(expectedUsage);
+
+        KaiUsageEnt returnedUsage = DefaultKaiService.getInstance().getUsage(projectId);
+
         assertEquals(expectedUsage.getLimit(), returnedUsage.getLimit());
         assertEquals(expectedUsage.getUsed(), returnedUsage.getUsed());
+        verify(m_kaiHandler).getUsage(projectId);
     }
 
 }

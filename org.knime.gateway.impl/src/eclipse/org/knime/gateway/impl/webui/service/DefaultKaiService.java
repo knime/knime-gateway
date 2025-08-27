@@ -203,8 +203,9 @@ public final class DefaultKaiService implements KaiService {
     }
 
     @Override
-    public KaiUsageEnt getUsage() {
-        return getListener().map(KaiHandler::getUsage).orElse(null);
+    public KaiUsageEnt getUsage(final String projectId) {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        return getListener().map(l -> l.getUsage(projectId)).orElse(null);
     }
 
 }

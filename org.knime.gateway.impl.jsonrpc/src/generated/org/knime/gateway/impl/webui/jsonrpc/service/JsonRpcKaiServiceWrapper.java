@@ -97,8 +97,8 @@ public class JsonRpcKaiServiceWrapper implements KaiService {
      */
     @Override
     @JsonRpcMethod(value = "getUsage")
-    public KaiUsageEnt getUsage()  {
-        return m_service.get().getUsage();    
+    public KaiUsageEnt getUsage(@JsonRpcParam(value="projectId") String projectId)  {
+        return m_service.get().getUsage(projectId);    
     }
 
 	/**

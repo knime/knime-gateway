@@ -80,10 +80,11 @@ public interface KaiService extends GatewayService {
     /**
      * Retrieves the current user&#39;s AI interaction usage and limits.
      *
+     * @param projectId ID of the workflow-project.
      *
      * @return the result
      */
-    KaiUsageEnt getUsage() ;
+    KaiUsageEnt getUsage(String projectId) ;
         
     /**
      * Sends a request to a chain.
