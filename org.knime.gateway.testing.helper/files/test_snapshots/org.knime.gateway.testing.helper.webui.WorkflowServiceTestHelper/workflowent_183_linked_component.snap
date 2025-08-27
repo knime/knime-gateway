@@ -70,7 +70,6 @@
   },
   "nodes" : {
     "root:183:0:14" : {
-      "dialogType" : "swing",
       "executionInfo" : {
         "streamable" : false
       },
