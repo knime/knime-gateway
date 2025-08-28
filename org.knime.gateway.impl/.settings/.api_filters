@@ -377,6 +377,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/CodeKaiHandler.java" type="org.knime.gateway.impl.webui.kai.CodeKaiHandler">
+        <filter id="1108344834">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.CodeKaiHandler"/>
+                <message_argument value="getUsage(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/KaiHandler.java" type="org.knime.gateway.impl.webui.kai.KaiHandler">
         <filter id="403804204">
             <message_arguments>
