@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: KNIME Gateway Json Base Plugin
 Bundle-SymbolicName: org.knime.gateway.json;singleton:=true
-Bundle-Version: 5.6.0.qualifier
+Bundle-Version: 5.7.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.gateway.json.util
@@ -12,11 +12,11 @@ Require-Bundle: com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.1
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.13.2,3.0.0)",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.13.2,3.0.0)",
  com.fasterxml.jackson.datatype.jackson-datatype-jdk8;bundle-version="[2.13.2,3.0.0)",
- org.knime.gateway.api;bundle-version="[5.6.0,6.0.0)",
+ org.knime.gateway.api;bundle-version="[5.7.0,6.0.0)",
  de.undercouch.bson4jackson;bundle-version="[2.4.0,3.0.0)",
- org.knime.gateway.impl;bundle-version="[5.6.0,6.0.0)",
+ org.knime.gateway.impl;bundle-version="[5.7.0,6.0.0)",
  org.apache.commons.codec;bundle-version="[1.14.0,1.15.0)",
- org.knime.core.util;bundle-version="[6.6.0,7.0.0)",
+ org.knime.core.util;bundle-version="[6.7.0,7.0.0)",
  jakarta.annotation-api;bundle-version="[2.1.1,3.0.0)",
  com.fasterxml.jackson.datatype.jackson-datatype-jsr310;bundle-version="[2.13.2,3.0.0)"
 Automatic-Module-Name: org.knime.gateway.json
