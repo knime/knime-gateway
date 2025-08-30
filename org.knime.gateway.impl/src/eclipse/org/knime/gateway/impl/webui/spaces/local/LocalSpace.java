@@ -69,6 +69,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -98,6 +99,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.project.WorkflowServiceProjects;
 import org.knime.gateway.impl.webui.spaces.Collision;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -115,6 +117,9 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 public final class LocalSpace implements Space {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalSpace.class);
+
+    private static final Pattern KNWF_KNAR_FILE_EXTENSION =
+            Pattern.compile("\\.(knwf|knar)$", Pattern.CASE_INSENSITIVE);
 
     /**
      * ID of the single {@link Space} provider by the {@link }
@@ -260,7 +265,7 @@ public final class LocalSpace implements Space {
 
     /**
      * -
-     * 
+     *
      * @return The base path in the local file system.
      */
     public Path getRootPath() {
@@ -287,6 +292,12 @@ public final class LocalSpace implements Space {
                 if (path == null) {
                     continue;
                 }
+
+                // `WorkflowServiceProjects` is a view on a subset of Projects in ProjectManager
+                // used as e.g. callees of "Call Workflow" nodes. Additionally, it is backed by
+                // an external cache of WorkflowManagers, from which items are removed only after
+                // an expiry timeout. This might prevent deletion of these files.
+                WorkflowServiceProjects.clearCached(path);
 
                 PathUtils.deleteDirectoryIfExists(path);
                 deletedItems.add(new DeletedItem(itemId, path));
@@ -456,9 +467,11 @@ public final class LocalSpace implements Space {
             }
 
             final var tmpSrcPath = contents[0].toPath();
-            final var fileName = tmpSrcPath.getFileName().toString();
+            final var fileSuffixMatcher = KNWF_KNAR_FILE_EXTENSION.matcher(srcPath.getFileName().toString());
+            final var fileName = fileSuffixMatcher.replaceAll("").trim();
             Supplier<String> uniqueName = () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true);
-            destPath = resolveWithNameCollisions(workflowGroupItemId, tmpSrcPath, collisionHandling, uniqueName);
+            destPath = resolveWithNameCollisions(
+                workflowGroupItemId, tmpSrcPath.getParent().resolve(fileName), collisionHandling, uniqueName);
 
             FileUtil.copyDir(tmpSrcPath.toFile(), destPath.toFile());
         } finally {

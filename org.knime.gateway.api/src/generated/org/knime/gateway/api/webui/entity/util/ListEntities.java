@@ -100,6 +100,7 @@ import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
+import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 import org.knime.gateway.api.webui.entity.KaiWelcomeMessagesEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
@@ -273,6 +274,7 @@ public class ListEntities {
         res.add(KaiMessageEnt.class);
         res.add(KaiRequestEnt.class);
         res.add(KaiUiStringsEnt.class);
+        res.add(KaiUsageEnt.class);
         res.add(KaiWelcomeMessagesEnt.class);
         res.add(LinkEnt.class);
         res.add(LoopInfoEnt.class);
@@ -431,6 +433,7 @@ public class ListEntities {
         res.add(KaiMessageEnt.KaiMessageEntBuilder.class);
         res.add(KaiRequestEnt.KaiRequestEntBuilder.class);
         res.add(KaiUiStringsEnt.KaiUiStringsEntBuilder.class);
+        res.add(KaiUsageEnt.KaiUsageEntBuilder.class);
         res.add(KaiWelcomeMessagesEnt.KaiWelcomeMessagesEntBuilder.class);
         res.add(LinkEnt.LinkEntBuilder.class);
         res.add(LoopInfoEnt.LoopInfoEntBuilder.class);

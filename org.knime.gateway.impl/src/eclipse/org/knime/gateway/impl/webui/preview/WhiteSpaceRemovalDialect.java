@@ -44,59 +44,52 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 26, 2025 (hornm): created
+ *   30 Jul 2025 (albrecht): created
  */
-package org.knime.gateway.impl.project;
+package org.knime.gateway.impl.webui.preview;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.virtual.parchunk.FlowVirtualScopeContext;
-import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
+import java.util.Set;
+
+import org.thymeleaf.dialect.IPostProcessorDialect;
+import org.thymeleaf.engine.AbstractTemplateHandler;
+import org.thymeleaf.model.IText;
+import org.thymeleaf.postprocessor.IPostProcessor;
+import org.thymeleaf.postprocessor.PostProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
- * Allows to keep track of 'virtual projects'. A virtual project only exist for a temporary period of time and is never
- * persisted, such as a project used for tool-execution for an 'agent'-node. See also {@link FlowVirtualScopeContext}.
+ * ThymeLeaf dialect, which removes excess white space as a post-processor
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  * @since 5.6
  */
-public final class VirtualWorkflowProjects {
+@SuppressWarnings("javadoc")
+public final class WhiteSpaceRemovalDialect implements IPostProcessorDialect {
 
-    private VirtualWorkflowProjects() {
-        // utility class
+    // Adapted from: https://github.com/thymeleaf/thymeleaf/issues/108#issuecomment-761724887
+
+    @Override
+    public String getName() {
+        return "WhiteSpaceRemovalDialect";
     }
 
-    /**
-     * Registers a workflow manager as virtual project. As a result, the gateway API can be used to access the workflow
-     * manager (i.e. in order to access a node view and it's data services).
-     *
-     * @param wfm the workflow manager to register
-     * @return the new project ID
-     */
-    public static String registerProject(final WorkflowManager wfm) {
-        var proj = //
-            Project.builder() //
-                .setWfm(wfm) //
-                .build();
-        ProjectManager.getInstance().addProject(proj, ProjectConsumerType.VIRTUAL_WORKFLOW, false);
-        return proj.getID();
+    @Override
+    public int getDialectPostProcessorPrecedence() {
+        return 0;
     }
 
-    /**
-     * Removes the project for the given id and disposes the workflow manager associated with it.
-     *
-     * @param id the id of the project to remove
-     */
-    public static void removeProject(final String id) {
-        ProjectManager.getInstance().removeProject(id, ProjectConsumerType.VIRTUAL_WORKFLOW);
+    @Override
+    public Set<IPostProcessor> getPostProcessors() {
+        return Set.of(new PostProcessor(TemplateMode.HTML, WhiteSpaceRemoval.class, Integer.MAX_VALUE));
     }
 
-    /**
-     * @param id -
-     * @return whether the given id references a virtual project
-     * @since 5.7
-     */
-    public static boolean isVirtualProject(final String id) {
-        return ProjectManager.getInstance().getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).anyMatch(id::equals);
-    }
+    public static final class WhiteSpaceRemoval extends AbstractTemplateHandler {
 
+        @Override
+        public void handleText(final IText text) {
+            if (text.getText() == null || !text.getText().isBlank()) {
+                super.handleText(text);
+            }
+        }
+    }
 }

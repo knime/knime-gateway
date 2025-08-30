@@ -93,9 +93,9 @@ public class ProjectManagerTest {
         pm.addProject(proj2);
 
         // get project-ids
-        assertThat(pm.getProjectIds(), is(pm.getProjectIds(ProjectConsumerType.UI)));
+        assertThat(pm.getProjectIds(), is(pm.getProjectIds(ProjectConsumerType.UI).toList()));
         assertThat(pm.getProjectIds(), is(List.of(proj1.getID(), proj2.getID())));
-        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(List.of(proj1a.getID())));
+        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE).toList(), is(List.of(proj1a.getID())));
 
         // replace project
         pm.addProject(proj1b);
@@ -106,10 +106,21 @@ public class ProjectManagerTest {
         // remove project
         pm.removeProject(proj1.getID()); // removes the ui-consumer
         assertThat(pm.getProjectIds(), is(List.of(proj2.getID())));
-        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(List.of(proj1a.getID())));
+        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE).toList(), is(List.of(proj1a.getID())));
         pm.removeProject(proj1a.getID(), ProjectConsumerType.WORKFLOW_SERVICE);
         assertThat(pm.getProjectIds(), is(List.of(proj2.getID())));
-        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE), is(List.of()));
+        assertThat(pm.getProjectIds(ProjectConsumerType.WORKFLOW_SERVICE).toList(), is(List.of()));
+
+        // add/remove virtual projects
+        var proj3 = Project.builder().setWfm(wfm).build();
+        var proj4 = Project.builder().setWfm(wfm).build();
+        pm.addProject(proj3, ProjectConsumerType.VIRTUAL_WORKFLOW, false);
+        assertThat(pm.getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).toList(), is(List.of(proj3.getID())));
+        pm.addProject(proj4, ProjectConsumerType.VIRTUAL_WORKFLOW, false);
+        assertThat(pm.getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).toList(),
+            is(List.of(proj3.getID(), proj4.getID())));
+        pm.removeProject(proj3.getID(), ProjectConsumerType.VIRTUAL_WORKFLOW);
+        assertThat(pm.getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).toList(), is(List.of(proj4.getID())));
     }
 
 }

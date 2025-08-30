@@ -23,7 +23,7 @@
       "typeId" : "org.knime.core.node.BufferedDataTable",
       "typeName" : "Table"
     }, {
-      "optional" : false,
+      "optional" : true,
       "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject",
       "typeName" : "Flow Variable"
     } ],
@@ -70,7 +70,6 @@
   },
   "nodes" : {
     "root:183:0:14" : {
-      "dialogType" : "swing",
       "executionInfo" : {
         "streamable" : false
       },

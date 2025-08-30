@@ -51,6 +51,8 @@ package org.knime.gateway.impl.webui.service;
 import java.io.Closeable;
 import java.util.Optional;
 
+import org.knime.gateway.impl.project.VirtualWorkflowProjects;
+
 /**
  * Contextual information available to default service implementations when service methods are being called.
  *
@@ -114,6 +116,12 @@ public final class DefaultServiceContext {
     static void assertWorkflowProjectId(final String projectIdToCheck) {
         var expectedId = getProjectId().orElse(null);
         if (expectedId == null) {
+            return;
+        }
+        if (VirtualWorkflowProjects.isVirtualProject(projectIdToCheck)) {
+            // Exclude virtual projects from the check for now.
+            // Ideally, virtual projects are associated with project they were created from - then we could check that instead.
+            // But we don't have that association (yet).
             return;
         }
         if (!expectedId.equals(projectIdToCheck)) {

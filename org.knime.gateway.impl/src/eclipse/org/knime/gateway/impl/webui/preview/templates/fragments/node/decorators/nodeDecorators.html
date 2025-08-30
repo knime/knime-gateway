@@ -1,0 +1,17 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="render(node, type, kind)">
+    <g>
+      <th:block th:if="${kind == 'component' and node.link != null and node.link.url != null}"
+        th:insert="fragments/node/decorators/linkDecorator :: render(${type})" />
+      <th:block th:if="${node.executionInfo != null}"
+        th:insert="fragments/node/decorators/streamingDecorator :: render" />
+      <th:block th:if="${kind == 'node' and node.isReexecutable()}" 
+        th:insert="fragments/node/decorators/reexecutionDecorator :: render(${type})" />
+      <th:block th:if="${kind == 'component' and node.isLocked() != null}" 
+        th:insert="fragments/node/decorators/lockDecorator :: render(${type})" />
+        
+      <!--/* In the canvas we also render loop status node decorators, however for the preview no executing 
+             nodes are ever saved/rendered and so these decorators can also not appear here */-->
+    </g>
+  </th:block>
+</svg>

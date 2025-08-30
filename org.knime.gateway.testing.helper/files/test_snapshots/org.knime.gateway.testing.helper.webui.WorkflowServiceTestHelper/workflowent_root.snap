@@ -731,7 +731,6 @@
         },
         "textAlign" : "center"
       },
-      "dialogType" : "swing",
       "hasView" : false,
       "id" : "root:13",
       "inPorts" : [ {
@@ -1594,7 +1593,7 @@
         "textAlign" : "center"
       },
       "dialogType" : "swing",
-      "hasView" : false,
+      "hasView" : true,
       "id" : "root:23",
       "inPorts" : [ {
         "canRemove" : false,
@@ -1865,7 +1864,6 @@
         "canOpenView" : false,
         "canReset" : false
       },
-      "dialogType" : "swing",
       "hasView" : false,
       "id" : "root:4",
       "inPorts" : [ {
@@ -2032,7 +2030,6 @@
         "canOpenView" : false,
         "canReset" : false
       },
-      "dialogType" : "swing",
       "hasView" : false,
       "id" : "root:8",
       "inPorts" : [ {

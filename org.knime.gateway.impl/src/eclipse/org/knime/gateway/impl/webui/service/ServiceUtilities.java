@@ -69,6 +69,8 @@ import org.knime.gateway.api.webui.entity.SelectionEventEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
+import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
 /**
  * Logic shared between web-ui default service implementations.
@@ -163,6 +165,13 @@ final class ServiceUtilities {
         var hiLiteHandler = tableViewManager.getHiLiteHandler(nodeWrapper).orElseThrow();
         final var selectionEventMode = SelectionEventEnt.ModeEnum.valueOf(mode.toUpperCase(Locale.ROOT));
         SelectionEventBus.processSelectionEvent(hiLiteHandler, nc.getID(), selectionEventMode, true, rowKeys);
+    }
+
+    /**
+     * @return The {@link Key} to return the correct {@link SpaceProviders} instance for the given context.
+     */
+    static Key getSpaceProvidersKey() {
+        return DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
     }
 
 }

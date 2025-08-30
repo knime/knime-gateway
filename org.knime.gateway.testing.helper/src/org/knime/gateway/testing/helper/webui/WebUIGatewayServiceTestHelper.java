@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
@@ -62,10 +64,12 @@ import org.awaitility.Awaitility;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.NodePortEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
+import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.PatchEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt;
 import org.knime.gateway.api.webui.entity.PatchOpEnt.PatchOpEntBuilder;
@@ -371,7 +375,6 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
      *
      * @param commandEnt
      * @param workflowId
-     * @return the updated workflow after the command was executed
      * @throws Exception
      */
     @SuppressWarnings("java:S112") // generic exception
@@ -382,7 +385,6 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     /**
      * @param wfId
-     * @return the updated workflow after the last command was undone
      * @throws Exception
      */
     @SuppressWarnings("java:S112") // generic exception
@@ -392,7 +394,6 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     /**
      * @param wfId
-     * @return the update workflow after a command was redone
      * @throws Exception
      */
     @SuppressWarnings("java:S112") // generic exception
@@ -425,6 +426,22 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
 
     void awaitFalse(final String workflowId, final Predicate<WorkflowEnt> condition) {
         awaitTrue(workflowId, condition.negate());
+    }
+
+    /**
+     * Execute a node and block until we can confirm that it is executing (currently only for nodes in root workflow).
+     *
+     * @param wfId The workflow to operate in
+     * @param toWaitFor the node to wait it's executing
+     * @throws Exception
+     */
+    protected void executeAndWaitUntilExecuting(final String wfId, final int toWaitFor) throws Exception {
+        executeWorkflowAsync(wfId);
+        Awaitility.await().atMost(15, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            WorkflowEnt wfEnt = ws().getWorkflow(wfId, NodeIDEnt.getRootID(), null, Boolean.FALSE).getWorkflow();
+            assertThat(((NativeNodeEnt)wfEnt.getNodes().get(new NodeIDEnt(toWaitFor).toString())).getState()
+                .getExecutionState(), is(ExecutionStateEnum.EXECUTING));
+        });
     }
 
 }

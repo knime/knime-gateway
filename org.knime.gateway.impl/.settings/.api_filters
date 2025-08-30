@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.impl" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.7.0"/>
+                <message_argument value="5.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.project.DefaultProject">
         <filter id="305324134">
             <message_arguments>
@@ -366,6 +374,27 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
                 <message_argument value="nodeCollections()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/CodeKaiHandler.java" type="org.knime.gateway.impl.webui.kai.CodeKaiHandler">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.CodeKaiHandler"/>
+                <message_argument value="getUsage(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/KaiHandler.java" type="org.knime.gateway.impl.webui.kai.KaiHandler">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandler"/>
+                <message_argument value="getUsage(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getUsage(String)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1152,6 +1181,18 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiUsageEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiUsageEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiUsageEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1615023740">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiUsageEnt"/>
             </message_arguments>
         </filter>
     </resource>

@@ -1,15 +1,12 @@
 <svg xmlns:th="https://www.thymeleaf.org">
-  <th:block th:fragment="render(node)">
-    <g
-      th:attr="transform='translate(' + ${node.position.x} + ',' + ${node.position.y} + ')'"
-      th:attrappend="data-node-id=${node.id}"
-    >
+  <th:block th:fragment="render(node)" th:with="type=${nodeUtils.getNodeType(node)}">
+    <g th:attr="transform='translate(' + ${node.position.x} + ',' + ${node.position.y} + ')'"
+      th:attrappend="data-node-id=${node.id}">
       <th:block th:insert="fragments/node/nodeLabel :: nodeLabel(node=${node})" />
       <th:block th:insert="fragments/node/torso/nodeTorso :: nodeTorso(
-          type=${nodeUtils.getNodeType(node)},
-          kind=${{node.kind}},
-          icon=${nodeUtils.getNodeIcon(node)}
+          type=${type}, kind=${{node.kind}}, icon=${nodeUtils.getNodeIcon(node)}, executionState=${node.state == null ? null : node.state.executionState}
           )" />
+      <th:block th:insert="fragments/node/decorators/nodeDecorators :: render(${node}, ${type}, ${{node.kind}})" />
       <th:block th:if="${{node.kind}} != 'metanode'" th:insert="fragments/node/nodeState :: nodeState(state=${node.state})" />
       <th:block th:insert="fragments/ports/nodePorts :: nodePorts(node=${node})" />
       <th:block th:insert="fragments/node/nodeName :: nodeName(name=${nodeUtils.getNodeName(node)})" />

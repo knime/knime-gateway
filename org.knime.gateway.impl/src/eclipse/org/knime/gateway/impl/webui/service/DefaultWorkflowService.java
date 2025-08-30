@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProvidersKey;
 
 import java.io.IOException;
 import java.util.List;
@@ -200,27 +201,37 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-
     public void disposeVersion(final String projectId, final String versionParameter) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        m_projectManager.getProject(projectId)
-            .ifPresent(project -> project.disposeCachedWfm(VersionId.parse(versionParameter)));
-        m_workflowMiddleware.clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId));
+        disposeVersion(projectId, VersionId.parse(versionParameter));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public void restoreVersion(final String projectId, final String versionId) throws ServiceCallException {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        final var project = m_projectManager.getProject(projectId).orElseThrow(); // No specific version needed here
+        final var origin = project.getOrigin().orElseThrow();
+        final var space = Optional.ofNullable(m_spaceProvidersManager) //
+            .map(mgr -> mgr.getSpaceProviders(getSpaceProvidersKey())) //
+            .map(providers -> providers.getSpace(origin.providerId(), origin.spaceId())) //
+            .orElseThrow();
+
+        try {
+            space.restoreItemVersion(origin.itemId(), VersionId.parse(versionId));
+        } catch (IOException e) {
+            throw new ServiceCallException("Could not restore version: " + versionId, e);
+        }
+
+        disposeVersion(projectId, VersionId.currentState());
+    }
+
     @Override
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
-        var spaceProviders = m_spaceProvidersManager == null ? null : //
-            m_spaceProvidersManager.getSpaceProviders( //
-                DefaultServiceContext.getProjectId().map(Key::of) //
-                    .orElse(Key.defaultKey()) //
-            );
+        var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
+        var spaceProviders = m_spaceProvidersManager == null ? null : m_spaceProvidersManager.getSpaceProviders(key);
         return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
             m_workflowMiddleware, m_nodeFactoryProvider, spaceProviders);
     }
@@ -244,6 +255,11 @@ public final class DefaultWorkflowService implements WorkflowService {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         return m_workflowMiddleware
             .buildWorkflowMonitorStateSnapshotEnt(new WorkflowKey(projectId, NodeIDEnt.getRootID()));
+    }
+
+    private void disposeVersion(final String projectId, final VersionId versionId) {
+        m_projectManager.getProject(projectId).ifPresent(project -> project.disposeCachedWfm(versionId));
+        m_workflowMiddleware.clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId));
     }
 
     /**
@@ -288,9 +304,8 @@ public final class DefaultWorkflowService implements WorkflowService {
          */
         private static void uploadToHub(final WorkflowContextV2 context, final SpaceProvidersManager spaceProvidersManager)
             throws ServiceCallException {
-            final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
             final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
-                .map(mgr -> mgr.getSpaceProviders(key)) //
+                .map(mgr -> mgr.getSpaceProviders(getSpaceProvidersKey())) //
                 .orElseThrow();
             final var spaceProvider = spaceProviders.getAllSpaceProviders().stream().findFirst().orElseThrow();
 

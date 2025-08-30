@@ -132,6 +132,17 @@ public interface WorkflowService extends GatewayService {
     void redoWorkflowCommand(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId)  throws ServiceExceptions.ServiceCallException;
         
     /**
+     * Restore the workflow (manager) corresponding to the given project and version, s.t. the current working area  will be overwritten with the specified version to restore.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param version The version identifier. &#x60;null&#x60; corresponds to the current-state (working area).
+     *
+     * 
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     */
+    void restoreVersion(String projectId, String version)  throws ServiceExceptions.ServiceCallException;
+        
+    /**
      * Save a project. This is a temporary service endpoint to offer saving a project in the browser environment, i.e. without any progress indication. In the desktop environment, this endpoint will not be called and instead the corresponding one from the Desktop API. Projects are usually only saved on session close in the browser environment, so the only other current use-case is saving before creating a version. We leave the call to the Catalog service to create the version to the Frontend for the time being. This means the code paths diverge only on save-and-upload. Otherwise, we would (a) have to parameterise the Gateway endpoint by some &#x60;doSave&#x60;, which is equivalent to &#x60;isBrowser&#x60; and (b) implement capability for the backend to make the Catalog call. As soon as we can provide Browser-compatible (i.e. Web-UI) progress indication (NXT-3634), the two endpoints and their backing duplicated logic can be unified and &#x60;createVersion&#x60; can become a single Gateway endpoint, also performing the hub service call (if desired).
      *
      * @param projectId ID of the workflow-project.

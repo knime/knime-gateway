@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.kai;
 
 import java.io.IOException;
 
+import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 import org.knime.gateway.impl.webui.kai.KaiHandlerFactory.AuthTokenProvider;
 
 /**
@@ -70,6 +71,13 @@ public interface CodeKaiHandler {
      * @return the ID of the Hub hosting the backend
      */
     String getHubId();
+
+    /**
+     * @param projectId the ID of the workflow-project required for authentication.
+     * @return the AI usage for the currently authenticated user.
+     * @since 5.7
+     */
+    KaiUsageEnt getUsage(String projectId);
 
     /**
      * Log in to the currently selected Hub end point

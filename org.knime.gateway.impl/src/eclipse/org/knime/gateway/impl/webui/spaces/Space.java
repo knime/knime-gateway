@@ -593,6 +593,19 @@ public interface Space {
     }
 
     /**
+     * Restore the workflow (manager) corresponding to the given project and version, s.t. the current working area will
+     * be overwritten with the specified version to restore.
+     *
+     * @param itemId the id of the item to restore
+     * @param versionId the version to restore
+     * @throws IOException if the restore failed
+     * @since 5.7
+     */
+    default void restoreItemVersion(final String itemId, final VersionId versionId) throws IOException {
+        throw new UnsupportedOperationException("Cannot call this method on spaces other than Hub spaces.");
+    }
+
+    /**
      * Generates unique space item names, preserves file extensions.
      *
      * @param taken predicate for determining whether a name is already taken in a space

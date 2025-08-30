@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,62 +40,81 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jun 26, 2025 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.project;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.virtual.parchunk.FlowVirtualScopeContext;
-import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
+
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Allows to keep track of 'virtual projects'. A virtual project only exist for a temporary period of time and is never
- * persisted, such as a project used for tool-execution for an 'agent'-node. See also {@link FlowVirtualScopeContext}.
- *
+ * Current AI interaction usage and limits for the authenticated user.
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @since 5.6
  */
-public final class VirtualWorkflowProjects {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
+public interface KaiUsageEnt extends GatewayEntity {
 
-    private VirtualWorkflowProjects() {
-        // utility class
-    }
 
-    /**
-     * Registers a workflow manager as virtual project. As a result, the gateway API can be used to access the workflow
-     * manager (i.e. in order to access a node view and it's data services).
-     *
-     * @param wfm the workflow manager to register
-     * @return the new project ID
-     */
-    public static String registerProject(final WorkflowManager wfm) {
-        var proj = //
-            Project.builder() //
-                .setWfm(wfm) //
-                .build();
-        ProjectManager.getInstance().addProject(proj, ProjectConsumerType.VIRTUAL_WORKFLOW, false);
-        return proj.getID();
-    }
+  /**
+   * Maximum number of requests allowed.
+   * @return limit , never <code>null</code>
+   **/
+  public Integer getLimit();
 
-    /**
-     * Removes the project for the given id and disposes the workflow manager associated with it.
-     *
-     * @param id the id of the project to remove
-     */
-    public static void removeProject(final String id) {
-        ProjectManager.getInstance().removeProject(id, ProjectConsumerType.VIRTUAL_WORKFLOW);
-    }
+  /**
+   * Number of requests used.
+   * @return used , never <code>null</code>
+   **/
+  public Integer getUsed();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (KaiUsageEnt)other;
+      valueConsumer.accept("limit", Pair.create(getLimit(), e.getLimit()));
+      valueConsumer.accept("used", Pair.create(getUsed(), e.getUsed()));
+  }
 
     /**
-     * @param id -
-     * @return whether the given id references a virtual project
-     * @since 5.7
+     * The builder for the entity.
      */
-    public static boolean isVirtualProject(final String id) {
-        return ProjectManager.getInstance().getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).anyMatch(id::equals);
+    public interface KaiUsageEntBuilder extends GatewayEntityBuilder<KaiUsageEnt> {
+
+        /**
+         * Maximum number of requests allowed.
+         * 
+         * @param limit the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiUsageEntBuilder setLimit(Integer limit);
+        
+        /**
+         * Number of requests used.
+         * 
+         * @param used the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiUsageEntBuilder setUsed(Integer used);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        KaiUsageEnt build();
+    
     }
 
 }

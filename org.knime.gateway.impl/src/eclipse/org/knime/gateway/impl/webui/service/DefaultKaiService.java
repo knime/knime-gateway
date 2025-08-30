@@ -56,6 +56,7 @@ import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
+import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 import org.knime.gateway.api.webui.service.KaiService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -199,6 +200,12 @@ public final class DefaultKaiService implements KaiService {
     public void submitFeedback(final String kaiFeedbackId, final KaiFeedbackEnt kaiFeedback) {
         getListener().ifPresent(l -> l.onFeedback(kaiFeedbackId, kaiFeedback.getProjectId(), kaiFeedback.isPositive(),
             kaiFeedback.getComment()));
+    }
+
+    @Override
+    public KaiUsageEnt getUsage(final String projectId) {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        return getListener().map(l -> l.getUsage(projectId)).orElse(null);
     }
 
 }

@@ -137,9 +137,7 @@ public class WorkflowChangesListenerTest {
         var callback = mock(Runnable.class);
         workflowChangesListener.addWorkflowChangeCallback(callback);
 
-        modifyWorkflowAndVerifyCallback(wfm, callback, mod -> switch (mod) {
-            default -> true;
-        });
+        modifyWorkflowAndVerifyCallback(wfm, callback, mod -> true);
 
         disposeWorkflow(wfm);
     }
@@ -238,21 +236,55 @@ public class WorkflowChangesListenerTest {
         workflowChangesListenerRecursive.addWorkflowChangeCallback(callbackRecursive);
         workflowChangesListenerNonRecursive.addWorkflowChangeCallback(callbackNonRecursive);
 
-        modifyWorkflowAndVerifyCallback(metanode, callbackNonRecursive, mod -> switch (mod) {
-            default -> false;
-        });
-        modifyWorkflowAndVerifyCallback(metanode, callbackRecursive, mod -> switch (mod) {
-            default -> true;
-        });
+        modifyWorkflowAndVerifyCallback(metanode, callbackNonRecursive, mod -> false);
+        modifyWorkflowAndVerifyCallback(metanode, callbackRecursive, mod -> true);
 
-        modifyWorkflowAndVerifyCallback(componentWfm, callbackNonRecursive, mod -> switch (mod) {
-            default -> false;
-        });
-        modifyWorkflowAndVerifyCallback(componentWfm, callbackRecursive, mod -> switch (mod) {
-            default -> true;
-        });
+        modifyWorkflowAndVerifyCallback(componentWfm, callbackNonRecursive, mod -> false);
+        modifyWorkflowAndVerifyCallback(componentWfm, callbackRecursive, mod -> true);
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }
+
+    @Test
+    public void testListenToParentOfMetanode() throws IOException {
+        var parent = createEmptyWorkflow();
+        var childMetanode = parent.createAndAddSubWorkflow(new PortType[0], new PortType[0], "metanode");
+        var listener = new WorkflowChangesListener(childMetanode, true);
+        var callback = mock(Runnable.class);
+        listener.addWorkflowChangeCallback(callback);
+        modifyWorkflowAndVerifyCallback(parent, callback, mod -> true);
+
+        WorkflowManagerUtil.disposeWorkflow(parent);
+    }
+
+
+    @Test
+    public void testListenToParentOfComponent() throws IOException {
+        var parent = createEmptyWorkflow();
+        var childComponent = parent.convertMetaNodeToSubNode(
+            parent.createAndAddSubWorkflow(new PortType[0], new PortType[0], "component").getID());
+        var childComponentWfm =
+                parent.getNodeContainer(childComponent.getConvertedNodeID(), SubNodeContainer.class, false).getWorkflowManager();
+        var listener = new WorkflowChangesListener(childComponentWfm, true);
+        var callback = mock(Runnable.class);
+        listener.addWorkflowChangeCallback(callback);
+        modifyWorkflowAndVerifyCallback(parent, callback, mod -> true);
+
+        WorkflowManagerUtil.disposeWorkflow(parent);
+    }
+
+    @Test
+    public void testDoesNotListenToParentByDefault() throws IOException {
+        var parent = createEmptyWorkflow();
+        var childMetanode = parent.createAndAddSubWorkflow(new PortType[0], new PortType[0], "metanode");
+        var listener = new WorkflowChangesListener(childMetanode);
+        var callback = mock(Runnable.class);
+        listener.addWorkflowChangeCallback(callback);
+        modifyWorkflowAndVerifyCallback(parent, callback, mod -> false);
+
+        WorkflowManagerUtil.disposeWorkflow(parent);
+    }
+
+
 
 }

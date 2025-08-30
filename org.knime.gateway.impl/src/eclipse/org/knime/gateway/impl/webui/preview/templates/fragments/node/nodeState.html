@@ -5,31 +5,17 @@
     trafficLight=${nodeUtils.getTrafficLight(executionState)}
   ">
     <g th:transform="'translate(0, ' + ${shapes.NODE_SIZE + shapes.NODE_STATUS_MARGIN_TOP} + ')'">
-      <rect
-        th:width="${shapes.NODE_SIZE}"
-        th:height="${shapes.NODE_STATUS_HEIGHT}"
-        th:fill="${colors.trafficLight.background}"
-        th:stroke="${colors.darkeningMask}"
-        stroke-width=".3"
-        rx="1"
-      />
-
+      <rect th:attr="width=${shapes.NODE_SIZE},
+           height=${shapes.NODE_STATUS_HEIGHT},
+           fill=${colors.trafficLight.background},
+           stroke=${colors.darkeningMask},
+           stroke-width='.3',
+           rx='1'" />
     <!--/* node's static states */-->
     <g th:if="${trafficLight} != null">
       <th:block th:each="active,iter : ${trafficLight}">
-        <circle
-          th:cx="6 + 10 * ${iter.index}"
-          cy="6"
-          r="4"
-          th:fill="${nodeUtils.getTrafficFillColor(active, iter.index)}"
-        />
-        <circle
-          th:cx="6 + 10 * ${iter.index}"
-          cy="6"
-          r="3.5"
-          fill="none"
-          th:stroke="${nodeUtils.getTrafficStrokeColor(active, iter.index)}"
-        />
+        <circle th:cx="6 + 10 * ${iter.index}" cy="6" r="4" th:fill="${nodeUtils.getTrafficFillColor(active, iter.index)}" />
+        <circle th:cx="6 + 10 * ${iter.index}" cy="6" r="3.5" fill="none" th:stroke="${nodeUtils.getTrafficStrokeColor(active, iter.index)}" />
       </th:block>
     </g>
     <text

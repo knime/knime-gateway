@@ -100,6 +100,7 @@ import org.knime.gateway.json.webui.entity.KaiFeedbackEntMixIn;
 import org.knime.gateway.json.webui.entity.KaiMessageEntMixIn;
 import org.knime.gateway.json.webui.entity.KaiRequestEntMixIn;
 import org.knime.gateway.json.webui.entity.KaiUiStringsEntMixIn;
+import org.knime.gateway.json.webui.entity.KaiUsageEntMixIn;
 import org.knime.gateway.json.webui.entity.KaiWelcomeMessagesEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkEntMixIn;
 import org.knime.gateway.json.webui.entity.LoopInfoEntMixIn;
@@ -272,6 +273,7 @@ public class ListEntities {
         res.add(KaiMessageEntMixIn.class);
         res.add(KaiRequestEntMixIn.class);
         res.add(KaiUiStringsEntMixIn.class);
+        res.add(KaiUsageEntMixIn.class);
         res.add(KaiWelcomeMessagesEntMixIn.class);
         res.add(LinkEntMixIn.class);
         res.add(LoopInfoEntMixIn.class);
@@ -430,6 +432,7 @@ public class ListEntities {
         res.add(KaiMessageEntMixIn.KaiMessageEntMixInBuilder.class);
         res.add(KaiRequestEntMixIn.KaiRequestEntMixInBuilder.class);
         res.add(KaiUiStringsEntMixIn.KaiUiStringsEntMixInBuilder.class);
+        res.add(KaiUsageEntMixIn.KaiUsageEntMixInBuilder.class);
         res.add(KaiWelcomeMessagesEntMixIn.KaiWelcomeMessagesEntMixInBuilder.class);
         res.add(LinkEntMixIn.LinkEntMixInBuilder.class);
         res.add(LoopInfoEntMixIn.LoopInfoEntMixInBuilder.class);

@@ -101,7 +101,7 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
      * @throws IllegalArgumentException if the provided arguments are null
      * @throws IOException if writing the output to the specified file path fails
      */
-    private static void renderPreviewSVG(final WorkflowManager workflow, final Path filePath)
+    static void renderPreviewSVG(final WorkflowManager workflow, final Path filePath)
         throws IllegalArgumentException, IOException {
 
         CheckUtils.checkArgumentNotNull(workflow, "Workflow can not be null for preview generation");
@@ -142,8 +142,8 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
 
         var templateEngine = new TemplateEngine();
         templateEngine.addTemplateResolver(templateResolver);
+        templateEngine.addDialect(new WhiteSpaceRemovalDialect());
         try (Writer writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8)) {
-            // TODO NXT-3962 minify output e.g. via postprocessing? input.replaceAll("(?m)^\\s*$\\n?", "").replaceAll("\\R", "");
             templateEngine.process("workflow", context, writer);
         }
     }

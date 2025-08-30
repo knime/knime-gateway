@@ -99,6 +99,7 @@ public final class ColorConstants {
         Map.entry("Manipulator", KNIME_COLORS.get("Yellow")),
         Map.entry("Metanode", KNIME_COLORS.get("StoneLight")),
         Map.entry("MetanodeSecondary", KNIME_COLORS.get("StoneGray")),
+        Map.entry("MetanodeState", KNIME_COLORS.get("Black")),
         Map.entry("Other", KNIME_COLORS.get("Wood")),
         Map.entry("Predictor", KNIME_COLORS.get("Meadow")),
         Map.entry("QuickForm", KNIME_COLORS.get("Avocado")),
@@ -139,19 +140,19 @@ public final class ColorConstants {
         Map.entry("background", "hsl(192, 6.8%, 85.7%)")
     );
 
-    public static final Map<String, Object> COLORS = Map.of(
-        "knimeColors", KNIME_COLORS,
-        "nodeBackgroundColors", NODE_COLORS,
-        "portColors", PORT_COLORS,
-        "connectorColors", CONNECTOR_COLORS,
-        "trafficLight", TRAFFIC_LIGHT,
+    public static final Map<String, Object> COLORS = Map.ofEntries(
+        Map.entry("knimeColors", KNIME_COLORS),
+        Map.entry("nodeBackgroundColors", NODE_COLORS),
+        Map.entry("portColors", PORT_COLORS),
+        Map.entry("connectorColors", CONNECTOR_COLORS),
+        Map.entry("trafficLight", TRAFFIC_LIGHT),
 
-        "textDefault", KNIME_COLORS.get("Masala"),
-        "linkDecorator", KNIME_COLORS.get("Black"),
-        "darkeningMask", "hsla(0, 0%, 0%, 33.3%)",
+        Map.entry("textDefault", KNIME_COLORS.get("Masala")),
+        Map.entry("decoratorColor", KNIME_COLORS.get("Black")),
+        Map.entry("darkeningMask", "hsla(0, 0%, 0%, 33.3%)"),
 
-        "error", TRAFFIC_LIGHT.get("red"),
-        "warning", KNIME_COLORS.get("Yellow")
+        Map.entry("error", TRAFFIC_LIGHT.get("red")),
+        Map.entry("warning", KNIME_COLORS.get("Yellow"))
     );
 
     private ColorConstants() {}

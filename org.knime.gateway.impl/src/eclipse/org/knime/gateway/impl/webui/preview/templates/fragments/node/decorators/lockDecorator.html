@@ -1,0 +1,17 @@
+<svg xmlns:th="https://www.thymeleaf.org">
+  <th:block th:fragment="render(type)">
+    <g transform="translate(22, 1)" th:with="backgroundColor=${type == null ? null : colors.nodeBackgroundColors.get(type)}">
+      <!--/* Colored Background. This makes sure the lock is well visible even if it overlaps with the node icon */-->
+      <rect th:if="${backgroundColor != null}"
+        x="0" y="5" rx="1" ry="1" width="6" height="6" th:fill="${backgroundColor}" />
+      
+      <!--/* Lock symbol, for the preview we only ever render the 'locked' lock */-->
+      <g fill="none" th:stroke="${colors.decoratorColor}" stroke-linejoin="round" stroke-miterlimit="10">
+        <path d="M7.43753 3.99902H1.5625V8.12524H7.43753V3.99902Z" />
+        <path d="M4.5 6.89504V5.71436" />
+        <path d="M2.53125 3.99892V2.84326C2.53125 1.75651 3.41297 0.874512 4.5 0.874512C5.58759 0.874512 6.46875 1.75651 6.46875 2.84326V3.99892" />
+        <path d="M3.97705 5.71436H5.0233" />
+      </g>
+    </g>
+  </th:block>
+</svg>

@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,62 +40,89 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jun 26, 2025 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.project;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.virtual.parchunk.FlowVirtualScopeContext;
-import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
+
+
+import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 
 /**
- * Allows to keep track of 'virtual projects'. A virtual project only exist for a temporary period of time and is never
- * persisted, such as a project used for tool-execution for an 'agent'-node. See also {@link FlowVirtualScopeContext}.
+ * Current AI interaction usage and limits for the authenticated user.
+ *
+ * @param limit
+ * @param used
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @since 5.6
  */
-public final class VirtualWorkflowProjects {
-
-    private VirtualWorkflowProjects() {
-        // utility class
-    }
-
-    /**
-     * Registers a workflow manager as virtual project. As a result, the gateway API can be used to access the workflow
-     * manager (i.e. in order to access a node view and it's data services).
-     *
-     * @param wfm the workflow manager to register
-     * @return the new project ID
-     */
-    public static String registerProject(final WorkflowManager wfm) {
-        var proj = //
-            Project.builder() //
-                .setWfm(wfm) //
-                .build();
-        ProjectManager.getInstance().addProject(proj, ProjectConsumerType.VIRTUAL_WORKFLOW, false);
-        return proj.getID();
-    }
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultKaiUsageEnt(
+    Integer limit,
+    Integer used) implements KaiUsageEnt {
 
     /**
-     * Removes the project for the given id and disposes the workflow manager associated with it.
-     *
-     * @param id the id of the project to remove
+     * Validation for required parameters not being {@code null}.
      */
-    public static void removeProject(final String id) {
-        ProjectManager.getInstance().removeProject(id, ProjectConsumerType.VIRTUAL_WORKFLOW);
+    public DefaultKaiUsageEnt {
+        if(limit == null) {
+            throw new IllegalArgumentException("<limit> must not be null.");
+        }
+        if(used == null) {
+            throw new IllegalArgumentException("<used> must not be null.");
+        }
     }
 
+    @Override
+    public String getTypeID() {
+        return "KaiUsage";
+    }
+  
+    @Override
+    public Integer getLimit() {
+        return limit;
+    }
+    
+    @Override
+    public Integer getUsed() {
+        return used;
+    }
+    
     /**
-     * @param id -
-     * @return whether the given id references a virtual project
-     * @since 5.7
+     * A builder for {@link DefaultKaiUsageEnt}.
      */
-    public static boolean isVirtualProject(final String id) {
-        return ProjectManager.getInstance().getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).anyMatch(id::equals);
+    public static class DefaultKaiUsageEntBuilder implements KaiUsageEntBuilder {
+
+        private Integer m_limit;
+
+        private Integer m_used;
+
+        @Override
+        public DefaultKaiUsageEntBuilder setLimit(Integer limit) {
+             if(limit == null) {
+                 throw new IllegalArgumentException("<limit> must not be null.");
+             }
+             m_limit = limit;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiUsageEntBuilder setUsed(Integer used) {
+             if(used == null) {
+                 throw new IllegalArgumentException("<used> must not be null.");
+             }
+             m_used = used;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiUsageEnt build() {
+            return new DefaultKaiUsageEnt(
+                immutable(m_limit),
+                immutable(m_used));
+        }
+    
     }
 
 }

@@ -44,59 +44,46 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 26, 2025 (hornm): created
+ *   Aug 14, 2025 (hornm): created
  */
-package org.knime.gateway.impl.project;
+package org.knime.gateway.impl.webui.preview;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.virtual.parchunk.FlowVirtualScopeContext;
-import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
+import java.nio.file.Files;
+
+import org.junit.jupiter.api.Test;
+import org.knime.core.util.FileUtil;
+import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.testing.helper.ResultChecker;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
- * Allows to keep track of 'virtual projects'. A virtual project only exist for a temporary period of time and is never
- * persisted, such as a project used for tool-execution for an 'agent'-node. See also {@link FlowVirtualScopeContext}.
+ * Tests {@link GenerateSVGWorkflowSaveHook}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @since 5.6
  */
-public final class VirtualWorkflowProjects {
-
-    private VirtualWorkflowProjects() {
-        // utility class
-    }
-
+class GenerateSVGWorkflowSaveHookTest {
     /**
-     * Registers a workflow manager as virtual project. As a result, the gateway API can be used to access the workflow
-     * manager (i.e. in order to access a node view and it's data services).
+     * Tests that the save hook does not throw an exception.
      *
-     * @param wfm the workflow manager to register
-     * @return the new project ID
+     * @throws Exception
      */
-    public static String registerProject(final WorkflowManager wfm) {
-        var proj = //
-            Project.builder() //
-                .setWfm(wfm) //
-                .build();
-        ProjectManager.getInstance().addProject(proj, ProjectConsumerType.VIRTUAL_WORKFLOW, false);
-        return proj.getID();
-    }
+    @Test
+    void testSVGSnapshot() throws Exception {
+        // setup
+        var wfm = WorkflowManagerUtil.loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI.getWorkflowDir());
+        var tmpDir = FileUtil.createTempDir("generate_svg_test").toPath();
+        var svgFile = tmpDir.resolve("test.svg");
+        var rc = new ResultChecker(null,
+            CoreUtil.resolveToFile("/files/test_snapshots", GenerateSVGWorkflowSaveHookTest.class));
 
-    /**
-     * Removes the project for the given id and disposes the workflow manager associated with it.
-     *
-     * @param id the id of the project to remove
-     */
-    public static void removeProject(final String id) {
-        ProjectManager.getInstance().removeProject(id, ProjectConsumerType.VIRTUAL_WORKFLOW);
-    }
+        // the actual snapshot test
+        GenerateSVGWorkflowSaveHook.renderPreviewSVG(wfm, svgFile);
+        rc.checkString(GenerateSVGWorkflowSaveHookTest.class, "preview.svg", Files.readString(svgFile));
 
-    /**
-     * @param id -
-     * @return whether the given id references a virtual project
-     * @since 5.7
-     */
-    public static boolean isVirtualProject(final String id) {
-        return ProjectManager.getInstance().getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).anyMatch(id::equals);
+        // cleanup
+        WorkflowManagerUtil.disposeWorkflow(wfm);
+        FileUtil.deleteRecursively(tmpDir.toFile());
     }
 
 }

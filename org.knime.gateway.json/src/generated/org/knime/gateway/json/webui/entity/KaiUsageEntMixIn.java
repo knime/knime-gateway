@@ -1,8 +1,7 @@
 /*
  * ------------------------------------------------------------------------
- *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.org; Email: contact@knime.org
+ *  Website: http://www.knime.com; Email: contact@knime.com
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -41,62 +40,66 @@
  *  propagated with or for interoperation with KNIME.  The owner of a Node
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
- * ---------------------------------------------------------------------
- *
- * History
- *   Jun 26, 2025 (hornm): created
+ * ------------------------------------------------------------------------
  */
-package org.knime.gateway.impl.project;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.virtual.parchunk.FlowVirtualScopeContext;
-import org.knime.gateway.impl.project.ProjectManager.ProjectConsumerType;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.KaiUsageEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiUsageEnt.DefaultKaiUsageEntBuilder;
 
 /**
- * Allows to keep track of 'virtual projects'. A virtual project only exist for a temporary period of time and is never
- * persisted, such as a project used for tool-execution for an 'agent'-node. See also {@link FlowVirtualScopeContext}.
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @since 5.6
  */
-public final class VirtualWorkflowProjects {
 
-    private VirtualWorkflowProjects() {
-        // utility class
-    }
+@JsonDeserialize(builder=DefaultKaiUsageEntBuilder.class)
+@JsonSerialize(as=KaiUsageEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface KaiUsageEntMixIn extends KaiUsageEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("limit")
+    public Integer getLimit();
+    
+    @Override
+    @JsonProperty("used")
+    public Integer getUsed();
+    
 
     /**
-     * Registers a workflow manager as virtual project. As a result, the gateway API can be used to access the workflow
-     * manager (i.e. in order to access a node view and it's data services).
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
-     * @param wfm the workflow manager to register
-     * @return the new project ID
+     * @author Martin Horn, University of Konstanz
      */
-    public static String registerProject(final WorkflowManager wfm) {
-        var proj = //
-            Project.builder() //
-                .setWfm(wfm) //
-                .build();
-        ProjectManager.getInstance().addProject(proj, ProjectConsumerType.VIRTUAL_WORKFLOW, false);
-        return proj.getID();
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface KaiUsageEntMixInBuilder extends KaiUsageEntBuilder {
+    
+        @Override
+        public KaiUsageEntMixIn build();
+    
+        @Override
+        @JsonProperty("limit")
+        public KaiUsageEntMixInBuilder setLimit(final Integer limit);
+        
+        @Override
+        @JsonProperty("used")
+        public KaiUsageEntMixInBuilder setUsed(final Integer used);
+        
     }
 
-    /**
-     * Removes the project for the given id and disposes the workflow manager associated with it.
-     *
-     * @param id the id of the project to remove
-     */
-    public static void removeProject(final String id) {
-        ProjectManager.getInstance().removeProject(id, ProjectConsumerType.VIRTUAL_WORKFLOW);
-    }
-
-    /**
-     * @param id -
-     * @return whether the given id references a virtual project
-     * @since 5.7
-     */
-    public static boolean isVirtualProject(final String id) {
-        return ProjectManager.getInstance().getProjectIds(ProjectConsumerType.VIRTUAL_WORKFLOW).anyMatch(id::equals);
-    }
 
 }
+

@@ -103,7 +103,9 @@ public class WorkflowChangesListener implements Closeable {
 
     boolean m_isListening;
 
-    private final boolean m_recurse;
+    private final boolean m_listenToChildren;
+
+    private final boolean m_listenToParent;
 
     /**
      * Allows one to define what aspects of the workflow to listen to.
@@ -120,21 +122,49 @@ public class WorkflowChangesListener implements Closeable {
     }
 
     /**
-     * @param wfm the workflow manager to listen to
+     * @param wfm -
      */
     public WorkflowChangesListener(final WorkflowManager wfm) {
-        this(wfm, Set.of(Scope.EVERYTHING), false);
+        this(wfm, Set.of(Scope.EVERYTHING), false, false);
+    }
+
+
+    /**
+     *
+     * @param wfm -
+     * @param listenToParent Whether to also listen to changes to the (direct) parent workflow
+     *
+     * @since 5.7
+     */
+    public WorkflowChangesListener(final WorkflowManager wfm, final boolean listenToParent) {
+        this(wfm, Set.of(Scope.EVERYTHING), false, listenToParent);
     }
 
     /**
-     * @param wfm the workflow manager to listen to
-     * @param scopes what workflow changes to listen to
-     * @param recurse whether to recurse into sub-workflows to listen for respective changes there, too
+     *
+     * @param wfm -
+     * @param scopes The kind of changes to listen to
+     * @param listenToChildren Whether to also listen to changes to any child workflow (recursive)
+     */
+    public WorkflowChangesListener(final WorkflowManager wfm, final Set<Scope> scopes, final boolean listenToChildren) {
+        this(wfm, scopes, listenToChildren, false);
+    }
+
+    /**
+     *
+     * @param wfm -
+     * @param scopes The kind of changes to listen to
+     * @param listenToChildren Whether to also listen to changes to any child workflow (recursive)
+     * @param listenToParent Whether to also listen to changes to the (direct) parent workflow
+     *
+     * @since 5.7
      */
     @SuppressWarnings("java:S2293") // diamond operator: need to explicitly specify type params
-    public WorkflowChangesListener(final WorkflowManager wfm, final Set<Scope> scopes, final boolean recurse) {
+    public WorkflowChangesListener(final WorkflowManager wfm, final Set<Scope> scopes, final boolean listenToChildren,
+        final boolean listenToParent) {
         m_wfm = wfm;
-        m_recurse = recurse;
+        m_listenToChildren = listenToChildren;
+        m_listenToParent = listenToParent;
 
         var isInStreamingMode = CoreUtil.isInStreamingMode(m_wfm);
         if (isInStreamingMode) {
@@ -296,9 +326,15 @@ public class WorkflowChangesListener implements Closeable {
         }
 
         startListening(m_wfm);
-        if (m_recurse) {
+        if (m_listenToChildren) {
             for (var nc : m_wfm.getNodeContainers()) {
                 CoreUtil.runOnNodeOrWfm(nc, null, this::startListening);
+            }
+        }
+        if (m_listenToParent) {
+            var parent = CoreUtil.getWorkflowParent(m_wfm);
+            if (!parent.getID().isRoot()) {
+                startListening(parent);
             }
         }
 
@@ -352,14 +388,14 @@ public class WorkflowChangesListener implements Closeable {
             case NODE_ADDED -> {
                 var nc = (NodeContainer)e.getNewValue();
                 addNodeListeners(nc);
-                if (m_recurse) {
+                if (m_listenToChildren) {
                     CoreUtil.runOnNodeOrWfm(nc, null, wfm -> wfm.addListener(m_workflowListener));
                 }
             }
             case NODE_REMOVED -> {
                 var nc = (NodeContainer)e.getOldValue();
                 removeNodeListeners(nc);
-                if (m_recurse) {
+                if (m_listenToChildren) {
                     CoreUtil.runOnNodeOrWfm(nc, null, wfm -> wfm.removeListener(m_workflowListener));
                 }
             }
@@ -422,9 +458,15 @@ public class WorkflowChangesListener implements Closeable {
             return;
         }
 
-        if (m_recurse) {
+        if (m_listenToChildren) {
             for (var nc : m_wfm.getNodeContainers()) {
                 CoreUtil.runOnNodeOrWfm(nc, null, this::stopListening);
+            }
+        }
+        if (m_listenToParent) {
+            var parent = CoreUtil.getWorkflowParent(m_wfm);
+            if (!parent.getID().isRoot()) {
+                stopListening(parent);
             }
         }
         stopListening(m_wfm);
