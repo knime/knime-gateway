@@ -53,7 +53,6 @@ import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProv
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Stream;
 
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
@@ -234,7 +233,7 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             getSpaceProvider(spaceProviderId).getSpace(spaceId).deleteItems(spaceItemIds, softDelete);
-        } catch (final NoSuchElementException | UnsupportedOperationException e) {
+        } catch (final NoSuchElementException e) {
             throw ServiceCallException.builder() //
                 .withTitle("An error occurred while deleting item(s)") //
                 .withDetails(e.getMessage()) //
@@ -251,7 +250,7 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             return getSpaceProvider(spaceProviderId).getSpace(spaceId).createWorkflowGroup(itemId);
-        } catch (final NoSuchElementException | UnsupportedOperationException e) {
+        } catch (final NoSuchElementException e) {
             throw ServiceCallException.builder() //
                 .withTitle("An error occurred while creating the folder") //
                 .withDetails(e.getMessage()) //
@@ -273,7 +272,6 @@ public class DefaultSpaceService implements SpaceService {
             return;
         }
 
-        final var title = "An error occurred while %sing item(s)".formatted(Boolean.TRUE.equals(copy) ? "copy" : "mov");
         try {
             var spaceProvider = getSpaceProvider(spaceProviderId);
             var destinationSpace = spaceProvider.getSpace(destSpaceId);
@@ -299,8 +297,10 @@ public class DefaultSpaceService implements SpaceService {
                 NameCollisionHandling.of(collisionHandling).orElse(NameCollisionHandling.NOOP);
 
             destinationSpace.moveOrCopyItems(itemIds, destWorkflowGroupItemId, actualCollisionHandling, copy);
-        } catch (final NoSuchElementException | IllegalArgumentException e) {
+        } catch (NoSuchElementException | IllegalArgumentException e) {
             // should never happen
+            final var title =
+                "An error occurred while %sing item(s)".formatted(Boolean.TRUE.equals(copy) ? "copy" : "mov");
             throw ServiceCallException.builder() //
                 .withTitle(title) //
                 .withDetails(e.getMessage()) //
@@ -308,23 +308,18 @@ public class DefaultSpaceService implements SpaceService {
                 .withCause(e) //
                 .build();
         } catch (final MutableServiceCallException e) { // NOSONAR
+            final var title =
+                "An error occurred while %sing item(s)".formatted(Boolean.TRUE.equals(copy) ? "copy" : "mov");
             throw e.toGatewayException(title);
         }
     }
 
     @Override
     public SpaceItemEnt renameItem(final String spaceProviderId, final String spaceId, final String itemId,
-        final String newName) throws ServiceCallException, LoggedOutException, NetworkException {
+        final String newName)
+        throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             return getSpaceProvider(spaceProviderId).getSpace(spaceId).renameItem(itemId, newName);
-        } catch (final OperationNotAllowedException e) {
-            throw ServiceCallException.builder() //
-                .withTitle(e.getTitle()) //
-                .withDetails(e.getDetails()) //
-                .canCopy(e.isCanCopy()) //
-                .withAdditionalProps(e.getAdditionalProperties()) //
-                .withCause(e) //
-                .build();
         } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while renaming item");
         }
@@ -332,17 +327,9 @@ public class DefaultSpaceService implements SpaceService {
 
     @Override
     public SpaceEnt renameSpace(final String spaceProviderId, final String spaceId, final String spaceName)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             return getSpaceProvider(spaceProviderId).getSpace(spaceId).renameSpace(spaceName);
-        } catch (final OperationNotAllowedException e) {
-            throw ServiceCallException.builder() //
-                .withTitle(e.getTitle()) //
-                .withDetails(e.getDetails()) //
-                .canCopy(e.isCanCopy()) //
-                .withAdditionalProps(e.getAdditionalProperties()) //
-                .withCause(e) //
-                .build();
         } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while renaming space");
         }
@@ -350,7 +337,7 @@ public class DefaultSpaceService implements SpaceService {
 
     private static void checkForCollisionsInSpace(final List<String> itemIds, final Space sourceSpace,
         final Space destinationSpace, final String destWorkflowGroupItemId)
-        throws CollisionException, NoSuchElementException, NetworkException, LoggedOutException, ServiceCallException {
+        throws CollisionException, NetworkException, LoggedOutException, ServiceCallException {
         for (var itemId : itemIds) {
             try {
                 var itemName = sourceSpace.getItemName(itemId);
@@ -400,18 +387,19 @@ public class DefaultSpaceService implements SpaceService {
      * @param space Filter for workflows belonging to this space. Set `null` to disable.
      * @return Stream of open workflow IDs
      */
-    private Stream<String> getOpenWorkflowIds(final Space space) {
+    private List<String> getOpenWorkflowIds(final Space space) {
         return m_projectManager.getProjectIds().stream()//
             .flatMap(id -> m_projectManager.getProject(id)//
                 .flatMap(Project::getOrigin)//
                 .filter(origin -> space == null || origin.spaceId().equals(space.getId())).map(Origin::itemId)//
-                .stream());
+                .stream())
+            .toList();
     }
 
-    private static List<String> checkForWorkflowsToClose(final Stream<String> openWorkflowIds,
+    private static List<String> checkForWorkflowsToClose(final List<String> openWorkflowIds,
         final List<String> itemIds, final LocalSpace localSpace) throws ServiceCallException {
         final List<String> toClose = new ArrayList<>();
-        for (final String workflowId : (Iterable<String>)openWorkflowIds::iterator) {
+        for (final String workflowId : openWorkflowIds) {
             try {
                 if (itemIds.contains(workflowId)
                     || localSpace.getAncestorItemIds(workflowId).stream().anyMatch(itemIds::contains)) {

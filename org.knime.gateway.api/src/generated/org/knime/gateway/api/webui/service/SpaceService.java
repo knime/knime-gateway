@@ -237,8 +237,9 @@ public interface SpaceService extends GatewayService {
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
      * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    SpaceItemEnt renameItem(String spaceProviderId, String spaceId, String itemId, String itemName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
+    SpaceItemEnt renameItem(String spaceProviderId, String spaceId, String itemId, String itemName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.OperationNotAllowedException;
         
     /**
      * Rename a space
@@ -251,7 +252,8 @@ public interface SpaceService extends GatewayService {
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
      * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     * @throws ServiceExceptions.OperationNotAllowedException If the an operation is not allowed, e.g., because it&#39;s not applicable.
      */
-    SpaceEnt renameSpace(String spaceProviderId, String spaceId, String spaceName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
+    SpaceEnt renameSpace(String spaceProviderId, String spaceId, String spaceName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.OperationNotAllowedException;
         
 }

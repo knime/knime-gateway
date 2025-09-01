@@ -102,24 +102,25 @@ public final class WorkflowMonitorStateChangedEventSource
         var initialEvent = m_workflowMiddleware.buildWorkflowMonitorStateChangeEventEnt(wfKey, // NOSONAR
             eventTypeEnt.getSnapshotId(), patchEntCreator);
 
-        m_workflowChangeCallbacks.computeIfAbsent(projectId, id -> createChangeCallback(id, wfKey, patchEntCreator));
+        m_workflowChangeCallbacks.computeIfAbsent(projectId, id -> {
+            var callback = createChangeCallback(id, wfKey, patchEntCreator);
+            m_workflowMiddleware.getWorkflowChangesListenerForWorkflowMonitor(wfKey)
+                .addWorkflowChangeCallback(callback);
+            return callback;
+        });
 
         return Optional.ofNullable(initialEvent);
     }
 
     private Runnable createChangeCallback(final String projectId, final WorkflowKey wfKey,
         final PatchEntCreator patchEntCreator) {
-        Runnable callback = () -> {
+        return () -> {
             var event = m_workflowMiddleware.buildWorkflowMonitorStateChangeEventEnt(wfKey,
                 patchEntCreator.getLastSnapshotId(), patchEntCreator);
             if (event != null) {
                 sendEvent(event, projectId);
             }
         };
-        m_workflowMiddleware
-            .getWorkflowChangesListenerForWorkflowMonitor(wfKey)
-            .addWorkflowChangeCallback(callback);
-        return callback;
     }
 
     @Override

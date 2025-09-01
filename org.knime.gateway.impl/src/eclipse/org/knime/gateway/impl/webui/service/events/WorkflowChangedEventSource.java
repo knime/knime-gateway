@@ -54,10 +54,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.EntityBuilderManager;
-import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
@@ -100,13 +100,13 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
         super(eventConsumer);
         m_workflowMiddleware = workflowMiddleware;
         m_projectManager = projectManager;
-        m_projectManager.addProjectRemovedListener(this::extracted);
+        m_projectManager.addProjectRemovedListener(this::removeEventListeners);
     }
 
-    private void extracted(final String projectId) {
+    private void removeEventListeners(final String projectId) {
         // remove listeners in case the FE doesn't explicitly do it,
         // e.g., in case the underlying job is swapped (AP in Hub)
-        for (final var wfKey : List.copyOf(m_workflowChangesCallbacks.keySet())) {
+        for (final var wfKey : Set.copyOf(m_workflowChangesCallbacks.keySet())) {
             if (wfKey.getProjectId().equals(projectId)) {
                 removeEventListener(wfKey);
             }
@@ -207,7 +207,7 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
 
     @Override
     public void removeAllEventListeners() {
-        for (final var key : List.copyOf(m_workflowChangesCallbacks.keySet())) {
+        for (final var key : Set.copyOf(m_workflowChangesCallbacks.keySet())) {
             removeEventListener(key);
         }
     }
@@ -218,7 +218,6 @@ public class WorkflowChangedEventSource extends EventSource<WorkflowChangedEvent
      * @param state
      * @return <code>true</code> any of the {@link WorkflowChangesListener}s has the callback-state as given by the
      *         argument
-     * @throws GatewayException
      */
     public boolean checkWorkflowChangesListenerCallbackState(final CallState state) {
         for (final var k : m_workflowChangesCallbacks.keySet()) {

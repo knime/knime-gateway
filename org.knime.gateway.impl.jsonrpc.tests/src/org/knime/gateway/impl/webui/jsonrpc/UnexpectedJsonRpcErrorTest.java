@@ -65,8 +65,8 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.util.EntityUtil;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.util.MiscEntityFactory;
 import org.knime.gateway.json.util.ObjectMapperUtil;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -107,7 +107,6 @@ public class UnexpectedJsonRpcErrorTest {
 
         /**
          * @param messageMatcher
-         * @param codeMatcher
          */
         public TestExceptionResolver(final Matcher<String> messageMatcher) {
             m_messageMatcher = messageMatcher;
@@ -122,7 +121,7 @@ public class UnexpectedJsonRpcErrorTest {
             assertNotNull("no stacktrace given", data.get("stackTrace"));
             var message = error.get("message").asText();
             assertThat("unexpected exception message", message, m_messageMatcher);
-            assertThat("unexpected title", data.get("title").asText(), Matchers.is(EntityUtil.UNEXPECTED_TITLE));
+            assertThat("unexpected title", data.get("title").asText(), Matchers.is(MiscEntityFactory.UNEXPECTED_TITLE));
             assertThat("unexpected error code in data", data.get("code").asText(),
                     Matchers.is("UnsupportedOperationException"));
             assertThat("unexpected canCopy", data.get("canCopy").asBoolean(), Matchers.is(true));

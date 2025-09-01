@@ -284,9 +284,11 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
             data = "LoggedOutException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
-            data = "NetworkException" /*per convention the data property contains the exception name*/)
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
+            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceItemEnt renameItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="itemName") String itemName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
+    public SpaceItemEnt renameItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="itemName") String itemName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.OperationNotAllowedException {
         return m_service.get().renameItem(spaceProviderId, spaceId, itemId, itemName);    
     }
 
@@ -301,9 +303,11 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
             data = "LoggedOutException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
-            data = "NetworkException" /*per convention the data property contains the exception name*/)
+            data = "NetworkException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.OperationNotAllowedException.class, code = -32600,
+            data = "OperationNotAllowedException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceEnt renameSpace(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceName") String spaceName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
+    public SpaceEnt renameSpace(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceName") String spaceName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.OperationNotAllowedException {
         return m_service.get().renameSpace(spaceProviderId, spaceId, spaceName);    
     }
 

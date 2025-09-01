@@ -91,6 +91,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.CollisionExcep
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Origin;
@@ -235,9 +236,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             createSpaceProvidersManager(p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
-        assertThrows(ServiceCallException.class, () -> {
-            ss().renameItem(providerId, space.getId(), Space.ROOT_ITEM_ID, "newName");
-        });
+        assertThrows(OperationNotAllowedException.class,
+            () -> ss().renameItem(providerId, space.getId(), Space.ROOT_ITEM_ID, "newName"));
     }
 
     public void testRenameSpace() throws Exception {
@@ -330,8 +330,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(space.getId()).thenReturn(id);
         when(space.getName()).thenReturn(name);
         when(space.listWorkflowGroup(any())).thenThrow( //
-                NetworkException.builder().withTitle("Mocked NetworkException").withDetails("mocked details").canCopy(true).build()
-        );
+            NetworkException.builder().withTitle("Mocked NetworkException").withDetails("mocked details").canCopy(true)
+                .build());
         // not mocked methods will return `null` or an appropriate empty/primitive value
         return space;
     }
@@ -396,7 +396,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(space.getId()).thenReturn(id);
         when(space.getName()).thenReturn(name);
         when(space.toEntity()).thenThrow( //
-                NetworkException.builder().withTitle("Mocked NetworkException").withDetails("mocked details").canCopy(true).build() //
+            NetworkException.builder().withTitle("Mocked NetworkException").withDetails("mocked details").canCopy(true)
+                .build() //
         );
         // not mocked methods will return `null` or an appropriate empty/primitive value
         return space;
@@ -411,8 +412,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      * @param isReachable
      * @return
      */
-    static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName,
-        final Space... spaces) {
+    static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName, final Space... spaces) {
         return new SpaceProvider() {
 
             @Override
@@ -519,8 +519,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
-            public SpaceGroupEnt toEntity()
-                throws NetworkException, LoggedOutException, MutableServiceCallException {
+            public SpaceGroupEnt toEntity() throws NetworkException, LoggedOutException, MutableServiceCallException {
                 final List<SpaceEnt> spaceEnts = new ArrayList<>();
                 for (final var space : spaces) {
                     spaceEnts.add(space.toEntity());
@@ -648,7 +647,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat("File must not exist anymore", !Files.exists(filePath));
 
         // Call delete on the root
-        assertThrows("Deleting root must fail", ServiceCallException.class,
+        assertThrows("Deleting root must fail", OperationNotAllowedException.class,
             () -> ss().deleteItems(spaceId, providerId, List.of("root"), false));
 
         // Call delete with an item id that does not exist
@@ -673,15 +672,13 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         Files.createFile(workflowGroupPath.resolve(fileName));
         ss().listWorkflowGroup(spaceId, providerId, workflowGroupId);
         var rootFiles = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
-        ss().deleteItems(spaceId, providerId,
-                rootFiles.getItems().stream().map(SpaceItemEnt::getId).toList(), false);
+        ss().deleteItems(spaceId, providerId, rootFiles.getItems().stream().map(SpaceItemEnt::getId).toList(), false);
     }
 
     public void testMoveItemWithCollision() throws Exception {
         var provider = mock(SpaceProvider.class);
         var spaceProviderId = "provider-id";
         when(provider.getId()).thenReturn(spaceProviderId);
-
 
         var sourceSpace = mock(Space.class);
         var sourceSpaceId = "source-space-id";
@@ -697,7 +694,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         List<String> itemIds = List.of("moved-item-id");
         var destWorkflowGroupItemId = "destination-workflow-group-id";
         when(sourceSpace.getItemName("moved-item-id")).thenReturn("Item name");
-        when(destinationSpace.getItemIdForName(destWorkflowGroupItemId, "Item name")).thenReturn(Optional.of("dest-item-id"));
+        when(destinationSpace.getItemIdForName(destWorkflowGroupItemId, "Item name"))
+            .thenReturn(Optional.of("dest-item-id"));
 
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManager(provider));
 

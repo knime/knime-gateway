@@ -119,12 +119,12 @@ public interface SpaceProvider {
      * @return spaceGroup The associated space group
      * @throws LoggedOutException
      * @throws NetworkException
-     * @throws NoSuchElementException
+     * @throws NoSuchElementException if no group with the given name exists
      * @throws MutableServiceCallException
      */
     @SuppressWarnings("java:S1452") // wildcard is needed so `HubSpaceGroup implements SpaceGroup<HubSpace>` works here
     SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName)
-        throws NetworkException, LoggedOutException, NoSuchElementException, MutableServiceCallException;
+        throws NetworkException, LoggedOutException, MutableServiceCallException;
 
     /**
      * Returns the server address of the current space provider

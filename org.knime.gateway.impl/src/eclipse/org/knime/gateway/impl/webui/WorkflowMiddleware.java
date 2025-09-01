@@ -66,7 +66,6 @@ import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.webui.entity.PatchEnt;
@@ -80,9 +79,6 @@ import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateSnapshotEnt.WorkflowMonitorStateSnapshotEntBuilder;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
@@ -297,13 +293,9 @@ public final class WorkflowMiddleware {
      * @param snapshotId the latest snapshot id
      * @param includeInteractionInfo see {@link WorkflowBuildContextBuilder#includeInteractionInfo(boolean)}
      * @return <code>null</code> if there are no changes, otherwise the {@link WorkflowChangedEventEnt}
-     * @throws NetworkException -
-     * @throws LoggedOutException -
-     * @throws ServiceCallException -
      */
     public WorkflowChangedEventEnt buildWorkflowChangedEvent(final WorkflowKey wfKey,
-        final PatchEntCreator patchEntCreator, final String snapshotId, final boolean includeInteractionInfo)
-         {
+        final PatchEntCreator patchEntCreator, final String snapshotId, final boolean includeInteractionInfo) {
         var buildContextBuilder = WorkflowBuildContext.builder()//
             .includeInteractionInfo(includeInteractionInfo);
         final var ws = getWorkflowState(wfKey);
@@ -386,7 +378,6 @@ public final class WorkflowMiddleware {
      *
      * @param wfKey The workflow key characterising the workflow
      * @return recent {@code DependentNodeProperties}
-     * @throws GatewayException
      */
     private DependentNodeProperties getDependentNodeProperties(final WorkflowKey wfKey) {
         return getWorkflowState(wfKey).getDependentNodeProperties();
@@ -411,13 +402,11 @@ public final class WorkflowMiddleware {
         return m_workflowStateCache.computeIfAbsent(wfKey, this::createWorkflowStateAndEventuallyClearCache);
     }
 
-    private WorkflowState createWorkflowStateAndEventuallyClearCache(final WorkflowKey wfKey)
-         {
-
+    private WorkflowState createWorkflowStateAndEventuallyClearCache(final WorkflowKey wfKey) {
         final String projectId = wfKey.getProjectId();
         final var wfm = WorkflowManagerResolver.load(projectId, wfKey.getWorkflowId(), wfKey.getVersionId());
-        final SpaceProviders spaceProviders = m_spaceProvidersManager == null ? null
-            : m_spaceProvidersManager.getSpaceProviders(Key.of(projectId));
+        final SpaceProviders spaceProviders =
+            m_spaceProvidersManager == null ? null : m_spaceProvidersManager.getSpaceProviders(Key.of(projectId));
         if (!wfm.isProject()) {
             final var nc = getNodeContainerOf(wfm); // component or metanode
             nc.getParent().addListener(new NodeRemovedListenerToClearWorkflowState(wfKey, nc));

@@ -56,7 +56,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.LoopStatusChangeListener;
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -82,11 +81,9 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  */
 public class WorkflowChangesListener implements Closeable {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowChangesListener.class);
-
     private final WorkflowManager m_wfm;
 
-    private final Set<Runnable> m_workflowChangedCallbacks = new HashSet<Runnable>();
+    private final Set<Runnable> m_workflowChangedCallbacks = new HashSet<>();
 
     private final Set<WorkflowChangesTracker> m_workflowChangesTrackers = Collections.synchronizedSet(new HashSet<>());
 

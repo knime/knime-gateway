@@ -86,8 +86,7 @@ class UpdateNodeLabel extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var nodeId = m_commandEnt.getNodeId();
         var nc = DefaultServiceUtil.getNodeContainer(getWorkflowKey().getProjectId(), nodeId);
         var newLabel = m_commandEnt.getLabel();

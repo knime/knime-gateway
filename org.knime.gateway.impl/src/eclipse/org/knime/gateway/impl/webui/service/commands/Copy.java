@@ -127,8 +127,7 @@ class Copy extends AbstractPartBasedWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var projectId = getWorkflowKey().getProjectId();
         var wfm = getWorkflowManager();
         var nodeIds = m_commandEnt.getNodeIds().stream()//

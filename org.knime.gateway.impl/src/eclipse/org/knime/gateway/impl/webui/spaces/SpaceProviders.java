@@ -81,8 +81,8 @@ public final class SpaceProviders {
      *
      * @param spaceProviderId
      * @param spaceId
-     * @throws NoSuchElementException if there is no space provider or space for the given ids
      * @return the space
+     * @throws NoSuchElementException if there is no space provider or space for the given ids
      * @throws LoggedOutException
      * @throws NetworkException
      * @throws MutableServiceCallException

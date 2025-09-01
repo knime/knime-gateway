@@ -165,12 +165,11 @@ public final class SpaceEntityFactory {
      * @param itemFilter determines the items to be excluded (e.g. hidden files)
      * @param comparator determines the order of the items
      * @return a new entity instance
-     * @throws IOException
+     * @throws IOException if there is a problem with listing the files
      */
-    public WorkflowGroupContentEnt buildLocalWorkflowGroupContentEnt(final Path absolutePath,
-        final Path spaceRootPath, final Function<Path, String> getItemId,
-        final Function<Path, SpaceItemEnt.TypeEnum> getItemType, final Predicate<Path> itemFilter,
-        final Comparator<SpaceItemEnt> comparator) throws IOException {
+    public WorkflowGroupContentEnt buildLocalWorkflowGroupContentEnt(final Path absolutePath, final Path spaceRootPath,
+        final Function<Path, String> getItemId, final Function<Path, SpaceItemEnt.TypeEnum> getItemType,
+        final Predicate<Path> itemFilter, final Comparator<SpaceItemEnt> comparator) throws IOException {
         final var isRoot = absolutePath.equals(spaceRootPath);
         final var relativePath = spaceRootPath.relativize(absolutePath);
         final var path = isRoot ? Collections.<SpacePathSegmentEnt> emptyList()

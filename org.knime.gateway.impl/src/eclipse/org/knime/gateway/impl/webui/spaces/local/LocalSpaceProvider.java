@@ -52,6 +52,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.util.Lazy;
 import org.knime.gateway.impl.webui.spaces.SpaceGroup;
@@ -106,8 +107,11 @@ public class LocalSpaceProvider implements SpaceProvider {
     }
 
     @Override
-    public LocalSpace getSpace(final String spaceId) {
-        return Optional.of(m_space).filter(space -> space.getId().equals(spaceId)).orElseThrow();
+    public LocalSpace getSpace(final String spaceId) throws MutableServiceCallException {
+        if (!m_space.getId().equals(spaceId)) {
+            throw new MutableServiceCallException(List.of("No space found for id '" + spaceId + "'"), false, null);
+        }
+        return m_space;
     }
 
     @Override
@@ -116,7 +120,7 @@ public class LocalSpaceProvider implements SpaceProvider {
     }
 
     @Override
-    public Optional<SpaceAndItemId> resolveSpaceAndItemId(final URI uri) {
+    public Optional<SpaceAndItemId> resolveSpaceAndItemId(final URI uri) throws MutableServiceCallException {
         return getSpace(LocalSpace.LOCAL_SPACE_ID).getItemIdByURI(uri) //
             .map(itemId -> new SpaceAndItemId(LocalSpace.LOCAL_SPACE_ID, itemId));
     }

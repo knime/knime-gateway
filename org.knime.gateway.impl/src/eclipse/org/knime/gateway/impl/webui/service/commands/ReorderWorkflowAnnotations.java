@@ -89,8 +89,7 @@ class ReorderWorkflowAnnotations extends AbstractWorkflowCommand {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         final var workflowKey = getWorkflowKey();
         final List<WorkflowAnnotationID> annotationIds = new ArrayList<>();

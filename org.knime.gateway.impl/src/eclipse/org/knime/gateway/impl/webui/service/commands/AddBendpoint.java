@@ -79,8 +79,7 @@ class AddBendpoint extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
 
         var wfm = getWorkflowManager();
         var connectionId =

@@ -62,7 +62,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -77,6 +76,7 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt.ExecutionStateEnum;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.service.WorkflowService;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
@@ -344,7 +344,8 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var space = mock(Space.class);
         when(space.getId()).thenReturn(spaceId);
-        doThrow(IOException.class).when(space).restoreItemVersion(anyString(), eq(VersionId.parse("666")));
+        doThrow(MutableServiceCallException.class).when(space).restoreItemVersion(anyString(),
+            eq(VersionId.parse("666")));
 
         var spaceProvider = createSpaceProvider(providerId, "Provider name for testing", space);
         var spaceProviderManager = createSpaceProvidersManager(spaceProvider);

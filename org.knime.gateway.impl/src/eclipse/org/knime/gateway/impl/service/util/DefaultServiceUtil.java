@@ -106,7 +106,7 @@ public final class DefaultServiceUtil {
      * @since 5.5
      */
     public static NodeContainer getNodeContainer(final String projectId, final VersionId versionId,
-        final NodeIDEnt nodeId) throws NoSuchElementException {
+        final NodeIDEnt nodeId) {
         var parent = WorkflowManagerResolver.get(projectId, versionId);
         return findNodeContainer(parent, nodeId);
     }
@@ -124,7 +124,7 @@ public final class DefaultServiceUtil {
      * @throws IllegalArgumentException if there is no node for the given node id
      * @throws IllegalStateException if the given node id doesn't reference a sub workflow (i.e. component or metanode)
      *             or the workflow is encrypted
-     * 
+     *
      */
     public static NodeContainer getNodeContainer(final String projectId, final NodeIDEnt subWorkflowId,
         final NodeIDEnt nodeInSubWorkflow) {

@@ -72,6 +72,7 @@ public final class Lazy {
      *
      * @implNote Not thread-safe.
      * @param <V> The type of the provided value.
+     * @param <E> the type of the exception when trying to get the value
      */
     public static final class Init<V, E extends Exception> {
 
@@ -106,6 +107,7 @@ public final class Lazy {
          * value.
          *
          * @return the value
+         * @throws E -
          */
         public V get() throws E {
             var result = this.m_value;
@@ -158,6 +160,7 @@ public final class Lazy {
      *
      * @implNote Not thread-safe.
      * @param <V> The type of the contained value.
+     * @param <E> The type of the exception when trying to get the transformed value
      */
     public static class Transform<V, E extends Exception> {
         private final UnaryOperator<V> m_transformation;
@@ -186,6 +189,7 @@ public final class Lazy {
 
         /**
          * @return The transformed value
+         * @throws E -
          */
         public V transformed() throws E {
             return m_transformed.get();

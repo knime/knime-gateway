@@ -303,11 +303,13 @@ public final class LocalSpace implements Space {
     }
 
     @Override
-    public void deleteItems(final List<String> itemIds, final boolean softDelete) throws MutableServiceCallException {
+    public void deleteItems(final List<String> itemIds, final boolean softDelete)
+        throws MutableServiceCallException, OperationNotAllowedException {
 
         // Check if the root is part of the IDs
         if (itemIds.contains(Space.ROOT_ITEM_ID)) {
-            throw new UnsupportedOperationException("The root of the space cannot be deleted.");
+            throw OperationNotAllowedException.builder().withTitle("The root of the space cannot be deleted.")
+                .withDetails().canCopy(false).build();
         }
 
         assertAllItemIdsExistOrElseThrow(itemIds);

@@ -118,9 +118,9 @@ public final class ComponentLoader {
             exec.setMessage("Downloading...");
             localPath = space.toLocalAbsolutePath(exec, commandEnt.getItemId()).orElseThrow();
         } catch (GatewayException ex) {
-            throw new IllegalStateException(ex); // TODO NXT-3938
+            throw new CompletionException(compileLoadingFailedErrorMessage(ex), ex);
         } catch (final MutableServiceCallException ex) {
-            throw new IllegalStateException(ex.toGatewayException("Failed to fetch component template"));
+            throw new CompletionException(ex.toGatewayException("Failed to fetch component template"));
         }
 
         var componentName = commandEnt.getName();

@@ -99,7 +99,7 @@ public abstract class GatewayException extends Exception {
      * @param canCopy flag indicating whether the problem description is supposed to be copyable
      * @deprecated use {@link #GatewayException(int, String, List, Map, boolean, Throwable)} instead
      */
-    @Deprecated(since = "5.7", forRemoval = true)
+    @Deprecated(since = "5.8", forRemoval = true)
     protected GatewayException(final boolean canCopy) {
         m_canCopy = canCopy;
         m_status = -1;
@@ -114,7 +114,7 @@ public abstract class GatewayException extends Exception {
      * @param properties -
      * @deprecated use {@link #GatewayException(int, String, List, Map, boolean, Throwable)} instead
      */
-    @Deprecated(since = "5.7", forRemoval = true)
+    @Deprecated(since = "5.8", forRemoval = true)
     protected GatewayException(final Map<String, String> properties) {
         this(Boolean.parseBoolean(properties.get("canCopy")));
         m_properties.putAll(properties);

@@ -219,10 +219,6 @@ public final class DefaultWorkflowService implements WorkflowService {
     public void restoreVersion(final String projectId, final String versionId)
         throws ServiceCallException, NetworkException, LoggedOutException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        final var project = m_projectManager.getProject(projectId).orElseThrow(); // No specific version needed here
-        final var origin = project.getOrigin().orElseThrow();
-
-
         if (m_spaceProvidersManager == null) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to restore item version") //
@@ -230,6 +226,8 @@ public final class DefaultWorkflowService implements WorkflowService {
                 .canCopy(false) //
                 .build();
         }
+        final var project = m_projectManager.getProject(projectId).orElseThrow(); // No specific version needed here
+        final var origin = project.getOrigin().orElseThrow();
         try {
             m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
                 .getSpace(origin.providerId(), origin.spaceId()) //

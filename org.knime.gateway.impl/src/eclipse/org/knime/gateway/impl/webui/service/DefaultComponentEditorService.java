@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
  * {@link ComponentEditorService} implementation created in js-core
  *
  * @author Tobias Kampmann, TNG Technology Consulting GmbH
- * @since 5.7
+ * @since 5.6
  */
 public class DefaultComponentEditorService implements ComponentEditorService {
 

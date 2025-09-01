@@ -109,7 +109,6 @@ class ProjectWfmCache {
                     "No workflow loader set for this project (required for dynamically loading some version)");
             }
 
-            // TODO is this unsynchronized not-quite-LRU map the right class to use?
             final var existing = m_fixedVersions.get(fixedVersion);
             if (existing != null) {
                 return existing;
@@ -122,6 +121,7 @@ class ProjectWfmCache {
             try {
                 return m_currentState.get();
             } catch (GatewayException e) {
+                // TODO NXT-3938
                 throw new RuntimeException(e);
             }
         }

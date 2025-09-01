@@ -111,7 +111,8 @@ public class DefaultCompositeViewService implements CompositeViewService {
 
     @Override
     public Object triggerCompleteComponentReexecution(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Map<String, String> viewValues) throws ServiceCallException, NodeNotFoundException {
+        final NodeIDEnt nodeId, final Map<String, String> viewValues)
+        throws ServiceCallException, NodeNotFoundException {
 
         assertProjectId(projectId);
         return getCompositeViewServiceDelegate().triggerCompleteComponentReexecution(projectId, workflowId, nodeId,

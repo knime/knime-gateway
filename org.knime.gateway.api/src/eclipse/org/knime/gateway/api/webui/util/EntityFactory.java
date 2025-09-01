@@ -106,6 +106,14 @@ public final class EntityFactory {
     /**
      * Entity builder instance to mainly build {@link WorkflowMonitorStateEnt}s and related entities.
      */
-    public static final WorkflowMonitorStateEntityFactory WorkflowMonitorState = new WorkflowMonitorStateEntityFactory();
+    public static final WorkflowMonitorStateEntityFactory WorkflowMonitorState =
+        new WorkflowMonitorStateEntityFactory();
+
+    /**
+     * Entity builder instance to build miscellaneous entities.
+     *
+     * @since 5.7
+     */
+    public static final MiscEntityFactory Misc = new MiscEntityFactory();
 
 }

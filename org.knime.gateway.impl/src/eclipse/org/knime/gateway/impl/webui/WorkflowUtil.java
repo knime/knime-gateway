@@ -80,7 +80,7 @@ public final class WorkflowUtil {
      * @throws NotASubWorkflowException
      */
     public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey)
-        throws NoSuchElementException, NodeNotFoundException, NotASubWorkflowException {
+        throws NodeNotFoundException, NotASubWorkflowException {
         WorkflowManager wfm;
         try {
             // No version needed, only current state
@@ -114,7 +114,7 @@ public final class WorkflowUtil {
      * @throws NoSuchElementException
      */
     public static void assertWorkflowExists(final WorkflowKey wfKey)
-        throws NoSuchElementException, NodeNotFoundException, NotASubWorkflowException {
+        throws NodeNotFoundException, NotASubWorkflowException {
         getWorkflowManager(wfKey);
     }
 

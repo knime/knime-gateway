@@ -62,9 +62,8 @@ public interface GatewayService {
 
     /**
      * Cleans up the service instance.
-     * @throws GatewayException
      */
-    default void dispose() throws GatewayException {
+    default void dispose() {
         //
     }
 

@@ -49,7 +49,7 @@
 package org.knime.gateway.impl.jsonrpc;
 
 import org.knime.gateway.api.service.GatewayException;
-import org.knime.gateway.api.util.EntityUtil;
+import org.knime.gateway.api.webui.util.EntityFactory;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 
@@ -76,9 +76,9 @@ public class DefaultExceptionToJsonRpcErrorTranslator implements ExceptionToJson
     @Override
     public Object getData(final Throwable throwable, final JsonRpcError errorAnnotation) {
         if (throwable instanceof GatewayException gatewayException && errorAnnotation != null) {
-            return EntityUtil.knownToProblemDescription(gatewayException);
+            return EntityFactory.Misc.buildKnownProblemDescriptionEnt(gatewayException);
         } else {
-            return EntityUtil.unknownToProblemDescription(throwable);
+            return EntityFactory.Misc.buildUnknownProblemDescriptionEnt(throwable);
         }
     }
 

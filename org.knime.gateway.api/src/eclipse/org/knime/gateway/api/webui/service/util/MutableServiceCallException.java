@@ -49,7 +49,6 @@
 package org.knime.gateway.api.webui.service.util;
 
 import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +66,7 @@ public final class MutableServiceCallException extends Exception {
 
     private final int m_status;
 
-    private final Deque<String> m_details = new ArrayDeque<>();
+    private final ArrayDeque<String> m_details = new ArrayDeque<>();
 
     private final Map<String, String> m_additional = new HashMap<>();
 

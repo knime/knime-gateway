@@ -178,8 +178,7 @@ public final class Project {
      * @param version The version id
      * @return The workflow manager of the project of a given {@link VersionId}.
      */
-    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version)
-         {
+    public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version) {
         return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version));
     }
 

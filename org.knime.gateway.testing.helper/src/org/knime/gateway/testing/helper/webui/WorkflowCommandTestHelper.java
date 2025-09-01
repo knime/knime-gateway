@@ -180,7 +180,6 @@ import org.knime.gateway.api.webui.entity.WorkflowSnapshotEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
@@ -322,7 +321,8 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
         // try to connect to an incompatible port
         var ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2, NodeRelationEnum.SUCCESSORS)));
-        assertThat(ex.getMessage(), is("Node couldn't be created because a connection couldn't be added."));
+        assertThat(ex.getMessage(),
+            is("Failed to create node\\n * Node couldn't be created because a connection couldn't be added."));
 
         // redo adding the row filter
         ws().redoWorkflowCommand(wfId, getRootID());
@@ -896,7 +896,7 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private void assertPortsUnchanged(final String projectId, final NodeIDEnt wfId, final NodeIDEnt node,
-        final WorkflowEnt originalWfEnt) throws ServiceExceptions.NotASubWorkflowException, NodeNotFoundException {
+        final WorkflowEnt originalWfEnt) throws NodeNotFoundException {
         var currentWfEnt = ws().getWorkflow(projectId, wfId, null, false).getWorkflow();
         var unchangedInports = originalWfEnt.getNodes().get(node.toString()).getInPorts();
         var changedInPorts = currentWfEnt.getNodes().get(node.toString()).getInPorts();
@@ -2044,7 +2044,8 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
         // try to execute the command for a component
         var message = assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(projectId, new NodeIDEnt(12), command1)).getMessage();
-        assertThat(message, is("Component don't have metanode ports bars. Can't be transformed."));
+        assertThat(message,
+            is("Failed to move ports bar\n * Components don't have metanode ports bars. Can't be transformed."));
     }
 
     /**

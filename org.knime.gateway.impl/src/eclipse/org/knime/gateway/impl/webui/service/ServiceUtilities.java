@@ -97,9 +97,7 @@ final class ServiceUtilities {
      * @throws NoSuchElementException if there is no project for the given id
      */
     static NodeContainer assertProjectIdAndGetNodeContainer(final String projectId, final NodeIDEnt workflowId,
-        final VersionId versionId, final NodeIDEnt nodeId)
-        throws NodeNotFoundException {
-
+        final VersionId versionId, final NodeIDEnt nodeId) throws NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         try {
             return org.knime.gateway.impl.service.util.DefaultServiceUtil.getNodeContainer(projectId, workflowId,
@@ -120,10 +118,9 @@ final class ServiceUtilities {
      *
      * @param wfKey -
      * @return -
-     * @throws NodeNotFoundException
+     * @throws NodeNotFoundException -
      */
-    static WorkflowManager assertProjectIdAndGetWorkflowManager(final WorkflowKey wfKey)
-        throws NodeNotFoundException {
+    static WorkflowManager assertProjectIdAndGetWorkflowManager(final WorkflowKey wfKey) throws NodeNotFoundException {
         DefaultServiceContext.assertWorkflowProjectId(wfKey.getProjectId());
         try {
             return org.knime.gateway.impl.service.util.DefaultServiceUtil.getWorkflowManager(wfKey);
@@ -147,20 +144,13 @@ final class ServiceUtilities {
      * @param selection -
      * @param getNodeWrapper -
      * @param <N> -
-     * @param projectId
-     * @param workflowId
-     * @param nodeId
-     * @param versionId
-     * @param portIdx can be {@code null} if not a port view
-     * @param viewIdx can be {@code null} if not a port view
      * @throws NodeNotFoundException -
      * @throws IllegalStateException If there was a problem with translating teh strings to row-keys
      */
     @SuppressWarnings("unchecked")
     static <N extends NodeWrapper> void updateDataPointSelection(final String projectId, final NodeIDEnt workflowId,
         final VersionId versionId, final NodeIDEnt nodeId, final String mode, final List<String> selection,
-        final Function<NodeContainer, N> getNodeWrapper)
-        throws NodeNotFoundException {
+        final Function<NodeContainer, N> getNodeWrapper) throws NodeNotFoundException {
 
         var nc = assertProjectIdAndGetNodeContainer(projectId, workflowId, versionId, nodeId);
         var nodeWrapper = getNodeWrapper.apply(nc);

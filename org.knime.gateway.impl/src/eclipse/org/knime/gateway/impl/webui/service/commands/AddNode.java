@@ -106,8 +106,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     }
 
     @Override
-    protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException {
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
         // Add node
         var positionEnt = m_commandEnt.getPosition();
@@ -184,11 +183,9 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
         try {
             var space = m_spaceProviders.getSpace(spaceProviderId, spaceId);
             return space.toPathBasedKnimeUrl(itemId).toURL();
-        } catch (MalformedURLException ex) {
-            NodeLogger.getLogger(AddNode.class).warn("Failed to resolve item ID " + itemId
-                + " to URL in " + spaceProviderId, ex);
-            return null;
-        } catch (GatewayException | MutableServiceCallException ex) {
+        } catch (MalformedURLException | GatewayException | MutableServiceCallException ex) {
+            NodeLogger.getLogger(AddNode.class)
+                .warn("Failed to resolve item ID " + itemId + " to URL in " + spaceProviderId, ex);
             return null;
         }
     }
