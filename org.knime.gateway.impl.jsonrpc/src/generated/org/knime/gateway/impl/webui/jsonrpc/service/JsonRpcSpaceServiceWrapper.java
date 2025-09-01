@@ -190,14 +190,14 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "getSpaceGroups")
     @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
-            data = "NetworkException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
             data = "LoggedOutException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
-    public java.util.List<SpaceGroupEnt> getSpaceGroups(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, ServiceExceptions.ServiceCallException {
+    public java.util.List<SpaceGroupEnt> getSpaceGroups(@JsonRpcParam(value="spaceProviderId") String spaceProviderId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
         return m_service.get().getSpaceGroups(spaceProviderId);    
     }
 
@@ -241,14 +241,14 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "listWorkflowGroup")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
             data = "LoggedOutException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
-            data = "NetworkException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
-    public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.ServiceCallException {
+    public WorkflowGroupContentEnt listWorkflowGroup(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
         return m_service.get().listWorkflowGroup(spaceId, spaceProviderId, itemId);    
     }
 
@@ -279,14 +279,14 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "renameItem")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
             data = "LoggedOutException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
-            data = "NetworkException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceItemEnt renameItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="itemName") String itemName)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.ServiceCallException {
+    public SpaceItemEnt renameItem(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="itemName") String itemName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
         return m_service.get().renameItem(spaceProviderId, spaceId, itemId, itemName);    
     }
 
@@ -296,14 +296,14 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     @Override
     @JsonRpcMethod(value = "renameSpace")
     @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
             data = "LoggedOutException" /*per convention the data property contains the exception name*/),
         @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
-            data = "NetworkException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
-    public SpaceEnt renameSpace(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceName") String spaceName)  throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, ServiceExceptions.ServiceCallException {
+    public SpaceEnt renameSpace(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceName") String spaceName)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
         return m_service.get().renameSpace(spaceProviderId, spaceId, spaceName);    
     }
 

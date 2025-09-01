@@ -77,9 +77,11 @@ public class JsonRpcCompositeViewServiceWrapper implements CompositeViewService 
     @JsonRpcMethod(value = "deactivateAllCompositeViewDataServices")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public void deactivateAllCompositeViewDataServices(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
+    public void deactivateAllCompositeViewDataServices(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException {
         m_service.get().deactivateAllCompositeViewDataServices(projectId, workflowId, nodeId);    
     }
 
@@ -90,9 +92,11 @@ public class JsonRpcCompositeViewServiceWrapper implements CompositeViewService 
     @JsonRpcMethod(value = "getCompositeViewPage")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public Object getCompositeViewPage(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
+    public Object getCompositeViewPage(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException {
         return m_service.get().getCompositeViewPage(projectId, workflowId, versionId, nodeId);    
     }
 
@@ -103,9 +107,11 @@ public class JsonRpcCompositeViewServiceWrapper implements CompositeViewService 
     @JsonRpcMethod(value = "pollCompleteComponentReexecutionStatus")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public Object pollCompleteComponentReexecutionStatus(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
+    public Object pollCompleteComponentReexecutionStatus(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException {
         return m_service.get().pollCompleteComponentReexecutionStatus(projectId, workflowId, nodeId);    
     }
 
@@ -116,9 +122,11 @@ public class JsonRpcCompositeViewServiceWrapper implements CompositeViewService 
     @JsonRpcMethod(value = "pollComponentReexecutionStatus")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public Object pollComponentReexecutionStatus(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="resetNodeIdSuffix") String resetNodeIdSuffix)  throws ServiceExceptions.ServiceCallException {
+    public Object pollComponentReexecutionStatus(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="resetNodeIdSuffix") String resetNodeIdSuffix)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException {
         return m_service.get().pollComponentReexecutionStatus(projectId, workflowId, nodeId, resetNodeIdSuffix);    
     }
 
@@ -129,9 +137,11 @@ public class JsonRpcCompositeViewServiceWrapper implements CompositeViewService 
     @JsonRpcMethod(value = "setViewValuesAsNewDefault")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public void setViewValuesAsNewDefault(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="viewValues") java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException {
+    public void setViewValuesAsNewDefault(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="viewValues") java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException {
         m_service.get().setViewValuesAsNewDefault(projectId, workflowId, nodeId, viewValues);    
     }
 
@@ -142,9 +152,11 @@ public class JsonRpcCompositeViewServiceWrapper implements CompositeViewService 
     @JsonRpcMethod(value = "triggerCompleteComponentReexecution")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public Object triggerCompleteComponentReexecution(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="viewValues") java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException {
+    public Object triggerCompleteComponentReexecution(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="viewValues") java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException {
         return m_service.get().triggerCompleteComponentReexecution(projectId, workflowId, nodeId, viewValues);    
     }
 
@@ -155,9 +167,11 @@ public class JsonRpcCompositeViewServiceWrapper implements CompositeViewService 
     @JsonRpcMethod(value = "triggerComponentReexecution")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
     })
-    public Object triggerComponentReexecution(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="resetNodeIdSuffix") String resetNodeIdSuffix, @JsonRpcParam(value="viewValues") java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException {
+    public Object triggerComponentReexecution(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="resetNodeIdSuffix") String resetNodeIdSuffix, @JsonRpcParam(value="viewValues") java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException {
         return m_service.get().triggerComponentReexecution(projectId, workflowId, nodeId, resetNodeIdSuffix, viewValues);    
     }
 

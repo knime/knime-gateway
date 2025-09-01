@@ -56,8 +56,6 @@ import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 
 /**
@@ -77,15 +75,13 @@ public abstract class GatewayException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(GatewayException.class);
+    private static final Set<String> BUILT_IN_PROPERTIES = Set.of("status", "title", "details");
 
-    private static final String STATUS_KEY = "status";
+    private final int m_status;
 
-    private static final String TITLE_KEY = "title";
+    private final String m_title;
 
-    private static final String DETAILS_KEY = "details";
-
-    private static final Set<String> BUILT_IN_PROPERTIES = Set.of(STATUS_KEY, TITLE_KEY, DETAILS_KEY);
+    private final List<String> m_details;
 
     private final Map<String, String> m_properties = new LinkedHashMap<>();
 
@@ -97,6 +93,31 @@ public abstract class GatewayException extends Exception {
             details.forEach(detail -> sb.append("\n * ").append(detail));
         }
         return sb.toString();
+    }
+
+    /**
+     * @param canCopy flag indicating whether the problem description is supposed to be copyable
+     * @deprecated use {@link #GatewayException(int, String, List, Map, boolean, Throwable)} instead
+     */
+    @Deprecated(since = "5.7", forRemoval = true)
+    protected GatewayException(final boolean canCopy) {
+        m_canCopy = canCopy;
+        m_status = -1;
+        m_title = "";
+        m_details = List.of();
+    }
+
+    /**
+     * New {@code GatewayException} to represent de-serialised GatewayPoblemDescription schema. For testing purposes
+     * only.
+     *
+     * @param properties -
+     * @deprecated use {@link #GatewayException(int, String, List, Map, boolean, Throwable)} instead
+     */
+    @Deprecated(since = "5.7", forRemoval = true)
+    protected GatewayException(final Map<String, String> properties) {
+        this(Boolean.parseBoolean(properties.get("canCopy")));
+        m_properties.putAll(properties);
     }
 
     /**
@@ -119,31 +140,23 @@ public abstract class GatewayException extends Exception {
             m_properties.putAll(additionalProps);
         }
 
-        if (status >= 0) {
-            m_properties.put(STATUS_KEY, Integer.toString(status));
-        }
-        m_properties.put(TITLE_KEY, CheckUtils.checkArgumentNotNull(title));
-        m_properties.put(DETAILS_KEY, details == null ? ""
-            : details.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining("\n")));
+        m_status = status;
+        m_title = CheckUtils.checkArgumentNotNull(title);
+        m_details = details == null ? List.of() : List.copyOf(details);
         m_canCopy = canCopy;
     }
 
     /**
      * Gets the status code of the exception as per "Problem Details” / RFC9457 standard.
      *
-     * @return Exception title property if present or {@code null} if not present
+     * @return Exception title property if present or an empty optional if not present
      * @since 5.7
      */
     public OptionalInt getStatus() {
-        final var statusStr = m_properties.get(STATUS_KEY);
-        if (!StringUtils.isBlank(statusStr)) {
-            try {
-                return OptionalInt.of(Integer.parseInt(statusStr));
-            } catch (final NumberFormatException e) {
-                LOGGER.debug("Could not parse status code", e);
-            }
+        if (m_status < 0) {
+            return OptionalInt.empty();
         }
-        return OptionalInt.empty();
+        return OptionalInt.of(m_status);
     }
 
     /**
@@ -152,7 +165,7 @@ public abstract class GatewayException extends Exception {
      * @return Exception title property if present or {@code null} if not present
      */
     public String getTitle() {
-        return m_properties.get(TITLE_KEY);
+        return m_title;
     }
 
     /**
@@ -162,8 +175,18 @@ public abstract class GatewayException extends Exception {
      * @since 5.7
      */
     public List<String> getDetails() {
-        final var detailsString = m_properties.get(DETAILS_KEY);
-        return StringUtils.isBlank(detailsString) ? List.of() : detailsString.lines().toList();
+        return m_details;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getMessage() {
+        if (m_properties.containsKey("message")) {
+            return m_properties.get("message");
+        }
+        return super.getMessage();
     }
 
     /**

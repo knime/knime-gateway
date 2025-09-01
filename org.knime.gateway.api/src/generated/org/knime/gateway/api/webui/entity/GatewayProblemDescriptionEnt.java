@@ -67,13 +67,13 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
 
   /**
    * Title of the problem (non instance-specific).
-   * @return title 
+   * @return title , never <code>null</code>
    **/
   public String getTitle();
 
   /**
    * Name of the thrown exception.
-   * @return code 
+   * @return code , never <code>null</code>
    **/
   public String getCode();
 
@@ -121,7 +121,7 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
         /**
          * Title of the problem (non instance-specific).
          * 
-         * @param title the property value,  
+         * @param title the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         GatewayProblemDescriptionEntBuilder setTitle(String title);
@@ -129,7 +129,7 @@ public interface GatewayProblemDescriptionEnt extends GatewayEntity {
         /**
          * Name of the thrown exception.
          * 
-         * @param code the property value,  
+         * @param code the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         GatewayProblemDescriptionEntBuilder setCode(String code);

@@ -65,8 +65,9 @@ public interface CompositeViewService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    void deactivateAllCompositeViewDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
+    void deactivateAllCompositeViewDataServices(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Returns all the information on a node view required to render it.
@@ -78,8 +79,9 @@ public interface CompositeViewService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    Object getCompositeViewPage(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
+    Object getCompositeViewPage(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Query the current page while reexecuting
@@ -90,8 +92,9 @@ public interface CompositeViewService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    Object pollCompleteComponentReexecutionStatus(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
+    Object pollCompleteComponentReexecutionStatus(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Query the current page while reexecuting
@@ -103,8 +106,9 @@ public interface CompositeViewService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    Object pollComponentReexecutionStatus(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String resetNodeIdSuffix)  throws ServiceExceptions.ServiceCallException;
+    Object pollComponentReexecutionStatus(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String resetNodeIdSuffix)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Applies viewValues as new default.  First the viewValues will be validated, then applied and when necessary the component will be executed.
@@ -116,8 +120,9 @@ public interface CompositeViewService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    void setViewValuesAsNewDefault(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException;
+    void setViewValuesAsNewDefault(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Triggers the re-execution process (and updates the viewValues) for the whole component, i.e.,  every containing node will be re-executed. If a specific node has triggered the re-execution process use  &#39;trigger-reexecution/{resetNodeIdSuffix}&#39; to only re-execute that node together  with every down-stream node of it.
@@ -129,8 +134,9 @@ public interface CompositeViewService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    Object triggerCompleteComponentReexecution(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException;
+    Object triggerCompleteComponentReexecution(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Triggers the re-execution process (and updates the viewValues).
@@ -143,7 +149,8 @@ public interface CompositeViewService extends GatewayService {
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
      */
-    Object triggerComponentReexecution(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String resetNodeIdSuffix, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException;
+    Object triggerComponentReexecution(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String resetNodeIdSuffix, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException;
         
 }

@@ -76,6 +76,12 @@ public record DefaultGatewayProblemDescriptionEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultGatewayProblemDescriptionEnt {
+        if(title == null) {
+            throw new IllegalArgumentException("<title> must not be null.");
+        }
+        if(code == null) {
+            throw new IllegalArgumentException("<code> must not be null.");
+        }
     }
 
     @Override
@@ -132,12 +138,18 @@ public record DefaultGatewayProblemDescriptionEnt(
 
         @Override
         public DefaultGatewayProblemDescriptionEntBuilder setTitle(String title) {
+             if(title == null) {
+                 throw new IllegalArgumentException("<title> must not be null.");
+             }
              m_title = title;
              return this;
         }
 
         @Override
         public DefaultGatewayProblemDescriptionEntBuilder setCode(String code) {
+             if(code == null) {
+                 throw new IllegalArgumentException("<code> must not be null.");
+             }
              m_code = code;
              return this;
         }

@@ -53,8 +53,6 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
@@ -105,8 +103,7 @@ public class DefaultComponentService implements ComponentService {
 
     @Override
     public ComponentNodeDescriptionEnt getComponentDescription(final String projectId, final NodeIDEnt workflowId,
-        final String versionId, final NodeIDEnt nodeId)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+        final String versionId, final NodeIDEnt nodeId) throws ServiceCallException {
 
         try {
             var version = VersionId.parse(versionId);

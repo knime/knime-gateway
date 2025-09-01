@@ -78,13 +78,9 @@ public class JsonRpcEventServiceWrapper implements EventService {
     @JsonRpcMethod(value = "addEventListener")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.InvalidRequestException.class, code = -32600,
-            data = "InvalidRequestException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
-            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/),
-        @JsonRpcError(exception = ServiceExceptions.NotASubWorkflowException.class, code = -32600,
-            data = "NotASubWorkflowException" /*per convention the data property contains the exception name*/)
+            data = "InvalidRequestException" /*per convention the data property contains the exception name*/)
     })
-    public void addEventListener(@JsonRpcParam(value="eventType") EventTypeEnt eventType)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException {
+    public void addEventListener(@JsonRpcParam(value="eventType") EventTypeEnt eventType)  throws ServiceExceptions.InvalidRequestException {
         m_service.get().addEventListener(eventType);    
     }
 

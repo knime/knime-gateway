@@ -69,7 +69,7 @@ public final class ServiceExceptions {
         }
 
         /**
-         * Creates a fluent builder for {@link ServiceCallException }.
+         * Creates a fluent builder for {@link ServiceCallException}.
          *
          * @return fluent builder
          */
@@ -97,7 +97,7 @@ public final class ServiceExceptions {
         }
 
         /**
-         * Creates a fluent builder for {@link NetworkException }.
+         * Creates a fluent builder for {@link NetworkException}.
          *
          * @return fluent builder
          */
@@ -125,7 +125,7 @@ public final class ServiceExceptions {
         }
 
         /**
-         * Creates a fluent builder for {@link NodeDescriptionNotAvailableException }.
+         * Creates a fluent builder for {@link NodeDescriptionNotAvailableException}.
          *
          * @return fluent builder
          */
@@ -153,7 +153,7 @@ public final class ServiceExceptions {
         }
 
         /**
-         * Creates a fluent builder for {@link NodeNotFoundException }.
+         * Creates a fluent builder for {@link NodeNotFoundException}.
          *
          * @return fluent builder
          */
@@ -181,7 +181,7 @@ public final class ServiceExceptions {
         }
 
         /**
-         * Creates a fluent builder for {@link NoSuchElementException }.
+         * Creates a fluent builder for {@link NoSuchElementException}.
          *
          * @return fluent builder
          */
@@ -209,7 +209,7 @@ public final class ServiceExceptions {
         }
 
         /**
-         * Creates a fluent builder for {@link NotASubWorkflowException }.
+         * Creates a fluent builder for {@link NotASubWorkflowException}.
          *
          * @return fluent builder
          */
@@ -237,7 +237,7 @@ public final class ServiceExceptions {
         }
 
         /**
-         * Creates a fluent builder for {@link InvalidRequestException }.
+         * Creates a fluent builder for {@link InvalidRequestException}.
          *
          * @return fluent builder
          */
@@ -265,7 +265,7 @@ public final class ServiceExceptions {
         }
 
         /**
-         * Creates a fluent builder for {@link OperationNotAllowedException }.
+         * Creates a fluent builder for {@link OperationNotAllowedException}.
          *
          * @return fluent builder
          */
@@ -293,7 +293,7 @@ public final class ServiceExceptions {
         }
 
         /**
-         * Creates a fluent builder for {@link CollisionException }.
+         * Creates a fluent builder for {@link CollisionException}.
          *
          * @return fluent builder
          */
@@ -321,9 +321,8 @@ public final class ServiceExceptions {
         }
 
         /**
-         * Creates a fluent builder for {@link LoggedOutException }.
+         * Creates a fluent builder for {@link LoggedOutException}.
          *
-         * @param spaceProviderId the spaceProviderId
          * @return fluent builder
          */
         public static NeedsTitle<LoggedOutException> builder(final String spaceProviderId) {

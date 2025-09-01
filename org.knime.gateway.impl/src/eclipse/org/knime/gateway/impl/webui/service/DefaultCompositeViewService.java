@@ -59,6 +59,7 @@ import org.knime.gateway.api.entity.NodeViewEnt;
 import org.knime.gateway.api.util.ExtPointUtil;
 import org.knime.gateway.api.webui.service.CompositeViewService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
@@ -92,7 +93,7 @@ public class DefaultCompositeViewService implements CompositeViewService {
 
     @Override
     public Object getCompositeViewPage(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final NodeIDEnt nodeId) throws ServiceCallException {
+        final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
 
         assertProjectId(projectId);
         return getCompositeViewServiceDelegate().getCompositeViewPage(projectId, workflowId, versionId, nodeId);
@@ -101,7 +102,7 @@ public class DefaultCompositeViewService implements CompositeViewService {
     @Override
     public Object triggerComponentReexecution(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId, final String resetNodeIdSuffix, final Map<String, String> viewValues)
-        throws ServiceCallException {
+        throws ServiceCallException, NodeNotFoundException {
 
         assertProjectId(projectId);
         return getCompositeViewServiceDelegate().triggerComponentReexecution(projectId, workflowId, nodeId,
@@ -110,7 +111,7 @@ public class DefaultCompositeViewService implements CompositeViewService {
 
     @Override
     public Object triggerCompleteComponentReexecution(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final Map<String, String> viewValues) throws ServiceCallException {
+        final NodeIDEnt nodeId, final Map<String, String> viewValues) throws ServiceCallException, NodeNotFoundException {
 
         assertProjectId(projectId);
         return getCompositeViewServiceDelegate().triggerCompleteComponentReexecution(projectId, workflowId, nodeId,
@@ -119,7 +120,7 @@ public class DefaultCompositeViewService implements CompositeViewService {
 
     @Override
     public Object pollComponentReexecutionStatus(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId, final String nodeIdThatTriggered) throws ServiceCallException {
+        final NodeIDEnt nodeId, final String nodeIdThatTriggered) throws ServiceCallException, NodeNotFoundException {
 
         assertProjectId(projectId);
         return getCompositeViewServiceDelegate().pollComponentReexecutionStatus(projectId, workflowId, nodeId,
@@ -128,7 +129,7 @@ public class DefaultCompositeViewService implements CompositeViewService {
 
     @Override
     public Object pollCompleteComponentReexecutionStatus(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws ServiceCallException {
+        final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
 
         assertProjectId(projectId);
         return getCompositeViewServiceDelegate().pollCompleteComponentReexecutionStatus(projectId, workflowId, nodeId);
@@ -136,7 +137,7 @@ public class DefaultCompositeViewService implements CompositeViewService {
 
     @Override
     public void setViewValuesAsNewDefault(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final Map<String, String> viewValues) throws ServiceCallException {
+        final Map<String, String> viewValues) throws ServiceCallException, NodeNotFoundException {
 
         assertProjectId(projectId);
         getCompositeViewServiceDelegate().setViewValuesAsNewDefault(projectId, workflowId, nodeId, viewValues);
@@ -144,7 +145,7 @@ public class DefaultCompositeViewService implements CompositeViewService {
 
     @Override
     public void deactivateAllCompositeViewDataServices(final String projectId, final NodeIDEnt workflowId,
-        final NodeIDEnt nodeId) throws ServiceCallException {
+        final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
 
         assertProjectId(projectId);
         getCompositeViewServiceDelegate().deactivateAllCompositeViewDataServices(projectId, workflowId, nodeId);

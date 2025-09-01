@@ -64,10 +64,8 @@ public interface EventService extends GatewayService {
      *
      * 
      * @throws ServiceExceptions.InvalidRequestException If the request is invalid for a reason.
-     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
-     * @throws ServiceExceptions.NotASubWorkflowException The requested node is not a sub-workflow (i.e. a meta- or sub-node), but is required to be.
      */
-    void addEventListener(EventTypeEnt eventType)  throws ServiceExceptions.InvalidRequestException, ServiceExceptions.NodeNotFoundException, ServiceExceptions.NotASubWorkflowException;
+    void addEventListener(EventTypeEnt eventType)  throws ServiceExceptions.InvalidRequestException;
         
     /**
      * Unregisters event listeners.
