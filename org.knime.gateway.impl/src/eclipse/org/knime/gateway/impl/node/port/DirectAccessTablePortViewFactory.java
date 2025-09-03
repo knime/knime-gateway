@@ -76,8 +76,9 @@ public class DirectAccessTablePortViewFactory implements PortViewFactory<PortObj
             public ReusablePage getPage() {
                 return Page.create().fromFile() //
                     .bundleClass(CoreUIPlugin.class) //
-                    .basePath("js-src/dist") //
-                    .relativeFilePath("DeferredTableView.js") //
+                    .basePath("js-src") //
+                    .relativeFilePath("dist/DeferredTableView.js") //
+                    .addResourceDirectory("dist") //
                     .getReusablePage("deferredtableview");
             }
 
