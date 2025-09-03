@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui.spaces.local;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -57,7 +56,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,14 +69,15 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipInputStream;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.WorkflowExporter;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
 import org.knime.core.node.workflow.contextv2.LocationInfo;
@@ -531,60 +530,22 @@ public final class LocalSpace implements Space {
         final Consumer<Path> createMetaInfoFileFor, final Space.NameCollisionHandling collisionHandling,
         final IProgressMonitor progressMonitor) throws MutableServiceCallException {
 
-        final File tmpDir;
-        try {
-            tmpDir = FileUtil.createTempDir(srcPath.getFileName().toString());
-        } catch (IOException ex) {
-            throw new MutableServiceCallException(List.of("Could not create temp directory: " + ex.getMessage()), true,
-                ex);
-        }
-
         final var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
-        final Path destPath;
+        final var fileName = KNWF_KNAR_FILE_EXTENSION.matcher(srcPath.getFileName().toString()).replaceAll("").trim();
+        final var destPath = resolveWithNameCollisions(workflowGroupItemId, fileName, collisionHandling,
+            () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true));
         try {
-            final File tmpSrcDir = unzipAndGetRootItem(srcPath.toFile(), tmpDir);
-            final var fileName = KNWF_KNAR_FILE_EXTENSION.matcher(tmpSrcDir.getName()).replaceAll("").trim();
-            destPath = resolveWithNameCollisions(workflowGroupItemId, fileName, collisionHandling,
-                () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, fileName, true));
-
-            try {
-                FileUtil.copyDir(tmpSrcDir, destPath.toFile());
-            } catch (final IOException ex) {
-                throw new MutableServiceCallException(
-                    List.of("Moving item(s) to workspace failed: %s".formatted(ex.getMessage())), true, ex);
+            final var singleRootFolder = WorkflowExporter.hasZipSingleRootFolder(srcPath);
+            try (final var zipInput = new ZipInputStream(Files.newInputStream(srcPath))) {
+                FileUtil.unzip(zipInput, destPath.toFile(), singleRootFolder ? 1 : 0);
             }
-
-        } finally {
-            // don't bother the user if something goes wrong here, it's only temp data and AP tries again on shutdown
-            FileUtils.deleteQuietly(tmpDir);
+        } catch (final IOException ex) {
+            throw new MutableServiceCallException(
+                List.of("Moving item(s) to workspace failed: %s".formatted(ex.getMessage())), true, ex);
         }
 
         createMetaInfoFileFor.accept(destPath);
         return getSpaceItemEntFromPathAndUpdateCache(destPath);
-    }
-
-    private static File unzipAndGetRootItem(final File source, final File destination)
-        throws MutableServiceCallException {
-
-        try {
-            FileUtil.unzip(source, destination);
-            final File[] topLevelContents = destination.listFiles();
-            if (topLevelContents == null) {
-                throw new MutableServiceCallException(
-                    List.of("Could not extract archive '%s':  Could not determine archive contents".formatted(source)),
-                    false, null);
-            }
-            if (topLevelContents.length != 1) {
-                final List<String> items = Arrays.stream(topLevelContents).map(File::getName).toList();
-                throw new MutableServiceCallException(
-                    List.of("Expected '%s' to have a single root folder, found %s".formatted(source, items)), false,
-                    null);
-            }
-            return topLevelContents[0];
-        } catch (final IOException ex) {
-            throw new MutableServiceCallException(
-                List.of("Could not extract archive '%s': %s".formatted(source, ex.getMessage())), true, ex);
-        }
     }
 
     @Override
