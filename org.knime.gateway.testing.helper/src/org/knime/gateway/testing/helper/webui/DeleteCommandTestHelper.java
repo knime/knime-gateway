@@ -48,6 +48,7 @@ package org.knime.gateway.testing.helper.webui;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -159,6 +160,7 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var command2 = createDeleteCommandEnt(asList(new NodeIDEnt(99999999)), emptyList(), emptyList());
         var ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command2));
+        assertThat(ex.getMessage(), containsString("Some nodes can't be deleted or don't exist"));
     }
 
     public void deletionFailsIfConnectionDoesNotExist() throws Exception {
@@ -167,6 +169,7 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
             createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(99999999), 0)), emptyList());
         var ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command3));
+        assertThat(ex.getMessage(), containsString("Some connections don't exist"));
     }
 
     public void deletionFailsIfAnnotationDoesNotExist() throws Exception {
@@ -175,6 +178,7 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
             createDeleteCommandEnt(emptyList(), emptyList(), asList(new AnnotationIDEnt(getRootID(), 999999999)));
         var ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, getRootID(), command4));
+        assertThat(ex.getMessage(), containsString("Some workflow annotations don't exist"));
     }
 
     public void deletionFailsIfNodeUnderDeleteLock() throws Exception {
@@ -182,6 +186,7 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var command5 = createDeleteCommandEnt(asList(new NodeIDEnt(23, 0, 8)), emptyList(), emptyList());
         var ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(23), command5));
+        assertThat(ex.getMessage(), containsString("Some nodes can't be deleted"));
     }
 
     public void deleteInExecutingWorkflow() throws Exception {
@@ -198,12 +203,14 @@ public class DeleteCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var command6 = createDeleteCommandEnt(asList(new NodeIDEnt(3)), emptyList(), emptyList());
         var ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId2, getRootID(), command6));
+        assertThat(ex.getMessage(), containsString("Some nodes can't be deleted"));
 
         // deletion of a connection fails because it's connected to an executing node
         var command7 =
             createDeleteCommandEnt(emptyList(), asList(new ConnectionIDEnt(new NodeIDEnt(7), 0)), emptyList());
         ex = Assert.assertThrows(ServiceExceptions.ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId2, getRootID(), command7));
+        assertThat(ex.getMessage(), containsString("Some connections can't be deleted"));
     }
 
     static DeleteCommandEnt createDeleteCommandEnt(final List<NodeIDEnt> nodeIds,

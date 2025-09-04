@@ -199,12 +199,9 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     /**
      * @throws java.util.NoSuchElementException If a node container is not available.
      * @return The node containers for the node ids affected by this command.
-     * @throws NetworkException
-     * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    protected final Set<NodeContainer> getNodeContainers()
-        throws ServiceCallException {
+    protected final Set<NodeContainer> getNodeContainers() throws ServiceCallException {
         checkPartsPresentElseThrow();
         return stream(getNodeIDs()) //
             .map(id -> CoreUtil.getNodeContainer(id, getWorkflowManager()).orElseThrow()) //
@@ -214,12 +211,9 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
     /**
      * @throws java.util.NoSuchElementException If an annotation is not available.
      * @return The annotation objects for the annotation ids affected by this command.
-     * @throws NetworkException
-     * @throws LoggedOutException
      * @throws ServiceCallException
      */
-    protected final Set<WorkflowAnnotation> getAnnotations()
-        throws ServiceCallException {
+    protected final Set<WorkflowAnnotation> getAnnotations() throws ServiceCallException {
         checkPartsPresentElseThrow();
         return getAnnotations(getAnnotationIDs());
     }
@@ -229,7 +223,7 @@ abstract class AbstractPartBasedWorkflowCommand extends AbstractWorkflowCommand 
      *            WorkflowAnnotations} for
      * @return the workflow annotations for the given annotation ids; except the ones that couldn't be found
      */
-    protected final Set<WorkflowAnnotation> getAnnotations(final WorkflowAnnotationID... annotationIDs) {
+    private final Set<WorkflowAnnotation> getAnnotations(final WorkflowAnnotationID... annotationIDs) {
         var wfm = getWorkflowManager();
         return stream(annotationIDs) //
             .map(id -> CoreUtil.getAnnotation(id, wfm).orElse(null)) //

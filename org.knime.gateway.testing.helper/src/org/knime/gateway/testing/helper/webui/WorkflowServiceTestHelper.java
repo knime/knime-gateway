@@ -49,6 +49,8 @@
 package org.knime.gateway.testing.helper.webui;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -62,6 +64,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -183,8 +186,10 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         loadVersionAndSetActive(projectId, version);
 
         // Try to get the workflow for a different project ID, throws
-        assertThrows(Throwable.class,
+        var ex1 = assertThrows(Throwable.class,
             () -> ws().getWorkflow(projectId + "_diff", NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE));
+        assertThat(ex1.getMessage(), anyOf(containsString("Project for ID \"" + projectId + "_diff\" not found"),
+            containsString("unexpected error code")));
 
         // Get the correct workflow, doesn't throw
         ws().getWorkflow(projectId, NodeIDEnt.getRootID(), version.toString(), Boolean.FALSE);
@@ -207,9 +212,16 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
         loadVersionAndSetActive(projectId, version);
 
         // Earlier version, throws
-        assertThrows(Throwable.class, () -> ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command));
-        assertThrows(Throwable.class, () -> ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID()));
-        assertThrows(Throwable.class, () -> ws().redoWorkflowCommand(projectId, NodeIDEnt.getRootID()));
+        var ex1 =
+            assertThrows(Throwable.class, () -> ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command));
+        assertThat(ex1.getMessage(), anyOf(containsString("Project version \"current-state\" is not active"),
+            containsString("unexpected error code")));
+        var ex2 = assertThrows(Throwable.class, () -> ws().undoWorkflowCommand(projectId, NodeIDEnt.getRootID()));
+        assertThat(ex2.getMessage(), anyOf(containsString("Project version \"current-state\" is not active"),
+            containsString("unexpected error code")));
+        var ex3 = assertThrows(Throwable.class, () -> ws().redoWorkflowCommand(projectId, NodeIDEnt.getRootID()));
+        assertThat(ex3.getMessage(), anyOf(containsString("Project version \"current-state\" is not active"),
+            containsString("unexpected error code")));
     }
 
     /**
@@ -344,7 +356,7 @@ public class WorkflowServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var space = mock(Space.class);
         when(space.getId()).thenReturn(spaceId);
-        doThrow(MutableServiceCallException.class).when(space).restoreItemVersion(anyString(),
+        doThrow(new MutableServiceCallException(List.of(), false)).when(space).restoreItemVersion(anyString(),
             eq(VersionId.parse("666")));
 
         var spaceProvider = createSpaceProvider(providerId, "Provider name for testing", space);

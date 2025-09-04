@@ -74,6 +74,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
@@ -987,8 +988,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var wfGroupId = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), wfGroupName);
         var nestedWfGroupId = findItemId(ss().listWorkflowGroup(spaceId, providerId, wfGroupId), wfGroupName);
 
-        assertThrows(ServiceCallException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
+        var message = assertThrows(ServiceCallException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
             List.of(nestedWfGroupId), spaceId, Space.ROOT_ITEM_ID, false, null)).getMessage();
+        assertThat(message, Matchers.containsString("The item with name 'wfGroup' can't overwrite itself"));
     }
 
     /**

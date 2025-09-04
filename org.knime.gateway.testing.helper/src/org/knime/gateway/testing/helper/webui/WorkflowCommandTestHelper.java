@@ -57,7 +57,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -275,12 +274,13 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
         // add a node that doesn't exists
         var ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand("non-sense-factory", null, 0, 0, null, null, null)));
-        assertThat(ex.getMessage(), is("No node found for factory key non-sense-factory"));
+        assertThat(ex.getMessage(), containsString("No node found for factory key non-sense-factory"));
 
         // add a dynamic node with non-sense settings
         ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(jsNodeFactory, "blub", 0, 0, null, null, null)));
-        assertThat(ex.getMessage(), startsWith("Problem reading factory settings while trying to create node from"));
+        assertThat(ex.getTitle(), containsString("Failed to create node"));
+        assertThat(ex.getDetails().get(0), containsString("Problem reading factory settings"));
     }
 
     /**
@@ -321,8 +321,7 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
         // try to connect to an incompatible port
         var ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2, NodeRelationEnum.SUCCESSORS)));
-        assertThat(ex.getMessage(),
-            is("Failed to create node\\n * Node couldn't be created because a connection couldn't be added."));
+        assertThat(ex.getMessage(), containsString("Node couldn't be created because a connection couldn't be added"));
 
         // redo adding the row filter
         ws().redoWorkflowCommand(wfId, getRootID());

@@ -50,6 +50,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
@@ -58,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.hamcrest.Matchers;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -68,7 +68,6 @@ import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -150,7 +149,10 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
             translateCommand(delta, List.of(), Map.of(connectionId, List.of(bendpointIndex)));
-        assertThrows(Exception.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId));
+        var message =
+            assertThrows(ServiceCallException.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId))
+                .getMessage();
+        assertThat("unexpected exception message", message, containsString("Workflow parts not found"));
     }
 
     public void testTranslateBendpointsOnConnectionWithNone() throws Exception {
@@ -159,14 +161,20 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var bendpointIndex = 999;
         var translateInvalidBendpointIndex =
             translateCommand(delta, List.of(), Map.of(connectionId, List.of(bendpointIndex)));
-        assertThrows(Exception.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId));
+        var message =
+            assertThrows(ServiceCallException.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId))
+                .getMessage();
+        assertThat("unexpected exception message", message, containsString("Workflow parts not found"));
     }
 
     public void testTranslateBendpointsOnInexistentConnection() throws Exception {
         var wfId = loadWorkflow(TestWorkflowCollection.BENDPOINTS);
         var connection = new ConnectionIDEnt(new NodeIDEnt(999), 999).toString();
         var translateInvalidBendpointIndex = translateCommand(delta, List.of(), Map.of(connection, List.of(0)));
-        assertThrows(Exception.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId));
+        var message =
+                assertThrows(ServiceCallException.class, () -> executeWorkflowCommand(translateInvalidBendpointIndex, wfId))
+                    .getMessage();
+            assertThat("unexpected exception message", message, containsString("Workflow parts not found"));
     }
 
     public void testTranslateNodesAndAnnotations() throws Exception {
@@ -283,16 +291,13 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         TranslateCommandEnt command5 = builder(TranslateCommandEnt.TranslateCommandEntBuilder.class)
             .setKind(WorkflowCommandEnt.KindEnum.TRANSLATE).setNodeIds(singletonList(new NodeIDEnt(9999)))
             .setAnnotationIds(singletonList(new AnnotationIDEnt("root_12345")))
-            .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(0).setY(0).build()).build();
-        assertThrows(ServiceExceptions.ServiceCallException.class,
+            .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(1).setY(0).build()).build();
+        assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(999999), command5));
-        try {
-            ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command5);
-        } catch (Exception e) { // NOSONAR
-            assertThat("unexpected exception class", e,
-                Matchers.instanceOf(ServiceExceptions.ServiceCallException.class));
-        }
 
+        var message = assertThrows(ServiceCallException.class,
+            () -> ws().executeWorkflowCommand(wfId, NodeIDEnt.getRootID(), command5)).getMessage();
+        assertThat("unexpected exception message", message, containsString("Workflow parts not found"));
     }
 
     public void testTranslateMetanodePortsBars() throws Exception {
@@ -319,15 +324,17 @@ public class TranslateCommandTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(outPortsBarBoundsTranslatedUndone.getY(), is(outPortsBarBounds.getY()));
 
         // try to execute command on a component
-        assertThrows(ServiceCallException.class,
-            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), translateCommand));
+        var message = assertThrows(ServiceCallException.class,
+            () -> ws().executeWorkflowCommand(wfId, new NodeIDEnt(12), translateCommand)).getMessage();
+        assertThat(message, containsString("Components don't have metanode-ports-bars to be moved."));
 
         // try to translate ports bar without a fixed position
         var translateCommand2 = builder(TranslateCommandEnt.TranslateCommandEntBuilder.class)
             .setKind(WorkflowCommandEnt.KindEnum.TRANSLATE).setMetanodeInPortsBar(Boolean.TRUE)
             .setTranslation(builder(XYEnt.XYEntBuilder.class).setX(10).setY(10).build()).build();
-        assertThrows(ServiceCallException.class,
-            () -> ws().executeWorkflowCommand(wfId, metanodeId, translateCommand2));
+        message = assertThrows(ServiceCallException.class,
+            () -> ws().executeWorkflowCommand(wfId, metanodeId, translateCommand2)).getMessage();
+        assertThat(message, containsString("Metanode in-ports-bar can't be moved"));
     }
 
 

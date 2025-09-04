@@ -83,8 +83,7 @@ final class Translate extends AbstractPartBasedWorkflowCommand {
     }
 
     @Override
-    public boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException {
+    public boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         if (m_delta.isZero()) {
             return false;
         }
