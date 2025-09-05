@@ -52,13 +52,26 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
+ * A mutable exception that can be used to collect details about a failure before converting it to an immutable
+ * {@link ServiceCallException} that can then be displayed as a toast in MUI.
+ * <p>
+ * The main purpose of this class is to allow adding details to an exception before re-throwing it. Example usage:
+ * <pre>
+ * public void someMethod(final String parentId) throws MutableServiceCallException {
+ *     try {
+ *         doSpecificThatMightFail(parentId);
+ *     } catch (MutableServiceCallException ex) {
+ *         ex.addDetails("Couldn't process parent with ID " + parentId);
+ *         throw ex;
+ *     }
+ * }
+ * </pre>
  *
- * @author leonard.woerteler
+ * @author Leonard Woerteler, KNIME GmbH, Konstanz, Germany
  * @since 5.7
  */
 @SuppressWarnings("serial")
@@ -74,22 +87,52 @@ public final class MutableServiceCallException extends Exception {
 
     private static String createMessage(final String title, final Iterable<String> details) {
         final var sb = new StringBuilder(title);
-        details.forEach(detail -> sb.append(" * " + detail));
+        if (details != null) {
+            details.forEach(detail -> sb.append(" * " + detail));
+        }
         return sb.toString();
     }
 
+    /**
+     * Creates a new mutable exception.
+     *
+     * @param status HTTP status code of the response that caused this exception, or {@code -1} if not applicable
+     * @param details list of details (user-oriented explanation/hint), may be {@code null}
+     * @param canCopy whether the details can be copied to the clipboard
+     */
     public MutableServiceCallException(final int status, final List<String> details, final boolean canCopy) {
         this(status, details, canCopy, null);
     }
 
+    /**
+     * Creates a new mutable exception.
+     *
+     * @param details list of details (user-oriented explanation/hint), may be {@code null}
+     * @param canCopy whether the details can be copied to the clipboard
+     */
     public MutableServiceCallException(final List<String> details, final boolean canCopy) {
         this(-1, details, canCopy);
     }
 
+    /**
+     * Creates a new mutable exception with a cause.
+     *
+     * @param details list of details (user-oriented explanation/hint), may be {@code null}
+     * @param canCopy whether the details can be copied to the clipboard
+     * @param cause the cause, may be {@code null}
+     */
     public MutableServiceCallException(final List<String> details, final boolean canCopy, final Throwable cause) {
         this(-1, details, canCopy, cause);
     }
 
+    /**
+     * Creates a new mutable exception with a cause.
+     *
+     * @param status HTTP status code of the response that caused this exception, or {@code -1} if not applicable
+     * @param details list of details (user-oriented explanation/hint), may be {@code null}
+     * @param canCopy whether the details can be copied to the clipboard
+     * @param cause the cause, may be {@code null}
+     */
     public MutableServiceCallException(final int status, final List<String> details, final boolean canCopy,
             final Throwable cause) {
         super(createMessage(MutableServiceCallException.class.getSimpleName() + ", details:", details), cause);
@@ -100,10 +143,33 @@ public final class MutableServiceCallException extends Exception {
         m_canCopy = canCopy;
     }
 
-    public MutableServiceCallException addDetails(final String... detailsLines) {
-        return addDetails(List.of(detailsLines));
+    /**
+     * HTTP status code of the response that caused this exception, or {@code -1} if not applicable.
+     *
+     * @return status code or {@code -1}
+     */
+    public int getStatus() {
+        return m_status;
     }
 
+    /**
+     * Adds lines of details to this exception. The lines will be added in the order they are given, i.e. the first
+     * line will be the first line in the details list.
+     *
+     * @param detailsLines lines of details to add, may be {@code null}
+     * @return this exception (for method chaining)
+     */
+    public MutableServiceCallException addDetails(final String... detailsLines) {
+        return detailsLines == null ? this : addDetails(List.of(detailsLines));
+    }
+
+    /**
+     * Adds lines of details to this exception. The lines will be added in the order they are given, i.e. the first
+     * line will be the first line in the details list.
+     *
+     * @param detailsLines lines of details to add, may be {@code null}
+     * @return this exception (for method chaining)
+     */
     public MutableServiceCallException addDetails(final List<String> detailsLines) {
         if (detailsLines != null) {
             for (int i = detailsLines.size() - 1; i >= 0; i--) {
@@ -113,11 +179,24 @@ public final class MutableServiceCallException extends Exception {
         return this;
     }
 
+    /**
+     * Adds an additional property to this exception that will be copied to the resulting {@link ServiceCallException}.
+     *
+     * @param key property key
+     * @param value property value
+     * @return this exception (for method chaining)
+     */
     public MutableServiceCallException setAdditionalProperty(final String key, final String value) {
         m_additional.put(key, value);
         return this;
     }
 
+    /**
+     * Converts this mutable exception to an immutable {@link ServiceCallException} with the given title.
+     *
+     * @param title title of the exception
+     * @return the immutable exception
+     */
     public ServiceCallException toGatewayException(final String title) {
         return ServiceCallException.builder() //
             .withTitle(title) //
@@ -127,17 +206,5 @@ public final class MutableServiceCallException extends Exception {
             .withCause(this) //
             .withAdditionalProps(m_additional) //
             .build();
-    }
-
-    public void copyContextTo(final ServiceCallException ex) {
-        final var title = getMessage();
-        ex.addProperty("title", title);
-        if (m_details.isEmpty()) {
-            ex.addProperty("details", "");
-        } else {
-            ex.addProperty("details", m_details.stream().collect(Collectors.joining("\n")));
-            ex.addProperty("message", createMessage(title, m_details));
-        }
-        m_additional.forEach(ex::addProperty);
     }
 }
