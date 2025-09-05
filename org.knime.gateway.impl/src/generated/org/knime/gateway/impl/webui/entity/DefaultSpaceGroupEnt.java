@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
  * @param name
  * @param type
  * @param spaces
+ * @param canSoftDelete
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -65,7 +66,8 @@ public record DefaultSpaceGroupEnt(
     String id,
     String name,
     TypeEnum type,
-    java.util.List<SpaceEnt> spaces) implements SpaceGroupEnt {
+    java.util.List<SpaceEnt> spaces,
+    Boolean canSoftDelete) implements SpaceGroupEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -110,6 +112,11 @@ public record DefaultSpaceGroupEnt(
         return spaces;
     }
     
+    @Override
+    public Boolean isCanSoftDelete() {
+        return canSoftDelete;
+    }
+    
     /**
      * A builder for {@link DefaultSpaceGroupEnt}.
      */
@@ -122,6 +129,8 @@ public record DefaultSpaceGroupEnt(
         private TypeEnum m_type;
 
         private java.util.List<SpaceEnt> m_spaces = new java.util.ArrayList<>();
+
+        private Boolean m_canSoftDelete;
 
         @Override
         public DefaultSpaceGroupEntBuilder setId(String id) {
@@ -160,12 +169,19 @@ public record DefaultSpaceGroupEnt(
         }
 
         @Override
+        public DefaultSpaceGroupEntBuilder setCanSoftDelete(Boolean canSoftDelete) {
+             m_canSoftDelete = canSoftDelete;
+             return this;
+        }
+
+        @Override
         public DefaultSpaceGroupEnt build() {
             return new DefaultSpaceGroupEnt(
                 immutable(m_id),
                 immutable(m_name),
                 immutable(m_type),
-                immutable(m_spaces));
+                immutable(m_spaces),
+                immutable(m_canSoftDelete));
         }
     
     }

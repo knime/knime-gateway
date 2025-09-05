@@ -109,6 +109,12 @@ public interface SpaceGroupEnt extends GatewayEntity {
    **/
   public java.util.List<SpaceEnt> getSpaces();
 
+  /**
+   * Whether this group supports a \&quot;recycle bin\&quot; for deletion of items.
+   * @return canSoftDelete 
+   **/
+  public Boolean isCanSoftDelete();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -118,6 +124,7 @@ public interface SpaceGroupEnt extends GatewayEntity {
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
       valueConsumer.accept("spaces", Pair.create(getSpaces(), e.getSpaces()));
+      valueConsumer.accept("canSoftDelete", Pair.create(isCanSoftDelete(), e.isCanSoftDelete()));
   }
 
     /**
@@ -156,6 +163,14 @@ public interface SpaceGroupEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         SpaceGroupEntBuilder setSpaces(java.util.List<SpaceEnt> spaces);
+        
+        /**
+         * Whether this group supports a \&quot;recycle bin\&quot; for deletion of items.
+         * 
+         * @param canSoftDelete the property value,  
+         * @return this entity builder for chaining
+         */
+        SpaceGroupEntBuilder setCanSoftDelete(Boolean canSoftDelete);
         
         
         /**

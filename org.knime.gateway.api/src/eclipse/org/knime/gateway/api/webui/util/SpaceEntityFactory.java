@@ -119,18 +119,31 @@ public final class SpaceEntityFactory {
     }
 
     /**
+     * @param id
+     * @param name
      * @param type
      * @param spaces
-     *
      * @return a new {@link SpaceProviderEnt}-instance
      */
     public SpaceGroupEnt buildSpaceGroupEnt(final String id, final String name, final SpaceGroupEnt.TypeEnum type,
         final List<SpaceEnt> spaces) {
+        return buildSpaceGroupEnt(id, name, type, spaces, false);
+    }
+
+    /**
+     * @param type
+     * @param spaces
+     * @param canSoftDelete
+     * @return a new {@link SpaceProviderEnt}-instance
+     */
+    public SpaceGroupEnt buildSpaceGroupEnt(final String id, final String name, final SpaceGroupEnt.TypeEnum type,
+        final List<SpaceEnt> spaces, final boolean canSoftDelete) {
         return builder(SpaceGroupEntBuilder.class) //
             .setId(id) //
             .setName(name) //
             .setType(type) //
             .setSpaces(spaces) //
+            .setCanSoftDelete(canSoftDelete) //
             .build();
     }
 

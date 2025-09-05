@@ -86,6 +86,10 @@ public interface SpaceGroupEntMixIn extends SpaceGroupEnt {
     @JsonProperty("spaces")
     public java.util.List<SpaceEnt> getSpaces();
     
+    @Override
+    @JsonProperty("canSoftDelete")
+    public Boolean isCanSoftDelete();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -114,6 +118,10 @@ public interface SpaceGroupEntMixIn extends SpaceGroupEnt {
         @Override
         @JsonProperty("spaces")
         public SpaceGroupEntMixInBuilder setSpaces(final java.util.List<SpaceEnt> spaces);
+        
+        @Override
+        @JsonProperty("canSoftDelete")
+        public SpaceGroupEntMixInBuilder setCanSoftDelete(final Boolean canSoftDelete);
         
     }
 
