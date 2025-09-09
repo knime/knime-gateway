@@ -55,6 +55,7 @@
     "canCollapse" : "true",
     "canDelete" : true,
     "canExecute" : true,
+    "canOpenLegacyFlowVariableDialog" : true,
     "canReset" : false
   },
   "root:3" : {
