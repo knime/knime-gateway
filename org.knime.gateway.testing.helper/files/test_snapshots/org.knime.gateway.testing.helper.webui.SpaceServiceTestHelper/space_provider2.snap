@@ -1,4 +1,5 @@
 [ {
+  "canSoftDelete" : false,
   "id" : "Local-Testing-space-id",
   "name" : "Local Testing Group",
   "spaces" : [ {

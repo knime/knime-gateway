@@ -93,6 +93,11 @@
                 <message_argument value="buildSpaceProviderEnt(SpaceProviderEnt.TypeEnum, List&lt;SpaceGroupEnt&gt;)"/>
             </message_arguments>
         </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildSpaceGroupEnt(String, String, SpaceGroupEnt.TypeEnum, List&lt;SpaceEnt&gt;, boolean)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/api/webui/util/WorkflowBuildContext.java" type="org.knime.gateway.api.webui.util.WorkflowBuildContext$WorkflowBuildContextBuilder">
         <filter id="1143996420">
@@ -399,6 +404,32 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder"/>
                 <message_argument value="setPortGroup(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceGroupEnt.java" type="org.knime.gateway.api.webui.entity.SpaceGroupEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceGroupEnt"/>
+                <message_argument value="isCanSoftDelete()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="isCanSoftDelete()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpaceGroupEnt.java" type="org.knime.gateway.api.webui.entity.SpaceGroupEnt$SpaceGroupEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpaceGroupEnt.SpaceGroupEntBuilder"/>
+                <message_argument value="setCanSoftDelete(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setCanSoftDelete(Boolean)"/>
             </message_arguments>
         </filter>
     </resource>

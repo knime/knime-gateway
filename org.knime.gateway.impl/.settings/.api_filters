@@ -491,6 +491,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultKaiService.java" type="org.knime.gateway.impl.webui.service.DefaultKaiService">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getUsage(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultNodeService.java" type="org.knime.gateway.impl.webui.service.DefaultNodeService">
         <filter id="338792546">
             <message_arguments>
@@ -1383,6 +1390,26 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder"/>
                 <message_argument value="setPortGroup(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSpaceGroupEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt"/>
+                <message_argument value="DefaultSpaceGroupEnt(String, String, SpaceGroupEnt.TypeEnum, List&lt;SpaceEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultSpaceGroupEnt(String, String, SpaceGroupEnt.TypeEnum, List&lt;SpaceEnt&gt;, Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSpaceGroupEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt$DefaultSpaceGroupEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setCanSoftDelete(Boolean)"/>
             </message_arguments>
         </filter>
     </resource>
