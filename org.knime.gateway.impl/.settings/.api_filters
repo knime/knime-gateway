@@ -391,14 +391,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/AbstractKaiHandler.java" type="org.knime.gateway.impl.webui.kai.AbstractKaiHandler">
-        <filter id="338792546">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.kai.AbstractKaiHandler"/>
-                <message_argument value="getEventConsumer(String)"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/CodeKaiHandler.java" type="org.knime.gateway.impl.webui.kai.CodeKaiHandler">
         <filter id="403804204">
             <message_arguments>

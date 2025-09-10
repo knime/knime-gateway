@@ -58,8 +58,6 @@ import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 import org.knime.gateway.api.webui.service.KaiService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -91,8 +89,7 @@ public final class DefaultKaiService implements KaiService {
         }
 
         @Override
-        public void execute(final KaiCommand kaiCommand)
-            throws ServiceCallException, LoggedOutException, NetworkException {
+        public void execute(final KaiCommand kaiCommand) throws ServiceCallException {
             WorkflowCommand command = new KaiCommandAdapter(kaiCommand);
             var commands = m_workflowMiddleware.getCommands();
             commands.setCommandToExecute(command);
@@ -100,8 +97,8 @@ public final class DefaultKaiService implements KaiService {
         }
 
         @Override
-        public void executeWorkflowAction(final Consumer<WorkflowManager> workflowAction) throws ServiceCallException,
-            LoggedOutException, NetworkException, NodeNotFoundException, NotASubWorkflowException {
+        public void executeWorkflowAction(final Consumer<WorkflowManager> workflowAction)
+            throws NodeNotFoundException, NotASubWorkflowException {
             var wfm = WorkflowUtil.getWorkflowManager(m_workflowKey);
             workflowAction.accept(wfm);
         }

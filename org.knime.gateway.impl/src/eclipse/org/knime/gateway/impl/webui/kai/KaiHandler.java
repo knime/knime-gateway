@@ -53,8 +53,6 @@ import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -207,23 +205,18 @@ public interface KaiHandler {
         /**
          * Executes commands that need to be put onto the command stack.
          * @param command to execute on the workflow
-         * @throws NetworkException
-         * @throws LoggedOutException
-         * @throws ServiceCallException
+         * @throws ServiceCallException if the command fails
          */
-        void execute(KaiCommand command) throws ServiceCallException, LoggedOutException, NetworkException;
+        void execute(KaiCommand command) throws ServiceCallException;
 
         /**
          * Executes actions that require the workflow but do not need to be put on the command stack.
          * @param workflowAction action to execute on the workflow
-         * @throws NotASubWorkflowException
-         * @throws NodeNotFoundException
-         * @throws NetworkException
-         * @throws LoggedOutException
-         * @throws ServiceCallException
+         * @throws NotASubWorkflowException if the (sub-)workflow cannot be accessed
+         * @throws NodeNotFoundException if the workflow project cannot be found
          */
-        void executeWorkflowAction(Consumer<WorkflowManager> workflowAction) throws ServiceCallException,
-            LoggedOutException, NetworkException, NodeNotFoundException, NotASubWorkflowException;
+        void executeWorkflowAction(Consumer<WorkflowManager> workflowAction)
+            throws NodeNotFoundException, NotASubWorkflowException;
     }
 
     /**
