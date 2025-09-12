@@ -116,7 +116,7 @@ final class EditContainerNodePorts implements EditPorts {
         if (getContainerType() == CoreUtil.ContainerType.COMPONENT && indexToRemove == 0) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to remove port") //
-                .withDetails("Can not remove fixed flow variable port at index 0.") //
+                .withDetails("Cannot remove fixed flow variable port at index 0.") //
                 .canCopy(false) //
                 .build();
         }

@@ -663,7 +663,7 @@ public interface Space {
         final String targetItemId, final boolean excludeData) throws OperationNotAllowedException {
         throw OperationNotAllowedException.builder() //
             .withTitle("Failed to upload items") //
-            .withDetails("Can not call this method on spaces other than Hub spaces.") //
+            .withDetails("Cannot call this method on spaces other than Hub spaces.") //
             .canCopy(true) //
             .build();
     }
@@ -681,7 +681,7 @@ public interface Space {
         final String targetItemId) throws OperationNotAllowedException {
         throw OperationNotAllowedException.builder() //
             .withTitle("Failed to download items") //
-            .withDetails("Can not call this method on spaces other than Hub spaces.") //
+            .withDetails("Cannot call this method on spaces other than Hub spaces.") //
             .canCopy(true) //
             .build();
     }

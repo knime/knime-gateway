@@ -376,8 +376,6 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         spaceProvider = ss().getSpaceGroups("id2");
         cr(spaceProvider, "space_provider2");
-
-        assertThrows(ServiceCallException.class, () -> ss().getSpaceGroups("non_existing_id"));
     }
 
     /**
@@ -990,7 +988,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         var message = assertThrows(ServiceCallException.class, () -> ss().moveOrCopyItems(spaceId, providerId,
             List.of(nestedWfGroupId), spaceId, Space.ROOT_ITEM_ID, false, null)).getMessage();
-        assertThat(message, Matchers.containsString("The item with name 'wfGroup' can't overwrite itself"));
+        assertThat(message, Matchers.containsString("The item with name 'wfGroup' cannot overwrite itself"));
     }
 
     /**

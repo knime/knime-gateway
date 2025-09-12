@@ -326,7 +326,7 @@ public class DefaultSpaceService implements SpaceService {
             if (ancestorItemIds.contains(destinationItemId)) {
                 throw ServiceCallException.builder() //
                     .withTitle(title) //
-                    .withDetails(("The item with name '%s' can not overwrite itself"
+                    .withDetails(("The item with name '%s' cannot overwrite itself"
                         + " (the destination item contains the source item).").formatted(itemName)) //
                     .canCopy(false) //
                     .build();

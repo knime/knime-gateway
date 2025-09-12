@@ -145,7 +145,7 @@ final class Delete extends AbstractWorkflowCommand {
         if (!canRemoveAllNodes(wfm, nodesToDelete)) {
             throw ServiceCallException.builder() //
                 .withTitle("Delete operation aborted") //
-                .withDetails("Some nodes can not be deleted or do not exist.") //
+                .withDetails("Some nodes cannot be deleted or do not exist.") //
                 .canCopy(false) //
                 .build();
         }
@@ -177,7 +177,7 @@ final class Delete extends AbstractWorkflowCommand {
         if (!CoreUtil.canRemoveConnections(m_connectionsDeleted, wfm)) {
             throw ServiceCallException.builder() //
                 .withTitle("Delete operation aborted") //
-                .withDetails("Some connections can not be deleted.") //
+                .withDetails("Some connections cannot be deleted.") //
                 .canCopy(false) //
                 .build();
         }

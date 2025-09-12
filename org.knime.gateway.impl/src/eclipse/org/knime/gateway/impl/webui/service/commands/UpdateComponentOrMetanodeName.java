@@ -99,7 +99,7 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
             if (metaNode.isProject()) {
                 throw ServiceCallException.builder()
                     .withTitle("Failed to update name") //
-                    .withDetails("Workflow projects can not be renamed like this.") //
+                    .withDetails("Workflow projects cannot be renamed like this.") //
                     .canCopy(false) //
                     .build();
             }
@@ -114,7 +114,7 @@ final class UpdateComponentOrMetanodeName extends AbstractWorkflowCommand {
             String className = container.getClass().getSimpleName();
             throw ServiceCallException.builder()
                 .withTitle("Failed to update name") //
-                .withDetails("<" + className + "> can not be renamed.") //
+                .withDetails("<" + className + "> cannot be renamed.") //
                 .canCopy(false) //
                 .build();
         }

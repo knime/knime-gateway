@@ -436,7 +436,7 @@ public final class LocalSpace implements Space {
         var destPathParent = getAbsolutePath(destItemId);
         if (m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(destPathParent) != TypeEnum.WORKFLOWGROUP) {
             throw new MutableServiceCallException(
-                "Can not move space item to a location that is not a workflow group. (Item ID: %s, destination: %s)."
+                "Cannot move space item to a location that is not a workflow group. (Item ID: %s, destination: %s)."
                     .formatted(destItemId, destPathParent),
                 false, null);
         }

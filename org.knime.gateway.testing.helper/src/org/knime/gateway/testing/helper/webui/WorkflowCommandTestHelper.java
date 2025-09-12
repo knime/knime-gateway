@@ -321,7 +321,7 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
         // try to connect to an incompatible port
         var ex = assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(wfId, getRootID(),
             buildAddNodeCommand(rowFilterFactory, null, 64, 128, sourceNodeId, 2, NodeRelationEnum.SUCCESSORS)));
-        assertThat(ex.getMessage(), containsString("Node couldn't be created because a connection couldn't be added"));
+        assertThat(ex.getMessage(), containsString("Node could not be created because a connection could not be added"));
 
         // redo adding the row filter
         ws().redoWorkflowCommand(wfId, getRootID());
@@ -2044,7 +2044,7 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
         var message = assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(projectId, new NodeIDEnt(12), command1)).getMessage();
         assertThat(message,
-            is("Failed to move ports bar\n * Components don't have metanode ports bars. Can't be transformed."));
+            is("Failed to move ports bar\n * Components do not have metanode ports bars, command not applicable."));
     }
 
     /**

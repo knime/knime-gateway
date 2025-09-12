@@ -236,7 +236,7 @@ public class ConnectCommandsTestHelper extends WebUIGatewayServiceTestHelper {
         var command3 = buildConnectCommandEnt(new NodeIDEnt(27), 0, new NodeIDEnt(1), 0);
         exception = assertThrows(ServiceCallException.class,
             () -> ws().executeWorkflowCommand(projectId, workflowId, command3));
-        assertThat(exception.getMessage(), containsString("Connection couldn't be created"));
+        assertThat(exception.getMessage(), containsString("Connection could not be created"));
     }
 
     /**
