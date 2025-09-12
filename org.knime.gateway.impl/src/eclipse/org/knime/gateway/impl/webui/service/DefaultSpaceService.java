@@ -184,13 +184,6 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             return getSpaceProvider(spaceProviderId).getSpaceGroup(spaceGroupName).createSpace().toEntity();
-        } catch (final NoSuchElementException | UnsupportedOperationException e) {
-            throw ServiceCallException.builder() //
-                .withTitle("Space creation failed") //
-                .withDetails(e.getMessage()) //
-                .canCopy(true) //
-                .withCause(e) //
-                .build();
         } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while creating the space");
         }
@@ -208,15 +201,8 @@ public class DefaultSpaceService implements SpaceService {
                         .getType() == TypeEnum.LOCAL ? WorkflowType.LOCAL : WorkflowType.REMOTE);
             }
             return item;
-        } catch (final NoSuchElementException e) {
-            throw ServiceCallException.builder() //
-                .withTitle("An error occurred while creating the workflow") //
-                .withDetails(e.getMessage()) //
-                .canCopy(true) //
-                .withCause(e) //
-                .build();
-        } catch (final MutableServiceCallException e) { // NOSONAR
-            throw e.toGatewayException("An error occurred while creating the workflow");
+        }  catch (final MutableServiceCallException e) { // NOSONAR
+            throw e.toGatewayException("An ereclipse ror occurred while creating the workflow");
         }
     }
 
@@ -226,14 +212,7 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             getSpaceProvider(spaceProviderId).getSpace(spaceId).deleteItems(spaceItemIds, softDelete);
-        } catch (final NoSuchElementException e) {
-            throw ServiceCallException.builder() //
-                .withTitle("An error occurred while deleting item(s)") //
-                .withDetails(e.getMessage()) //
-                .canCopy(true) //
-                .withCause(e) //
-                .build();
-        } catch (final MutableServiceCallException e) { // NOSONAR
+        }  catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while deleting item(s)");
         }
     }
@@ -243,13 +222,6 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             return getSpaceProvider(spaceProviderId).getSpace(spaceId).createWorkflowGroup(itemId);
-        } catch (final NoSuchElementException e) {
-            throw ServiceCallException.builder() //
-                .withTitle("An error occurred while creating the folder") //
-                .withDetails(e.getMessage()) //
-                .canCopy(true) //
-                .withCause(e) //
-                .build();
         } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while creating the folder");
         }
