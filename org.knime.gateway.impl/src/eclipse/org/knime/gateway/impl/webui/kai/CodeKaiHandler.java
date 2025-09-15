@@ -75,7 +75,7 @@ public interface CodeKaiHandler {
     /**
      * @param projectId the ID of the workflow-project required for authentication.
      * @return the AI usage for the currently authenticated user.
-     * @since 5.7
+     * @since 5.8
      */
     KaiUsageEnt getUsage(String projectId);
 

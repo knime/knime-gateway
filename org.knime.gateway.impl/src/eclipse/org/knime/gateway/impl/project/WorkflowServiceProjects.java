@@ -130,7 +130,7 @@ public final class WorkflowServiceProjects {
      * this depends on the implementation of the cache.
      * @param absolutePath -
      *
-     * @since 5.7
+     * @since 5.8
      */
     public static void clearCached(final Path absolutePath) {
         if (getProjectIdAt(absolutePath).isPresent()) {
@@ -151,7 +151,7 @@ public final class WorkflowServiceProjects {
      * Run a callback when {@link this#clearCached(Path)} is called.
      * @param callback -
      *
-     * @since 5.7
+     * @since 5.8
      */
     public static void setOnClearCallback(final Consumer<Path> callback) {
         onClearCallback = callback;

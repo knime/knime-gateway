@@ -72,7 +72,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
  * </pre>
  *
  * @author Leonard Woerteler, KNIME GmbH, Konstanz, Germany
- * @since 5.7
+ * @since 5.8
  */
 @SuppressWarnings("serial")
 public final class MutableServiceCallException extends Exception {

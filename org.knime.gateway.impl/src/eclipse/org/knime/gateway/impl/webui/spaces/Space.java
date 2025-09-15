@@ -715,7 +715,7 @@ public interface Space {
      * @throws MutableServiceCallException -
      * @throws LoggedOutException -
      * @throws NetworkException -
-     * @since 5.7
+     * @since 5.8
      */
     default void restoreItemVersion(final String itemId, final VersionId versionId)
         throws NetworkException, LoggedOutException, MutableServiceCallException {

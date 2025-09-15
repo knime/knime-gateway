@@ -129,7 +129,7 @@ public abstract class GatewayException extends Exception {
      * @param additionalProps additional properties, may be {@code null}
      * @param canCopy flag indicating whether the problem description is supposed to be copyable
      * @param cause cause of the problem, may be {@code null}
-     * @since 5.7
+     * @since 5.8
      */
     protected GatewayException(final int status, final String title, final List<String> details,
         final Map<String, String> additionalProps, final boolean canCopy, final Throwable cause) {
@@ -150,7 +150,7 @@ public abstract class GatewayException extends Exception {
      * Gets the status code of the exception as per "Problem Details” / RFC9457 standard.
      *
      * @return Exception title property if present or an empty optional if not present
-     * @since 5.7
+     * @since 5.8
      */
     public OptionalInt getStatus() {
         if (m_status < 0) {
@@ -172,7 +172,7 @@ public abstract class GatewayException extends Exception {
      * Gets the details of the exception as per "Problem Details” / RFC9457 standard.
      *
      * @return Exception details property if present or {@code null} if not present
-     * @since 5.7
+     * @since 5.8
      */
     public List<String> getDetails() {
         return m_details;
@@ -224,7 +224,7 @@ public abstract class GatewayException extends Exception {
      * Required builder phase to set the title of the exception.
      *
      * @param <T> type of the resulting exception
-     * @since 5.7
+     * @since 5.8
      */
     public interface NeedsTitle<T extends GatewayException> {
 
@@ -241,7 +241,7 @@ public abstract class GatewayException extends Exception {
      * Required builder phase to set the details of the exception.
      *
      * @param <T> type of the resulting exception
-     * @since 5.7
+     * @since 5.8
      */
     public interface NeedsDetails<T extends GatewayException> {
 
@@ -268,7 +268,7 @@ public abstract class GatewayException extends Exception {
      * Required builder phase to set the copy flag of the exception.
      *
      * @param <T> type of the resulting exception
-     * @since 5.7
+     * @since 5.8
      */
     public interface NeedsCopyFlag<T extends GatewayException> {
 
@@ -285,7 +285,7 @@ public abstract class GatewayException extends Exception {
      * Final stage of the builder pattern to set optional properties of the exception and build it.
      *
      * @param <T> type of the resulting exception
-     * @since 5.7
+     * @since 5.8
      */
     public interface FinalStage<T> {
 
@@ -335,7 +335,7 @@ public abstract class GatewayException extends Exception {
      * Abstract builder class for creating instances of {@link GatewayException}.
      *
      * @param <T> type of the resulting exception
-     * @since 5.7
+     * @since 5.8
      */
     @SuppressWarnings("javadoc") // only exposed via interfaces anyway
     protected abstract static class Builder<T extends GatewayException>

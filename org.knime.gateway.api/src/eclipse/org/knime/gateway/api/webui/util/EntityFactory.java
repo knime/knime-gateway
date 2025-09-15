@@ -112,7 +112,7 @@ public final class EntityFactory {
     /**
      * Entity builder instance to build miscellaneous entities.
      *
-     * @since 5.7
+     * @since 5.8
      */
     public static final MiscEntityFactory Misc = new MiscEntityFactory();
 

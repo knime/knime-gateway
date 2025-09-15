@@ -134,7 +134,7 @@ public class WorkflowChangesListener implements Closeable {
      * @param wfm -
      * @param listenToParent Whether to also listen to changes to the (direct) parent workflow
      *
-     * @since 5.7
+     * @since 5.8
      */
     public WorkflowChangesListener(final WorkflowManager wfm, final boolean listenToParent) {
         this(wfm, Set.of(Scope.EVERYTHING), false, listenToParent);
@@ -157,7 +157,7 @@ public class WorkflowChangesListener implements Closeable {
      * @param listenToChildren Whether to also listen to changes to any child workflow (recursive)
      * @param listenToParent Whether to also listen to changes to the (direct) parent workflow
      *
-     * @since 5.7
+     * @since 5.8
      */
     @SuppressWarnings("java:S2293") // diamond operator: need to explicitly specify type params
     public WorkflowChangesListener(final WorkflowManager wfm, final Set<Scope> scopes, final boolean listenToChildren,

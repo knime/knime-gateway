@@ -62,15 +62,13 @@ import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt.GatewayPr
  * Factory for miscellaneous entities. See also {@link EntityFactory}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @since 5.7
+ * @since 5.8
  */
 @SuppressWarnings("static-method")
 public final class MiscEntityFactory {
 
     /**
      * "title" property of unexpected exceptions.
-     *
-     * @since 5.7
      */
     public static final String UNEXPECTED_TITLE = "An unexpected error occurred";
 
@@ -79,7 +77,6 @@ public final class MiscEntityFactory {
      *
      * @param gatewayException known gateway exception
      * @return problem entity
-     * @since 5.7
      */
     public GatewayProblemDescriptionEnt buildKnownProblemDescriptionEnt(final GatewayException gatewayException) {
         final var details = gatewayException.getDetails();
@@ -102,7 +99,6 @@ public final class MiscEntityFactory {
      *
      * @param throwable unknown exception
      * @return problem entity
-     * @since 5.7
      */
     public GatewayProblemDescriptionEnt buildUnknownProblemDescriptionEnt(final Throwable throwable) {
         return EntityBuilderManager.builder(GatewayProblemDescriptionEntBuilder.class) //
