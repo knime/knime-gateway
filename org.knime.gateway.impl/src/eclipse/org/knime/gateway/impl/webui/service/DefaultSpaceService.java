@@ -202,7 +202,7 @@ public class DefaultSpaceService implements SpaceService {
             }
             return item;
         }  catch (final MutableServiceCallException e) { // NOSONAR
-            throw e.toGatewayException("An ereclipse ror occurred while creating the workflow");
+            throw e.toGatewayException("An error occurred while creating the workflow");
         }
     }
 
