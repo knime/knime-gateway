@@ -111,6 +111,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
     public DialogTypeEnum getDialogType();
     
     @Override
+    @JsonProperty("configContentVersion")
+    public Integer getConfigContentVersion();
+    
+    @Override
     @JsonProperty("inputContentVersion")
     public Integer getInputContentVersion();
     
@@ -190,6 +194,10 @@ public interface ComponentNodeEntMixIn extends ComponentNodeEnt {
         @Override
         @JsonProperty("dialogType")
         public ComponentNodeEntMixInBuilder setDialogType(final DialogTypeEnum dialogType);
+        
+        @Override
+        @JsonProperty("configContentVersion")
+        public ComponentNodeEntMixInBuilder setConfigContentVersion(final Integer configContentVersion);
         
         @Override
         @JsonProperty("inputContentVersion")

@@ -65,6 +65,7 @@ import org.knime.gateway.api.webui.entity.NodeEnt;
  * @param position
  * @param kind
  * @param dialogType
+ * @param configContentVersion
  * @param inputContentVersion
  * @param allowedActions
  * @param executionInfo
@@ -81,6 +82,7 @@ public record DefaultNodeEnt(
     XYEnt position,
     KindEnum kind,
     DialogTypeEnum dialogType,
+    Integer configContentVersion,
     Integer inputContentVersion,
     AllowedNodeActionsEnt allowedActions,
     NodeExecutionInfoEnt executionInfo) implements NodeEnt {
@@ -155,6 +157,11 @@ public record DefaultNodeEnt(
     }
     
     @Override
+    public Integer getConfigContentVersion() {
+        return configContentVersion;
+    }
+    
+    @Override
     public Integer getInputContentVersion() {
         return inputContentVersion;
     }
@@ -189,6 +196,8 @@ public record DefaultNodeEnt(
         private KindEnum m_kind;
 
         private DialogTypeEnum m_dialogType;
+
+        private Integer m_configContentVersion;
 
         private Integer m_inputContentVersion;
 
@@ -263,6 +272,12 @@ public record DefaultNodeEnt(
         }
 
         @Override
+        public DefaultNodeEntBuilder setConfigContentVersion(Integer configContentVersion) {
+             m_configContentVersion = configContentVersion;
+             return this;
+        }
+
+        @Override
         public DefaultNodeEntBuilder setInputContentVersion(Integer inputContentVersion) {
              m_inputContentVersion = inputContentVersion;
              return this;
@@ -291,6 +306,7 @@ public record DefaultNodeEnt(
                 immutable(m_position),
                 immutable(m_kind),
                 immutable(m_dialogType),
+                immutable(m_configContentVersion),
                 immutable(m_inputContentVersion),
                 immutable(m_allowedActions),
                 immutable(m_executionInfo));

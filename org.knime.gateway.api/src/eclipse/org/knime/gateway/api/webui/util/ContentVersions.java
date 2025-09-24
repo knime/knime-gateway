@@ -59,6 +59,8 @@ import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.util.InputPortUtil;
+import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.dialog.NodeDialogManager;
 
 /**
  * A reference will yield a different <i>content version</i> if its "content" has changed. The definition of "content"
@@ -70,6 +72,20 @@ class ContentVersions {
 
     private ContentVersions() {
 
+    }
+
+    /**
+     * Retrieves an integer representing the version of the configuration content associated with the provided node
+     * container. A change in the return value of this method indicates that the configuration content has been
+     * modified.
+     *
+     * @param nc The node container whose configuration content version needs to be retrieved
+     * @return An integer representing the version of the configuration content
+     */
+    public static Integer getConfigContentVersion(final NodeContainer nc) {
+        return NodeDialogManager.getInstance().getDataServiceManager() //
+            .callInitialDataService(NodeWrapper.of(nc)) //
+            .hashCode(); // only string contents (not object identity) matter here.
     }
 
     /**

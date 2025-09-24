@@ -110,6 +110,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
     public DialogTypeEnum getDialogType();
     
     @Override
+    @JsonProperty("configContentVersion")
+    public Integer getConfigContentVersion();
+    
+    @Override
     @JsonProperty("inputContentVersion")
     public Integer getInputContentVersion();
     
@@ -181,6 +185,10 @@ public interface MetaNodeEntMixIn extends MetaNodeEnt {
         @Override
         @JsonProperty("dialogType")
         public MetaNodeEntMixInBuilder setDialogType(final DialogTypeEnum dialogType);
+        
+        @Override
+        @JsonProperty("configContentVersion")
+        public MetaNodeEntMixInBuilder setConfigContentVersion(final Integer configContentVersion);
         
         @Override
         @JsonProperty("inputContentVersion")
