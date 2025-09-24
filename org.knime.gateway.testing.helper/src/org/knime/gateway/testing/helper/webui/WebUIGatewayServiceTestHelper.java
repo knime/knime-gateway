@@ -208,6 +208,12 @@ public class WebUIGatewayServiceTestHelper extends GatewayServiceTestHelper {
         /**
          * Non-deterministic field.
          */
+        objToString.addException(NodeEnt.class, "configContentVersion",
+                (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_VERSION"));
+
+        /**
+         * Non-deterministic field.
+         */
         objToString.addException(SpaceItemEnt.class, "id", (v, gen, e) -> gen.writeString("PLACEHOLDER_FOR_ID"));
 
         /**

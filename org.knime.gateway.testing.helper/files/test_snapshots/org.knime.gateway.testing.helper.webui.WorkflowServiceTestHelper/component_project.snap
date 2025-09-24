@@ -257,6 +257,7 @@
         "canOpenLegacyFlowVariableDialog" : true,
         "canReset" : false
       },
+      "configContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "dialogType" : "web",
       "hasView" : false,
       "id" : "root:8",

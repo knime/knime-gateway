@@ -1037,6 +1037,7 @@
         },
         "textAlign" : "center"
       },
+      "configContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "dialogType" : "web",
       "hasView" : false,
       "id" : "root:2",
@@ -1507,6 +1508,7 @@
         },
         "textAlign" : "center"
       },
+      "configContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "dialogType" : "web",
       "hasView" : false,
       "id" : "root:27",
