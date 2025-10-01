@@ -103,6 +103,7 @@ public interface KaiHandler {
     /**
      * @param projectId ID of the active workflow.
      * @return the list list of AI quick actions available at the connected KNIME Hub.
+     * @since 5.8
      */
     KaiQuickActionsAvailableEnt listQuickActions(String projectId);
 
