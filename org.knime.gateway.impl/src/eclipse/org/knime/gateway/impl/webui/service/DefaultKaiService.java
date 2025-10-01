@@ -54,6 +54,9 @@ import java.util.function.Consumer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
+import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionsAvailableEnt;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
@@ -199,6 +202,19 @@ public final class DefaultKaiService implements KaiService {
     public KaiUsageEnt getUsage(final String projectId) {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         return getListener().map(l -> l.getUsage(projectId)).orElse(null);
+    }
+
+    @Override
+    public KaiQuickActionResponseEnt executeQuickAction(final String kaiQuickActionId,
+        final KaiQuickActionRequestEnt kaiQuickActionRequest) {
+        DefaultServiceContext.assertWorkflowProjectId(kaiQuickActionRequest.getProjectId());
+        return getListener().map(l -> l.executeQuickAction(kaiQuickActionId, kaiQuickActionRequest)).orElse(null);
+    }
+
+    @Override
+    public KaiQuickActionsAvailableEnt listQuickActions(final String projectId) {
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        return getListener().map(l -> l.listQuickActions(projectId)).orElse(null);
     }
 
 }

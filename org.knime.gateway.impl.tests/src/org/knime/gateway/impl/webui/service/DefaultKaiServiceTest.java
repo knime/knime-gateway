@@ -58,8 +58,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
+import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionContextEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionRequestEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResponseEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionsAvailableEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiRequestEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiUsageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultXYEnt;
@@ -159,6 +166,60 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
         assertEquals(expectedUsage.getLimit(), returnedUsage.getLimit());
         assertEquals(expectedUsage.getUsed(), returnedUsage.getUsed());
         verify(m_kaiHandler).getUsage(projectId);
+    }
+
+    /**
+     * Tests that the executeQuickAction method correctly delegates to the listener.
+     *
+     * @throws Exception not thrown
+     */
+    @Test
+    public void testExecuteQuickAction() throws Exception {
+        String kaiQuickActionId = "quickAction123";
+        String projectId = "bar";
+
+        var context = new DefaultKaiQuickActionContextEnt();
+        var request = new DefaultKaiQuickActionRequestEnt(
+            KaiQuickActionRequestEnt.ActionIdEnum.GENERATEANNOTATION,
+            projectId,
+            context
+        );
+
+        var expectedResult = new DefaultKaiQuickActionResultEnt();
+        var expectedUsage = new DefaultKaiUsageEnt(100, 30);
+        var expectedResponse = new DefaultKaiQuickActionResponseEnt(
+            KaiQuickActionResponseEnt.ActionIdEnum.GENERATEANNOTATION,
+            expectedResult,
+            expectedUsage
+        );
+
+        Mockito.when(m_kaiHandler.executeQuickAction(kaiQuickActionId, request)).thenReturn(expectedResponse);
+
+        var returnedResponse = DefaultKaiService.getInstance().executeQuickAction(kaiQuickActionId, request);
+
+        assertEquals(expectedResponse.getActionId(), returnedResponse.getActionId());
+        assertEquals(expectedResponse.getResult(), returnedResponse.getResult());
+        assertEquals(expectedResponse.getUsage().getLimit(), returnedResponse.getUsage().getLimit());
+        assertEquals(expectedResponse.getUsage().getUsed(), returnedResponse.getUsage().getUsed());
+        verify(m_kaiHandler).executeQuickAction(kaiQuickActionId, request);
+    }
+
+    /**
+     * Tests that the listQuickActions method correctly delegates to the listener.
+     *
+     * @throws Exception not thrown
+     */
+    @Test
+    public void testListQuickActions() throws Exception {
+        String projectId = "bar";
+        var expectedActions = new DefaultKaiQuickActionsAvailableEnt(List.of("action1", "action2", "action3"));
+
+        Mockito.when(m_kaiHandler.listQuickActions(projectId)).thenReturn(expectedActions);
+
+        var returnedActions = DefaultKaiService.getInstance().listQuickActions(projectId);
+
+        assertEquals(expectedActions.getAvailableActions(), returnedActions.getAvailableActions());
+        verify(m_kaiHandler).listQuickActions(projectId);
     }
 
 }

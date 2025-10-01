@@ -52,6 +52,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionsAvailableEnt;
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
@@ -88,6 +91,20 @@ public interface KaiHandler {
      * @since 5.8
      */
     KaiUsageEnt getUsage(String projectId);
+
+    /**
+     * @param actionId ID of the AI quick action to be executed.
+     * @param request request body containing the necessary context for the quick action.
+     * @return response containing the execution result.
+     * @since 5.8
+     */
+    KaiQuickActionResponseEnt executeQuickAction(String actionId, KaiQuickActionRequestEnt request);
+
+    /**
+     * @param projectId ID of the active workflow.
+     * @return the list list of AI quick actions available at the connected KNIME Hub.
+     */
+    KaiQuickActionsAvailableEnt listQuickActions(String projectId);
 
     /**
      * Invoked if the user provides feedback on one of K-AI's answers.

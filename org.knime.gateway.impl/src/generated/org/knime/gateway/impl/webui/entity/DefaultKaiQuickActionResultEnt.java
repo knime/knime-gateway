@@ -42,90 +42,45 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionsAvailableEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
-import org.knime.gateway.api.webui.entity.KaiUsageEnt;
+
+import org.knime.gateway.api.webui.entity.KaiQuickActionResultEnt;
 
 /**
- * Operations on K-AI.
+ * Base AI quick action result schema for proper inheritance.
+ *
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface KaiService extends GatewayService {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultKaiQuickActionResultEnt(
+    ) implements KaiQuickActionResultEnt {
 
     /**
-     * Aborts the currently running request to the given chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     *
-     * 
+     * Validation for required parameters not being {@code null}.
      */
-    void abortAiRequest(String kaiChainId) ;
-        
+    public DefaultKaiQuickActionResultEnt {
+    }
+
+    @Override
+    public String getTypeID() {
+        return "KaiQuickActionResult";
+    }
+  
     /**
-     * Executes a promptless AI quick action that doesn&#39;t require chat interactions.
-     *
-     * @param kaiQuickActionId Identifier of an AI quick action.
-     * @param kaiQuickActionRequest 
-     *
-     * @return the result
+     * A builder for {@link DefaultKaiQuickActionResultEnt}.
      */
-    KaiQuickActionResponseEnt executeQuickAction(String kaiQuickActionId, KaiQuickActionRequestEnt kaiQuickActionRequest) ;
-        
-    /**
-     * Fetches the disclaimer and welcome messages displayed in K-AI&#39;s chat interface.
-     *
-     *
-     * @return the result
-     */
-    KaiUiStringsEnt getUiStrings() ;
-        
-    /**
-     * Retrieves the current user&#39;s AI interaction usage and limits.
-     *
-     * @param projectId ID of the workflow-project.
-     *
-     * @return the result
-     */
-    KaiUsageEnt getUsage(String projectId) ;
-        
-    /**
-     * Returns available AI quick actions.
-     *
-     * @param projectId ID of the workflow-project.
-     *
-     * @return the result
-     */
-    KaiQuickActionsAvailableEnt listQuickActions(String projectId) ;
-        
-    /**
-     * Sends a request to a chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     * @param kaiRequest 
-     *
-     * 
-     */
-    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
-        
-    /**
-     * Submits feedback for a chain.
-     *
-     * @param kaiFeedbackId Id of the K-AI feedback
-     * @param kaiFeedback 
-     *
-     * 
-     */
-    void submitFeedback(String kaiFeedbackId, KaiFeedbackEnt kaiFeedback) ;
-        
+    public static class DefaultKaiQuickActionResultEntBuilder implements KaiQuickActionResultEntBuilder {
+
+        @Override
+        public DefaultKaiQuickActionResultEnt build() {
+            return new DefaultKaiQuickActionResultEnt(
+                );
+        }
+    
+    }
+
 }

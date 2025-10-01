@@ -42,90 +42,84 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
-
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionGenerateAnnotationContextEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionsAvailableEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
-import org.knime.gateway.api.webui.entity.KaiUsageEnt;
+
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Operations on K-AI.
- *
+ * KaiQuickActionGenerateAnnotationRequestEnt
+ * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface KaiService extends GatewayService {
+public interface KaiQuickActionGenerateAnnotationRequestEnt extends GatewayEntity, KaiQuickActionRequestEnt {
+
+
+  /**
+   * Get context
+   * @return context , never <code>null</code>
+   **/
+  public KaiQuickActionGenerateAnnotationContextEnt getContext();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (KaiQuickActionGenerateAnnotationRequestEnt)other;
+      valueConsumer.accept("actionId", Pair.create(getActionId(), e.getActionId()));
+      valueConsumer.accept("projectId", Pair.create(getProjectId(), e.getProjectId()));
+      valueConsumer.accept("context", Pair.create(getContext(), e.getContext()));
+  }
 
     /**
-     * Aborts the currently running request to the given chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     *
-     * 
+     * The builder for the entity.
      */
-    void abortAiRequest(String kaiChainId) ;
+    public interface KaiQuickActionGenerateAnnotationRequestEntBuilder extends GatewayEntityBuilder<KaiQuickActionGenerateAnnotationRequestEnt> {
+
+        /**
+   		 * Set actionId
+         * 
+         * @param actionId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiQuickActionGenerateAnnotationRequestEntBuilder setActionId(ActionIdEnum actionId);
         
-    /**
-     * Executes a promptless AI quick action that doesn&#39;t require chat interactions.
-     *
-     * @param kaiQuickActionId Identifier of an AI quick action.
-     * @param kaiQuickActionRequest 
-     *
-     * @return the result
-     */
-    KaiQuickActionResponseEnt executeQuickAction(String kaiQuickActionId, KaiQuickActionRequestEnt kaiQuickActionRequest) ;
+        /**
+         * Identifies the top-level workflow, needed for authentication.
+         * 
+         * @param projectId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiQuickActionGenerateAnnotationRequestEntBuilder setProjectId(String projectId);
         
-    /**
-     * Fetches the disclaimer and welcome messages displayed in K-AI&#39;s chat interface.
-     *
-     *
-     * @return the result
-     */
-    KaiUiStringsEnt getUiStrings() ;
+        /**
+   		 * Set context
+         * 
+         * @param context the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiQuickActionGenerateAnnotationRequestEntBuilder setContext(KaiQuickActionGenerateAnnotationContextEnt context);
         
-    /**
-     * Retrieves the current user&#39;s AI interaction usage and limits.
-     *
-     * @param projectId ID of the workflow-project.
-     *
-     * @return the result
-     */
-    KaiUsageEnt getUsage(String projectId) ;
         
-    /**
-     * Returns available AI quick actions.
-     *
-     * @param projectId ID of the workflow-project.
-     *
-     * @return the result
-     */
-    KaiQuickActionsAvailableEnt listQuickActions(String projectId) ;
-        
-    /**
-     * Sends a request to a chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     * @param kaiRequest 
-     *
-     * 
-     */
-    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
-        
-    /**
-     * Submits feedback for a chain.
-     *
-     * @param kaiFeedbackId Id of the K-AI feedback
-     * @param kaiFeedback 
-     *
-     * 
-     */
-    void submitFeedback(String kaiFeedbackId, KaiFeedbackEnt kaiFeedback) ;
-        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        KaiQuickActionGenerateAnnotationRequestEnt build();
+    
+    }
+
 }

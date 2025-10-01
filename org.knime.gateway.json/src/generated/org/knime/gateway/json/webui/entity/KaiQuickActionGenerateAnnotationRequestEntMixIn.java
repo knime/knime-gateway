@@ -42,90 +42,74 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.entity.KaiQuickActionGenerateAnnotationContextEnt;
+import org.knime.gateway.json.webui.entity.KaiQuickActionRequestEntMixIn;
 
-import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
-import org.knime.gateway.api.webui.entity.KaiQuickActionsAvailableEnt;
-import org.knime.gateway.api.webui.entity.KaiRequestEnt;
-import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
-import org.knime.gateway.api.webui.entity.KaiUsageEnt;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.KaiQuickActionGenerateAnnotationRequestEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationRequestEnt.DefaultKaiQuickActionGenerateAnnotationRequestEntBuilder;
 
 /**
- * Operations on K-AI.
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface KaiService extends GatewayService {
+
+@JsonDeserialize(builder=DefaultKaiQuickActionGenerateAnnotationRequestEntBuilder.class)
+@JsonSerialize(as=KaiQuickActionGenerateAnnotationRequestEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface KaiQuickActionGenerateAnnotationRequestEntMixIn extends KaiQuickActionGenerateAnnotationRequestEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("actionId")
+    public ActionIdEnum getActionId();
+    
+    @Override
+    @JsonProperty("projectId")
+    public String getProjectId();
+    
+    @Override
+    @JsonProperty("context")
+    public KaiQuickActionGenerateAnnotationContextEnt getContext();
+    
 
     /**
-     * Aborts the currently running request to the given chain.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
-     * @param kaiChainId Id of a K-AI chain.
-     *
-     * 
+     * @author Martin Horn, University of Konstanz
      */
-    void abortAiRequest(String kaiChainId) ;
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface KaiQuickActionGenerateAnnotationRequestEntMixInBuilder extends KaiQuickActionGenerateAnnotationRequestEntBuilder {
+    
+        @Override
+        public KaiQuickActionGenerateAnnotationRequestEntMixIn build();
+    
+        @Override
+        @JsonProperty("actionId")
+        public KaiQuickActionGenerateAnnotationRequestEntMixInBuilder setActionId(final ActionIdEnum actionId);
         
-    /**
-     * Executes a promptless AI quick action that doesn&#39;t require chat interactions.
-     *
-     * @param kaiQuickActionId Identifier of an AI quick action.
-     * @param kaiQuickActionRequest 
-     *
-     * @return the result
-     */
-    KaiQuickActionResponseEnt executeQuickAction(String kaiQuickActionId, KaiQuickActionRequestEnt kaiQuickActionRequest) ;
+        @Override
+        @JsonProperty("projectId")
+        public KaiQuickActionGenerateAnnotationRequestEntMixInBuilder setProjectId(final String projectId);
         
-    /**
-     * Fetches the disclaimer and welcome messages displayed in K-AI&#39;s chat interface.
-     *
-     *
-     * @return the result
-     */
-    KaiUiStringsEnt getUiStrings() ;
+        @Override
+        @JsonProperty("context")
+        public KaiQuickActionGenerateAnnotationRequestEntMixInBuilder setContext(final KaiQuickActionGenerateAnnotationContextEnt context);
         
-    /**
-     * Retrieves the current user&#39;s AI interaction usage and limits.
-     *
-     * @param projectId ID of the workflow-project.
-     *
-     * @return the result
-     */
-    KaiUsageEnt getUsage(String projectId) ;
-        
-    /**
-     * Returns available AI quick actions.
-     *
-     * @param projectId ID of the workflow-project.
-     *
-     * @return the result
-     */
-    KaiQuickActionsAvailableEnt listQuickActions(String projectId) ;
-        
-    /**
-     * Sends a request to a chain.
-     *
-     * @param kaiChainId Id of a K-AI chain.
-     * @param kaiRequest 
-     *
-     * 
-     */
-    void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
-        
-    /**
-     * Submits feedback for a chain.
-     *
-     * @param kaiFeedbackId Id of the K-AI feedback
-     * @param kaiFeedback 
-     *
-     * 
-     */
-    void submitFeedback(String kaiFeedbackId, KaiFeedbackEnt kaiFeedback) ;
-        
+    }
+
+
 }
+

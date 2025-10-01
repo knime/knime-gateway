@@ -152,6 +152,26 @@ import org.knime.gateway.api.webui.entity.KaiFeedbackEnt.KaiFeedbackEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.KaiMessageEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionContextEnt.KaiQuickActionContextEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionContextEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionErrorEnt.KaiQuickActionErrorEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionErrorEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionGenerateAnnotationContextEnt.KaiQuickActionGenerateAnnotationContextEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationContextEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionGenerateAnnotationRequestEnt.KaiQuickActionGenerateAnnotationRequestEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionGenerateAnnotationResponseEnt.KaiQuickActionGenerateAnnotationResponseEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationResponseEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionGenerateAnnotationResultEnt.KaiQuickActionGenerateAnnotationResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationResultEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt.KaiQuickActionRequestEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt.KaiQuickActionResponseEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResponseEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionResultEnt.KaiQuickActionResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResultEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionsAvailableEnt.KaiQuickActionsAvailableEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionsAvailableEnt;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt.KaiRequestEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt.KaiUiStringsEntBuilder;
@@ -527,6 +547,36 @@ public class Interface2ImplMap {
         }        
         if(clazz == KaiMessageEntBuilder.class) {
             return (B)new DefaultKaiMessageEnt.DefaultKaiMessageEntBuilder();
+        }        
+        if(clazz == KaiQuickActionContextEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionContextEnt.DefaultKaiQuickActionContextEntBuilder();
+        }        
+        if(clazz == KaiQuickActionErrorEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionErrorEnt.DefaultKaiQuickActionErrorEntBuilder();
+        }        
+        if(clazz == KaiQuickActionGenerateAnnotationContextEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionGenerateAnnotationContextEnt.DefaultKaiQuickActionGenerateAnnotationContextEntBuilder();
+        }        
+        if(clazz == KaiQuickActionGenerateAnnotationRequestEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionGenerateAnnotationRequestEnt.DefaultKaiQuickActionGenerateAnnotationRequestEntBuilder();
+        }        
+        if(clazz == KaiQuickActionGenerateAnnotationResponseEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionGenerateAnnotationResponseEnt.DefaultKaiQuickActionGenerateAnnotationResponseEntBuilder();
+        }        
+        if(clazz == KaiQuickActionGenerateAnnotationResultEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionGenerateAnnotationResultEnt.DefaultKaiQuickActionGenerateAnnotationResultEntBuilder();
+        }        
+        if(clazz == KaiQuickActionRequestEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionRequestEnt.DefaultKaiQuickActionRequestEntBuilder();
+        }        
+        if(clazz == KaiQuickActionResponseEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionResponseEnt.DefaultKaiQuickActionResponseEntBuilder();
+        }        
+        if(clazz == KaiQuickActionResultEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionResultEnt.DefaultKaiQuickActionResultEntBuilder();
+        }        
+        if(clazz == KaiQuickActionsAvailableEntBuilder.class) {
+            return (B)new DefaultKaiQuickActionsAvailableEnt.DefaultKaiQuickActionsAvailableEntBuilder();
         }        
         if(clazz == KaiRequestEntBuilder.class) {
             return (B)new DefaultKaiRequestEnt.DefaultKaiRequestEntBuilder();

@@ -45,6 +45,9 @@
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
+import org.knime.gateway.api.webui.entity.KaiQuickActionsAvailableEnt;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
@@ -87,6 +90,15 @@ public class JsonRpcKaiServiceWrapper implements KaiService {
      * {@inheritDoc}
      */
     @Override
+    @JsonRpcMethod(value = "executeQuickAction")
+    public KaiQuickActionResponseEnt executeQuickAction(@JsonRpcParam(value="kaiQuickActionId") String kaiQuickActionId, @JsonRpcParam(value="kaiQuickActionRequest") KaiQuickActionRequestEnt kaiQuickActionRequest)  {
+        return m_service.get().executeQuickAction(kaiQuickActionId, kaiQuickActionRequest);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
     @JsonRpcMethod(value = "getUiStrings")
     public KaiUiStringsEnt getUiStrings()  {
         return m_service.get().getUiStrings();    
@@ -99,6 +111,15 @@ public class JsonRpcKaiServiceWrapper implements KaiService {
     @JsonRpcMethod(value = "getUsage")
     public KaiUsageEnt getUsage(@JsonRpcParam(value="projectId") String projectId)  {
         return m_service.get().getUsage(projectId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "listQuickActions")
+    public KaiQuickActionsAvailableEnt listQuickActions(@JsonRpcParam(value="projectId") String projectId)  {
+        return m_service.get().listQuickActions(projectId);    
     }
 
 	/**
