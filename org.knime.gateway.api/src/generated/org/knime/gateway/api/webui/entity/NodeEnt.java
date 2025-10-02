@@ -161,6 +161,12 @@ public interface NodeEnt extends GatewayEntity {
   public DialogTypeEnum getDialogType();
 
   /**
+   * A change in this value signals that the configuration of a node has been changed.  Applies only to nodes under the UI-extensions, modern dialog framework. Only present for native nodes and components, not for metanodes. Only present if node is executed.
+   * @return modelSettingsContentVersion 
+   **/
+  public Integer getModelSettingsContentVersion();
+
+  /**
    * A change in this value signals that the input of the node has changed (this currently only considers   port specs). Includes the flow variable port. Not present if &#x60;hasDialog&#x60; is false. Not present if &#x60;interaction info&#x60; is not included. Not present if no input ports present. Not present for metanodes.
    * @return inputContentVersion 
    **/
@@ -191,6 +197,7 @@ public interface NodeEnt extends GatewayEntity {
       valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("dialogType", Pair.create(getDialogType(), e.getDialogType()));
+      valueConsumer.accept("modelSettingsContentVersion", Pair.create(getModelSettingsContentVersion(), e.getModelSettingsContentVersion()));
       valueConsumer.accept("inputContentVersion", Pair.create(getInputContentVersion(), e.getInputContentVersion()));
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("executionInfo", Pair.create(getExecutionInfo(), e.getExecutionInfo()));
@@ -264,6 +271,14 @@ public interface NodeEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         NodeEntBuilder setDialogType(DialogTypeEnum dialogType);
+        
+        /**
+         * A change in this value signals that the configuration of a node has been changed.  Applies only to nodes under the UI-extensions, modern dialog framework. Only present for native nodes and components, not for metanodes. Only present if node is executed.
+         * 
+         * @param modelSettingsContentVersion the property value,  
+         * @return this entity builder for chaining
+         */
+        NodeEntBuilder setModelSettingsContentVersion(Integer modelSettingsContentVersion);
         
         /**
          * A change in this value signals that the input of the node has changed (this currently only considers   port specs). Includes the flow variable port. Not present if &#x60;hasDialog&#x60; is false. Not present if &#x60;interaction info&#x60; is not included. Not present if no input ports present. Not present for metanodes.

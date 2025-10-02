@@ -51,7 +51,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
+import org.knime.core.node.config.base.ConfigBase;
+import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
@@ -59,6 +62,9 @@ import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.data.util.InputPortUtil;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.internal.SettingsExtractor;
+import org.knime.core.webui.node.view.NodeViewManager;
 
 /**
  * A reference will yield a different <i>content version</i> if its "content" has changed. The definition of "content"
@@ -66,10 +72,41 @@ import org.knime.core.webui.data.util.InputPortUtil;
  * 
  * @author Benjamin Moser, KNIME GmbH
  */
-class ContentVersions {
+final class ContentVersions {
 
     private ContentVersions() {
 
+    }
+
+    /**
+     * Retrieves an integer representing the version of the configuration content associated with the provided node
+     * container. A change in the return value of this method indicates that the configuration content has been
+     * modified.
+     *
+     * @param nc The node container whose configuration content version needs to be retrieved
+     * @return An integer representing the version of the configuration content
+     */
+    static Integer getModelSettingsContentVersion(final NodeContainer nc) {
+        if (!nc.getNodeContainerState().isExecuted() //
+            || !NodeViewManager.hasNodeView(nc)) {
+            return null;
+        }
+        var settings = new SettingsExtractor( //
+            nc, //
+            // only interested in updating model settings -- view settings have their own mechanism
+            // of live-updating the view
+            Set.of(SettingsType.MODEL), //
+            s -> {
+                // no need to validate extractedSettings here, because we are only interested in the content.
+                // even if invalid, this should trigger a "content version" change.
+            }) //
+            .getNodeSettingsOverwrittenByVariables();
+
+        return serialiseSettings(settings.get(SettingsType.MODEL)).hashCode();
+    }
+
+    private static String serialiseSettings(final ConfigBase settings) {
+        return JSONConfig.toJSONString(settings, JSONConfig.WriterConfig.DEFAULT);
     }
 
     /**

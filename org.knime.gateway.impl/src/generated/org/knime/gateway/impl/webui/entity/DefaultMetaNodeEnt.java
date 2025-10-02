@@ -68,6 +68,7 @@ import org.knime.gateway.api.webui.entity.MetaNodeEnt;
  * @param position
  * @param kind
  * @param dialogType
+ * @param modelSettingsContentVersion
  * @param inputContentVersion
  * @param allowedActions
  * @param executionInfo
@@ -88,6 +89,7 @@ public record DefaultMetaNodeEnt(
     XYEnt position,
     KindEnum kind,
     DialogTypeEnum dialogType,
+    Integer modelSettingsContentVersion,
     Integer inputContentVersion,
     AllowedNodeActionsEnt allowedActions,
     NodeExecutionInfoEnt executionInfo,
@@ -172,6 +174,11 @@ public record DefaultMetaNodeEnt(
     }
     
     @Override
+    public Integer getModelSettingsContentVersion() {
+        return modelSettingsContentVersion;
+    }
+    
+    @Override
     public Integer getInputContentVersion() {
         return inputContentVersion;
     }
@@ -226,6 +233,8 @@ public record DefaultMetaNodeEnt(
         private KindEnum m_kind;
 
         private DialogTypeEnum m_dialogType;
+
+        private Integer m_modelSettingsContentVersion;
 
         private Integer m_inputContentVersion;
 
@@ -308,6 +317,12 @@ public record DefaultMetaNodeEnt(
         }
 
         @Override
+        public DefaultMetaNodeEntBuilder setModelSettingsContentVersion(Integer modelSettingsContentVersion) {
+             m_modelSettingsContentVersion = modelSettingsContentVersion;
+             return this;
+        }
+
+        @Override
         public DefaultMetaNodeEntBuilder setInputContentVersion(Integer inputContentVersion) {
              m_inputContentVersion = inputContentVersion;
              return this;
@@ -366,6 +381,7 @@ public record DefaultMetaNodeEnt(
                 immutable(m_position),
                 immutable(m_kind),
                 immutable(m_dialogType),
+                immutable(m_modelSettingsContentVersion),
                 immutable(m_inputContentVersion),
                 immutable(m_allowedActions),
                 immutable(m_executionInfo),

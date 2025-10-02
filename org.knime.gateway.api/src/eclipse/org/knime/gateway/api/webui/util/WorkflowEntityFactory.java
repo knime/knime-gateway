@@ -556,8 +556,9 @@ public final class WorkflowEntityFactory {
         var metadata = snc.getMetadata();
         var type =
             metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
-        var inputContentVersion = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(snc)
-            ? ContentVersions.getInputContentVersion(snc) : null;
+        var wantContentVersions = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(snc);
+        var inputContentVersion = wantContentVersions ? ContentVersions.getInputContentVersion(snc) : null;
+        var modelSettingsContentVersion = wantContentVersions ? ContentVersions.getModelSettingsContentVersion(snc) : null;
         return builder(ComponentNodeEntBuilder.class).setName(snc.getName())//
             .setId(id)//
             .setType(type) //
@@ -574,6 +575,7 @@ public final class WorkflowEntityFactory {
             .setExecutionInfo(buildNodeExecutionInfoEnt(snc)) //
             .setIsLocked(CoreUtil.isLocked(snc).orElse(null)) //
             .setInputContentVersion(inputContentVersion) //
+            .setModelSettingsContentVersion(modelSettingsContentVersion) //
             .setHasView(hasNodeView(snc, 0)) //
             .build();
     }
@@ -825,8 +827,9 @@ public final class WorkflowEntityFactory {
         if (nnc.getNodeModel() instanceof ReExecutable) {
             isReexecutable = ((ReExecutable<?>)nnc.getNodeModel()).canTriggerReExecution();
         }
-        var inputContentVersion = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(nnc)
-            ? ContentVersions.getInputContentVersion(nnc) : null;
+        var wantContentVersions = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(nnc);
+        var inputContentVersion = wantContentVersions ? ContentVersions.getInputContentVersion(nnc) : null;
+        var modelSettingsContentVersion = wantContentVersions ? ContentVersions.getModelSettingsContentVersion(nnc) : null;
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
             .setKind(KindEnum.NODE)//
@@ -844,6 +847,7 @@ public final class WorkflowEntityFactory {
             .setHasView(hasView)//
             .setIsReexecutable(isReexecutable)//
             .setInputContentVersion(inputContentVersion) //
+            .setModelSettingsContentVersion(modelSettingsContentVersion) //
             .build();
     }
 

@@ -15,6 +15,19 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentNodeEnt.java" type="org.knime.gateway.api.webui.entity.ComponentNodeEnt$ComponentNodeEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentNodeEnt.ComponentNodeEntBuilder"/>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/GatewayProblemDescriptionEnt.java" type="org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt">
         <filter id="403804204">
             <message_arguments>
@@ -137,6 +150,69 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.KaiUsageEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/MetaNodeEnt.java" type="org.knime.gateway.api.webui.entity.MetaNodeEnt$MetaNodeEntBuilder">
+        <filter comment="AP-4024" id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder"/>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="AP-4024" id="1211105284">
+            <message_arguments>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/NativeNodeEnt.java" type="org.knime.gateway.api.webui.entity.NativeNodeEnt$NativeNodeEntBuilder">
+        <filter comment="AP-4024" id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder"/>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="AP-4024" id="1211105284">
+            <message_arguments>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/NodeEnt.java" type="org.knime.gateway.api.webui.entity.NodeEnt">
+        <filter comment="AP-4024" id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.NodeEnt"/>
+                <message_argument value="getConfigContentVersion()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="NXT-4024" id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.NodeEnt"/>
+                <message_argument value="getModelSettingsContentVersion()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="AP-4024" id="1211105284">
+            <message_arguments>
+                <message_argument value="getConfigContentVersion()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="NXT-4024" id="1211105284">
+            <message_arguments>
+                <message_argument value="getModelSettingsContentVersion()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/NodeEnt.java" type="org.knime.gateway.api.webui.entity.NodeEnt$NodeEntBuilder">
+        <filter comment="AP-4024" id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.NodeEnt.NodeEntBuilder"/>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="AP-4024" id="1211105284">
+            <message_arguments>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
             </message_arguments>
         </filter>
     </resource>
