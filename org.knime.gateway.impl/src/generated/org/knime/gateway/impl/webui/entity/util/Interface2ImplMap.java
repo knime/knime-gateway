@@ -96,6 +96,14 @@ import org.knime.gateway.api.webui.entity.CollapseResultEnt.CollapseResultEntBui
 import org.knime.gateway.impl.webui.entity.DefaultCollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.CommandResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
+import org.knime.gateway.api.webui.entity.ComponentConfigurationLayoutEnt.ComponentConfigurationLayoutEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentConfigurationLayoutEnt;
+import org.knime.gateway.api.webui.entity.ComponentConfigurationLayoutNodeEnt.ComponentConfigurationLayoutNodeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentConfigurationLayoutNodeEnt;
+import org.knime.gateway.api.webui.entity.ComponentConfigurationLayoutTableEnt.ComponentConfigurationLayoutTableEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentConfigurationLayoutTableEnt;
+import org.knime.gateway.api.webui.entity.ComponentLayoutEnt.ComponentLayoutEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentLayoutEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt.ComponentNodeAndDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder;
@@ -106,6 +114,12 @@ import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.ComponentPlace
 import org.knime.gateway.impl.webui.entity.DefaultComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentPortDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ComponentViewLayoutEnt.ComponentViewLayoutEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentViewLayoutEnt;
+import org.knime.gateway.api.webui.entity.ComponentViewLayoutNodeEnt.ComponentViewLayoutNodeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentViewLayoutNodeEnt;
+import org.knime.gateway.api.webui.entity.ComponentViewLayoutTableEnt.ComponentViewLayoutTableEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentViewLayoutTableEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
@@ -464,6 +478,18 @@ public class Interface2ImplMap {
         if(clazz == CommandResultEntBuilder.class) {
             return (B)new DefaultCommandResultEnt.DefaultCommandResultEntBuilder();
         }        
+        if(clazz == ComponentConfigurationLayoutEntBuilder.class) {
+            return (B)new DefaultComponentConfigurationLayoutEnt.DefaultComponentConfigurationLayoutEntBuilder();
+        }        
+        if(clazz == ComponentConfigurationLayoutNodeEntBuilder.class) {
+            return (B)new DefaultComponentConfigurationLayoutNodeEnt.DefaultComponentConfigurationLayoutNodeEntBuilder();
+        }        
+        if(clazz == ComponentConfigurationLayoutTableEntBuilder.class) {
+            return (B)new DefaultComponentConfigurationLayoutTableEnt.DefaultComponentConfigurationLayoutTableEntBuilder();
+        }        
+        if(clazz == ComponentLayoutEntBuilder.class) {
+            return (B)new DefaultComponentLayoutEnt.DefaultComponentLayoutEntBuilder();
+        }        
         if(clazz == ComponentNodeAndDescriptionEntBuilder.class) {
             return (B)new DefaultComponentNodeAndDescriptionEnt.DefaultComponentNodeAndDescriptionEntBuilder();
         }        
@@ -478,6 +504,15 @@ public class Interface2ImplMap {
         }        
         if(clazz == ComponentPortDescriptionEntBuilder.class) {
             return (B)new DefaultComponentPortDescriptionEnt.DefaultComponentPortDescriptionEntBuilder();
+        }        
+        if(clazz == ComponentViewLayoutEntBuilder.class) {
+            return (B)new DefaultComponentViewLayoutEnt.DefaultComponentViewLayoutEntBuilder();
+        }        
+        if(clazz == ComponentViewLayoutNodeEntBuilder.class) {
+            return (B)new DefaultComponentViewLayoutNodeEnt.DefaultComponentViewLayoutNodeEntBuilder();
+        }        
+        if(clazz == ComponentViewLayoutTableEntBuilder.class) {
+            return (B)new DefaultComponentViewLayoutTableEnt.DefaultComponentViewLayoutTableEntBuilder();
         }        
         if(clazz == CompositeEventEntBuilder.class) {
             return (B)new DefaultCompositeEventEnt.DefaultCompositeEventEntBuilder();

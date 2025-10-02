@@ -49,6 +49,7 @@
 package org.knime.gateway.api.webui.util;
 
 import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.ComponentLayoutEnt;
 import org.knime.gateway.api.webui.entity.NodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
@@ -116,4 +117,10 @@ public final class EntityFactory {
      */
     public static final MiscEntityFactory Misc = new MiscEntityFactory();
 
+    /**
+     * Entity builder instance to mainly build {@link ComponentLayoutEnt}s and related entities.
+     *
+     * @since 5.8
+     */
+    public static final ComponentLayoutEntityFactory ComponentLayout = new ComponentLayoutEntityFactory();
 }

@@ -52,6 +52,7 @@ import java.util.List;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.ExtPointUtil;
+import org.knime.gateway.api.webui.entity.ComponentLayoutEnt;
 import org.knime.gateway.api.webui.service.ComponentEditorService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
@@ -71,21 +72,22 @@ public class DefaultComponentEditorService implements ComponentEditorService {
     }
 
     @Override
-    public String getViewNodes(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
+    public ComponentLayoutEnt getLayout(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
         throws ServiceCallException {
-
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        return getComponentEditorServiceDelegate().getViewNodes(projectId, workflowId, nodeId);
+        return getComponentEditorServiceDelegate().getLayout(projectId, workflowId, nodeId);
     }
 
     @Override
-    public String getViewLayout(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws ServiceCallException {
-
+    public void setLayout(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
+        final ComponentLayoutEnt componentLayout) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        return getComponentEditorServiceDelegate().getViewLayout(projectId, workflowId, nodeId);
+        getComponentEditorServiceDelegate().setLayout(projectId, workflowId, nodeId, componentLayout);
     }
 
+    /**
+     * TODO: Remove from API
+     */
     @Override
     public void setViewLayout(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String componentViewLayout) throws ServiceCallException {
@@ -94,22 +96,9 @@ public class DefaultComponentEditorService implements ComponentEditorService {
         getComponentEditorServiceDelegate().setViewLayout(projectId, workflowId, nodeId, componentViewLayout);
     }
 
-    @Override
-    public String getConfigurationNodes(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws ServiceCallException {
-
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        return getComponentEditorServiceDelegate().getConfigurationNodes(projectId, workflowId, nodeId);
-    }
-
-    @Override
-    public String getConfigurationLayout(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId)
-        throws ServiceCallException {
-
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        return getComponentEditorServiceDelegate().getConfigurationLayout(projectId, workflowId, nodeId);
-    }
-
+    /**
+     * TODO: Remove from API
+     */
     @Override
     public void setConfigurationLayout(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
         final String componentConfigurationLayout) throws ServiceCallException {
@@ -131,5 +120,4 @@ public class DefaultComponentEditorService implements ComponentEditorService {
         }
         return m_componentEditorServiceDelegate;
     }
-
 }
