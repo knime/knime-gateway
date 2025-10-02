@@ -70,19 +70,6 @@ public interface ComponentEditorService extends GatewayService {
     ComponentLayoutEnt getLayout(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
         
     /**
-     * Sets configuration layout for the component editor.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a workflow which has the same format as a node-id.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     * @param componentConfigurationLayout 
-     *
-     * 
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     */
-    void setConfigurationLayout(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String componentConfigurationLayout)  throws ServiceExceptions.ServiceCallException;
-        
-    /**
      * Sets view and configuration layout for the component editor.
      *
      * @param projectId ID of the workflow-project.
@@ -94,18 +81,5 @@ public interface ComponentEditorService extends GatewayService {
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
     void setLayout(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, ComponentLayoutEnt componentLayout)  throws ServiceExceptions.ServiceCallException;
-        
-    /**
-     * Sets view layout for the component view editor.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a workflow which has the same format as a node-id.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     * @param componentViewLayout 
-     *
-     * 
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     */
-    void setViewLayout(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String componentViewLayout)  throws ServiceExceptions.ServiceCallException;
         
 }

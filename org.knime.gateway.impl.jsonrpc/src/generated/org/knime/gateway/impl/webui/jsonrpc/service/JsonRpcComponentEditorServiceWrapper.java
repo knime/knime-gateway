@@ -88,19 +88,6 @@ public class JsonRpcComponentEditorServiceWrapper implements ComponentEditorServ
      * {@inheritDoc}
      */
     @Override
-    @JsonRpcMethod(value = "setConfigurationLayout")
-    @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
-    })
-    public void setConfigurationLayout(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="componentConfigurationLayout") String componentConfigurationLayout)  throws ServiceExceptions.ServiceCallException {
-        m_service.get().setConfigurationLayout(projectId, workflowId, nodeId, componentConfigurationLayout);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
     @JsonRpcMethod(value = "setLayout")
     @JsonRpcErrors(value = {
         @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
@@ -108,19 +95,6 @@ public class JsonRpcComponentEditorServiceWrapper implements ComponentEditorServ
     })
     public void setLayout(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="componentLayout") ComponentLayoutEnt componentLayout)  throws ServiceExceptions.ServiceCallException {
         m_service.get().setLayout(projectId, workflowId, nodeId, componentLayout);    
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    @JsonRpcMethod(value = "setViewLayout")
-    @JsonRpcErrors(value = {
-        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
-            data = "ServiceCallException" /*per convention the data property contains the exception name*/)
-    })
-    public void setViewLayout(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId, @JsonRpcParam(value="componentViewLayout") String componentViewLayout)  throws ServiceExceptions.ServiceCallException {
-        m_service.get().setViewLayout(projectId, workflowId, nodeId, componentViewLayout);    
     }
 
 }

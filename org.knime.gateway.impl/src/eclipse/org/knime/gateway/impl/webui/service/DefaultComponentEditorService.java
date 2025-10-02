@@ -85,29 +85,6 @@ public class DefaultComponentEditorService implements ComponentEditorService {
         getComponentEditorServiceDelegate().setLayout(projectId, workflowId, nodeId, componentLayout);
     }
 
-    /**
-     * TODO: Remove from API
-     */
-    @Override
-    public void setViewLayout(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String componentViewLayout) throws ServiceCallException {
-
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        getComponentEditorServiceDelegate().setViewLayout(projectId, workflowId, nodeId, componentViewLayout);
-    }
-
-    /**
-     * TODO: Remove from API
-     */
-    @Override
-    public void setConfigurationLayout(final String projectId, final NodeIDEnt workflowId, final NodeIDEnt nodeId,
-        final String componentConfigurationLayout) throws ServiceCallException {
-
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        getComponentEditorServiceDelegate().setConfigurationLayout(projectId, workflowId, nodeId,
-            componentConfigurationLayout);
-    }
-
     private ComponentEditorService getComponentEditorServiceDelegate() {
         if (m_componentEditorServiceDelegate == null) {
             List<GatewayServiceFactory> serviceFactories =
