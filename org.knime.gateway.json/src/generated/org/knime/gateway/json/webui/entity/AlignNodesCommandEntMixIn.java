@@ -82,6 +82,10 @@ public interface AlignNodesCommandEntMixIn extends AlignNodesCommandEnt {
     @JsonProperty("direction")
     public DirectionEnum getDirection();
     
+    @Override
+    @JsonProperty("referenceNodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getReferenceNodeId();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -106,6 +110,10 @@ public interface AlignNodesCommandEntMixIn extends AlignNodesCommandEnt {
         @Override
         @JsonProperty("direction")
         public AlignNodesCommandEntMixInBuilder setDirection(final DirectionEnum direction);
+        
+        @Override
+        @JsonProperty("referenceNodeId")
+        public AlignNodesCommandEntMixInBuilder setReferenceNodeId(final org.knime.gateway.api.entity.NodeIDEnt referenceNodeId);
         
     }
 

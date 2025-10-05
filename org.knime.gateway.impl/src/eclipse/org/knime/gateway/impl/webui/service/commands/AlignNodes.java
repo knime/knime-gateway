@@ -78,9 +78,14 @@ final class AlignNodes extends AbstractWorkflowCommand {
 
     private final List<NodeIDEnt> m_nodeIds;
 
+    private final NodeIDEnt m_referenceNodeIDEnt;
+
+    private NodeID m_referenceNodeID;
+
     AlignNodes(final AlignNodesCommandEnt commandEnt) {
         m_direction = commandEnt.getDirection();
         m_nodeIds = commandEnt.getNodeIds();
+        m_referenceNodeIDEnt = commandEnt.getReferenceNodeId();
     }
 
     /**
@@ -104,7 +109,7 @@ final class AlignNodes extends AbstractWorkflowCommand {
      *
      * @param wfm The workflow manager to operate in
      * @return <code>true</code> if the command changed the position of nodes, <code>false</code> if the successful
-     * execution of the command did not change the position of nodes
+     *         execution of the command did not change the position of nodes
      */
     private boolean alignNodes(final WorkflowManager wfm) {
         if (m_nodeIds.isEmpty()) {
@@ -112,28 +117,16 @@ final class AlignNodes extends AbstractWorkflowCommand {
         }
 
         m_originalPositions = m_nodeIds.stream().map(id -> wfm.getNodeContainer(id.toNodeID(wfm)))
-                .collect(Collectors.toUnmodifiableMap(nc -> nc.getID(), AlignNodes::getPosition));
+            .collect(Collectors.toUnmodifiableMap(nc -> nc.getID(), AlignNodes::getPosition));
+
         if (areAlreadyAligned()) {
             return false;
         }
 
-        // y of leftmost node will be used when aligning horizontally
-        var leftMostY = m_originalPositions.values().stream()
-                .min(Comparator.comparingInt(Geometry.Point::x)).orElseThrow().y();
-        // x of topmost node will be used when aligning vertically
-        var topMostX = m_originalPositions.values().stream()
-                .min(Comparator.comparingInt(Geometry.Point::y)).orElseThrow().x();
-
-
-        switch (m_direction) { // NOSONAR switch over enum is acceptable
-            case HORIZONTAL -> m_originalPositions.forEach((nodeID, originalPosition) -> { // NOSONAR size of lambda
-                var newPosition = new Geometry.Point(originalPosition.x(), leftMostY);
-                setPosition(wfm.getNodeContainer(nodeID), newPosition);
-            });
-            case VERTICAL -> m_originalPositions.forEach((nodeID, originalPosition) -> { // NOSONAR size of lambda
-                var newPosition = new Geometry.Point(topMostX, originalPosition.y());
-                setPosition(wfm.getNodeContainer(nodeID), newPosition);
-            });
+        if (m_referenceNodeIDEnt == null) {
+            this.alignByBoundary(wfm);
+        } else {
+            this.alignByReference(wfm);
         }
 
         wfm.setDirty();
@@ -143,16 +136,121 @@ final class AlignNodes extends AbstractWorkflowCommand {
     private boolean areAlreadyAligned() {
         var somePosition = m_originalPositions.values().iterator().next();
         switch (m_direction) { // NOSONAR switch over enum is acceptable
-            case HORIZONTAL -> {
+            case LEFT, RIGHT, HORIZONTAL_CENTER -> {
                 return m_originalPositions.values().stream().map(Geometry.Point::y)
-                        .allMatch(y -> y == somePosition.y());
+                    .allMatch(x -> x == somePosition.x());
             }
-            case VERTICAL -> {
-                return m_originalPositions.values().stream().map(Geometry.Point::x)
-                        .allMatch(x -> x == somePosition.x());
+
+            case TOP, BOTTOM, VERTICAL_CENTER -> {
+                return m_originalPositions.values().stream().map(Geometry.Point::y)
+                    .allMatch(y -> y == somePosition.y());
             }
         }
         return false;
+    }
+
+    private void alignByReference(final WorkflowManager wfm) {
+        m_referenceNodeID = m_referenceNodeIDEnt.toNodeID(wfm);
+
+        switch (m_direction) {
+            case LEFT, RIGHT, HORIZONTAL_CENTER -> {
+                var nextX = m_originalPositions.get(this.m_referenceNodeID).x();
+
+                m_originalPositions.forEach((nodeID, originalPosition) -> {
+                    var newPosition = new Geometry.Point(nextX, originalPosition.y());
+                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
+                });
+            }
+
+            case TOP, BOTTOM, VERTICAL_CENTER -> {
+                var nextY = m_originalPositions.get(this.m_referenceNodeID).y();
+
+                m_originalPositions.forEach((nodeID, originalPosition) -> {
+                    var newPosition = new Geometry.Point(originalPosition.x(), nextY);
+                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
+                });
+            }
+        }
+    }
+
+    private void alignByBoundary(final WorkflowManager wfm) {
+        switch (m_direction) {
+            case LEFT -> {
+                var nextX = this.getMinX();
+
+                m_originalPositions.forEach((nodeID, originalPosition) -> {
+                    var newPosition = new Geometry.Point(nextX, originalPosition.y());
+                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
+                });
+            }
+
+            case RIGHT -> {
+                var nextX = this.getMaxX();
+
+                m_originalPositions.forEach((nodeID, originalPosition) -> {
+                    var newPosition = new Geometry.Point(nextX, originalPosition.y());
+                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
+                });
+            }
+
+            case TOP -> {
+                var nextY = this.getMinY();
+
+                m_originalPositions.forEach((nodeID, originalPosition) -> {
+                    var newPosition = new Geometry.Point(originalPosition.x(), nextY);
+                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
+                });
+            }
+
+            case BOTTOM -> {
+                var nextY = this.getMaxY();
+
+                m_originalPositions.forEach((nodeID, originalPosition) -> {
+                    var newPosition = new Geometry.Point(originalPosition.x(), nextY);
+                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
+                });
+            }
+
+            case VERTICAL_CENTER -> {
+                var minY = this.getMinY();
+                var maxY = this.getMaxY();
+
+                var centerY = (maxY - minY) / 2 + minY;
+
+                m_originalPositions.forEach((nodeID, originalPosition) -> {
+                    var newPosition = new Geometry.Point(originalPosition.x(), centerY);
+                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
+                });
+            }
+
+            case HORIZONTAL_CENTER -> {
+                var minX = this.getMinX();
+                var maxX = this.getMaxX();
+
+                var centerX = (maxX - minX) / 2 + minX;
+
+                m_originalPositions.forEach((nodeID, originalPosition) -> {
+                    var newPosition = new Geometry.Point(centerX, originalPosition.y());
+                    setPosition(wfm.getNodeContainer(nodeID), newPosition);
+                });
+            }
+        }
+    }
+
+    private int getMinX() {
+        return m_originalPositions.values().stream().min(Comparator.comparingInt(Geometry.Point::x)).orElseThrow().x();
+    }
+
+    private int getMaxX() {
+        return m_originalPositions.values().stream().max(Comparator.comparingInt(Geometry.Point::x)).orElseThrow().x();
+    }
+
+    private int getMinY() {
+        return m_originalPositions.values().stream().min(Comparator.comparingInt(Geometry.Point::y)).orElseThrow().y();
+    }
+
+    private int getMaxY() {
+        return m_originalPositions.values().stream().max(Comparator.comparingInt(Geometry.Point::y)).orElseThrow().y();
     }
 
     private static Geometry.Point getPosition(final NodeContainer node) {
@@ -165,7 +263,7 @@ final class AlignNodes extends AbstractWorkflowCommand {
         newBounds[0] = newLocation.x();
         newBounds[1] = newLocation.y();
         node.setUIInformation(NodeUIInformation.builder()
-                .setNodeLocation(newBounds[0], newBounds[1], newBounds[2], newBounds[3]).build());
+            .setNodeLocation(newBounds[0], newBounds[1], newBounds[2], newBounds[3]).build());
     }
 
     /**
@@ -178,8 +276,8 @@ final class AlignNodes extends AbstractWorkflowCommand {
             return;
         }
 
-        m_originalPositions.forEach((nodeID, originalPosition) ->
-                setPosition(wfm.getNodeContainer(nodeID), originalPosition));
+        m_originalPositions
+            .forEach((nodeID, originalPosition) -> setPosition(wfm.getNodeContainer(nodeID), originalPosition));
 
         wfm.setDirty();
     }

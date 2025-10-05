@@ -67,9 +67,17 @@ public interface AlignNodesCommandEnt extends GatewayEntity, WorkflowCommandEnt 
    * The direction in which the nodes are to be aligned
    */
   public enum DirectionEnum {
-    HORIZONTAL("horizontal"),
+    TOP("top"),
     
-    VERTICAL("vertical");
+    BOTTOM("bottom"),
+    
+    VERTICAL_CENTER("vertical-center"),
+    
+    LEFT("left"),
+    
+    RIGHT("right"),
+    
+    HORIZONTAL_CENTER("horizontal-center");
 
     private String value;
 
@@ -97,6 +105,12 @@ public interface AlignNodesCommandEnt extends GatewayEntity, WorkflowCommandEnt 
    **/
   public DirectionEnum getDirection();
 
+  /**
+   * Get referenceNodeId
+   * @return referenceNodeId 
+   **/
+  public org.knime.gateway.api.entity.NodeIDEnt getReferenceNodeId();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -105,6 +119,7 @@ public interface AlignNodesCommandEnt extends GatewayEntity, WorkflowCommandEnt 
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("nodeIds", Pair.create(getNodeIds(), e.getNodeIds()));
       valueConsumer.accept("direction", Pair.create(getDirection(), e.getDirection()));
+      valueConsumer.accept("referenceNodeId", Pair.create(getReferenceNodeId(), e.getReferenceNodeId()));
   }
 
     /**
@@ -135,6 +150,14 @@ public interface AlignNodesCommandEnt extends GatewayEntity, WorkflowCommandEnt 
          * @return this entity builder for chaining
          */
         AlignNodesCommandEntBuilder setDirection(DirectionEnum direction);
+        
+        /**
+   		 * Set referenceNodeId
+         * 
+         * @param referenceNodeId the property value,  
+         * @return this entity builder for chaining
+         */
+        AlignNodesCommandEntBuilder setReferenceNodeId(org.knime.gateway.api.entity.NodeIDEnt referenceNodeId);
         
         
         /**

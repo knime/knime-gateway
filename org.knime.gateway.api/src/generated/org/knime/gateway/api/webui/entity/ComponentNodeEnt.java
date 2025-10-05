@@ -185,7 +185,7 @@ public interface ComponentNodeEnt extends GatewayEntity, NodeEnt, ComponentNodeA
         ComponentNodeEntBuilder setDialogType(DialogTypeEnum dialogType);
         
         /**
-         * A change in this value signals that the configuration of a node has been changed.  Applies only to nodes under the UI-extensions, modern dialog framework. Only present for native nodes and components, not for metanodes. Only present if node is executed.
+         * A change in this value signals that the model settings of a node have changed.  Applies only to nodes under the UI-extensions, modern dialog framework. Only present for native nodes and components, not for metanodes. Only present if node is executed. Only present if node provides a view.
          * 
          * @param modelSettingsContentVersion the property value,  
          * @return this entity builder for chaining

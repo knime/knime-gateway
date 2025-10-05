@@ -56,6 +56,7 @@ import org.knime.gateway.api.webui.entity.AlignNodesCommandEnt;
  * @param kind
  * @param nodeIds
  * @param direction
+ * @param referenceNodeId
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,7 +64,8 @@ import org.knime.gateway.api.webui.entity.AlignNodesCommandEnt;
 public record DefaultAlignNodesCommandEnt(
     KindEnum kind,
     java.util.List<org.knime.gateway.api.entity.NodeIDEnt> nodeIds,
-    DirectionEnum direction) implements AlignNodesCommandEnt {
+    DirectionEnum direction,
+    org.knime.gateway.api.entity.NodeIDEnt referenceNodeId) implements AlignNodesCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -100,6 +102,11 @@ public record DefaultAlignNodesCommandEnt(
         return direction;
     }
     
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getReferenceNodeId() {
+        return referenceNodeId;
+    }
+    
     /**
      * A builder for {@link DefaultAlignNodesCommandEnt}.
      */
@@ -110,6 +117,8 @@ public record DefaultAlignNodesCommandEnt(
         private java.util.List<org.knime.gateway.api.entity.NodeIDEnt> m_nodeIds = new java.util.ArrayList<>();
 
         private DirectionEnum m_direction;
+
+        private org.knime.gateway.api.entity.NodeIDEnt m_referenceNodeId;
 
         @Override
         public DefaultAlignNodesCommandEntBuilder setKind(KindEnum kind) {
@@ -139,11 +148,18 @@ public record DefaultAlignNodesCommandEnt(
         }
 
         @Override
+        public DefaultAlignNodesCommandEntBuilder setReferenceNodeId(org.knime.gateway.api.entity.NodeIDEnt referenceNodeId) {
+             m_referenceNodeId = referenceNodeId;
+             return this;
+        }
+
+        @Override
         public DefaultAlignNodesCommandEnt build() {
             return new DefaultAlignNodesCommandEnt(
                 immutable(m_kind),
                 immutable(m_nodeIds),
-                immutable(m_direction));
+                immutable(m_direction),
+                immutable(m_referenceNodeId));
         }
     
     }
