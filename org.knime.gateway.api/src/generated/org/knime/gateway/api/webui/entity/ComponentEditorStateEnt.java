@@ -42,45 +42,95 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
-
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt;
-import org.knime.gateway.api.webui.entity.ComponentEditorStateEnt;
+
+import java.util.function.BiConsumer;
+
+import org.knime.core.util.Pair;
+
+import org.knime.gateway.api.entity.GatewayEntityBuilder;
+
+
+import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
+ * The state of the component editor.
  * 
- *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentEditorService extends GatewayService {
+public interface ComponentEditorStateEnt extends GatewayEntity {
+
+
+  /**
+   * Get config
+   * @return config , never <code>null</code>
+   **/
+  public ComponentEditorConfigEnt getConfig();
+
+  /**
+   * The nodes in the view layout.
+   * @return viewNodes , never <code>null</code>
+   **/
+  public java.util.List<String> getViewNodes();
+
+  /**
+   * The nodes in the configuration layout.
+   * @return configurationNodes , never <code>null</code>
+   **/
+  public java.util.List<String> getConfigurationNodes();
+
+
+  @Override
+  default void forEachPropertyValue(final GatewayEntity other,
+      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
+      var e = (ComponentEditorStateEnt)other;
+      valueConsumer.accept("config", Pair.create(getConfig(), e.getConfig()));
+      valueConsumer.accept("viewNodes", Pair.create(getViewNodes(), e.getViewNodes()));
+      valueConsumer.accept("configurationNodes", Pair.create(getConfigurationNodes(), e.getConfigurationNodes()));
+  }
 
     /**
-     * Sets component editor config.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a workflow which has the same format as a node-id.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     * @param config 
-     *
-     * 
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * The builder for the entity.
      */
-    void applyComponentEditorConfig(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, ComponentEditorConfigEnt config)  throws ServiceExceptions.ServiceCallException;
+    public interface ComponentEditorStateEntBuilder extends GatewayEntityBuilder<ComponentEditorStateEnt> {
+
+        /**
+   		 * Set config
+         * 
+         * @param config the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ComponentEditorStateEntBuilder setConfig(ComponentEditorConfigEnt config);
         
-    /**
-     * Returns the state required to render the component editor. 
-     *
-     * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a workflow which has the same format as a node-id.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     *
-     * @return the result
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     */
-    ComponentEditorStateEnt getComponentEditorState(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
+        /**
+         * The nodes in the view layout.
+         * 
+         * @param viewNodes the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ComponentEditorStateEntBuilder setViewNodes(java.util.List<String> viewNodes);
         
+        /**
+         * The nodes in the configuration layout.
+         * 
+         * @param configurationNodes the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ComponentEditorStateEntBuilder setConfigurationNodes(java.util.List<String> configurationNodes);
+        
+        
+        /**
+        * Creates the entity from the builder.
+        * 
+        * @return the entity
+        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
+        */
+        @Override
+        ComponentEditorStateEnt build();
+    
+    }
+
 }
