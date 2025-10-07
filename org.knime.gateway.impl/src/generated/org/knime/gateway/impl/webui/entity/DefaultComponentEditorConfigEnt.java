@@ -52,6 +52,7 @@ import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt;
 /**
  * A components editor configuration.
  *
+ * @param reportingEnabled
  * @param viewLayout
  * @param configurationLayout
  *
@@ -59,6 +60,7 @@ import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultComponentEditorConfigEnt(
+    Boolean reportingEnabled,
     String viewLayout,
     String configurationLayout) implements ComponentEditorConfigEnt {
 
@@ -80,6 +82,11 @@ public record DefaultComponentEditorConfigEnt(
     }
   
     @Override
+    public Boolean isReportingEnabled() {
+        return reportingEnabled;
+    }
+    
+    @Override
     public String getViewLayout() {
         return viewLayout;
     }
@@ -94,9 +101,17 @@ public record DefaultComponentEditorConfigEnt(
      */
     public static class DefaultComponentEditorConfigEntBuilder implements ComponentEditorConfigEntBuilder {
 
+        private Boolean m_reportingEnabled;
+
         private String m_viewLayout;
 
         private String m_configurationLayout;
+
+        @Override
+        public DefaultComponentEditorConfigEntBuilder setReportingEnabled(Boolean reportingEnabled) {
+             m_reportingEnabled = reportingEnabled;
+             return this;
+        }
 
         @Override
         public DefaultComponentEditorConfigEntBuilder setViewLayout(String viewLayout) {
@@ -119,6 +134,7 @@ public record DefaultComponentEditorConfigEnt(
         @Override
         public DefaultComponentEditorConfigEnt build() {
             return new DefaultComponentEditorConfigEnt(
+                immutable(m_reportingEnabled),
                 immutable(m_viewLayout),
                 immutable(m_configurationLayout));
         }

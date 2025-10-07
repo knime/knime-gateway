@@ -64,6 +64,12 @@ public interface ComponentEditorConfigEnt extends GatewayEntity {
 
 
   /**
+   * Whether reporting is enabled for the component. It has three states: - true: reporting is enabled - false: reporting is disabled - absent: reporting extension is not installed -&gt; option disabled
+   * @return reportingEnabled 
+   **/
+  public Boolean isReportingEnabled();
+
+  /**
    * The view layout of the component.
    * @return viewLayout , never <code>null</code>
    **/
@@ -80,6 +86,7 @@ public interface ComponentEditorConfigEnt extends GatewayEntity {
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (ComponentEditorConfigEnt)other;
+      valueConsumer.accept("reportingEnabled", Pair.create(isReportingEnabled(), e.isReportingEnabled()));
       valueConsumer.accept("viewLayout", Pair.create(getViewLayout(), e.getViewLayout()));
       valueConsumer.accept("configurationLayout", Pair.create(getConfigurationLayout(), e.getConfigurationLayout()));
   }
@@ -89,6 +96,14 @@ public interface ComponentEditorConfigEnt extends GatewayEntity {
      */
     public interface ComponentEditorConfigEntBuilder extends GatewayEntityBuilder<ComponentEditorConfigEnt> {
 
+        /**
+         * Whether reporting is enabled for the component. It has three states: - true: reporting is enabled - false: reporting is disabled - absent: reporting extension is not installed -&gt; option disabled
+         * 
+         * @param reportingEnabled the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentEditorConfigEntBuilder setReportingEnabled(Boolean reportingEnabled);
+        
         /**
          * The view layout of the component.
          * 

@@ -70,6 +70,10 @@ public interface ComponentEditorConfigEntMixIn extends ComponentEditorConfigEnt 
     public String getTypeID();
 
     @Override
+    @JsonProperty("reportingEnabled")
+    public Boolean isReportingEnabled();
+    
+    @Override
     @JsonProperty("viewLayout")
     public String getViewLayout();
     
@@ -90,6 +94,10 @@ public interface ComponentEditorConfigEntMixIn extends ComponentEditorConfigEnt 
         @Override
         public ComponentEditorConfigEntMixIn build();
     
+        @Override
+        @JsonProperty("reportingEnabled")
+        public ComponentEditorConfigEntMixInBuilder setReportingEnabled(final Boolean reportingEnabled);
+        
         @Override
         @JsonProperty("viewLayout")
         public ComponentEditorConfigEntMixInBuilder setViewLayout(final String viewLayout);
