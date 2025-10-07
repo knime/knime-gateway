@@ -42,45 +42,73 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
-
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import org.knime.gateway.api.webui.entity.ComponentEditorStateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultComponentEditorStateEnt.DefaultComponentEditorStateEntBuilder;
 
 /**
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentEditorService extends GatewayService {
+
+@JsonDeserialize(builder=DefaultComponentEditorStateEntBuilder.class)
+@JsonSerialize(as=ComponentEditorStateEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface ComponentEditorStateEntMixIn extends ComponentEditorStateEnt {
+
+    @Override
+    @JsonIgnore
+    public String getTypeID();
+
+    @Override
+    @JsonProperty("config")
+    public ComponentEditorConfigEnt getConfig();
+    
+    @Override
+    @JsonProperty("viewNodes")
+    public java.util.List<String> getViewNodes();
+    
+    @Override
+    @JsonProperty("configurationNodes")
+    public java.util.List<String> getConfigurationNodes();
+    
 
     /**
-     * Sets component editor config.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
      *
-     * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a workflow which has the same format as a node-id.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     * @param config 
-     *
-     * 
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @author Martin Horn, University of Konstanz
      */
-    void applyComponentEditorConfig(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, ComponentEditorConfigEnt config)  throws ServiceExceptions.ServiceCallException;
+
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface ComponentEditorStateEntMixInBuilder extends ComponentEditorStateEntBuilder {
+    
+        @Override
+        public ComponentEditorStateEntMixIn build();
+    
+        @Override
+        @JsonProperty("config")
+        public ComponentEditorStateEntMixInBuilder setConfig(final ComponentEditorConfigEnt config);
         
-    /**
-     * Returns the state required to render the component editor. 
-     *
-     * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a workflow which has the same format as a node-id.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     *
-     * @return the result
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
-     */
-    ComponentEditorStateEnt getComponentEditorState(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
+        @Override
+        @JsonProperty("viewNodes")
+        public ComponentEditorStateEntMixInBuilder setViewNodes(final java.util.List<String> viewNodes);
         
+        @Override
+        @JsonProperty("configurationNodes")
+        public ComponentEditorStateEntMixInBuilder setConfigurationNodes(final java.util.List<String> configurationNodes);
+        
+    }
+
+
 }
+

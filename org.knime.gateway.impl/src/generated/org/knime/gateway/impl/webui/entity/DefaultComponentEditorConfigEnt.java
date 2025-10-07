@@ -42,45 +42,87 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.service;
+package org.knime.gateway.impl.webui.entity;
 
-import org.knime.gateway.api.service.GatewayService;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import static org.knime.gateway.api.util.EntityUtil.immutable;
+
 
 import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt;
-import org.knime.gateway.api.webui.entity.ComponentEditorStateEnt;
 
 /**
- * 
+ * A components editor configuration.
+ *
+ * @param viewLayout
+ * @param configurationLayout
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentEditorService extends GatewayService {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultComponentEditorConfigEnt(
+    String viewLayout,
+    String configurationLayout) implements ComponentEditorConfigEnt {
 
     /**
-     * Sets component editor config.
-     *
-     * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a workflow which has the same format as a node-id.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     * @param config 
-     *
-     * 
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * Validation for required parameters not being {@code null}.
      */
-    void applyComponentEditorConfig(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, ComponentEditorConfigEnt config)  throws ServiceExceptions.ServiceCallException;
-        
+    public DefaultComponentEditorConfigEnt {
+        if(viewLayout == null) {
+            throw new IllegalArgumentException("<viewLayout> must not be null.");
+        }
+        if(configurationLayout == null) {
+            throw new IllegalArgumentException("<configurationLayout> must not be null.");
+        }
+    }
+
+    @Override
+    public String getTypeID() {
+        return "ComponentEditorConfig";
+    }
+  
+    @Override
+    public String getViewLayout() {
+        return viewLayout;
+    }
+    
+    @Override
+    public String getConfigurationLayout() {
+        return configurationLayout;
+    }
+    
     /**
-     * Returns the state required to render the component editor. 
-     *
-     * @param projectId ID of the workflow-project.
-     * @param workflowId The ID of a workflow which has the same format as a node-id.
-     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
-     *
-     * @return the result
-     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * A builder for {@link DefaultComponentEditorConfigEnt}.
      */
-    ComponentEditorStateEnt getComponentEditorState(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
-        
+    public static class DefaultComponentEditorConfigEntBuilder implements ComponentEditorConfigEntBuilder {
+
+        private String m_viewLayout;
+
+        private String m_configurationLayout;
+
+        @Override
+        public DefaultComponentEditorConfigEntBuilder setViewLayout(String viewLayout) {
+             if(viewLayout == null) {
+                 throw new IllegalArgumentException("<viewLayout> must not be null.");
+             }
+             m_viewLayout = viewLayout;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentEditorConfigEntBuilder setConfigurationLayout(String configurationLayout) {
+             if(configurationLayout == null) {
+                 throw new IllegalArgumentException("<configurationLayout> must not be null.");
+             }
+             m_configurationLayout = configurationLayout;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentEditorConfigEnt build() {
+            return new DefaultComponentEditorConfigEnt(
+                immutable(m_viewLayout),
+                immutable(m_configurationLayout));
+        }
+    
+    }
+
 }

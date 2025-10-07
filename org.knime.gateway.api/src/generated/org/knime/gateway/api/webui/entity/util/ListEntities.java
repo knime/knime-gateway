@@ -70,6 +70,8 @@ import org.knime.gateway.api.webui.entity.CategoryMetadataEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
+import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt;
+import org.knime.gateway.api.webui.entity.ComponentEditorStateEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
@@ -254,6 +256,8 @@ public class ListEntities {
         res.add(CollapseCommandEnt.class);
         res.add(CollapseResultEnt.class);
         res.add(CommandResultEnt.class);
+        res.add(ComponentEditorConfigEnt.class);
+        res.add(ComponentEditorStateEnt.class);
         res.add(ComponentNodeAndDescriptionEnt.class);
         res.add(ComponentNodeDescriptionEnt.class);
         res.add(ComponentNodeEnt.class);
@@ -423,6 +427,8 @@ public class ListEntities {
         res.add(CollapseCommandEnt.CollapseCommandEntBuilder.class);
         res.add(CollapseResultEnt.CollapseResultEntBuilder.class);
         res.add(CommandResultEnt.CommandResultEntBuilder.class);
+        res.add(ComponentEditorConfigEnt.ComponentEditorConfigEntBuilder.class);
+        res.add(ComponentEditorStateEnt.ComponentEditorStateEntBuilder.class);
         res.add(ComponentNodeAndDescriptionEnt.ComponentNodeAndDescriptionEntBuilder.class);
         res.add(ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder.class);
         res.add(ComponentNodeEnt.ComponentNodeEntBuilder.class);
