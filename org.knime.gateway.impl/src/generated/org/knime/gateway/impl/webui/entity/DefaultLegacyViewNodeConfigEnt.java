@@ -46,120 +46,81 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+
 import org.knime.gateway.api.webui.entity.LegacyViewNodeConfigEnt;
 
-import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt;
-
 /**
- * A components editor configuration.
+ * Configuration of a legacy view node.
  *
- * @param reporting
- * @param viewLayout
- * @param configurationLayout
- * @param legacyViewNodes
+ * @param nodeId
+ * @param availableInView
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultComponentEditorConfigEnt(
-    ReportingEnum reporting,
-    String viewLayout,
-    String configurationLayout,
-    java.util.List<LegacyViewNodeConfigEnt> legacyViewNodes) implements ComponentEditorConfigEnt {
+public record DefaultLegacyViewNodeConfigEnt(
+    String nodeId,
+    Boolean availableInView) implements LegacyViewNodeConfigEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultComponentEditorConfigEnt {
-        if(reporting == null) {
-            throw new IllegalArgumentException("<reporting> must not be null.");
+    public DefaultLegacyViewNodeConfigEnt {
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
         }
-        if(viewLayout == null) {
-            throw new IllegalArgumentException("<viewLayout> must not be null.");
-        }
-        if(configurationLayout == null) {
-            throw new IllegalArgumentException("<configurationLayout> must not be null.");
+        if(availableInView == null) {
+            throw new IllegalArgumentException("<availableInView> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "ComponentEditorConfig";
+        return "LegacyViewNodeConfig";
     }
   
     @Override
-    public ReportingEnum getReporting() {
-        return reporting;
+    public String getNodeId() {
+        return nodeId;
     }
     
     @Override
-    public String getViewLayout() {
-        return viewLayout;
-    }
-    
-    @Override
-    public String getConfigurationLayout() {
-        return configurationLayout;
-    }
-    
-    @Override
-    public java.util.List<LegacyViewNodeConfigEnt> getLegacyViewNodes() {
-        return legacyViewNodes;
+    public Boolean isAvailableInView() {
+        return availableInView;
     }
     
     /**
-     * A builder for {@link DefaultComponentEditorConfigEnt}.
+     * A builder for {@link DefaultLegacyViewNodeConfigEnt}.
      */
-    public static class DefaultComponentEditorConfigEntBuilder implements ComponentEditorConfigEntBuilder {
+    public static class DefaultLegacyViewNodeConfigEntBuilder implements LegacyViewNodeConfigEntBuilder {
 
-        private ReportingEnum m_reporting;
+        private String m_nodeId;
 
-        private String m_viewLayout;
-
-        private String m_configurationLayout;
-
-        private java.util.List<LegacyViewNodeConfigEnt> m_legacyViewNodes;
+        private Boolean m_availableInView;
 
         @Override
-        public DefaultComponentEditorConfigEntBuilder setReporting(ReportingEnum reporting) {
-             if(reporting == null) {
-                 throw new IllegalArgumentException("<reporting> must not be null.");
+        public DefaultLegacyViewNodeConfigEntBuilder setNodeId(String nodeId) {
+             if(nodeId == null) {
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
              }
-             m_reporting = reporting;
+             m_nodeId = nodeId;
              return this;
         }
 
         @Override
-        public DefaultComponentEditorConfigEntBuilder setViewLayout(String viewLayout) {
-             if(viewLayout == null) {
-                 throw new IllegalArgumentException("<viewLayout> must not be null.");
+        public DefaultLegacyViewNodeConfigEntBuilder setAvailableInView(Boolean availableInView) {
+             if(availableInView == null) {
+                 throw new IllegalArgumentException("<availableInView> must not be null.");
              }
-             m_viewLayout = viewLayout;
+             m_availableInView = availableInView;
              return this;
         }
 
         @Override
-        public DefaultComponentEditorConfigEntBuilder setConfigurationLayout(String configurationLayout) {
-             if(configurationLayout == null) {
-                 throw new IllegalArgumentException("<configurationLayout> must not be null.");
-             }
-             m_configurationLayout = configurationLayout;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentEditorConfigEntBuilder setLegacyViewNodes(java.util.List<LegacyViewNodeConfigEnt> legacyViewNodes) {
-             m_legacyViewNodes = legacyViewNodes;
-             return this;
-        }
-
-        @Override
-        public DefaultComponentEditorConfigEnt build() {
-            return new DefaultComponentEditorConfigEnt(
-                immutable(m_reporting),
-                immutable(m_viewLayout),
-                immutable(m_configurationLayout),
-                immutable(m_legacyViewNodes));
+        public DefaultLegacyViewNodeConfigEnt build() {
+            return new DefaultLegacyViewNodeConfigEnt(
+                immutable(m_nodeId),
+                immutable(m_availableInView));
         }
     
     }

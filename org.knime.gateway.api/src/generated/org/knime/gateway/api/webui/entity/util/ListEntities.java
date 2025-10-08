@@ -114,6 +114,7 @@ import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiUiStringsEnt;
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 import org.knime.gateway.api.webui.entity.KaiWelcomeMessagesEnt;
+import org.knime.gateway.api.webui.entity.LegacyViewNodeConfigEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
@@ -300,6 +301,7 @@ public class ListEntities {
         res.add(KaiUiStringsEnt.class);
         res.add(KaiUsageEnt.class);
         res.add(KaiWelcomeMessagesEnt.class);
+        res.add(LegacyViewNodeConfigEnt.class);
         res.add(LinkEnt.class);
         res.add(LoopInfoEnt.class);
         res.add(MetaNodeEnt.class);
@@ -471,6 +473,7 @@ public class ListEntities {
         res.add(KaiUiStringsEnt.KaiUiStringsEntBuilder.class);
         res.add(KaiUsageEnt.KaiUsageEntBuilder.class);
         res.add(KaiWelcomeMessagesEnt.KaiWelcomeMessagesEntBuilder.class);
+        res.add(LegacyViewNodeConfigEnt.LegacyViewNodeConfigEntBuilder.class);
         res.add(LinkEnt.LinkEntBuilder.class);
         res.add(LoopInfoEnt.LoopInfoEntBuilder.class);
         res.add(MetaNodeEnt.MetaNodeEntBuilder.class);

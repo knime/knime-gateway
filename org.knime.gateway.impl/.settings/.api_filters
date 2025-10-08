@@ -354,6 +354,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultLegacyViewNodeConfigEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultLegacyViewNodeConfigEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultLegacyViewNodeConfigEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultMetaNodeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt">
         <filter comment="AP-4024" id="338722907">
             <message_arguments>

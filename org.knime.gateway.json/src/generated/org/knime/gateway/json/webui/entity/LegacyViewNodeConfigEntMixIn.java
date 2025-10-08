@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.LegacyViewNodeConfigEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentEditorConfigEnt.DefaultComponentEditorConfigEntBuilder;
+import org.knime.gateway.api.webui.entity.LegacyViewNodeConfigEnt;
+import org.knime.gateway.impl.webui.entity.DefaultLegacyViewNodeConfigEnt.DefaultLegacyViewNodeConfigEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,30 +60,22 @@ import org.knime.gateway.impl.webui.entity.DefaultComponentEditorConfigEnt.Defau
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultComponentEditorConfigEntBuilder.class)
-@JsonSerialize(as=ComponentEditorConfigEnt.class)
+@JsonDeserialize(builder=DefaultLegacyViewNodeConfigEntBuilder.class)
+@JsonSerialize(as=LegacyViewNodeConfigEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ComponentEditorConfigEntMixIn extends ComponentEditorConfigEnt {
+public interface LegacyViewNodeConfigEntMixIn extends LegacyViewNodeConfigEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("reporting")
-    public ReportingEnum getReporting();
+    @JsonProperty("nodeId")
+    public String getNodeId();
     
     @Override
-    @JsonProperty("viewLayout")
-    public String getViewLayout();
-    
-    @Override
-    @JsonProperty("configurationLayout")
-    public String getConfigurationLayout();
-    
-    @Override
-    @JsonProperty("legacyViewNodes")
-    public java.util.List<LegacyViewNodeConfigEnt> getLegacyViewNodes();
+    @JsonProperty("availableInView")
+    public Boolean isAvailableInView();
     
 
     /**
@@ -94,26 +85,18 @@ public interface ComponentEditorConfigEntMixIn extends ComponentEditorConfigEnt 
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ComponentEditorConfigEntMixInBuilder extends ComponentEditorConfigEntBuilder {
+    public static interface LegacyViewNodeConfigEntMixInBuilder extends LegacyViewNodeConfigEntBuilder {
     
         @Override
-        public ComponentEditorConfigEntMixIn build();
+        public LegacyViewNodeConfigEntMixIn build();
     
         @Override
-        @JsonProperty("reporting")
-        public ComponentEditorConfigEntMixInBuilder setReporting(final ReportingEnum reporting);
+        @JsonProperty("nodeId")
+        public LegacyViewNodeConfigEntMixInBuilder setNodeId(final String nodeId);
         
         @Override
-        @JsonProperty("viewLayout")
-        public ComponentEditorConfigEntMixInBuilder setViewLayout(final String viewLayout);
-        
-        @Override
-        @JsonProperty("configurationLayout")
-        public ComponentEditorConfigEntMixInBuilder setConfigurationLayout(final String configurationLayout);
-        
-        @Override
-        @JsonProperty("legacyViewNodes")
-        public ComponentEditorConfigEntMixInBuilder setLegacyViewNodes(final java.util.List<LegacyViewNodeConfigEnt> legacyViewNodes);
+        @JsonProperty("availableInView")
+        public LegacyViewNodeConfigEntMixInBuilder setAvailableInView(final Boolean availableInView);
         
     }
 

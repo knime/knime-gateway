@@ -44,7 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.LegacyViewNodeConfigEnt;
 
 import java.util.function.BiConsumer;
 
@@ -56,108 +55,55 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A components editor configuration.
+ * Configuration of a legacy view node.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ComponentEditorConfigEnt extends GatewayEntity {
-
-  /**
-   * Whether reporting is enabled for the component or not available.
-   */
-  public enum ReportingEnum {
-    ENABLED("enabled"),
-    
-    DISABLED("disabled"),
-    
-    NOT_AVAILABLE("not-available");
-
-    private String value;
-
-    ReportingEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface LegacyViewNodeConfigEnt extends GatewayEntity {
 
 
   /**
-   * Whether reporting is enabled for the component or not available.
-   * @return reporting , never <code>null</code>
+   * The node ID of the legacy view node.
+   * @return nodeId , never <code>null</code>
    **/
-  public ReportingEnum getReporting();
+  public String getNodeId();
 
   /**
-   * The view layout of the component.
-   * @return viewLayout , never <code>null</code>
+   * Whether the legacy view node is available in the view layout.
+   * @return availableInView , never <code>null</code>
    **/
-  public String getViewLayout();
-
-  /**
-   * The configuration layout of the component.
-   * @return configurationLayout , never <code>null</code>
-   **/
-  public String getConfigurationLayout();
-
-  /**
-   * Properties of legacy view nodes to update.
-   * @return legacyViewNodes 
-   **/
-  public java.util.List<LegacyViewNodeConfigEnt> getLegacyViewNodes();
+  public Boolean isAvailableInView();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ComponentEditorConfigEnt)other;
-      valueConsumer.accept("reporting", Pair.create(getReporting(), e.getReporting()));
-      valueConsumer.accept("viewLayout", Pair.create(getViewLayout(), e.getViewLayout()));
-      valueConsumer.accept("configurationLayout", Pair.create(getConfigurationLayout(), e.getConfigurationLayout()));
-      valueConsumer.accept("legacyViewNodes", Pair.create(getLegacyViewNodes(), e.getLegacyViewNodes()));
+      var e = (LegacyViewNodeConfigEnt)other;
+      valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
+      valueConsumer.accept("availableInView", Pair.create(isAvailableInView(), e.isAvailableInView()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface ComponentEditorConfigEntBuilder extends GatewayEntityBuilder<ComponentEditorConfigEnt> {
+    public interface LegacyViewNodeConfigEntBuilder extends GatewayEntityBuilder<LegacyViewNodeConfigEnt> {
 
         /**
-         * Whether reporting is enabled for the component or not available.
+         * The node ID of the legacy view node.
          * 
-         * @param reporting the property value, NOT <code>null</code>! 
+         * @param nodeId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentEditorConfigEntBuilder setReporting(ReportingEnum reporting);
+        LegacyViewNodeConfigEntBuilder setNodeId(String nodeId);
         
         /**
-         * The view layout of the component.
+         * Whether the legacy view node is available in the view layout.
          * 
-         * @param viewLayout the property value, NOT <code>null</code>! 
+         * @param availableInView the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentEditorConfigEntBuilder setViewLayout(String viewLayout);
-        
-        /**
-         * The configuration layout of the component.
-         * 
-         * @param configurationLayout the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ComponentEditorConfigEntBuilder setConfigurationLayout(String configurationLayout);
-        
-        /**
-         * Properties of legacy view nodes to update.
-         * 
-         * @param legacyViewNodes the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentEditorConfigEntBuilder setLegacyViewNodes(java.util.List<LegacyViewNodeConfigEnt> legacyViewNodes);
+        LegacyViewNodeConfigEntBuilder setAvailableInView(Boolean availableInView);
         
         
         /**
@@ -167,7 +113,7 @@ public interface ComponentEditorConfigEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ComponentEditorConfigEnt build();
+        LegacyViewNodeConfigEnt build();
     
     }
 

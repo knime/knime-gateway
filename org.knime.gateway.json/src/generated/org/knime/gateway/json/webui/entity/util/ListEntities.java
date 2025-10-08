@@ -114,6 +114,7 @@ import org.knime.gateway.json.webui.entity.KaiRequestEntMixIn;
 import org.knime.gateway.json.webui.entity.KaiUiStringsEntMixIn;
 import org.knime.gateway.json.webui.entity.KaiUsageEntMixIn;
 import org.knime.gateway.json.webui.entity.KaiWelcomeMessagesEntMixIn;
+import org.knime.gateway.json.webui.entity.LegacyViewNodeConfigEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkEntMixIn;
 import org.knime.gateway.json.webui.entity.LoopInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeEntMixIn;
@@ -299,6 +300,7 @@ public class ListEntities {
         res.add(KaiUiStringsEntMixIn.class);
         res.add(KaiUsageEntMixIn.class);
         res.add(KaiWelcomeMessagesEntMixIn.class);
+        res.add(LegacyViewNodeConfigEntMixIn.class);
         res.add(LinkEntMixIn.class);
         res.add(LoopInfoEntMixIn.class);
         res.add(MetaNodeEntMixIn.class);
@@ -470,6 +472,7 @@ public class ListEntities {
         res.add(KaiUiStringsEntMixIn.KaiUiStringsEntMixInBuilder.class);
         res.add(KaiUsageEntMixIn.KaiUsageEntMixInBuilder.class);
         res.add(KaiWelcomeMessagesEntMixIn.KaiWelcomeMessagesEntMixInBuilder.class);
+        res.add(LegacyViewNodeConfigEntMixIn.LegacyViewNodeConfigEntMixInBuilder.class);
         res.add(LinkEntMixIn.LinkEntMixInBuilder.class);
         res.add(LoopInfoEntMixIn.LoopInfoEntMixInBuilder.class);
         res.add(MetaNodeEntMixIn.MetaNodeEntMixInBuilder.class);
