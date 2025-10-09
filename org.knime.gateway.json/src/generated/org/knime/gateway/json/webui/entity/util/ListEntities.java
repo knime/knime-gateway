@@ -70,8 +70,6 @@ import org.knime.gateway.json.webui.entity.CategoryMetadataEntMixIn;
 import org.knime.gateway.json.webui.entity.CollapseCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.CollapseResultEntMixIn;
 import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
-import org.knime.gateway.json.webui.entity.ComponentEditorConfigEntMixIn;
-import org.knime.gateway.json.webui.entity.ComponentEditorStateEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeAndDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeDescriptionEntMixIn;
 import org.knime.gateway.json.webui.entity.ComponentNodeEntMixIn;
@@ -255,8 +253,6 @@ public class ListEntities {
         res.add(CollapseCommandEntMixIn.class);
         res.add(CollapseResultEntMixIn.class);
         res.add(CommandResultEntMixIn.class);
-        res.add(ComponentEditorConfigEntMixIn.class);
-        res.add(ComponentEditorStateEntMixIn.class);
         res.add(ComponentNodeAndDescriptionEntMixIn.class);
         res.add(ComponentNodeDescriptionEntMixIn.class);
         res.add(ComponentNodeEntMixIn.class);
@@ -426,8 +422,6 @@ public class ListEntities {
         res.add(CollapseCommandEntMixIn.CollapseCommandEntMixInBuilder.class);
         res.add(CollapseResultEntMixIn.CollapseResultEntMixInBuilder.class);
         res.add(CommandResultEntMixIn.CommandResultEntMixInBuilder.class);
-        res.add(ComponentEditorConfigEntMixIn.ComponentEditorConfigEntMixInBuilder.class);
-        res.add(ComponentEditorStateEntMixIn.ComponentEditorStateEntMixInBuilder.class);
         res.add(ComponentNodeAndDescriptionEntMixIn.ComponentNodeAndDescriptionEntMixInBuilder.class);
         res.add(ComponentNodeDescriptionEntMixIn.ComponentNodeDescriptionEntMixInBuilder.class);
         res.add(ComponentNodeEntMixIn.ComponentNodeEntMixInBuilder.class);

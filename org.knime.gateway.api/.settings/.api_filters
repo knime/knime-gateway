@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.api" version="2">
-    <resource path="META-INF/MANIFEST.MF">
-        <filter id="923795461">
-            <message_arguments>
-                <message_argument value="5.8.0"/>
-                <message_argument value="5.7.0"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/eclipse/org/knime/gateway/api/service/GatewayException.java" type="org.knime.gateway.api.service.GatewayException">
         <filter id="338792546">
             <message_arguments>
@@ -20,20 +12,6 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="buildSpaceGroupEnt(String, String, SpaceGroupEnt.TypeEnum, List&lt;SpaceEnt&gt;, boolean)"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentEditorConfigEnt.java" type="org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentEditorStateEnt.java" type="org.knime.gateway.api.webui.entity.ComponentEditorStateEnt">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.ComponentEditorStateEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -261,66 +239,6 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setCanSoftDelete(Boolean)"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/service/ComponentEditorService.java" type="org.knime.gateway.api.webui.service.ComponentEditorService">
-        <filter id="403804204">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.service.ComponentEditorService"/>
-                <message_argument value="applyComponentEditorConfig(String, NodeIDEnt, NodeIDEnt, ComponentEditorConfigEnt)"/>
-            </message_arguments>
-        </filter>
-        <filter id="403804204">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.service.ComponentEditorService"/>
-                <message_argument value="getComponentEditorState(String, NodeIDEnt, NodeIDEnt)"/>
-            </message_arguments>
-        </filter>
-        <filter id="405901410">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.service.ComponentEditorService"/>
-                <message_argument value="getConfigurationLayout(String, NodeIDEnt, NodeIDEnt)"/>
-            </message_arguments>
-        </filter>
-        <filter id="405901410">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.service.ComponentEditorService"/>
-                <message_argument value="getConfigurationNodes(String, NodeIDEnt, NodeIDEnt)"/>
-            </message_arguments>
-        </filter>
-        <filter id="405901410">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.service.ComponentEditorService"/>
-                <message_argument value="getViewLayout(String, NodeIDEnt, NodeIDEnt)"/>
-            </message_arguments>
-        </filter>
-        <filter id="405901410">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.service.ComponentEditorService"/>
-                <message_argument value="getViewNodes(String, NodeIDEnt, NodeIDEnt)"/>
-            </message_arguments>
-        </filter>
-        <filter id="405901410">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.service.ComponentEditorService"/>
-                <message_argument value="setConfigurationLayout(String, NodeIDEnt, NodeIDEnt, String)"/>
-            </message_arguments>
-        </filter>
-        <filter id="405901410">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.service.ComponentEditorService"/>
-                <message_argument value="setViewLayout(String, NodeIDEnt, NodeIDEnt, String)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1211105284">
-            <message_arguments>
-                <message_argument value="applyComponentEditorConfig(String, NodeIDEnt, NodeIDEnt, ComponentEditorConfigEnt)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1211105284">
-            <message_arguments>
-                <message_argument value="getComponentEditorState(String, NodeIDEnt, NodeIDEnt)"/>
             </message_arguments>
         </filter>
     </resource>

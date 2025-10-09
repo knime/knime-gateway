@@ -96,10 +96,6 @@ import org.knime.gateway.api.webui.entity.CollapseResultEnt.CollapseResultEntBui
 import org.knime.gateway.impl.webui.entity.DefaultCollapseResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.CommandResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
-import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt.ComponentEditorConfigEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultComponentEditorConfigEnt;
-import org.knime.gateway.api.webui.entity.ComponentEditorStateEnt.ComponentEditorStateEntBuilder;
-import org.knime.gateway.impl.webui.entity.DefaultComponentEditorStateEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeAndDescriptionEnt.ComponentNodeAndDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentNodeAndDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt.ComponentNodeDescriptionEntBuilder;
@@ -467,12 +463,6 @@ public class Interface2ImplMap {
         }        
         if(clazz == CommandResultEntBuilder.class) {
             return (B)new DefaultCommandResultEnt.DefaultCommandResultEntBuilder();
-        }        
-        if(clazz == ComponentEditorConfigEntBuilder.class) {
-            return (B)new DefaultComponentEditorConfigEnt.DefaultComponentEditorConfigEntBuilder();
-        }        
-        if(clazz == ComponentEditorStateEntBuilder.class) {
-            return (B)new DefaultComponentEditorStateEnt.DefaultComponentEditorStateEntBuilder();
         }        
         if(clazz == ComponentNodeAndDescriptionEntBuilder.class) {
             return (B)new DefaultComponentNodeAndDescriptionEnt.DefaultComponentNodeAndDescriptionEntBuilder();
