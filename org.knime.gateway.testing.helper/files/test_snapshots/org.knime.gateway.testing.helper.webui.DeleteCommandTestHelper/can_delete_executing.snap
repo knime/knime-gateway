@@ -150,6 +150,7 @@
         "canCollapse" : "false",
         "canDelete" : false,
         "canExecute" : false,
+        "canOpenLegacyFlowVariableDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -161,7 +162,7 @@
         },
         "textAlign" : "center"
       },
-      "dialogType" : "swing",
+      "dialogType" : "web",
       "hasView" : false,
       "id" : "root:2",
       "inPorts" : [ {
@@ -179,6 +180,7 @@
         "optional" : true,
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
+      "inputContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "kind" : "node",
       "outPorts" : [ {
         "canRemove" : false,
@@ -212,6 +214,7 @@
         "canCollapse" : "false",
         "canDelete" : false,
         "canExecute" : false,
+        "canOpenLegacyFlowVariableDialog" : true,
         "canReset" : false
       },
       "annotation" : {
@@ -223,7 +226,7 @@
         },
         "textAlign" : "center"
       },
-      "dialogType" : "swing",
+      "dialogType" : "web",
       "hasView" : false,
       "id" : "root:3",
       "inPorts" : [ {
@@ -241,6 +244,7 @@
         "optional" : true,
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
+      "inputContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "kind" : "node",
       "outPorts" : [ {
         "canRemove" : false,

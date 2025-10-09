@@ -307,9 +307,10 @@
         "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : true,
+        "canOpenLegacyFlowVariableDialog" : true,
         "canReset" : false
       },
-      "dialogType" : "swing",
+      "dialogType" : "web",
       "hasView" : false,
       "id" : "root:9",
       "inPorts" : [ {
@@ -327,6 +328,7 @@
         "optional" : true,
         "typeId" : "org.knime.core.node.port.flowvariable.FlowVariablePortObject"
       } ],
+      "inputContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "kind" : "node",
       "outPorts" : [ {
         "canRemove" : false,
