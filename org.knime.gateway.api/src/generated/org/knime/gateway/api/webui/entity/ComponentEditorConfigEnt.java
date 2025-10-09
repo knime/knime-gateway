@@ -62,12 +62,35 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface ComponentEditorConfigEnt extends GatewayEntity {
 
+  /**
+   * Whether reporting is enabled for the component or not available.
+   */
+  public enum ReportingEnum {
+    ENABLED("enabled"),
+    
+    DISABLED("disabled"),
+    
+    NOT_AVAILABLE("not-available");
+
+    private String value;
+
+    ReportingEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
-   * Whether reporting is enabled for the component. It has three states: - true: reporting is enabled - false: reporting is disabled - absent: reporting extension is not installed -&gt; option disabled
-   * @return reportingEnabled 
+   * Whether reporting is enabled for the component or not available.
+   * @return reporting , never <code>null</code>
    **/
-  public Boolean isReportingEnabled();
+  public ReportingEnum getReporting();
 
   /**
    * The view layout of the component.
@@ -86,7 +109,7 @@ public interface ComponentEditorConfigEnt extends GatewayEntity {
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (ComponentEditorConfigEnt)other;
-      valueConsumer.accept("reportingEnabled", Pair.create(isReportingEnabled(), e.isReportingEnabled()));
+      valueConsumer.accept("reporting", Pair.create(getReporting(), e.getReporting()));
       valueConsumer.accept("viewLayout", Pair.create(getViewLayout(), e.getViewLayout()));
       valueConsumer.accept("configurationLayout", Pair.create(getConfigurationLayout(), e.getConfigurationLayout()));
   }
@@ -97,12 +120,12 @@ public interface ComponentEditorConfigEnt extends GatewayEntity {
     public interface ComponentEditorConfigEntBuilder extends GatewayEntityBuilder<ComponentEditorConfigEnt> {
 
         /**
-         * Whether reporting is enabled for the component. It has three states: - true: reporting is enabled - false: reporting is disabled - absent: reporting extension is not installed -&gt; option disabled
+         * Whether reporting is enabled for the component or not available.
          * 
-         * @param reportingEnabled the property value,  
+         * @param reporting the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ComponentEditorConfigEntBuilder setReportingEnabled(Boolean reportingEnabled);
+        ComponentEditorConfigEntBuilder setReporting(ReportingEnum reporting);
         
         /**
          * The view layout of the component.

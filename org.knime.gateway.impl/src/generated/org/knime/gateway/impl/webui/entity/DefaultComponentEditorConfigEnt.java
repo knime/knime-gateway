@@ -52,7 +52,7 @@ import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt;
 /**
  * A components editor configuration.
  *
- * @param reportingEnabled
+ * @param reporting
  * @param viewLayout
  * @param configurationLayout
  *
@@ -60,7 +60,7 @@ import org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultComponentEditorConfigEnt(
-    Boolean reportingEnabled,
+    ReportingEnum reporting,
     String viewLayout,
     String configurationLayout) implements ComponentEditorConfigEnt {
 
@@ -68,6 +68,9 @@ public record DefaultComponentEditorConfigEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultComponentEditorConfigEnt {
+        if(reporting == null) {
+            throw new IllegalArgumentException("<reporting> must not be null.");
+        }
         if(viewLayout == null) {
             throw new IllegalArgumentException("<viewLayout> must not be null.");
         }
@@ -82,8 +85,8 @@ public record DefaultComponentEditorConfigEnt(
     }
   
     @Override
-    public Boolean isReportingEnabled() {
-        return reportingEnabled;
+    public ReportingEnum getReporting() {
+        return reporting;
     }
     
     @Override
@@ -101,15 +104,18 @@ public record DefaultComponentEditorConfigEnt(
      */
     public static class DefaultComponentEditorConfigEntBuilder implements ComponentEditorConfigEntBuilder {
 
-        private Boolean m_reportingEnabled;
+        private ReportingEnum m_reporting;
 
         private String m_viewLayout;
 
         private String m_configurationLayout;
 
         @Override
-        public DefaultComponentEditorConfigEntBuilder setReportingEnabled(Boolean reportingEnabled) {
-             m_reportingEnabled = reportingEnabled;
+        public DefaultComponentEditorConfigEntBuilder setReporting(ReportingEnum reporting) {
+             if(reporting == null) {
+                 throw new IllegalArgumentException("<reporting> must not be null.");
+             }
+             m_reporting = reporting;
              return this;
         }
 
@@ -134,7 +140,7 @@ public record DefaultComponentEditorConfigEnt(
         @Override
         public DefaultComponentEditorConfigEnt build() {
             return new DefaultComponentEditorConfigEnt(
-                immutable(m_reportingEnabled),
+                immutable(m_reporting),
                 immutable(m_viewLayout),
                 immutable(m_configurationLayout));
         }
