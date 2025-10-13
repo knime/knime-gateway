@@ -66,6 +66,7 @@ public final class FeatureFlags {
 
     /**
      * Returns the map of available feature flags.
+     * Currently returns an empty map as no features require flagging.
      *
      * To add a new feature flag, e.g.:
      * var myFlag = FEATURE_FLAGS_PREFIX + "my_feature_name";
@@ -74,7 +75,6 @@ public final class FeatureFlags {
      * @return the available feature flags
      */
     public static Map<String, Object> getFeatureFlags() {
-        var f1 = FEATURE_FLAGS_PREFIX + "modern_layout_editor_feature";
-        return Map.of(f1, Boolean.getBoolean(f1));
+        return Map.of();
     }
 }
