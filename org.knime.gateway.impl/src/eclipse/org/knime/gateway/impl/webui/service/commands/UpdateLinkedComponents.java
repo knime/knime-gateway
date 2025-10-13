@@ -230,6 +230,10 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             .formatted(nct.getNameWithID(), nct.getTemplateInformation().getSourceURI()));
 
         try {
+            // TODO: Will eventually be moved into `WorkflowCommand#canExecute(...)`.
+            if (!wfm.canUpdateMetaNodeLink(oldComponentId)) {
+                return logErrorAndReturnUpdateLog(component, "Execution is in progress.", null);
+            }
             if (!needsUpdate(oldComponentId, wfm)) {
                 return new UpdateLog(oldComponentId, wfm, null, StatusEnum.UNCHANGED, null);
             }
