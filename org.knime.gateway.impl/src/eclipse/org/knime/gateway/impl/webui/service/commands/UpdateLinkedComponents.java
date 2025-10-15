@@ -51,12 +51,17 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
@@ -154,7 +159,10 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     private static void undoInternal(final UpdateLog log) {
-        final var componentId = log.componentId;
+        if (log == null || log.nct == null) {
+            return;
+        }
+        final var componentId = log.nct.getID();
         final var persistor = log.persistor;
         if (componentId != null && persistor != null) {
             try {
@@ -211,14 +219,24 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
     }
 
     private static List<String> getDetails(final StatusEnum status, final List<UpdateLog> updateLogs) {
-        if (status == StatusEnum.ERROR) {
-            return updateLogs.stream()//
-                .map(UpdateLog::message)//
-                .filter(Objects::nonNull)//
-                .toList();
+        if (status != StatusEnum.ERROR) {
+            return null; // NOSONAR
         }
 
-        return null; // NOSONAR
+        return updateLogs.stream() //
+            .filter(log -> log.nct() != null) //
+            .collect(Collectors.groupingBy(log -> Map.entry( //
+                // squash details with the same URI and same reason
+                log.nct().getTemplateInformation().getSourceURI(), //
+                log.reason() //
+            ))) //
+            .entrySet().stream() //
+            .map(entry -> { //
+                // create single, squashed detail message with all affected components
+                final var names = entry.getValue().stream().map(log -> log.nct().getNameWithID()).toList(); //
+                return UpdateLog.createMessage(names, entry.getKey().getKey(), entry.getKey().getValue()); //
+            }) //
+            .toList();
     }
 
     private static UpdateLog updateLinkedComponent(final SubNodeContainer component) {
@@ -235,7 +253,7 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
                 return logErrorAndReturnUpdateLog(component, "Execution is in progress.", null);
             }
             if (!needsUpdate(oldComponentId, wfm)) {
-                return new UpdateLog(oldComponentId, wfm, null, StatusEnum.UNCHANGED, null);
+                return new UpdateLog(component, wfm, null, StatusEnum.UNCHANGED, null);
             }
         } catch (IOException e) {
             LOGGER.debug("Node with ID <%s> unexpectedly doesn't need an update.".formatted(oldComponentId), e);
@@ -257,9 +275,9 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
             return logErrorAndReturnUpdateLog(nct, null, null); // If f.e. the linked component could not be found
         }
 
-        final var componentId = updateResult.getNCTemplate().getID();
+        final var newComponent = updateResult.getNCTemplate();
         var status = updateResult.getType() == LoadResultEntryType.Ok ? StatusEnum.SUCCESS : StatusEnum.ERROR;
-        return new UpdateLog(componentId, wfm, persistor, status, null);
+        return new UpdateLog(newComponent, wfm, persistor, status, null);
     }
 
     private static boolean needsUpdate(final NodeID componentId, final WorkflowManager parent) throws IOException {
@@ -268,18 +286,28 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
     private static UpdateLog logErrorAndReturnUpdateLog(final NodeContainerTemplate nct, final String reason,
         final Throwable t) {
-        var message = "Could not update <%s> from <%s>%s".formatted(//
-            nct.getNameWithID(), //
-            nct.getTemplateInformation().getSourceURI(), //
-            reason != null ? (": " + reason) : "."//
-        );
+        final var log = new UpdateLog(nct, null, null, StatusEnum.ERROR, reason);
+        final var message = log.message();
         LOGGER.error(message, t);
-        return new UpdateLog(null, null, null, StatusEnum.ERROR, message);
+        return log;
     }
 
-    private static record UpdateLog(NodeID componentId, WorkflowManager wfm, WorkflowPersistor persistor,
-        StatusEnum status, String message) {
-        //
-    }
+    private static record UpdateLog(NodeContainerTemplate nct, WorkflowManager wfm, WorkflowPersistor persistor,
+        StatusEnum status, String reason) {
 
+        String message() {
+            if (nct == null) {
+                return reason;
+            }
+            return createMessage(List.of(nct.getNameWithID()), nct.getTemplateInformation().getSourceURI(), reason);
+        }
+
+        static String createMessage(final Collection<String> names, final URI sourceURI, final String reason) {
+            final var joinedNames = Objects.requireNonNullElseGet(names, Collections::emptyList).stream() //
+                .map(n -> String.format("<%s>", n)) //
+                .collect(Collectors.joining(", "));
+            final var message = "Could not update %s from <%s>".formatted(joinedNames, sourceURI);
+            return StringUtils.isNotBlank(reason) ? (message + ": " + reason) : (message + ".");
+        }
+    }
 }
