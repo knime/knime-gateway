@@ -47,9 +47,7 @@
       "name" : "Shape"
     }
   },
-  "featureFlags" : {
-    "org.knime.ui.feature.modern_layout_editor_feature" : false
-  },
+  "featureFlags" : { },
   "openProjects" : [ {
     "activeWorkflowId" : "root",
     "name" : "hollow",
