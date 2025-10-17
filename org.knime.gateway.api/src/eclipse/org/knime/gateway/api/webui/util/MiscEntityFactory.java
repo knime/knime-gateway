@@ -81,7 +81,7 @@ public final class MiscEntityFactory {
     public GatewayProblemDescriptionEnt buildKnownProblemDescriptionEnt(final GatewayException gatewayException) {
         final var details = gatewayException.getDetails();
         final var additionalProperties = new HashMap<>(gatewayException.getAdditionalProperties());
-        if (gatewayException.getCause() != null) {
+        if (gatewayException.getCause() != null && gatewayException.isCanCopy()) {
             additionalProperties.put("stackTrace", ExceptionUtils.getStackTrace(gatewayException));
         }
         return EntityBuilderManager.builder(GatewayProblemDescriptionEntBuilder.class) //
