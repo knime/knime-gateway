@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -225,16 +224,12 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
 
         return updateLogs.stream() //
             .filter(log -> log.nct() != null) //
-            .collect(Collectors.groupingBy(log -> Map.entry( //
-                // squash details with the same URI and same reason
-                log.nct().getTemplateInformation().getSourceURI(), //
-                log.reason() //
-            ))) //
+            .collect(Collectors.groupingBy(UpdateDetails::fromUpdateLog)) //
             .entrySet().stream() //
             .map(entry -> { //
                 // create single, squashed detail message with all affected components
                 final var names = entry.getValue().stream().map(log -> log.nct().getNameWithID()).toList(); //
-                return UpdateLog.createMessage(names, entry.getKey().getKey(), entry.getKey().getValue()); //
+                return UpdateLog.createMessage(names, entry.getKey().sourceURI(), entry.getKey().reason()); //
             }) //
             .toList();
     }
@@ -308,6 +303,16 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
                 .collect(Collectors.joining(", "));
             final var message = "Could not update %s from <%s>".formatted(joinedNames, sourceURI);
             return StringUtils.isNotBlank(reason) ? (message + ": " + reason) : (message + ".");
+        }
+    }
+
+    private static record UpdateDetails(URI sourceURI, String reason) {
+        static UpdateDetails fromUpdateLog(final UpdateLog log) {
+            return new UpdateDetails(//
+                // squash details with the same URI and same (nullable) reason
+                log.nct().getTemplateInformation().getSourceURI(), //
+                log.reason() //
+            );
         }
     }
 }
