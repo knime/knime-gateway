@@ -402,11 +402,18 @@ public final class WorkflowMiddleware {
         return m_workflowStateCache.computeIfAbsent(wfKey, this::createWorkflowStateAndEventuallyClearCache);
     }
 
+    /**
+     * Only creates a new {@link WorkflowState} if the given workflow key refers to
+     * {@link WorkflowKey.Version#CURRENT_STATE}.
+     */
     private WorkflowState createWorkflowStateAndEventuallyClearCache(final WorkflowKey wfKey) {
-        final String projectId = wfKey.getProjectId();
-        final var wfm = WorkflowManagerResolver.load(projectId, wfKey.getWorkflowId(), wfKey.getVersionId());
-        final SpaceProviders spaceProviders =
-            m_spaceProvidersManager == null ? null : m_spaceProvidersManager.getSpaceProviders(Key.of(projectId));
+        if (!wfKey.getVersionId().isCurrentState()) {
+            throw new IllegalStateException("Cannot create workflow state for non-current-state workflow: " + wfKey);
+        }
+        final var wfm = WorkflowManagerResolver.load(wfKey.getProjectId(), wfKey.getWorkflowId(), wfKey.getVersionId());
+        final SpaceProviders spaceProviders = m_spaceProvidersManager == null //
+            ? null //
+            : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId()));
         if (!wfm.isProject()) {
             final var nc = getNodeContainerOf(wfm); // component or metanode
             nc.getParent().addListener(new NodeRemovedListenerToClearWorkflowState(wfKey, nc));

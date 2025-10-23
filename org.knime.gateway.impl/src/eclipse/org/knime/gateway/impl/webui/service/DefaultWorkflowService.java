@@ -272,7 +272,8 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private void disposeVersion(final String projectId, final VersionId versionId) {
         m_projectManager.getProject(projectId).ifPresent(project -> project.disposeCachedWfm(versionId));
-        m_workflowMiddleware.clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId));
+        m_workflowMiddleware.clearWorkflowState(
+            wfKey -> wfKey.getProjectId().equals(projectId) && wfKey.getVersionId().equals(versionId));
     }
 
     /**
