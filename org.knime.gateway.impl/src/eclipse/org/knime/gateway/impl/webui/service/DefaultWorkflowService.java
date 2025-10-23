@@ -101,17 +101,17 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
  */
 public final class DefaultWorkflowService implements WorkflowService {
 
-    private final WorkflowMiddleware m_workflowMiddleware =
-        ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
+    private final WorkflowMiddleware m_workflowMiddleware = ServiceDependencies
+            .getServiceDependency(WorkflowMiddleware.class, true);
 
-    private final NodeFactoryProvider m_nodeFactoryProvider =
-        ServiceDependencies.getServiceDependency(NodeFactoryProvider.class, false);
+    private final NodeFactoryProvider m_nodeFactoryProvider = ServiceDependencies
+            .getServiceDependency(NodeFactoryProvider.class, false);
 
-    private final SpaceProvidersManager m_spaceProvidersManager =
-        ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, false);
+    private final SpaceProvidersManager m_spaceProvidersManager = ServiceDependencies
+            .getServiceDependency(SpaceProvidersManager.class, false);
 
-    private final ProjectManager m_projectManager =
-        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
+    private final ProjectManager m_projectManager = ServiceDependencies.getServiceDependency(ProjectManager.class,
+            true);
 
     /**
      * Returns the singleton instance for this service.
@@ -128,7 +128,7 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public WorkflowSnapshotEnt getWorkflow(final String projectId, final NodeIDEnt workflowId, final String versionId,
-        final Boolean includeInteractionInfo) throws NotASubWorkflowException, NodeNotFoundException {
+            final Boolean includeInteractionInfo) throws NotASubWorkflowException, NodeNotFoundException {
         final var version = VersionId.parse(versionId);
         final var wfKey = new WorkflowKey(projectId, workflowId, version);
         final var wfm = ServiceUtilities.assertProjectIdAndGetWorkflowManager(wfKey);
@@ -137,14 +137,15 @@ public final class DefaultWorkflowService implements WorkflowService {
         // TODO NXT-3605 remove `includeInteractionInfo` (NOSONAR)
         if (Boolean.TRUE.equals(includeInteractionInfo) && version.isCurrentState()) {
             Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null //
-                ? Map.of() //
-                : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes();
+                    ? Map.of() //
+                    : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes();
             buildContext.includeInteractionInfo(true)//
-                .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
-                .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
-                .setSpaceProviderTypes(providerTypes) //
-                .setComponentPlaceholders(
-                    m_workflowMiddleware.getComponentLoadJobManager(wfKey).getComponentPlaceholdersAndCleanUp());
+                    .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
+                    .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
+                    .setSpaceProviderTypes(providerTypes) //
+                    .setComponentPlaceholders(
+                            m_workflowMiddleware.getComponentLoadJobManager(wfKey)
+                                    .getComponentPlaceholdersAndCleanUp());
         } else {
             buildContext.includeInteractionInfo(false);
         }
@@ -152,18 +153,19 @@ public final class DefaultWorkflowService implements WorkflowService {
             return m_workflowMiddleware.buildWorkflowSnapshotEnt(wfKey, () -> buildContext);
         } else {
             // fixed versions are not editable,
-            // we do not need to cache state, execute commands, provide change events etc. for these
+            // we do not need to cache state, execute commands, provide change events etc.
+            // for these
             var workflowEntity = EntityFactory.Workflow.buildWorkflowEnt(wfm, buildContext);
             return builder(WorkflowSnapshotEnt.WorkflowSnapshotEntBuilder.class) //
-                .setSnapshotId(null) //
-                .setWorkflow(workflowEntity) //
-                .build();
+                    .setSnapshotId(null) //
+                    .setWorkflow(workflowEntity) //
+                    .build();
         }
     }
 
     @Override
     public List<NodeIdAndIsExecutedEnt> getUpdatableLinkedComponents(final String projectId, final NodeIDEnt workflowId)
-        throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
+            throws NotASubWorkflowException, NodeNotFoundException, InvalidRequestException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         final var wfKey = new WorkflowKey(projectId, workflowId);
         final var wfm = WorkflowUtil.getWorkflowManager(wfKey);
@@ -171,15 +173,15 @@ public final class DefaultWorkflowService implements WorkflowService {
             final var linkedComponentsToStateMap = CoreUtil.getLinkedComponentToStateMap(wfm);
             final var candidateList = linkedComponentsToStateMap.keySet().stream().toList();
             final var componentUpdateResult = CheckForComponentUpdatesUtil.checkForComponentUpdatesAndSetUpdateStatus(
-                wfm, "org.knime.gateway.impl", candidateList, new NullProgressMonitor());
+                    wfm, "org.knime.gateway.impl", candidateList, new NullProgressMonitor());
             return componentUpdateResult.updateList().stream()//
-                .map(wfm::findNodeContainer)//
-                .map(NodeContainer::getID)//
-                .map(nodeId -> {
-                    final var ncState = linkedComponentsToStateMap.get(nodeId);
-                    return EntityFactory.Workflow.buildNodeIdAndIsExecutedEnt(nodeId, ncState);
-                })//
-                .toList();
+                    .map(wfm::findNodeContainer)//
+                    .map(NodeContainer::getID)//
+                    .map(nodeId -> {
+                        final var ncState = linkedComponentsToStateMap.get(nodeId);
+                        return EntityFactory.Workflow.buildNodeIdAndIsExecutedEnt(nodeId, ncState);
+                    })//
+                    .toList();
         } catch (IllegalStateException | InterruptedException e) { // NOSONAR
             throw new InvalidRequestException("Could not determine updatable node IDs", e);
         }
@@ -188,9 +190,10 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public void saveProject(final String projectId, final String workflowPreviewSvg) throws ServiceCallException {
         if (DefaultServiceContext.getProjectId().isEmpty()) {
-            // only to be called from browser environment and this value is only set in browser environment
+            // only to be called from browser environment and this value is only set in
+            // browser environment
             NodeLogger.getLogger(DefaultWorkflowService.class)
-                .warn("Called 'saveProject' without project id, indicating usage from Desktop environment.");
+                    .warn("Called 'saveProject' without project id, indicating usage from Desktop environment.");
             return;
         }
         DefaultServiceContext.assertWorkflowProjectId(projectId);
@@ -203,12 +206,12 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     @Override
-
     public void disposeVersion(final String projectId, final String versionParameter) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        m_projectManager.getProject(projectId)
-            .ifPresent(project -> project.disposeCachedWfm(VersionId.parse(versionParameter)));
-        m_workflowMiddleware.clearWorkflowState(wfKey -> wfKey.getProjectId().equals(projectId));
+        final var versionId = VersionId.parse(versionParameter);
+        m_projectManager.getProject(projectId).ifPresent(project -> project.disposeCachedWfm(versionId));
+        m_workflowMiddleware.clearWorkflowState(
+                wfKey -> wfKey.getProjectId().equals(projectId) && wfKey.getVersionId().equals(versionId));
     }
 
     /**
@@ -216,16 +219,16 @@ public final class DefaultWorkflowService implements WorkflowService {
      */
     @Override
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
-        final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
+            final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         var spaceProviders = m_spaceProvidersManager == null ? null : //
-            m_spaceProvidersManager.getSpaceProviders( //
-                DefaultServiceContext.getProjectId().map(Key::of) //
-                    .orElse(Key.defaultKey()) //
-            );
+                m_spaceProvidersManager.getSpaceProviders( //
+                        DefaultServiceContext.getProjectId().map(Key::of) //
+                                .orElse(Key.defaultKey()) //
+                );
         return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
-            m_workflowMiddleware, m_nodeFactoryProvider, spaceProviders);
+                m_workflowMiddleware, m_nodeFactoryProvider, spaceProviders);
     }
 
     @Override
@@ -246,7 +249,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     public WorkflowMonitorStateSnapshotEnt getWorkflowMonitorState(final String projectId) {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         return m_workflowMiddleware
-            .buildWorkflowMonitorStateSnapshotEnt(new WorkflowKey(projectId, NodeIDEnt.getRootID()));
+                .buildWorkflowMonitorStateSnapshotEnt(new WorkflowKey(projectId, NodeIDEnt.getRootID()));
     }
 
     /**
@@ -255,14 +258,14 @@ public final class DefaultWorkflowService implements WorkflowService {
     private static final class SaveProjectHelper {
 
         private static WorkflowManager assertIsWorkflowProjectAndNotExecting(final String projectId)
-            throws ServiceCallException {
+                throws ServiceCallException {
             var wfm = WorkflowManagerResolver.get(projectId);
             if (wfm.isComponentProjectWFM()) {
                 throw new ServiceCallException("Not supported for component projects");
             }
 
             var isExecutionInProgress = wfm.getNodeContainerState().isExecutionInProgress()
-                || wfm.getNodeContainerState().isExecutingRemotely();
+                    || wfm.getNodeContainerState().isExecutingRemotely();
             if (isExecutionInProgress) {
                 throw new ServiceCallException("Workflow is currently executing");
             }
@@ -271,10 +274,11 @@ public final class DefaultWorkflowService implements WorkflowService {
         }
 
         /**
-         * TODO NXT-3634: Headless save until we can provide proper UI; de-duplicate from SaveProject (NOSONAR)
+         * TODO NXT-3634: Headless save until we can provide proper UI; de-duplicate
+         * from SaveProject (NOSONAR)
          */
         private static WorkflowContextV2 saveToDisk(final WorkflowManager wfm, final String workflowPreviewSvg)
-            throws ServiceCallException {
+                throws ServiceCallException {
             final var context = wfm.getContextV2();
             var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
 
@@ -285,7 +289,7 @@ public final class DefaultWorkflowService implements WorkflowService {
             }
             try {
                 Files.writeString(localWorkflowPath.resolve(WorkflowPersistor.SVG_WORKFLOW_FILE), workflowPreviewSvg,
-                    StandardCharsets.UTF_8);
+                        StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new ServiceCallException("Could not save workflow SVG", e);
             }
@@ -294,19 +298,23 @@ public final class DefaultWorkflowService implements WorkflowService {
         }
 
         /**
-         * TODO NXT-3634: Headless upload until we can provide proper UI; de-duplicate from 'SaveProject' (NOSONAR)
+         * TODO NXT-3634: Headless upload until we can provide proper UI; de-duplicate
+         * from 'SaveProject' (NOSONAR)
          */
-        private static void uploadToHub(final WorkflowContextV2 context, final SpaceProvidersManager spaceProvidersManager)
-            throws ServiceCallException {
+        private static void uploadToHub(final WorkflowContextV2 context,
+                final SpaceProvidersManager spaceProvidersManager)
+                throws ServiceCallException {
             final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
             final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
-                .map(mgr -> mgr.getSpaceProviders(key)) //
-                .orElseThrow();
+                    .map(mgr -> mgr.getSpaceProviders(key)) //
+                    .orElseThrow();
             final var spaceProvider = spaceProviders.getAllSpaceProviders().stream().findFirst().orElseThrow();
 
-            // (a) In Desktop AP, the provider would be identified by the mountpoint URI saved in the workflow context.
-            // (b) In Browser, this info is not given (because ultimately the context is constructed off a
-            //     HubJobExecutorInfo and not a AnalyticsPlatformExecutorInfo)
+            // (a) In Desktop AP, the provider would be identified by the mountpoint URI
+            // saved in the workflow context.
+            // (b) In Browser, this info is not given (because ultimately the context is
+            // constructed off a
+            // HubJobExecutorInfo and not a AnalyticsPlatformExecutorInfo)
             if (context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo) {
                 final var space = spaceProvider.getSpace(hubInfo.getSpaceItemId());
                 try {
