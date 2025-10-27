@@ -75,7 +75,8 @@ public class PortViewEnt extends UIExtensionEnt<NodePortWrapper> {
     public PortViewEnt(final NodePortWrapper wrapper, final PortViewManager manager,
         final Supplier<List<String>> initialSelectionSupplier) {
         super(wrapper, manager.getPageResourceManager(), manager.getDataServiceManager(), PageType.PORT);
-        m_info = new NodeInfoEnt(wrapper.get());
+        var nc = wrapper.get();
+        m_info = new NodeInfoEnt(nc, nc::getNodeMessage);
         m_initialSelection = initialSelectionSupplier == null ? null : initialSelectionSupplier.get();
     }
 

@@ -177,7 +177,9 @@ public final class NodeViewEnt extends UIExtensionEnt<NodeWrapper> {
             isRunAsDesktopApplication() || isUsedForImageOrReportGeneration);
         CheckUtils.checkArgument(NodeViewManager.hasNodeView(nnc), "The provided node doesn't have a node view");
         m_initialSelection = initialSelection == null ? null : initialSelection.get();
-        m_info = new NodeInfoEnt(nnc, customErrorMessage);
+        m_info = new NodeInfoEnt(nnc,
+            () -> nodeViewManager == null ? nnc.getNodeMessage() : nodeViewManager.getViewNodeMessage(nnc),
+            customErrorMessage);
         m_renderingConfigEnt = renderingConfigEnt;
         final var spec =
             nodeViewManager == null ? null : nodeViewManager.getInputDataTableSpecIfTableView(nnc).orElse(null);
