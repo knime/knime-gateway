@@ -50,10 +50,12 @@ package org.knime.gateway.api.entity;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerState;
+import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.NodeMessage.Type;
 
 /**
@@ -77,8 +79,8 @@ public final class NodeInfoEnt {
 
     private final Boolean m_canExecute;
 
-    NodeInfoEnt(final NodeContainer nc) {
-        this(nc, null);
+    NodeInfoEnt(final NodeContainer nc, final Supplier<NodeMessage> nodeMessageSupplier) {
+        this(nc, nodeMessageSupplier, null);
     }
 
     /**
@@ -86,14 +88,14 @@ public final class NodeInfoEnt {
      * @param errorMessage a custom error message (will replace a potentially available error message provided by the
      *            node)
      */
-    NodeInfoEnt(final NodeContainer nc, final String errorMessage) {
+    NodeInfoEnt(final NodeContainer nc, final Supplier<NodeMessage> nodeMessageSupplier, final String errorMessage) {
         m_name = nc.getName();
         m_annotation = nc.getNodeAnnotation().toString();
 
         var state = nc.getNodeContainerState();
         m_state = stateToString(state);
 
-        var message = nc.getNodeMessage();
+        var message = nodeMessageSupplier.get();
         var messageType = message.getMessageType();
         if (errorMessage != null) {
             m_errorMessage = errorMessage;
