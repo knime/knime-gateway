@@ -173,83 +173,61 @@ public final class WorkflowCommands {
     }
 
     @SuppressWarnings("java:S1541")
-    private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
+    private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt,
         final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders,
         final WorkflowMiddleware workflowMiddleware) throws ServiceCallException {
-        WorkflowCommand command;
-        if (commandEnt instanceof TranslateCommandEnt ce) {
-            command = new Translate(ce);
-        } else if (commandEnt instanceof DeleteCommandEnt ce) {
-            command = new Delete(ce);
-        } else if (commandEnt instanceof ConnectCommandEnt ce) {
-            command = new Connect(ce);
-        } else if (commandEnt instanceof AutoConnectCommandEnt ce) {
-            command = new AutoConnect(ce);
-        } else if (commandEnt instanceof AutoDisconnectCommandEnt ce) {
-            command = new AutoDisconnect(ce);
-        } else if (commandEnt instanceof AddNodeCommandEnt ce) {
-            command = new AddNode(ce, nodeFactoryProvider, spaceProviders);
-        } else if (commandEnt instanceof AddComponentCommandEnt ce) {
-            command = new AddComponent(ce, workflowMiddleware);
-        } else if (commandEnt instanceof DeleteComponentPlaceholderCommandEnt ce) {
-            command = new DeleteComponentPlaceholder(ce, workflowMiddleware);
-        } else if (commandEnt instanceof ReplaceNodeCommandEnt ce) {
-            command = new ReplaceNode(ce);
-        } else if (commandEnt instanceof InsertNodeCommandEnt ce) {
-            command = new InsertNode(ce);
-        } else if (commandEnt instanceof UpdateComponentOrMetanodeNameCommandEnt ce) {
-            command = new UpdateComponentOrMetanodeName(ce);
-        } else if (commandEnt instanceof UpdateNodeLabelCommandEnt ce) {
-            command = new UpdateNodeLabel(ce);
-        } else if (commandEnt instanceof CollapseCommandEnt ce) {
-            command = new Collapse(ce);
-        } else if (commandEnt instanceof ExpandCommandEnt ce) {
-            command = new Expand(ce);
-        } else if (commandEnt instanceof AddPortCommandEnt ce) {
-            command = new AddPort(ce);
-        } else if (commandEnt instanceof RemovePortCommandEnt ce) {
-            command = new RemovePort(ce);
-        } else if (commandEnt instanceof CopyCommandEnt ce) {
-            command = new Copy(ce);
-        } else if (commandEnt instanceof CutCommandEnt ce) {
-            command = new Cut(ce);
-        } else if (commandEnt instanceof PasteCommandEnt ce) {
-            command = new Paste(ce);
-        } else if (commandEnt instanceof TransformWorkflowAnnotationCommandEnt ce) {
-            command = new TransformWorkflowAnnotation(ce);
-        } else if (commandEnt instanceof UpdateWorkflowAnnotationCommandEnt ce) {
-            command = new UpdateWorkflowAnnotation(ce);
-        } else if (commandEnt instanceof ReorderWorkflowAnnotationsCommandEnt ce) {
-            command = new ReorderWorkflowAnnotations(ce);
-        } else if (commandEnt instanceof AddWorkflowAnnotationCommandEnt ce) {
-            command = new AddWorkflowAnnotation(ce);
-        } else if (commandEnt instanceof UpdateProjectMetadataCommandEnt ce) {
-            command = new UpdateProjectMetadata(ce);
-        } else if (commandEnt instanceof UpdateComponentMetadataCommandEnt ce) {
-            command = new UpdateComponentMetadata(ce);
-        } else if (commandEnt instanceof AddBendpointCommandEnt ce) {
-            command = new AddBendpoint(ce);
-        } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) {
-            command = new UpdateComponentLinkInformation(ce);
-        } else if (commandEnt instanceof TransformMetanodePortsBarCommandEnt ce) {
-            command = new TransformMetanodePortsBar(ce);
-        } else if (commandEnt instanceof UpdateLinkedComponentsCommandEnt ce) {
-            command = new UpdateLinkedComponents(ce);
-        } else if (commandEnt instanceof AlignNodesCommandEnt ce) {
-            command = new AlignNodes(ce);
-        } else {
-            if (m_workflowCommandToExecute != null) {
-                command = m_workflowCommandToExecute;
-                m_workflowCommandToExecute = null;
-            } else {
+        return switch (commandEnt) {
+            case TranslateCommandEnt ce -> new Translate(ce);
+            case DeleteCommandEnt ce -> new Delete(ce);
+            case ConnectCommandEnt ce -> new Connect(ce);
+            case AutoConnectCommandEnt ce -> new AutoConnect(ce);
+            case AutoDisconnectCommandEnt ce -> new AutoDisconnect(ce);
+            case AddNodeCommandEnt ce -> new AddNode(ce, nodeFactoryProvider, spaceProviders);
+            case AddComponentCommandEnt ce -> new AddComponent(ce, workflowMiddleware);
+            case DeleteComponentPlaceholderCommandEnt ce -> new DeleteComponentPlaceholder(ce, workflowMiddleware);
+            case ReplaceNodeCommandEnt ce -> new ReplaceNode(ce);
+            case InsertNodeCommandEnt ce -> new InsertNode(ce);
+            case UpdateComponentOrMetanodeNameCommandEnt ce -> new UpdateComponentOrMetanodeName(ce);
+            case UpdateNodeLabelCommandEnt ce -> new UpdateNodeLabel(ce);
+            case CollapseCommandEnt ce -> new Collapse(ce);
+            case ExpandCommandEnt ce -> new Expand(ce);
+            case AddPortCommandEnt ce -> new AddPort(ce);
+            case RemovePortCommandEnt ce -> new RemovePort(ce);
+            case CopyCommandEnt ce -> new Copy(ce);
+            case CutCommandEnt ce -> new Cut(ce);
+            case PasteCommandEnt ce -> new Paste(ce);
+            case TransformWorkflowAnnotationCommandEnt ce -> new TransformWorkflowAnnotation(ce);
+            case UpdateWorkflowAnnotationCommandEnt ce -> new UpdateWorkflowAnnotation(ce);
+            case ReorderWorkflowAnnotationsCommandEnt ce -> new ReorderWorkflowAnnotations(ce);
+            case AddWorkflowAnnotationCommandEnt ce -> new AddWorkflowAnnotation(ce);
+            case UpdateProjectMetadataCommandEnt ce -> new UpdateProjectMetadata(ce);
+            case UpdateComponentMetadataCommandEnt ce -> new UpdateComponentMetadata(ce);
+            case AddBendpointCommandEnt ce -> new AddBendpoint(ce);
+            case UpdateComponentLinkInformationCommandEnt ce -> new UpdateComponentLinkInformation(ce);
+            case TransformMetanodePortsBarCommandEnt ce -> new TransformMetanodePortsBar(ce);
+            case UpdateLinkedComponentsCommandEnt ce -> new UpdateLinkedComponents(ce);
+            case AlignNodesCommandEnt ce -> new AlignNodes(ce);
+            case null -> {
+                if (m_workflowCommandToExecute != null) {
+                    final var command = m_workflowCommandToExecute;
+                    m_workflowCommandToExecute = null;
+                    yield command;
+                } else {
+                    throw ServiceCallException.builder() //
+                        .withTitle("Unknown command") //
+                        .withDetails("Command of type <null> cannot be executed.") //
+                        .canCopy(true) //
+                        .build();
+                }
+            }
+            default -> {
                 throw ServiceCallException.builder() //
                     .withTitle("Unknown command") //
-                    .withDetails("Command of type " + commandEnt.getClass().getSimpleName() + " cannot be executed.") //
+                    .withDetails("Command of type <" + commandEnt.getClass().getSimpleName() + "> cannot be executed.") //
                     .canCopy(true) //
                     .build();
             }
-        }
-        return command;
+        };
     }
 
     private static boolean hasCommandResult(final WorkflowKey wfKey, final WorkflowCommand command)
