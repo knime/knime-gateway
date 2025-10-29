@@ -57,37 +57,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
-import org.knime.gateway.api.webui.entity.AddBendpointCommandEnt;
-import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
-import org.knime.gateway.api.webui.entity.AddNodeCommandEnt;
-import org.knime.gateway.api.webui.entity.AddPortCommandEnt;
-import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
-import org.knime.gateway.api.webui.entity.AlignNodesCommandEnt;
-import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
-import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
-import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
-import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
-import org.knime.gateway.api.webui.entity.CopyCommandEnt;
-import org.knime.gateway.api.webui.entity.CutCommandEnt;
-import org.knime.gateway.api.webui.entity.DeleteCommandEnt;
-import org.knime.gateway.api.webui.entity.DeleteComponentPlaceholderCommandEnt;
-import org.knime.gateway.api.webui.entity.ExpandCommandEnt;
-import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
-import org.knime.gateway.api.webui.entity.PasteCommandEnt;
-import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
-import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
-import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
-import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt;
-import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
-import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateNodeLabelCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateProjectMetadataCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowChangeWaiter;
@@ -95,6 +65,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.service.commands.SealedWorkflowCommandEnt.PermittedAddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -176,37 +147,38 @@ public final class WorkflowCommands {
     private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt,
         final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders,
         final WorkflowMiddleware workflowMiddleware) throws ServiceCallException {
-        return switch (commandEnt) {
-            case TranslateCommandEnt ce -> new Translate(ce);
-            case DeleteCommandEnt ce -> new Delete(ce);
-            case ConnectCommandEnt ce -> new Connect(ce);
-            case AutoConnectCommandEnt ce -> new AutoConnect(ce);
-            case AutoDisconnectCommandEnt ce -> new AutoDisconnect(ce);
-            case AddNodeCommandEnt ce -> new AddNode(ce, nodeFactoryProvider, spaceProviders);
-            case AddComponentCommandEnt ce -> new AddComponent(ce, workflowMiddleware);
-            case DeleteComponentPlaceholderCommandEnt ce -> new DeleteComponentPlaceholder(ce, workflowMiddleware);
-            case ReplaceNodeCommandEnt ce -> new ReplaceNode(ce);
-            case InsertNodeCommandEnt ce -> new InsertNode(ce);
-            case UpdateComponentOrMetanodeNameCommandEnt ce -> new UpdateComponentOrMetanodeName(ce);
-            case UpdateNodeLabelCommandEnt ce -> new UpdateNodeLabel(ce);
-            case CollapseCommandEnt ce -> new Collapse(ce);
-            case ExpandCommandEnt ce -> new Expand(ce);
-            case AddPortCommandEnt ce -> new AddPort(ce);
-            case RemovePortCommandEnt ce -> new RemovePort(ce);
-            case CopyCommandEnt ce -> new Copy(ce);
-            case CutCommandEnt ce -> new Cut(ce);
-            case PasteCommandEnt ce -> new Paste(ce);
-            case TransformWorkflowAnnotationCommandEnt ce -> new TransformWorkflowAnnotation(ce);
-            case UpdateWorkflowAnnotationCommandEnt ce -> new UpdateWorkflowAnnotation(ce);
-            case ReorderWorkflowAnnotationsCommandEnt ce -> new ReorderWorkflowAnnotations(ce);
-            case AddWorkflowAnnotationCommandEnt ce -> new AddWorkflowAnnotation(ce);
-            case UpdateProjectMetadataCommandEnt ce -> new UpdateProjectMetadata(ce);
-            case UpdateComponentMetadataCommandEnt ce -> new UpdateComponentMetadata(ce);
-            case AddBendpointCommandEnt ce -> new AddBendpoint(ce);
-            case UpdateComponentLinkInformationCommandEnt ce -> new UpdateComponentLinkInformation(ce);
-            case TransformMetanodePortsBarCommandEnt ce -> new TransformMetanodePortsBar(ce);
-            case UpdateLinkedComponentsCommandEnt ce -> new UpdateLinkedComponents(ce);
-            case AlignNodesCommandEnt ce -> new AlignNodes(ce);
+        final var permittedCommandEnt = SealedWorkflowCommandEnt.of(commandEnt);
+        return switch (permittedCommandEnt) {
+//            case TranslateCommandEnt ce -> new Translate(ce);
+//            case DeleteCommandEnt ce -> new Delete(ce);
+//            case ConnectCommandEnt ce -> new Connect(ce);
+//            case AutoConnectCommandEnt ce -> new AutoConnect(ce);
+//            case AutoDisconnectCommandEnt ce -> new AutoDisconnect(ce);
+//            case AddNodeCommandEnt ce -> new AddNode(ce, nodeFactoryProvider, spaceProviders);
+//            case AddComponentCommandEnt ce -> new AddComponent(ce, workflowMiddleware);
+//            case DeleteComponentPlaceholderCommandEnt ce -> new DeleteComponentPlaceholder(ce, workflowMiddleware);
+//            case ReplaceNodeCommandEnt ce -> new ReplaceNode(ce);
+//            case InsertNodeCommandEnt ce -> new InsertNode(ce);
+//            case UpdateComponentOrMetanodeNameCommandEnt ce -> new UpdateComponentOrMetanodeName(ce);
+//            case UpdateNodeLabelCommandEnt ce -> new UpdateNodeLabel(ce);
+//            case CollapseCommandEnt ce -> new Collapse(ce);
+//            case ExpandCommandEnt ce -> new Expand(ce);
+//            case AddPortCommandEnt ce -> new AddPort(ce);
+//            case RemovePortCommandEnt ce -> new RemovePort(ce);
+//            case CopyCommandEnt ce -> new Copy(ce);
+//            case CutCommandEnt ce -> new Cut(ce);
+//            case PasteCommandEnt ce -> new Paste(ce);
+//            case TransformWorkflowAnnotationCommandEnt ce -> new TransformWorkflowAnnotation(ce);
+//            case UpdateWorkflowAnnotationCommandEnt ce -> new UpdateWorkflowAnnotation(ce);
+//            case ReorderWorkflowAnnotationsCommandEnt ce -> new ReorderWorkflowAnnotations(ce);
+            case PermittedAddWorkflowAnnotationCommandEnt ce -> new AddWorkflowAnnotation(ce.get());
+//            case UpdateProjectMetadataCommandEnt ce -> new UpdateProjectMetadata(ce);
+//            case UpdateComponentMetadataCommandEnt ce -> new UpdateComponentMetadata(ce);
+//            case AddBendpointCommandEnt ce -> new AddBendpoint(ce);
+//            case UpdateComponentLinkInformationCommandEnt ce -> new UpdateComponentLinkInformation(ce);
+//            case TransformMetanodePortsBarCommandEnt ce -> new TransformMetanodePortsBar(ce);
+//            case UpdateLinkedComponentsCommandEnt ce -> new UpdateLinkedComponents(ce);
+//            case AlignNodesCommandEnt ce -> new AlignNodes(ce);
             case null -> {
                 if (m_workflowCommandToExecute != null) {
                     final var command = m_workflowCommandToExecute;
@@ -215,18 +187,12 @@ public final class WorkflowCommands {
                 } else {
                     throw ServiceCallException.builder() //
                         .withTitle("Unknown command") //
-                        .withDetails("Command of type <null> cannot be executed.") //
+                        .withDetails("No command to execute was specified") //
                         .canCopy(true) //
                         .build();
                 }
             }
-            default -> {
-                throw ServiceCallException.builder() //
-                    .withTitle("Unknown command") //
-                    .withDetails("Command of type <" + commandEnt.getClass().getSimpleName() + "> cannot be executed.") //
-                    .canCopy(true) //
-                    .build();
-            }
+            default -> null;
         };
     }
 
