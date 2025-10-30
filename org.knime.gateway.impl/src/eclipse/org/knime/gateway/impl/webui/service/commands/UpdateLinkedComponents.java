@@ -63,6 +63,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.util.ConvenienceMethods;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
 import org.knime.core.node.workflow.NodeContainerTemplate;
 import org.knime.core.node.workflow.NodeID;
@@ -72,6 +73,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.WorkflowPersistor.LoadResultEntry.LoadResultEntryType;
 import org.knime.core.node.workflow.WorkflowPersistor.NodeContainerTemplateLinkUpdateResult;
+import org.knime.core.util.Pair;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
@@ -298,9 +300,9 @@ class UpdateLinkedComponents extends AbstractWorkflowCommand implements WithResu
         }
 
         static String createMessage(final Collection<String> names, final URI sourceURI, final String reason) {
-            final var joinedNames = Objects.requireNonNullElseGet(names, Collections::emptyList).stream() //
-                .map(n -> String.format("<%s>", n)) //
-                .collect(Collectors.joining(", "));
+            final var usableNames = Objects.requireNonNullElseGet(names, Collections::emptyList);
+            final var joinedNames = ConvenienceMethods.getShortStringFrom( //
+                usableNames.iterator(), usableNames.size(), 3, Pair.create("<", ">"));
             final var message = "Could not update %s from <%s>".formatted(joinedNames, sourceURI);
             return StringUtils.isNotBlank(reason) ? (message + ": " + reason) : (message + ".");
         }
