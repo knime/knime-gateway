@@ -62,6 +62,8 @@ import org.knime.gateway.impl.node.port.ImagePortViewFactory;
 import org.knime.gateway.impl.node.port.StatisticsPortViewFactory;
 import org.knime.gateway.impl.node.port.TablePortViewFactory;
 import org.knime.gateway.impl.node.port.TableSpecViewFactory;
+import org.knime.gateway.impl.node.port.workflow.WorkflowPortSpecViewFactory;
+import org.knime.gateway.impl.node.port.workflow.WorkflowPortViewFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -110,6 +112,13 @@ public class GatewayImplPlugin implements BundleActivator {
 
         PortViewManager.registerPortViews("org.knime.core.data.DirectAccessTable", //
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
+
+        PortViewManager.registerPortViews("org.knime.core.node.workflow.capture.WorkflowPortObject", //
+            List.of(new PortViewDescriptor("Workflow", new WorkflowPortSpecViewFactory()), //
+                new PortViewDescriptor("Workflow", new WorkflowPortViewFactory())), //
+            List.of(0), //
+            List.of(1)//
+        );
 
         m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
         m_customizationServiceTracker.open();

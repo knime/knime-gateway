@@ -103,9 +103,24 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
      */
     static void renderPreviewSVG(final WorkflowManager workflow, final Path filePath)
         throws IllegalArgumentException, IOException {
+        CheckUtils.checkArgumentNotNull(filePath, "File path can not be null for preview generation");
+        try (Writer writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8)) {
+            renderPreviewSVG(workflow, writer);
+        }
+    }
+
+    /**
+     * Renders a preview of the given {@link WorkflowManager} instance in SVG format to the provided file path.
+     *
+     * @param workflow the {@link WorkflowManager} instance containing the current state of the workflow to be rendered
+     * @param writer TODO
+     * @throws IllegalArgumentException if the provided arguments are null
+     * @throws IOException if writing the output to the specified file path fails
+     */
+    public static void renderPreviewSVG(final WorkflowManager workflow, final Writer writer)
+        throws IllegalArgumentException, IOException {
 
         CheckUtils.checkArgumentNotNull(workflow, "Workflow can not be null for preview generation");
-        CheckUtils.checkArgumentNotNull(filePath, "File path can not be null for preview generation");
 
         var basePath = GenerateSVGWorkflowSaveHook.class.getPackage().getName().replace('.', '/');
         var templateResolver = new ClassLoaderTemplateResolver();
@@ -143,9 +158,7 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
         var templateEngine = new TemplateEngine();
         templateEngine.addTemplateResolver(templateResolver);
         templateEngine.addDialect(new WhiteSpaceRemovalDialect());
-        try (Writer writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8)) {
-            templateEngine.process("workflow", context, writer);
-        }
+        templateEngine.process("workflow", context, writer);
     }
 
     /**
