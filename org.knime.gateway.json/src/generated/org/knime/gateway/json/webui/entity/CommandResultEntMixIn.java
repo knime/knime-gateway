@@ -63,6 +63,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAddAnnotationResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddComponentPlaceholderResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateLinkedComponentsResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPasteResultEnt;
+import org.knime.gateway.impl.webui.entity.DefaultShareComponentResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddPortResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCollapseResultEnt;
@@ -101,6 +102,8 @@ import org.knime.gateway.impl.webui.entity.DefaultAddNodeResultEnt;
   @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "update_linked_components_result")
 ,
   @Type(value = DefaultAddComponentPlaceholderResultEnt.class, name = "add_component_placeholder_result")
+,
+  @Type(value = DefaultShareComponentResultEnt.class, name = "share_component_result")
 })
 @JsonDeserialize(builder=DefaultCommandResultEntBuilder.class)
 @JsonSerialize(as=CommandResultEnt.class)
@@ -153,6 +156,8 @@ public interface CommandResultEntMixIn extends CommandResultEnt {
   @Type(value = DefaultUpdateLinkedComponentsResultEnt.class, name = "update_linked_components_result")
 ,
   @Type(value = DefaultAddComponentPlaceholderResultEnt.class, name = "add_component_placeholder_result")
+,
+  @Type(value = DefaultShareComponentResultEnt.class, name = "share_component_result")
 })
     // AUTO-GENERATED CODE; DO NOT MODIFY
     public static interface CommandResultEntMixInBuilder extends CommandResultEntBuilder {

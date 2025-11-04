@@ -164,6 +164,8 @@ import org.knime.gateway.json.webui.entity.RemovePortCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReorderWorkflowAnnotationsCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.ReplaceNodeCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.SelectionEventEntMixIn;
+import org.knime.gateway.json.webui.entity.ShareComponentCommandEntMixIn;
+import org.knime.gateway.json.webui.entity.ShareComponentResultEntMixIn;
 import org.knime.gateway.json.webui.entity.ShowToastEventEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceEntMixIn;
 import org.knime.gateway.json.webui.entity.SpaceGroupEntMixIn;
@@ -350,6 +352,8 @@ public class ListEntities {
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.class);
         res.add(ReplaceNodeCommandEntMixIn.class);
         res.add(SelectionEventEntMixIn.class);
+        res.add(ShareComponentCommandEntMixIn.class);
+        res.add(ShareComponentResultEntMixIn.class);
         res.add(ShowToastEventEntMixIn.class);
         res.add(SpaceEntMixIn.class);
         res.add(SpaceGroupEntMixIn.class);
@@ -522,6 +526,8 @@ public class ListEntities {
         res.add(ReorderWorkflowAnnotationsCommandEntMixIn.ReorderWorkflowAnnotationsCommandEntMixInBuilder.class);
         res.add(ReplaceNodeCommandEntMixIn.ReplaceNodeCommandEntMixInBuilder.class);
         res.add(SelectionEventEntMixIn.SelectionEventEntMixInBuilder.class);
+        res.add(ShareComponentCommandEntMixIn.ShareComponentCommandEntMixInBuilder.class);
+        res.add(ShareComponentResultEntMixIn.ShareComponentResultEntMixInBuilder.class);
         res.add(ShowToastEventEntMixIn.ShowToastEventEntMixInBuilder.class);
         res.add(SpaceEntMixIn.SpaceEntMixInBuilder.class);
         res.add(SpaceGroupEntMixIn.SpaceGroupEntMixInBuilder.class);

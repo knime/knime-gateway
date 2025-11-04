@@ -61,6 +61,7 @@ import org.knime.gateway.impl.webui.entity.DefaultAlignNodesCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAutoDisconnectCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultExpandCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateLinkedComponentsCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultPortCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateProjectMetadataCommandEnt;
@@ -156,6 +157,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
 ,
   @Type(value = DefaultUpdateComponentMetadataCommandEnt.class, name = "update_component_metadata")
 ,
+  @Type(value = DefaultShareComponentCommandEnt.class, name = "share_component")
+,
   @Type(value = DefaultAddBendpointCommandEnt.class, name = "add_bendpoint")
 ,
   @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
@@ -243,6 +246,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultUpdateProjectMetadataCommandEnt.class, name = "update_project_metadata")
 ,
   @Type(value = DefaultUpdateComponentMetadataCommandEnt.class, name = "update_component_metadata")
+,
+  @Type(value = DefaultShareComponentCommandEnt.class, name = "share_component")
 ,
   @Type(value = DefaultAddBendpointCommandEnt.class, name = "add_bendpoint")
 ,

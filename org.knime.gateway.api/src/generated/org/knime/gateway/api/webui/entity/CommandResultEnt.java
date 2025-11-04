@@ -84,7 +84,9 @@ public interface CommandResultEnt extends GatewayEntity {
     
     UPDATE_LINKED_COMPONENTS_RESULT("update_linked_components_result"),
     
-    ADD_COMPONENT_PLACEHOLDER_RESULT("add_component_placeholder_result");
+    ADD_COMPONENT_PLACEHOLDER_RESULT("add_component_placeholder_result"),
+    
+    SHARE_COMPONENT_RESULT("share_component_result");
 
     private String value;
 
