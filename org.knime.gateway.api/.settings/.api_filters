@@ -294,7 +294,7 @@
         <filter id="338886760">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.util.ServiceExceptions.IOException"/>
-                <message_argument value="org.knime.gateway.api_5.8.0"/>
+                <message_argument value="org.knime.gateway.api_5.8.1"/>
             </message_arguments>
         </filter>
     </resource>
