@@ -284,6 +284,10 @@ import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeComma
 import org.knime.gateway.impl.webui.entity.DefaultReplaceNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSelectionEventEnt;
+import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.ShareComponentCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt;
+import org.knime.gateway.api.webui.entity.ShareComponentResultEnt.ShareComponentResultEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultShareComponentResultEnt;
 import org.knime.gateway.api.webui.entity.ShowToastEventEnt.ShowToastEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultShowToastEventEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt.SpaceEntBuilder;
@@ -751,6 +755,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == SelectionEventEntBuilder.class) {
             return (B)new DefaultSelectionEventEnt.DefaultSelectionEventEntBuilder();
+        }        
+        if(clazz == ShareComponentCommandEntBuilder.class) {
+            return (B)new DefaultShareComponentCommandEnt.DefaultShareComponentCommandEntBuilder();
+        }        
+        if(clazz == ShareComponentResultEntBuilder.class) {
+            return (B)new DefaultShareComponentResultEnt.DefaultShareComponentResultEntBuilder();
         }        
         if(clazz == ShowToastEventEntBuilder.class) {
             return (B)new DefaultShowToastEventEnt.DefaultShowToastEventEntBuilder();

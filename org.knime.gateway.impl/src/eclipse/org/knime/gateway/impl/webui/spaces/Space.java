@@ -723,6 +723,13 @@ public interface Space {
     }
 
     /**
+     * @return The file size limit for uploading an item to this space. Empty if unlimited.
+     */
+    default Optional<Long> getUploadLimit() {
+        return Optional.empty();
+    }
+
+    /**
      * Generates unique space item names, preserves file extensions.
      *
      * @param taken predicate for determining whether a name is already taken in a space

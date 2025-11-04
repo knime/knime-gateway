@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.CommandResultEnt;
 
 import java.util.function.BiConsumer;
 
@@ -55,119 +56,73 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * A command that is executed to change a workflow.
+ * ShareComponentResultEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface WorkflowCommandEnt extends GatewayEntity {
-
-  /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   */
-  public enum KindEnum {
-    TRANSLATE("translate"),
-    
-    DELETE("delete"),
-    
-    CONNECT("connect"),
-    
-    AUTO_CONNECT("auto_connect"),
-    
-    AUTO_DISCONNECT("auto_disconnect"),
-    
-    ADD_NODE("add_node"),
-    
-    ADD_COMPONENT("add_component"),
-    
-    DELETE_COMPONENT_PLACEHOLDER("delete_component_placeholder"),
-    
-    REPLACE_NODE("replace_node"),
-    
-    INSERT_NODE("insert_node"),
-    
-    UPDATE_COMPONENT_OR_METANODE_NAME("update_component_or_metanode_name"),
-    
-    UPDATE_NODE_LABEL("update_node_label"),
-    
-    COLLAPSE("collapse"),
-    
-    EXPAND("expand"),
-    
-    ADD_PORT("add_port"),
-    
-    REMOVE_PORT("remove_port"),
-    
-    COPY("copy"),
-    
-    CUT("cut"),
-    
-    PASTE("paste"),
-    
-    TRANSFORM_WORKFLOW_ANNOTATION("transform_workflow_annotation"),
-    
-    UPDATE_WORKFLOW_ANNOTATION("update_workflow_annotation"),
-    
-    REORDER_WORKFLOW_ANNOTATIONS("reorder_workflow_annotations"),
-    
-    ADD_WORKFLOW_ANNOTATION("add_workflow_annotation"),
-    
-    UPDATE_PROJECT_METADATA("update_project_metadata"),
-    
-    UPDATE_COMPONENT_METADATA("update_component_metadata"),
-    
-    SHARE_COMPONENT("share_component"),
-    
-    ADD_BENDPOINT("add_bendpoint"),
-    
-    UPDATE_COMPONENT_LINK_INFORMATION("update_component_link_information"),
-    
-    TRANSFORM_METANODE_PORTS_BAR("transform_metanode_ports_bar"),
-    
-    UPDATE_LINKED_COMPONENTS("update_linked_components"),
-    
-    ALIGN_NODES("align_nodes");
-
-    private String value;
-
-    KindEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface ShareComponentResultEnt extends GatewayEntity, CommandResultEnt {
 
 
   /**
-   * The kind of command which directly maps to a specific &#39;implementation&#39;.
-   * @return kind , never <code>null</code>
+   * Get isNameCollision
+   * @return isNameCollision 
    **/
-  public KindEnum getKind();
+  public Boolean isNameCollision();
+
+  /**
+   * Get browserLink
+   * @return browserLink 
+   **/
+  public String getBrowserLink();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (WorkflowCommandEnt)other;
+      var e = (ShareComponentResultEnt)other;
+      valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
+      valueConsumer.accept("isNameCollision", Pair.create(isNameCollision(), e.isNameCollision()));
+      valueConsumer.accept("browserLink", Pair.create(getBrowserLink(), e.getBrowserLink()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface WorkflowCommandEntBuilder extends GatewayEntityBuilder<WorkflowCommandEnt> {
+    public interface ShareComponentResultEntBuilder extends GatewayEntityBuilder<ShareComponentResultEnt> {
 
         /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
+         * Workflow changes produced by this command are guaranteed to be contained in a workflow snapshot patch as emitted by &#x60;WorkflowChangedEventSource&#x60; with ID less-or-equal to this ID.
          * 
-         * @param kind the property value, NOT <code>null</code>! 
+         * @param snapshotId the property value,  
          * @return this entity builder for chaining
          */
-        WorkflowCommandEntBuilder setKind(KindEnum kind);
+        ShareComponentResultEntBuilder setSnapshotId(String snapshotId);
+        
+        /**
+   		 * Set kind
+         * 
+         * @param kind the property value,  
+         * @return this entity builder for chaining
+         */
+        ShareComponentResultEntBuilder setKind(KindEnum kind);
+        
+        /**
+   		 * Set isNameCollision
+         * 
+         * @param isNameCollision the property value,  
+         * @return this entity builder for chaining
+         */
+        ShareComponentResultEntBuilder setIsNameCollision(Boolean isNameCollision);
+        
+        /**
+   		 * Set browserLink
+         * 
+         * @param browserLink the property value,  
+         * @return this entity builder for chaining
+         */
+        ShareComponentResultEntBuilder setBrowserLink(String browserLink);
         
         
         /**
@@ -177,7 +132,7 @@ public interface WorkflowCommandEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        WorkflowCommandEnt build();
+        ShareComponentResultEnt build();
     
     }
 

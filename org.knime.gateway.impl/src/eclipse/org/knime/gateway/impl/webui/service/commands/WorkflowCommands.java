@@ -78,6 +78,7 @@ import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
@@ -231,6 +232,8 @@ public final class WorkflowCommands {
             command = new AddBendpoint(ce);
         } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) {
             command = new UpdateComponentLinkInformation(ce);
+        }  else if (commandEnt instanceof ShareComponentCommandEnt ce) {
+            command = new ShareComponent(ce, spaceProviders);
         } else if (commandEnt instanceof TransformMetanodePortsBarCommandEnt ce) {
             command = new TransformMetanodePortsBar(ce);
         } else if (commandEnt instanceof UpdateLinkedComponentsCommandEnt ce) {
