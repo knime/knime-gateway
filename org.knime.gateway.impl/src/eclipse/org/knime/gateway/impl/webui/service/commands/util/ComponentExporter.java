@@ -53,12 +53,10 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
-import java.util.function.Supplier;
 
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.port.PortObject;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowExporter;
@@ -100,13 +98,12 @@ public final class ComponentExporter {
     public static MetaNodeTemplateInformation exportComponentWithLimit(final SubNodeContainer component,
         final Path wfArtifactTarget, final Path compressionTarget, final boolean includeInputData,
         Optional<Long> uploadLimit) throws IOException, CanceledExecutionException, LockFailedException,
-        InvalidSettingsException, ServiceExceptions.ServiceCallException {
+            InvalidSettingsException, ServiceExceptions.ServiceCallException, InterruptedException {
 
-        Supplier<PortObject[]> exampleInputData = () -> CoreUtil.getExampleInputData(component).orElseThrow();
         var originalTemplateInfo = component.saveAsTemplate( //
             wfArtifactTarget.toFile(), //
             new ExecutionMonitor(), //
-            includeInputData ? exampleInputData.get() : null //
+            includeInputData ? CoreUtil.getExampleInputData(component) : null //
         );
         // now have /tmp/knime_<PROJ_NAME>/MetaTemplateUpload<ID>/<COMPONENT_NAME>/{workflow.knime,...}
 

@@ -82,10 +82,6 @@ public interface ShareComponentResultEntMixIn extends ShareComponentResultEnt {
     @JsonProperty("isNameCollision")
     public Boolean isNameCollision();
     
-    @Override
-    @JsonProperty("browserLink")
-    public String getBrowserLink();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -110,10 +106,6 @@ public interface ShareComponentResultEntMixIn extends ShareComponentResultEnt {
         @Override
         @JsonProperty("isNameCollision")
         public ShareComponentResultEntMixInBuilder setIsNameCollision(final Boolean isNameCollision);
-        
-        @Override
-        @JsonProperty("browserLink")
-        public ShareComponentResultEntMixInBuilder setBrowserLink(final String browserLink);
         
     }
 

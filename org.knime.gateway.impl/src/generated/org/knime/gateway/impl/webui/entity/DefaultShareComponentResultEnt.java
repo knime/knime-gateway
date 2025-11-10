@@ -56,7 +56,6 @@ import org.knime.gateway.api.webui.entity.ShareComponentResultEnt;
  * @param snapshotId
  * @param kind
  * @param isNameCollision
- * @param browserLink
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -64,8 +63,7 @@ import org.knime.gateway.api.webui.entity.ShareComponentResultEnt;
 public record DefaultShareComponentResultEnt(
     String snapshotId,
     KindEnum kind,
-    Boolean isNameCollision,
-    String browserLink) implements ShareComponentResultEnt {
+    Boolean isNameCollision) implements ShareComponentResultEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -93,11 +91,6 @@ public record DefaultShareComponentResultEnt(
         return isNameCollision;
     }
     
-    @Override
-    public String getBrowserLink() {
-        return browserLink;
-    }
-    
     /**
      * A builder for {@link DefaultShareComponentResultEnt}.
      */
@@ -108,8 +101,6 @@ public record DefaultShareComponentResultEnt(
         private KindEnum m_kind;
 
         private Boolean m_isNameCollision;
-
-        private String m_browserLink;
 
         @Override
         public DefaultShareComponentResultEntBuilder setSnapshotId(String snapshotId) {
@@ -130,18 +121,11 @@ public record DefaultShareComponentResultEnt(
         }
 
         @Override
-        public DefaultShareComponentResultEntBuilder setBrowserLink(String browserLink) {
-             m_browserLink = browserLink;
-             return this;
-        }
-
-        @Override
         public DefaultShareComponentResultEnt build() {
             return new DefaultShareComponentResultEnt(
                 immutable(m_snapshotId),
                 immutable(m_kind),
-                immutable(m_isNameCollision),
-                immutable(m_browserLink));
+                immutable(m_isNameCollision));
         }
     
     }

@@ -70,12 +70,6 @@ public interface ShareComponentResultEnt extends GatewayEntity, CommandResultEnt
    **/
   public Boolean isNameCollision();
 
-  /**
-   * Get browserLink
-   * @return browserLink 
-   **/
-  public String getBrowserLink();
-
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -84,7 +78,6 @@ public interface ShareComponentResultEnt extends GatewayEntity, CommandResultEnt
       valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("isNameCollision", Pair.create(isNameCollision(), e.isNameCollision()));
-      valueConsumer.accept("browserLink", Pair.create(getBrowserLink(), e.getBrowserLink()));
   }
 
     /**
@@ -115,14 +108,6 @@ public interface ShareComponentResultEnt extends GatewayEntity, CommandResultEnt
          * @return this entity builder for chaining
          */
         ShareComponentResultEntBuilder setIsNameCollision(Boolean isNameCollision);
-        
-        /**
-   		 * Set browserLink
-         * 
-         * @param browserLink the property value,  
-         * @return this entity builder for chaining
-         */
-        ShareComponentResultEntBuilder setBrowserLink(String browserLink);
         
         
         /**
