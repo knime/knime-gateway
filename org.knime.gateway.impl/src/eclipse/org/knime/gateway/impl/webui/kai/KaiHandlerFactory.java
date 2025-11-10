@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.kai;
 
 import org.knime.core.node.workflow.contextv2.RestLocationInfo;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
+import org.knime.core.webui.node.dialog.scripting.kai.CodeKaiHandler;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 
 /**

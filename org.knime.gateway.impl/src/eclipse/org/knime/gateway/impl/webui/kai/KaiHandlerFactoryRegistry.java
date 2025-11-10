@@ -56,6 +56,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.webui.node.dialog.scripting.kai.CodeKaiHandler;
 import org.knime.gateway.impl.webui.kai.KaiHandlerFactory.AuthTokenProvider;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 

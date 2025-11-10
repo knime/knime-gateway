@@ -69,6 +69,8 @@ import org.knime.core.webui.data.DataServiceDependencies;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
+import org.knime.core.webui.node.dialog.scripting.kai.CodeKaiHandler;
+import org.knime.core.webui.node.dialog.scripting.kai.CodeKaiHandler.ProjectId;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.node.view.table.TableViewManager;
@@ -87,8 +89,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundEx
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
-import org.knime.gateway.impl.webui.kai.CodeKaiHandler;
-import org.knime.gateway.impl.webui.kai.CodeKaiHandler.ProjectId;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 
 /**

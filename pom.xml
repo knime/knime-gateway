@@ -156,11 +156,6 @@
                     <url>${knime.base.views.p2}</url>
                 </repository>
                 <repository>
-                    <id>p2-knime-scripting-editor</id>
-                    <url>${knime.scripting.editor.p2}</url>
-                    <layout>p2</layout>
-                </repository>
-                <repository>
                     <id>p2-knime-cef</id>
                     <layout>p2</layout>
                     <url>${knime.cef.p2}</url>
