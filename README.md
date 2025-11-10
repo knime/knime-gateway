@@ -3,9 +3,9 @@
 [![Jenkins](https://jenkins.knime.com/buildStatus/icon?job=knime-gateway%2Fmaster)](https://jenkins.knime.com/job/knime-gateway/job/master/)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=KNIME_knime-gateway&metric=alert_status&token=55129ac721eacd76417f57921368ed587ad8339d)](https://sonarcloud.io/summary/new_code?id=KNIME_knime-gateway)
 
-This repository is maintained by the [KNIME UI Development Team](mailto:team-ap-next@knime.com).
+This repository is maintained by the [AP.next Development Team](mailto:team-ap-next@knime.com).
 
-It's the gateway between the KNIME UI and the KNIME Core.
+It's the gateway between KNIME UI and KNIME Core.
 
 # KNIME Gateway API definition and related projects
 
@@ -15,7 +15,7 @@ It's the gateway between the KNIME UI and the KNIME Core.
 
 *Note*: some projects contain auto-generated code. The code-generation tool etc. is located at 'knime-com-shared/com.knime.gateway.codegen'.
 
-### _org.knime.gateway.api_: 
+### _org.knime.gateway.api_:
 * contains all the entity, entity builder and service interfaces for the web-ui API (generated)
 * some 'API'-remarks
   * _entities_ are the messages to be send in between two computers consisting either of other entities or primitives (or list/maps of those)
