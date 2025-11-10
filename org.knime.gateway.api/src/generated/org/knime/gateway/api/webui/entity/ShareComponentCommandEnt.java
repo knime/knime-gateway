@@ -90,13 +90,9 @@ public interface ShareComponentCommandEnt extends GatewayEntity, WorkflowCommand
    * Gets or Sets linkType
    */
   public enum LinkTypeEnum {
-    NODE_RELATIVE("NODE_RELATIVE"),
-    
     WORKFLOW_RELATIVE("WORKFLOW_RELATIVE"),
     
     SPACE_RELATIVE("SPACE_RELATIVE"),
-    
-    MOUNTPOINT_RELATIVE("MOUNTPOINT_RELATIVE"),
     
     MOUNTPOINT_ABSOLUTE("MOUNTPOINT_ABSOLUTE"),
     

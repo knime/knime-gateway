@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
@@ -97,8 +98,6 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
     private boolean m_resultIsNameCollision;
 
     private MetaNodeTemplateInformation m_oldTemplateInfo;
-
-    private String m_resultBrowserLink;
 
     ShareComponent(final ShareComponentCommandEnt ce, final SpaceProviders spaceProviders) {
         m_command = ce;
@@ -163,10 +162,8 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
     private static Optional<KnimeUrlResolver.KnimeUrlVariant>
         parseUrlVariant(final ShareComponentCommandEnt.LinkTypeEnum input) {
         return switch (input) {
-            case NODE_RELATIVE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.NODE_RELATIVE);
             case WORKFLOW_RELATIVE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.WORKFLOW_RELATIVE);
             case SPACE_RELATIVE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.SPACE_RELATIVE);
-            case MOUNTPOINT_RELATIVE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_RELATIVE);
             case MOUNTPOINT_ABSOLUTE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH);
             case MOUNTPOINT_ABSOLUTE_ID_BASED -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID);
             case NONE -> Optional.empty();
@@ -185,8 +182,10 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
     @Override
     public ShareComponentResultEnt buildEntity(final String snapshotId) {
         return builder(ShareComponentResultEnt.ShareComponentResultEntBuilder.class) //
-            .setKind(CommandResultEnt.KindEnum.SHARE_COMPONENT_RESULT).setSnapshotId(snapshotId)
-            .setIsNameCollision(m_resultIsNameCollision).setBrowserLink(m_resultBrowserLink).build();
+            .setKind(CommandResultEnt.KindEnum.SHARE_COMPONENT_RESULT) //
+            .setSnapshotId(snapshotId) //
+            .setIsNameCollision(m_resultIsNameCollision) //
+            .build();
     }
 
     @Override
@@ -206,10 +205,9 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         );
 
         final var collisionHandling = Optional.ofNullable(m_command.getCollisionHandling()) //
-            .map(ShareComponent::parseCollisionHandling)
-            .orElse(Space.NameCollisionHandling.NOOP);
+            .map(ShareComponent::parseCollisionHandling).orElse(Space.NameCollisionHandling.NOOP);
         if ( //
-            collisionHandling == Space.NameCollisionHandling.NOOP //
+        collisionHandling == Space.NameCollisionHandling.NOOP //
             && checkForCollision(m_command.getDestinationItemId(), component, destinationSpace) //
         ) {
             m_resultIsNameCollision = true; // command result
@@ -232,8 +230,7 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
                 wfArtifactTarget, //
                 compressionTarget, //
                 m_command.isIncludeInputData(), //
-                uploadLimit
-            );
+                uploadLimit);
 
             var uploadedComponentItemEnt = importToSpace( // currently expects archive
                 compressionTarget, //
@@ -241,10 +238,6 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
                 m_command.getDestinationItemId(), //
                 collisionHandling //
             );
-
-            m_resultBrowserLink = destinationSpace.getItemUrl(uploadedComponentItemEnt.getId()) //
-                .map(URI::toString) //
-                .orElse(null);
 
             final var requestedLinkVariant = parseUrlVariant(m_command.getLinkType());
             if (requestedLinkVariant.isEmpty()) {
@@ -267,8 +260,8 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         } catch (final CanceledExecutionException e) { // NOSONAR
             // cancelled by user action
             return false;
-        } catch (LockFailedException | InvalidSettingsException e) {
-            throw new RuntimeException(e);  // NOSONAR RuntimeException intended
+        } catch (LockFailedException | InvalidSettingsException | InterruptedException e) {
+            throw new RuntimeException(e); // NOSONAR RuntimeException intended
         } catch (MutableServiceCallException | ServiceExceptions.NetworkException | ServiceExceptions.LoggedOutException
                 | ServiceExceptions.OperationNotAllowedException e) {
             throw convertException(e);
@@ -278,7 +271,7 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
     }
 
     // Override hiding some constant parameters
-    private static SpaceItemEnt importToSpace(final java.nio.file.Path source, final Space destinationSpace,
+    private static SpaceItemEnt importToSpace(final Path source, final Space destinationSpace,
         final String destinationItemId, final Space.NameCollisionHandling collisionHandling)
         throws CanceledExecutionException, MutableServiceCallException, ServiceExceptions.NetworkException,
         ServiceExceptions.LoggedOutException, ServiceExceptions.OperationNotAllowedException {

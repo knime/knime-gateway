@@ -811,19 +811,9 @@ public final class CoreUtil {
      * @param snc the sub-node container
      * @return the input data or empty if unavailable
      */
-    public static Optional<PortObject[]> getExampleInputData(final SubNodeContainer snc) {
-        return getExampleInputData(snc, ProgressReporter.NO_OP);
-    }
-
-    private static Optional<PortObject[]> getExampleInputData(final SubNodeContainer snc, final ProgressReporter progress) {
-        return progress.getWithProgress("Executing upstream nodes...", NodeLogger.getLogger(CoreUtil.class), monitor -> {
-            try {
-                snc.getParent().executePredecessorsAndWait(snc.getID());
-            } catch (InterruptedException e) { // NOSONAR: cancellation is handled
-                return null;
-            }
-            return snc.fetchInputDataFromParent();
-        });
+    public static PortObject[] getExampleInputData(final SubNodeContainer snc) throws InterruptedException {
+        snc.getParent().executePredecessorsAndWait(snc.getID());
+        return snc.fetchInputDataFromParent();
     }
 
     /**
