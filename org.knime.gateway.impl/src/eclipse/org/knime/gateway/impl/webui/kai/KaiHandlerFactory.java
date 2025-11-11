@@ -57,6 +57,8 @@ import org.knime.gateway.impl.webui.service.events.EventConsumer;
  * Factory for {@link KaiHandler} instances that are registered at an extension point.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+ * @noimplement This interface is not intended to be implemented by clients.
+ * @noreference This interface is not intended to be referenced by clients.
  */
 public interface KaiHandlerFactory {
 
@@ -73,7 +75,7 @@ public interface KaiHandlerFactory {
      * @param tokenProvider if {@code null} defaults to getting the auth token from the ExplorerMountTable, which is
      *            only valid in local AP.
      * @return a new handler for the code generation assistant
-     * @since 5.5
+     * @since 5.9
      */
     CodeKaiHandler createCodeKaiHandler(AuthTokenProvider tokenProvider);
 

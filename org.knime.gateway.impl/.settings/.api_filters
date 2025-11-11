@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.impl" version="2">
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.kai.CodeKaiHandler">
+        <filter comment="CodeKaiHandler was not inteded to be used by clients" id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.CodeKaiHandler"/>
+                <message_argument value="org.knime.gateway.impl_5.9.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/KaiHandlerFactory.java" type="org.knime.gateway.impl.webui.kai.KaiHandlerFactory">
+        <filter comment="KaiHandlerFactory was not inteded to be used by clients" id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandlerFactory"/>
+                <message_argument value="createCodeKaiHandler(KaiHandlerFactory.AuthTokenProvider)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultComponentEditorService.java" type="org.knime.gateway.impl.webui.service.DefaultComponentEditorService">
         <filter comment="AP-4024" id="337682486">
             <message_arguments>
@@ -49,6 +65,21 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.service.DefaultCompositeViewService"/>
                 <message_argument value="org.knime.gateway.api.service.GatewayService,org.knime.gateway.api.webui.service.CompositeViewService"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/ServiceDependencies.java" type="org.knime.gateway.impl.webui.service.ServiceDependencies">
+        <filter comment="ServiceDependencies is not inteded to be used by clients" id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.ServiceDependencies"/>
+                <message_argument value="setDefaultServiceDependencies(ProjectManager, WorkflowMiddleware, AppStateUpdater, EventConsumer, SpaceProvidersManager, UpdateStateProvider, NodeRepository, PreferencesProvider, NodeFactoryProvider, KaiHandler, CodeKaiHandler, NodeCollections, NodeCategoryExtensions, SelectionEventBus)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="ServiceDependencies is not inteded to be used by clients" id="1141899266">
+            <message_arguments>
+                <message_argument value="5.5"/>
+                <message_argument value="5.9"/>
+                <message_argument value="setDefaultServiceDependencies(ProjectManager, WorkflowMiddleware, AppStateUpdater, EventConsumer, SpaceProvidersManager, UpdateStateProvider, NodeRepository, PreferencesProvider, NodeFactoryProvider, KaiHandler, CodeKaiHandler, NodeCollections, NodeCategoryExtensions, SelectionEventBus)"/>
             </message_arguments>
         </filter>
     </resource>
