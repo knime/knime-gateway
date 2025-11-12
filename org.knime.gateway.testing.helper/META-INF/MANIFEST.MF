@@ -8,7 +8,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: org.knime.gateway.testing.helper
 Export-Package: org.knime.gateway.testing.helper,
  org.knime.gateway.testing.helper.rpc.node,
- org.knime.gateway.testing.helper.webui
+ org.knime.gateway.testing.helper.webui,
+ org.knime.gateway.testing.helper.webui.node
 Require-Bundle: com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.13.2.2,3.0.0)",
  org.knime.gateway.api;bundle-version="[5.8.0,6.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.11.0,3.0.0)",

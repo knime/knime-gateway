@@ -87,6 +87,8 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
  * Export and link a component
+ *
+ * @since 5.9
  */
 @SuppressWarnings("java:S1130")
 public class ShareComponent extends AbstractWorkflowCommand implements WithResult {

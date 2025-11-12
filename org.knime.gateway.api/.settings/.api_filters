@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.api" version="2">
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/CommandResultEnt.java" type="org.knime.gateway.api.webui.entity.CommandResultEnt$KindEnum">
+        <filter id="1177550852">
+            <message_arguments>
+                <message_argument value="SHARE_COMPONENT_RESULT"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentEditorConfigEnt.java" type="org.knime.gateway.api.webui.entity.ComponentEditorConfigEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -18,6 +25,27 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.LegacyViewNodeConfigEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ShareComponentCommandEnt.java" type="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ShareComponentResultEnt.java" type="org.knime.gateway.api.webui.entity.ShareComponentResultEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentResultEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/WorkflowCommandEnt.java" type="org.knime.gateway.api.webui.entity.WorkflowCommandEnt$KindEnum">
+        <filter id="1177550852">
+            <message_arguments>
+                <message_argument value="SHARE_COMPONENT"/>
             </message_arguments>
         </filter>
     </resource>

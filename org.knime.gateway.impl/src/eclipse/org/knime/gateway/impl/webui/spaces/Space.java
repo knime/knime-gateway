@@ -724,6 +724,7 @@ public interface Space {
 
     /**
      * @return The file size limit for uploading an item to this space. Empty if unlimited.
+     * @since 5.9
      */
     default Optional<Long> getUploadLimit() {
         return Optional.empty();
