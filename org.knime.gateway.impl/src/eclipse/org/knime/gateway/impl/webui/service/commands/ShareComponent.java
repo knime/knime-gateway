@@ -60,7 +60,6 @@ import java.util.function.Function;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
@@ -68,11 +67,11 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
-import org.knime.core.util.LockFailedException;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.core.util.urlresolve.KnimeUrlResolver;
 import org.knime.core.util.urlresolve.URLResolverUtil;
+import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
@@ -84,6 +83,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.service.commands.util.ComponentExporter;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Export and link a component
@@ -112,20 +112,15 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         return component;
     }
 
-    private static boolean checkForCollision(final String destItemId, final SubNodeContainer component,
-        final Space destinationSpace) throws ServiceExceptions.ServiceCallException {
-        try {
-            return destinationSpace.getItemIdForName(destItemId, component.getName()).isPresent();
-        } catch (MutableServiceCallException | ServiceExceptions.NetworkException
-                | ServiceExceptions.LoggedOutException e) {
-            throw convertException(e);
-        }
+    private static boolean hasCollision(final String destItemId, final SubNodeContainer component,
+        final Space destinationSpace)
+        throws MutableServiceCallException, ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException {
+        return destinationSpace.getItemIdForName(destItemId, component.getName()).isPresent();
     }
 
     private static URI resolveLinkUri(final KnimeUrlResolver.KnimeUrlVariant requestedVariant,
         final Space destinationSpace, final String uploadedComponentItemId, final SubNodeContainer component)
-        throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, MutableServiceCallException,
-        ResourceAccessException, MalformedURLException {
+        throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, MutableServiceCallException {
 
         final var absoluteUri = destinationSpace.toKnimeUrl(uploadedComponentItemId);
         final var pathBasedUri = destinationSpace.toPathBasedKnimeUrl(uploadedComponentItemId);
@@ -133,19 +128,25 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         final var projectWorkflow = CoreUtil.getProjectWorkflow(component);
         final var resolver = KnimeUrlResolver.getResolver(projectWorkflow.getContextV2());
 
-        final var translator = createHubUrlTranslator(pathBasedUri);
-        final var variants = new EnumMap<KnimeUrlResolver.KnimeUrlVariant, URL>(KnimeUrlResolver.KnimeUrlVariant.class);
-        variants.putAll(resolver.changeLinkType(URLResolverUtil.toURL(pathBasedUri), translator));
-        variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH,
-            URLResolverUtil.toURL(pathBasedUri));
-        variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID,
-            URLResolverUtil.toURL(absoluteUri));
+        try {
+            final var translator = createHubUrlTranslator(pathBasedUri);
+            final var variants =
+                new EnumMap<KnimeUrlResolver.KnimeUrlVariant, URL>(KnimeUrlResolver.KnimeUrlVariant.class);
+            variants.putAll(resolver.changeLinkType(URLResolverUtil.toURL(pathBasedUri), translator));
+            variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH,
+                URLResolverUtil.toURL(pathBasedUri));
+            variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID,
+                URLResolverUtil.toURL(absoluteUri));
 
-        final var selectedUrl = variants.get(requestedVariant);
-        if (selectedUrl == null) {
-            throw new IllegalArgumentException("No URL variant found for " + requestedVariant);
+            final var selectedUrl = variants.get(requestedVariant);
+            if (selectedUrl == null) {
+                throw new MutableServiceCallException("No URL variant found for " + requestedVariant, true);
+            }
+            return URLResolverUtil.toURI(selectedUrl);
+
+        } catch (ResourceAccessException e) {
+            throw new MutableServiceCallException("Could not resolve link types", true, e);
         }
-        return URLResolverUtil.toURI(selectedUrl);
     }
 
     private static Function<URL, Optional<KnimeUrlResolver.IdAndPath>> createHubUrlTranslator(final URI pathBasedUri) {
@@ -199,21 +200,73 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         final var wfm = getWorkflowManager();
         final var componentId = m_command.getNodeId().toNodeID(wfm);
         final var component = getSubNodeContainerOrThrow(wfm, componentId);
-        final var destinationSpace = getSpaceOrThrow( //
-            m_command.getDestinationSpaceProviderId(), //
-            m_command.getDestinationSpaceId() //
-        );
 
-        final var collisionHandling = Optional.ofNullable(m_command.getCollisionHandling()) //
-            .map(ShareComponent::parseCollisionHandling).orElse(Space.NameCollisionHandling.NOOP);
-        if ( //
-        collisionHandling == Space.NameCollisionHandling.NOOP //
-            && checkForCollision(m_command.getDestinationItemId(), component, destinationSpace) //
-        ) {
-            m_resultIsNameCollision = true; // command result
-            return false;
+        try {
+            final var destinationSpace = m_spaceProviders.getSpace(m_command.getDestinationSpaceProviderId(), //
+                m_command.getDestinationSpaceId() //
+            );
+            // pattern: frontend first tries with NOOP collision handling, backend checks for collision and returns in case,
+            //  frontend can prompt user for strategy and try again.
+            final var collisionHandling = Optional.ofNullable(m_command.getCollisionHandling()) //
+                .map(ShareComponent::parseCollisionHandling).orElse(Space.NameCollisionHandling.NOOP);
+            if ( //
+            collisionHandling == Space.NameCollisionHandling.NOOP //
+                && hasCollision(m_command.getDestinationItemId(), component, destinationSpace) //
+            ) {
+                m_resultIsNameCollision = true; // command result
+                return false;
+            }
+
+            var parameters = new ImportParameters( //
+                m_command.getDestinationItemId(), //
+                component, //
+                collisionHandling, //
+                m_command.isIncludeInputData() //
+            );
+            var importResult = destinationSpace instanceof LocalSpace localSpace ? //
+                importToLocal(localSpace, parameters) //
+                : importToSpace(destinationSpace, parameters);
+
+            final var requestedLinkVariant = parseUrlVariant(m_command.getLinkType());
+            if (requestedLinkVariant.isEmpty()) {
+                return false; // share, but do not create local link
+            }
+            final var newLink = resolveLinkUri( //
+                requestedLinkVariant.get(), //
+                destinationSpace, //
+                importResult.spaceItemEnt().getId(), //
+                component //
+            );
+
+            var newTemplateInfo = importResult.templateInfo().createLink(newLink);
+            m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
+            return true;
+        } catch (MutableServiceCallException e) {
+            throw e.toGatewayException("Failed to link component");
+        } catch (CanceledExecutionException e) {
+            return false; // user cancelled, do nothing
+        } catch (GatewayException e) {
+            throw convertException(e);
         }
+    }
 
+    private static ImportResult importToLocal(final LocalSpace localSpace, final ImportParameters params)
+        throws MutableServiceCallException, CanceledExecutionException {
+        var wfArtifactTarget = localSpace.getImportTarget( //
+            params.destinationItemId, //
+            params.component.getName(), //
+            params.collisionHandling //
+        );
+        var originalTemplateInfo =
+            ComponentExporter.exportToDirectory(params.component, wfArtifactTarget, params.includeInputData);
+        var importedComponentItemEnt = localSpace.getSpaceItemEntFromPathAndUpdateCache(wfArtifactTarget);
+        return new ImportResult(originalTemplateInfo, importedComponentItemEnt);
+    }
+
+    private static ImportResult importToSpace(final Space destinationSpace, final ImportParameters params)
+        throws MutableServiceCallException, CanceledExecutionException, ServiceExceptions.ServiceCallException,
+        ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException,
+        ServiceExceptions.OperationNotAllowedException {
         try ( //
                 // the directory name determines the name of the item in the Space, so it has to be component.getName()
                 // to avoid name collisions, put it in directory with unique name
@@ -221,62 +274,34 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
                 var compressionTargetParent = FileUtil.createTempDirResource("knime_uploaded_item") //
         ) {
 
-            var wfArtifactTarget = wfArtifactParent.getPath().resolve(component.getName());
+            var wfArtifactTarget = wfArtifactParent.getPath().resolve(params.component.getName());
 
-            var compressionTarget = compressionTargetParent.getPath().resolve(component.getName());
+            var compressionTarget = compressionTargetParent.getPath().resolve(params.component.getName());
             var uploadLimit = destinationSpace.getUploadLimit();
             var originalTemplateInfo = ComponentExporter.exportComponentWithLimit( //
-                component, //
+                params.component, //
                 wfArtifactTarget, //
                 compressionTarget, //
-                m_command.isIncludeInputData(), //
+                params.includeInputData, //
                 uploadLimit);
 
-            var uploadedComponentItemEnt = importToSpace( // currently expects archive
-                compressionTarget, //
-                destinationSpace, //
-                m_command.getDestinationItemId(), //
-                collisionHandling //
-            );
+            var uploadedComponentItemEnt = importWorkflowOrWorkflowGroup(destinationSpace, params.destinationItemId,
+                params.collisionHandling, compressionTarget);
 
-            final var requestedLinkVariant = parseUrlVariant(m_command.getLinkType());
-            if (requestedLinkVariant.isEmpty()) {
-                return false; // share, but do not create local link
-            }
-
-            final var newLink = resolveLinkUri( //
-                requestedLinkVariant.get(), //
-                destinationSpace, //
-                uploadedComponentItemEnt.getId(), //
-                component //
-            );
-
-            var newTemplateInfo = originalTemplateInfo.createLink(newLink);
-            m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
+            return new ImportResult(originalTemplateInfo, uploadedComponentItemEnt);
 
         } catch (IOException e) {
-            throw ServiceExceptions.ServiceCallException.builder().withTitle("Failed to share component")
-                .withDetails("Unable to create or write component template file.").canCopy(false).withCause(e).build();
-        } catch (final CanceledExecutionException e) { // NOSONAR
-            // cancelled by user action
-            return false;
-        } catch (LockFailedException | InvalidSettingsException | InterruptedException e) {
-            throw new RuntimeException(e); // NOSONAR RuntimeException intended
-        } catch (MutableServiceCallException | ServiceExceptions.NetworkException | ServiceExceptions.LoggedOutException
-                | ServiceExceptions.OperationNotAllowedException e) {
-            throw convertException(e);
+            throw new MutableServiceCallException("Could not set up temporary directories for export.", true, e);
         }
-
-        return true;
     }
 
-    // Override hiding some constant parameters
-    private static SpaceItemEnt importToSpace(final Path source, final Space destinationSpace,
-        final String destinationItemId, final Space.NameCollisionHandling collisionHandling)
+    private static SpaceItemEnt importWorkflowOrWorkflowGroup(final Space destinationSpace,
+        final String destinationItemId, final Space.NameCollisionHandling collisionHandling,
+        final Path compressionTarget)
         throws CanceledExecutionException, MutableServiceCallException, ServiceExceptions.NetworkException,
         ServiceExceptions.LoggedOutException, ServiceExceptions.OperationNotAllowedException {
-        return destinationSpace.importWorkflowOrWorkflowGroup( //
-            source, //
+        return destinationSpace.importWorkflowOrWorkflowGroup( // currently expects archive
+            compressionTarget, //
             destinationItemId, //
             p -> {
             }, //
@@ -285,14 +310,13 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         );
     }
 
-    private Space getSpaceOrThrow(final String providerId, final String spaceId)
-        throws ServiceExceptions.ServiceCallException {
-        try {
-            return m_spaceProviders.getSpace(providerId, spaceId);
-        } catch (ServiceExceptions.NetworkException | ServiceExceptions.LoggedOutException
-                | MutableServiceCallException e) {
-            throw convertException(e);
-        }
+    private record ImportResult(MetaNodeTemplateInformation templateInfo, SpaceItemEnt spaceItemEnt) {
+
+    }
+
+    private record ImportParameters(String destinationItemId, SubNodeContainer component,
+            Space.NameCollisionHandling collisionHandling, boolean includeInputData) {
+
     }
 
     @Override

@@ -573,6 +573,16 @@ public final class LocalSpace implements Space {
         }
     }
 
+    public Path getImportTarget(final String workflowGroupItemId, final String originalName, final NameCollisionHandling collisionHandling) throws MutableServiceCallException {
+        final var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
+        return resolveWithNameCollisions( //
+                workflowGroupItemId, //
+                originalName, //
+                collisionHandling, //
+                () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, originalName, true) //
+        );
+    }
+
     /**
      * @return The item's path after it was moved.
      * @throws MutableServiceCallException
@@ -651,7 +661,7 @@ public final class LocalSpace implements Space {
         }
     }
 
-    private SpaceItemEnt getSpaceItemEntFromPathAndUpdateCache(final Path absolutePath) {
+    public SpaceItemEnt getSpaceItemEntFromPathAndUpdateCache(final Path absolutePath) {
         var id = m_spaceItemPathAndTypeCache.determineItemIdOrGetFromCache(absolutePath);
         var type = m_spaceItemPathAndTypeCache.determineTypeOrGetFromCache(absolutePath);
         return EntityFactory.Space.buildLocalSpaceItemEnt(absolutePath, m_rootPath, id, type);
