@@ -263,7 +263,7 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
      */
     private static ImportResult importToLocal(final LocalSpace localSpace, final ImportParameters params)
         throws MutableServiceCallException, CanceledExecutionException {
-        var wfArtifactTarget = localSpace.getImportTarget( //
+        var wfArtifactTarget = localSpace.resolveWithNameCollisions( //
             params.destinationItemId, //
             params.component.getName(), //
             params.collisionHandling //

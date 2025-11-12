@@ -584,7 +584,7 @@ public final class LocalSpace implements Space {
      * @throws MutableServiceCallException if the parent workflow group cannot be resolved or if collision handling
      *             fails
      */
-    public Path getImportTarget(final String workflowGroupItemId, final String originalName, final NameCollisionHandling collisionHandling) throws MutableServiceCallException {
+    public Path resolveWithNameCollisions(final String workflowGroupItemId, final String originalName, final NameCollisionHandling collisionHandling) throws MutableServiceCallException {
         final var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         return resolveWithNameCollisions( //
                 workflowGroupItemId, //
