@@ -51,7 +51,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +59,6 @@ import java.util.function.Function;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
@@ -68,7 +66,6 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
-import org.knime.core.util.LockFailedException;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.core.util.urlresolve.KnimeUrlResolver;
@@ -84,6 +81,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.service.commands.util.ComponentExporter;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Export and link a component
@@ -114,20 +112,15 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         return component;
     }
 
-    private static boolean checkForCollision(final String destItemId, final SubNodeContainer component,
-        final Space destinationSpace) throws ServiceExceptions.ServiceCallException {
-        try {
-            return destinationSpace.getItemIdForName(destItemId, component.getName()).isPresent();
-        } catch (MutableServiceCallException | ServiceExceptions.NetworkException
-                | ServiceExceptions.LoggedOutException e) {
-            throw convertException(e);
-        }
+    private static boolean hasCollision(final String destItemId, final SubNodeContainer component,
+        final Space destinationSpace)
+        throws MutableServiceCallException, ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException {
+        return destinationSpace.getItemIdForName(destItemId, component.getName()).isPresent();
     }
 
     private static URI resolveLinkUri(final KnimeUrlResolver.KnimeUrlVariant requestedVariant,
         final Space destinationSpace, final String uploadedComponentItemId, final SubNodeContainer component)
-        throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, MutableServiceCallException,
-        ResourceAccessException, MalformedURLException {
+        throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, MutableServiceCallException {
 
         final var absoluteUri = destinationSpace.toKnimeUrl(uploadedComponentItemId);
         final var pathBasedUri = destinationSpace.toPathBasedKnimeUrl(uploadedComponentItemId);
@@ -135,19 +128,25 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         final var projectWorkflow = CoreUtil.getProjectWorkflow(component);
         final var resolver = KnimeUrlResolver.getResolver(projectWorkflow.getContextV2());
 
-        final var translator = createHubUrlTranslator(pathBasedUri);
-        final var variants = new EnumMap<KnimeUrlResolver.KnimeUrlVariant, URL>(KnimeUrlResolver.KnimeUrlVariant.class);
-        variants.putAll(resolver.changeLinkType(URLResolverUtil.toURL(pathBasedUri), translator));
-        variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH,
-            URLResolverUtil.toURL(pathBasedUri));
-        variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID,
-            URLResolverUtil.toURL(absoluteUri));
+        try {
+            final var translator = createHubUrlTranslator(pathBasedUri);
+            final var variants =
+                new EnumMap<KnimeUrlResolver.KnimeUrlVariant, URL>(KnimeUrlResolver.KnimeUrlVariant.class);
+            variants.putAll(resolver.changeLinkType(URLResolverUtil.toURL(pathBasedUri), translator));
+            variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH,
+                URLResolverUtil.toURL(pathBasedUri));
+            variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID,
+                URLResolverUtil.toURL(absoluteUri));
 
-        final var selectedUrl = variants.get(requestedVariant);
-        if (selectedUrl == null) {
-            throw new IllegalArgumentException("No URL variant found for " + requestedVariant);
+            final var selectedUrl = variants.get(requestedVariant);
+            if (selectedUrl == null) {
+                throw new MutableServiceCallException("No URL variant found for " + requestedVariant, true);
+            }
+            return URLResolverUtil.toURI(selectedUrl);
+
+        } catch (ResourceAccessException e) {
+            throw new MutableServiceCallException("Could not resolve link types", true, e);
         }
-        return URLResolverUtil.toURI(selectedUrl);
     }
 
     private static Function<URL, Optional<KnimeUrlResolver.IdAndPath>> createHubUrlTranslator(final URI pathBasedUri) {
@@ -201,100 +200,134 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         final var wfm = getWorkflowManager();
         final var componentId = m_command.getNodeId().toNodeID(wfm);
         final var component = getSubNodeContainerOrThrow(wfm, componentId);
-        final var destinationSpace = getSpaceOrThrow( //
-            m_command.getDestinationSpaceProviderId(), //
-            m_command.getDestinationSpaceId() //
-        );
 
-        final var collisionHandling = Optional.ofNullable(m_command.getCollisionHandling()) //
-            .map(ShareComponent::parseCollisionHandling).orElse(Space.NameCollisionHandling.NOOP);
-        if ( //
-        collisionHandling == Space.NameCollisionHandling.NOOP //
-            && checkForCollision(m_command.getDestinationItemId(), component, destinationSpace) //
-        ) {
-            m_resultIsNameCollision = true; // command result
-            return false;
-        }
-
-        try ( //
-                // the directory name determines the name of the item in the Space, so it has to be component.getName()
-                // to avoid name collisions, put it in directory with unique name
-                var wfArtifactParent = FileUtil.createTempDirResource("MetaTemplateUpload");
-                var compressionTargetParent = FileUtil.createTempDirResource("knime_uploaded_item") //
-        ) {
-
-            var wfArtifactTarget = wfArtifactParent.getPath().resolve(component.getName());
-
-            var compressionTarget = compressionTargetParent.getPath().resolve(component.getName());
-            var uploadLimit = destinationSpace.getUploadLimit();
-            var originalTemplateInfo = ComponentExporter.exportComponentWithLimit( //
-                component, //
-                wfArtifactTarget, //
-                compressionTarget, //
-                m_command.isIncludeInputData(), //
-                uploadLimit);
-
-            var uploadedComponentItemEnt = importToSpace( // currently expects archive
-                compressionTarget, //
-                destinationSpace, //
-                m_command.getDestinationItemId(), //
-                collisionHandling //
+        try {
+            final var destinationSpace = m_spaceProviders.getSpace( //
+                m_command.getDestinationSpaceProviderId(), //
+                m_command.getDestinationSpaceId() //
             );
+            // pattern: frontend first tries with NOOP collision handling, backend checks for collision and returns in case,
+            //  frontend can prompt user for strategy and try again.
+            final var collisionHandling = Optional.ofNullable(m_command.getCollisionHandling()) //
+                .map(ShareComponent::parseCollisionHandling) //
+                .orElse(Space.NameCollisionHandling.NOOP);
+            if ( //
+            collisionHandling == Space.NameCollisionHandling.NOOP //
+                && hasCollision(m_command.getDestinationItemId(), component, destinationSpace) //
+            ) {
+                m_resultIsNameCollision = true; // command result
+                return false;
+            }
+
+            var parameters = new ImportParameters( //
+                m_command.getDestinationItemId(), //
+                component, //
+                collisionHandling, //
+                m_command.isIncludeInputData() //
+            );
+            var importResult = destinationSpace instanceof LocalSpace localSpace ? //
+                importToLocal(localSpace, parameters) //
+                : importToSpace(destinationSpace, parameters);
 
             final var requestedLinkVariant = parseUrlVariant(m_command.getLinkType());
             if (requestedLinkVariant.isEmpty()) {
                 return false; // share, but do not create local link
             }
-
             final var newLink = resolveLinkUri( //
                 requestedLinkVariant.get(), //
                 destinationSpace, //
-                uploadedComponentItemEnt.getId(), //
+                importResult.spaceItemEnt().getId(), //
                 component //
             );
 
-            var newTemplateInfo = originalTemplateInfo.createLink(newLink);
+            var newTemplateInfo = importResult.templateInfo().createLink(newLink);
             m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
+            return true;
+        } catch (MutableServiceCallException e) {
+            throw e.toGatewayException("Failed to link component");
+        } catch (CanceledExecutionException e) {
+            return false; // user cancelled, do nothing
+        } catch (Exception e) {
+            throw convertException(e);
+        }
+    }
+
+    /**
+     * Imports a component to a local space by saving it directly to a directory without compression.
+     *
+     * @param localSpace the target local space
+     * @param params the import parameters including destination, collision handling, and input data settings
+     * @return import result containing template information and space item entity
+     * @throws MutableServiceCallException if the import operation fails
+     * @throws CanceledExecutionException if the operation is canceled
+     */
+    private static ImportResult importToLocal(final LocalSpace localSpace, final ImportParameters params)
+            throws Exception {
+        final var result = localSpace.importWithResult( //
+            destination -> ComponentExporter.exportToDirectory(params.component, destination, params.includeInputData), //
+            params.destinationItemId, //
+            params.component.getName(), //
+            params.collisionHandling //
+        );
+        return new ImportResult(result.getSecond(), result.getFirst());
+    }
+
+    /**
+     * Imports a component to a non-local space by first compressing it and then uploading.
+     *
+     * @param destinationSpace the target space
+     * @param params the import parameters including destination, collision handling, and input data settings
+     * @return import result containing template information and space item entity
+     * @throws MutableServiceCallException if the import operation fails
+     * @throws CanceledExecutionException if the operation is canceled
+     * @throws ServiceExceptions.NetworkException if a network error occurs
+     * @throws ServiceExceptions.LoggedOutException if the user is logged out
+     * @throws ServiceExceptions.OperationNotAllowedException if the operation is not allowed
+     */
+    private static ImportResult importToSpace(final Space destinationSpace, final ImportParameters params)
+        throws MutableServiceCallException, CanceledExecutionException,
+            ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException,
+        ServiceExceptions.OperationNotAllowedException, ServiceExceptions.ServiceCallException {
+        try ( //
+                // the directory name determines the name of the item in the Space, so it has to be component.getName()
+                // to avoid name collisions, put it in directory with unique name
+                var wfArtifactParent = FileUtil.createTempDirResource("MetaTemplateUpload"); //
+                var compressionTargetParent = FileUtil.createTempDirResource("knime_uploaded_item") //
+        ) {
+
+            var wfArtifactTarget = wfArtifactParent.getPath().resolve(params.component.getName());
+
+            var compressionTarget = compressionTargetParent.getPath().resolve(params.component.getName());
+            var uploadLimit = destinationSpace.getUploadLimit();
+            var originalTemplateInfo = ComponentExporter.exportComponentWithLimit( //
+                params.component, //
+                wfArtifactTarget, //
+                compressionTarget, //
+                params.includeInputData, //
+                uploadLimit);
+
+            var uploadedComponentItemEnt = destinationSpace.importWorkflowOrWorkflowGroup( // currently expects archive
+                compressionTarget, //
+                params.destinationItemId, //
+                p -> {
+                }, //
+                params.collisionHandling, //
+                new NullProgressMonitor() //
+            );
+            return new ImportResult(originalTemplateInfo, uploadedComponentItemEnt);
 
         } catch (IOException e) {
-            throw ServiceExceptions.ServiceCallException.builder().withTitle("Failed to share component")
-                .withDetails("Unable to create or write component template file.").canCopy(false).withCause(e).build();
-        } catch (final CanceledExecutionException e) { // NOSONAR
-            // cancelled by user action
-            return false;
-        } catch (LockFailedException | InvalidSettingsException | InterruptedException e) {
-            throw new RuntimeException(e); // NOSONAR RuntimeException intended
-        } catch (MutableServiceCallException | ServiceExceptions.NetworkException | ServiceExceptions.LoggedOutException
-                | ServiceExceptions.OperationNotAllowedException e) {
-            throw convertException(e);
+            throw new MutableServiceCallException("Could not set up temporary directories for export.", true, e);
         }
-
-        return true;
     }
 
-    // Override hiding some constant parameters
-    private static SpaceItemEnt importToSpace(final Path source, final Space destinationSpace,
-        final String destinationItemId, final Space.NameCollisionHandling collisionHandling)
-        throws CanceledExecutionException, MutableServiceCallException, ServiceExceptions.NetworkException,
-        ServiceExceptions.LoggedOutException, ServiceExceptions.OperationNotAllowedException {
-        return destinationSpace.importWorkflowOrWorkflowGroup( //
-            source, //
-            destinationItemId, //
-            p -> {
-            }, //
-            collisionHandling, //
-            new NullProgressMonitor() //
-        );
+    private record ImportParameters(String destinationItemId, SubNodeContainer component,
+            Space.NameCollisionHandling collisionHandling, boolean includeInputData) {
+
     }
 
-    private Space getSpaceOrThrow(final String providerId, final String spaceId)
-        throws ServiceExceptions.ServiceCallException {
-        try {
-            return m_spaceProviders.getSpace(providerId, spaceId);
-        } catch (ServiceExceptions.NetworkException | ServiceExceptions.LoggedOutException
-                | MutableServiceCallException e) {
-            throw convertException(e);
-        }
+
+    private record ImportResult(MetaNodeTemplateInformation templateInfo, SpaceItemEnt spaceItemEnt) {
     }
 
     @Override

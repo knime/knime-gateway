@@ -72,6 +72,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.function.FailableFunction;
 import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -539,6 +540,37 @@ public final class LocalSpace implements Space {
         }
         createMetaInfoFileFor.accept(destPath);
         return getSpaceItemEntFromPathAndUpdateCache(destPath);
+    }
+
+    /**
+     * Provides pre- and post-processing around the invocation of the given importer function.
+     *
+     * @param importer The function to invoke, receives a resolved destination path (i.e. after name collision
+     *            resolution, renaming)
+     * @param destinationParent The item ID of the directory / workflow group the item should be imported into
+     * @param importItemName The name of the item to be imported
+     * @param collisionHandling The collision handling strategy to apply if the import item name already exists
+     * @return A pair containing the SpaceItemEnt representing the imported item and the result of the importer function
+     * @param <R> The return type of the importer function
+     * @param <E> The type of exception thrown by the importer function
+     * @throws E If the importer function throws an exception
+     * @throws MutableServiceCallException If an error occurs during name resolving
+     * @since 5.9
+     */
+    public <R, E extends Exception> Pair<SpaceItemEnt, R> importWithResult(final FailableFunction<Path, R, E> importer,
+        final String destinationParent, final String importItemName, final NameCollisionHandling collisionHandling)
+        throws E, MutableServiceCallException {
+        final var parentWorkflowGroupPath = getAbsolutePath(destinationParent);
+        final var destinationPath = resolveWithNameCollisions( //
+            destinationParent, //
+            importItemName, //
+            collisionHandling, //
+            () -> generateUniqueSpaceItemName(parentWorkflowGroupPath, importItemName, true) //
+        );
+        // mind the evaluation order
+        var result = importer.apply(destinationPath);
+        var spaceEnt = getSpaceItemEntFromPathAndUpdateCache(destinationPath);
+        return new Pair<>(spaceEnt, result);
     }
 
     @Override
