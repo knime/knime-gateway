@@ -75,9 +75,19 @@ public final class ComponentExporter {
 
     }
 
+    /**
+     * Exports a component to a directory without compression.
+     *
+     * @param component the component to export
+     * @param wfArtifactTarget the target directory path
+     * @param includeInputData whether to include input data in the export
+     * @return the original template information of the component
+     * @throws CanceledExecutionException if the operation is canceled
+     * @throws MutableServiceCallException if the export fails
+     */
     public static MetaNodeTemplateInformation exportToDirectory(final SubNodeContainer component,
-        final Path wfArtifactTarget, final boolean includeInputData) throws 
-            CanceledExecutionException, MutableServiceCallException {
+        final Path wfArtifactTarget, final boolean includeInputData)
+        throws CanceledExecutionException, MutableServiceCallException {
         return saveAsTemplate(component, wfArtifactTarget, includeInputData);
     }
 
@@ -94,6 +104,8 @@ public final class ComponentExporter {
      * @param includeInputData whether to include example input data in the export
      * @param uploadLimit throws if exceeded
      * @return the original template information of the component
+     * @throws CanceledExecutionException -
+     * @throws MutableServiceCallException -
      */
     @SuppressWarnings("java:S125")
     public static MetaNodeTemplateInformation exportComponentWithLimit(final SubNodeContainer component,
@@ -129,8 +141,19 @@ public final class ComponentExporter {
         return originalTemplateInfo;
     }
 
-    private static MetaNodeTemplateInformation saveAsTemplate(SubNodeContainer component, Path wfArtifactTarget,
-        boolean includeInputData) throws MutableServiceCallException, CanceledExecutionException {
+    /**
+     * Saves the component as a template to the specified directory.
+     *
+     * @param component the component to save
+     * @param wfArtifactTarget the target directory
+     * @param includeInputData whether to include input data
+     * @return the original template information
+     * @throws MutableServiceCallException if the save operation fails
+     * @throws CanceledExecutionException if the operation is canceled
+     */
+    private static MetaNodeTemplateInformation saveAsTemplate(final SubNodeContainer component,
+        final Path wfArtifactTarget, final boolean includeInputData)
+        throws MutableServiceCallException, CanceledExecutionException {
         try {
             return component.saveAsTemplate( //
                 wfArtifactTarget.toFile(), //
@@ -150,12 +173,12 @@ public final class ComponentExporter {
         }
     }
 
-
     /**
      * Validates that the compressed size does not exceed the specified limit.
-     * 
+     *
      * @param compressedSize the actual size of the compressed archive in bytes
-     * @param uploadLimit the maximum allowed size in bytes
+     * @param uploadLimit the maximum allowed size in bytes (empty if no limit)
+     * @throws MutableServiceCallException if the upload limit is exceeded
      */
     private static void assertSize(final long compressedSize, final Optional<Long> uploadLimit)
         throws MutableServiceCallException {

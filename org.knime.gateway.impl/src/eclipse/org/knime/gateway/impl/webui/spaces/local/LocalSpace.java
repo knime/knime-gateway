@@ -573,6 +573,17 @@ public final class LocalSpace implements Space {
         }
     }
 
+    /**
+     * Determines the import target path for a component being saved to this local space, handling name collisions
+     * according to the specified strategy.
+     *
+     * @param workflowGroupItemId the ID of the parent workflow group where the component will be imported
+     * @param originalName the original name of the component to import
+     * @param collisionHandling the strategy for handling name collisions (NOOP, AUTORENAME, or OVERWRITE)
+     * @return the resolved target path where the component should be imported
+     * @throws MutableServiceCallException if the parent workflow group cannot be resolved or if collision handling
+     *             fails
+     */
     public Path getImportTarget(final String workflowGroupItemId, final String originalName, final NameCollisionHandling collisionHandling) throws MutableServiceCallException {
         final var parentWorkflowGroupPath = getAbsolutePath(workflowGroupItemId);
         return resolveWithNameCollisions( //

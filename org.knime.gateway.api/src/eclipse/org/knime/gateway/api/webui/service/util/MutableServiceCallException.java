@@ -88,7 +88,7 @@ public final class MutableServiceCallException extends Exception {
     private static String createMessage(final String title, final Iterable<String> details) {
         final var sb = new StringBuilder(title);
         if (details != null) {
-            details.forEach(detail -> sb.append(" * " + detail));
+            details.forEach(detail -> sb.append(" * ").append(detail));
         }
         return sb.toString();
     }
@@ -115,6 +115,12 @@ public final class MutableServiceCallException extends Exception {
         this(List.of(firstDetail), canCopy, cause);
     }
 
+    /**
+     * Creates a new mutable exception without a cause.
+     *
+     * @param firstDetail first detail line (user-oriented explanation/hint), may be {@code null}
+     * @param canCopy whether the details can be copied to the clipboard
+     */
     public MutableServiceCallException(final String firstDetail, final boolean canCopy) {
         this(List.of(firstDetail), canCopy, null);
     }

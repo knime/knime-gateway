@@ -202,13 +202,15 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         final var component = getSubNodeContainerOrThrow(wfm, componentId);
 
         try {
-            final var destinationSpace = m_spaceProviders.getSpace(m_command.getDestinationSpaceProviderId(), //
+            final var destinationSpace = m_spaceProviders.getSpace( //
+                m_command.getDestinationSpaceProviderId(), //
                 m_command.getDestinationSpaceId() //
             );
             // pattern: frontend first tries with NOOP collision handling, backend checks for collision and returns in case,
             //  frontend can prompt user for strategy and try again.
             final var collisionHandling = Optional.ofNullable(m_command.getCollisionHandling()) //
-                .map(ShareComponent::parseCollisionHandling).orElse(Space.NameCollisionHandling.NOOP);
+                .map(ShareComponent::parseCollisionHandling) //
+                .orElse(Space.NameCollisionHandling.NOOP);
             if ( //
             collisionHandling == Space.NameCollisionHandling.NOOP //
                 && hasCollision(m_command.getDestinationItemId(), component, destinationSpace) //
@@ -250,6 +252,15 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         }
     }
 
+    /**
+     * Imports a component to a local space by saving it directly to a directory without compression.
+     *
+     * @param localSpace the target local space
+     * @param params the import parameters including destination, collision handling, and input data settings
+     * @return import result containing template information and space item entity
+     * @throws MutableServiceCallException if the import operation fails
+     * @throws CanceledExecutionException if the operation is canceled
+     */
     private static ImportResult importToLocal(final LocalSpace localSpace, final ImportParameters params)
         throws MutableServiceCallException, CanceledExecutionException {
         var wfArtifactTarget = localSpace.getImportTarget( //
@@ -263,6 +274,19 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         return new ImportResult(originalTemplateInfo, importedComponentItemEnt);
     }
 
+    /**
+     * Imports a component to a non-local space by first compressing it and then uploading.
+     *
+     * @param destinationSpace the target space
+     * @param params the import parameters including destination, collision handling, and input data settings
+     * @return import result containing template information and space item entity
+     * @throws MutableServiceCallException if the import operation fails
+     * @throws CanceledExecutionException if the operation is canceled
+     * @throws ServiceExceptions.ServiceCallException if a service call fails
+     * @throws ServiceExceptions.NetworkException if a network error occurs
+     * @throws ServiceExceptions.LoggedOutException if the user is logged out
+     * @throws ServiceExceptions.OperationNotAllowedException if the operation is not allowed
+     */
     private static ImportResult importToSpace(final Space destinationSpace, final ImportParameters params)
         throws MutableServiceCallException, CanceledExecutionException, ServiceExceptions.ServiceCallException,
         ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException,
@@ -270,7 +294,7 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         try ( //
                 // the directory name determines the name of the item in the Space, so it has to be component.getName()
                 // to avoid name collisions, put it in directory with unique name
-                var wfArtifactParent = FileUtil.createTempDirResource("MetaTemplateUpload");
+                var wfArtifactParent = FileUtil.createTempDirResource("MetaTemplateUpload"); //
                 var compressionTargetParent = FileUtil.createTempDirResource("knime_uploaded_item") //
         ) {
 
@@ -285,8 +309,12 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
                 params.includeInputData, //
                 uploadLimit);
 
-            var uploadedComponentItemEnt = importWorkflowOrWorkflowGroup(destinationSpace, params.destinationItemId,
-                params.collisionHandling, compressionTarget);
+            var uploadedComponentItemEnt = importWorkflowOrWorkflowGroup( //
+                destinationSpace, //
+                params.destinationItemId, //
+                params.collisionHandling, //
+                compressionTarget //
+            );
 
             return new ImportResult(originalTemplateInfo, uploadedComponentItemEnt);
 
@@ -295,10 +323,12 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         }
     }
 
-    private static SpaceItemEnt importWorkflowOrWorkflowGroup(final Space destinationSpace,
-        final String destinationItemId, final Space.NameCollisionHandling collisionHandling,
-        final Path compressionTarget)
-        throws CanceledExecutionException, MutableServiceCallException, ServiceExceptions.NetworkException,
+    private static SpaceItemEnt importWorkflowOrWorkflowGroup( //
+        final Space destinationSpace, //
+        final String destinationItemId, //
+        final Space.NameCollisionHandling collisionHandling, //
+        final Path compressionTarget //
+    ) throws CanceledExecutionException, MutableServiceCallException, ServiceExceptions.NetworkException,
         ServiceExceptions.LoggedOutException, ServiceExceptions.OperationNotAllowedException {
         return destinationSpace.importWorkflowOrWorkflowGroup( // currently expects archive
             compressionTarget, //
