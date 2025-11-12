@@ -203,7 +203,8 @@ public final class WorkflowManagerResolver {
     static WorkflowManager getProjectWfm(final String projectId, final VersionId versionId) {
         return ProjectManager.getInstance().getProject(projectId)
             .orElseThrow(() -> new NoSuchElementException("Project for ID \"" + projectId + "\" not found."))
-            .getWorkflowManagerIfLoaded(versionId) //
+            // TODO behaviour like this would be required for dev server scenario
+            .getFromCacheOrLoadWorkflowManager(versionId) //
             .orElseThrow(() -> new NoSuchElementException("Workflow not found."));
     }
 
