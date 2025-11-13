@@ -114,7 +114,7 @@ final class ServiceUtilities {
 
     /**
      * Call {@link DefaultServiceContext#assertWorkflowProjectId(String)} and return the {@link WorkflowManager}
-     * instance identified by the given {@link WorkflowKey}.
+     * instance identified by the given {@link WorkflowKey}, loading it if required.
      *
      * @param wfKey -
      * @return -

@@ -152,25 +152,27 @@ public final class DefaultServiceUtil {
     }
 
     /**
-     * Gets the (sub-)workflow manager for the project id and node id.
+     * Gets the (sub-)workflow manager for the project id and node id. If the WorkflowManager instance is not yet
+     * loaded, load it.
      *
      * @param projectId -
      * @param workflowId the subnode's or metanode's node id. May be {@link NodeIDEnt#getRootID()}
      * @return -
      */
     public static WorkflowManager getWorkflowManager(final String projectId, final NodeIDEnt workflowId) {
-        return WorkflowManagerResolver.get(projectId, workflowId, VersionId.currentState());
+        return WorkflowManagerResolver.load(projectId, workflowId, VersionId.currentState());
     }
 
     /**
-     * Gets the (sub-)workflow manager for the project id and node id.
+     * Gets the (sub-)workflow manager for the project id and node id. If the WorkflowManager instance is not yet
+     * loaded, load it.
      *
      * @param wfKey identifying the {@link WorkflowManager} instance
      * @return -
      * @since 5.5
      */
     public static WorkflowManager getWorkflowManager(final WorkflowKey wfKey) {
-        return WorkflowManagerResolver.get(wfKey.getProjectId(), wfKey.workflowId(), wfKey.getVersionId());
+        return WorkflowManagerResolver.load(wfKey.getProjectId(), wfKey.workflowId(), wfKey.getVersionId());
     }
 
     /**
