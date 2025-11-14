@@ -312,7 +312,7 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         if (exception instanceof ServiceExceptions.NetworkException networkException) {
             return ServiceExceptions.ServiceCallException.builder() //
                 .withTitle("Could not connect to the destination.") //
-                .withDetails(List.of()) //
+                .withDetails(networkException.getDetails()) //
                 .canCopy(true) //
                 .withCause(networkException) //
                 .build(); //
@@ -320,14 +320,17 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         if (exception instanceof ServiceExceptions.LoggedOutException loggedOutException) {
             return ServiceExceptions.ServiceCallException.builder() //
                 .withTitle("You've been logged out. Please re-connect to the destination") //
-                .withDetails(List.of()) //
+                .withDetails(loggedOutException.getDetails()) //
                 .canCopy(true) //
                 .withCause(loggedOutException) //
                 .build(); //
         }
+        if (exception instanceof ServiceExceptions.ServiceCallException serviceCallException) {
+            return serviceCallException;
+        }
         return ServiceExceptions.ServiceCallException.builder() //
             .withTitle("Failed to share component") //
-            .withDetails(List.of()) //
+            .withDetails(List.of(exception.getMessage())) //
             .canCopy(true) //
             .withCause(exception) //
             .build(); //
