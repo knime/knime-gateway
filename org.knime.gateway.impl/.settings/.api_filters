@@ -52,6 +52,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/ServiceDependencies.java" type="org.knime.gateway.impl.webui.service.ServiceDependencies">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.ServiceDependencies"/>
+                <message_argument value="setDefaultServiceDependencies(ProjectManager, WorkflowMiddleware, AppStateUpdater, EventConsumer, SpaceProvidersManager, UpdateStateProvider, NodeRepository, PreferencesProvider, NodeFactoryProvider, KaiHandler, CodeKaiHandler, NodeCollections, NodeCategoryExtensions, SelectionEventBus)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentEditorConfigEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentEditorConfigEnt">
         <filter id="1110441988">
             <message_arguments>
