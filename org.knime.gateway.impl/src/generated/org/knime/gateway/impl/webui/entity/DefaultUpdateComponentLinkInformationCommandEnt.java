@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
@@ -55,7 +56,7 @@ import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandE
  *
  * @param kind
  * @param nodeId
- * @param newUrl
+ * @param linkType
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,7 +64,7 @@ import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandE
 public record DefaultUpdateComponentLinkInformationCommandEnt(
     KindEnum kind,
     org.knime.gateway.api.entity.NodeIDEnt nodeId,
-    String newUrl) implements UpdateComponentLinkInformationCommandEnt {
+    LinkTypeEnt linkType) implements UpdateComponentLinkInformationCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -74,6 +75,9 @@ public record DefaultUpdateComponentLinkInformationCommandEnt(
         }
         if(nodeId == null) {
             throw new IllegalArgumentException("<nodeId> must not be null.");
+        }
+        if(linkType == null) {
+            throw new IllegalArgumentException("<linkType> must not be null.");
         }
     }
 
@@ -93,8 +97,8 @@ public record DefaultUpdateComponentLinkInformationCommandEnt(
     }
     
     @Override
-    public String getNewUrl() {
-        return newUrl;
+    public LinkTypeEnt getLinkType() {
+        return linkType;
     }
     
     /**
@@ -106,7 +110,7 @@ public record DefaultUpdateComponentLinkInformationCommandEnt(
 
         private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
-        private String m_newUrl;
+        private LinkTypeEnt m_linkType;
 
         @Override
         public DefaultUpdateComponentLinkInformationCommandEntBuilder setKind(KindEnum kind) {
@@ -127,8 +131,11 @@ public record DefaultUpdateComponentLinkInformationCommandEnt(
         }
 
         @Override
-        public DefaultUpdateComponentLinkInformationCommandEntBuilder setNewUrl(String newUrl) {
-             m_newUrl = newUrl;
+        public DefaultUpdateComponentLinkInformationCommandEntBuilder setLinkType(LinkTypeEnt linkType) {
+             if(linkType == null) {
+                 throw new IllegalArgumentException("<linkType> must not be null.");
+             }
+             m_linkType = linkType;
              return this;
         }
 
@@ -137,7 +144,7 @@ public record DefaultUpdateComponentLinkInformationCommandEnt(
             return new DefaultUpdateComponentLinkInformationCommandEnt(
                 immutable(m_kind),
                 immutable(m_nodeId),
-                immutable(m_newUrl));
+                immutable(m_linkType));
         }
     
     }

@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 
 import java.util.function.BiConsumer;
 
@@ -110,6 +111,12 @@ public interface TemplateLinkEnt extends GatewayEntity {
    **/
   public Object getIsHubItemVersionChangeable();
 
+  /**
+   * Get currentLinkType
+   * @return currentLinkType 
+   **/
+  public LinkTypeEnt getCurrentLinkType();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -119,6 +126,7 @@ public interface TemplateLinkEnt extends GatewayEntity {
       valueConsumer.accept("updateStatus", Pair.create(getUpdateStatus(), e.getUpdateStatus()));
       valueConsumer.accept("isLinkTypeChangeable", Pair.create(isLinkTypeChangeable(), e.isLinkTypeChangeable()));
       valueConsumer.accept("isHubItemVersionChangeable", Pair.create(getIsHubItemVersionChangeable(), e.getIsHubItemVersionChangeable()));
+      valueConsumer.accept("currentLinkType", Pair.create(getCurrentLinkType(), e.getCurrentLinkType()));
   }
 
     /**
@@ -157,6 +165,14 @@ public interface TemplateLinkEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         TemplateLinkEntBuilder setIsHubItemVersionChangeable(Object isHubItemVersionChangeable);
+        
+        /**
+   		 * Set currentLinkType
+         * 
+         * @param currentLinkType the property value,  
+         * @return this entity builder for chaining
+         */
+        TemplateLinkEntBuilder setCurrentLinkType(LinkTypeEnt currentLinkType);
         
         
         /**

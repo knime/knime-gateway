@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
@@ -79,8 +80,8 @@ public interface UpdateComponentLinkInformationCommandEntMixIn extends UpdateCom
     public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
     
     @Override
-    @JsonProperty("newUrl")
-    public String getNewUrl();
+    @JsonProperty("linkType")
+    public LinkTypeEnt getLinkType();
     
 
     /**
@@ -104,8 +105,8 @@ public interface UpdateComponentLinkInformationCommandEntMixIn extends UpdateCom
         public UpdateComponentLinkInformationCommandEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
         @Override
-        @JsonProperty("newUrl")
-        public UpdateComponentLinkInformationCommandEntMixInBuilder setNewUrl(final String newUrl);
+        @JsonProperty("linkType")
+        public UpdateComponentLinkInformationCommandEntMixInBuilder setLinkType(final LinkTypeEnt linkType);
         
     }
 

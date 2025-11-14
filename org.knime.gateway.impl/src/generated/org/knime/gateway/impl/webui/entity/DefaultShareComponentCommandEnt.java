@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
@@ -73,7 +74,7 @@ public record DefaultShareComponentCommandEnt(
     String destinationItemId,
     CollisionHandlingEnum collisionHandling,
     Boolean includeInputData,
-    LinkTypeEnum linkType) implements ShareComponentCommandEnt {
+    LinkTypeEnt linkType) implements ShareComponentCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -125,7 +126,7 @@ public record DefaultShareComponentCommandEnt(
     }
     
     @Override
-    public LinkTypeEnum getLinkType() {
+    public LinkTypeEnt getLinkType() {
         return linkType;
     }
     
@@ -148,7 +149,7 @@ public record DefaultShareComponentCommandEnt(
 
         private Boolean m_includeInputData;
 
-        private LinkTypeEnum m_linkType;
+        private LinkTypeEnt m_linkType;
 
         @Override
         public DefaultShareComponentCommandEntBuilder setKind(KindEnum kind) {
@@ -196,7 +197,7 @@ public record DefaultShareComponentCommandEnt(
         }
 
         @Override
-        public DefaultShareComponentCommandEntBuilder setLinkType(LinkTypeEnum linkType) {
+        public DefaultShareComponentCommandEntBuilder setLinkType(LinkTypeEnt linkType) {
              m_linkType = linkType;
              return this;
         }

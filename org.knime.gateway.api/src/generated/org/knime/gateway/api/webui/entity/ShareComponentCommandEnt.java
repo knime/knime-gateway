@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
@@ -76,33 +77,6 @@ public interface ShareComponentCommandEnt extends GatewayEntity, WorkflowCommand
     private String value;
 
     CollisionHandlingEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
-  /**
-   * Gets or Sets linkType
-   */
-  public enum LinkTypeEnum {
-    WORKFLOW_RELATIVE("WORKFLOW_RELATIVE"),
-    
-    SPACE_RELATIVE("SPACE_RELATIVE"),
-    
-    MOUNTPOINT_ABSOLUTE("MOUNTPOINT_ABSOLUTE"),
-    
-    MOUNTPOINT_ABSOLUTE_ID_BASED("MOUNTPOINT_ABSOLUTE_ID_BASED"),
-    
-    NONE("NONE");
-
-    private String value;
-
-    LinkTypeEnum(String value) {
       this.value = value;
     }
 
@@ -154,7 +128,7 @@ public interface ShareComponentCommandEnt extends GatewayEntity, WorkflowCommand
    * Get linkType
    * @return linkType 
    **/
-  public LinkTypeEnum getLinkType();
+  public LinkTypeEnt getLinkType();
 
 
   @Override
@@ -238,7 +212,7 @@ public interface ShareComponentCommandEnt extends GatewayEntity, WorkflowCommand
          * @param linkType the property value,  
          * @return this entity builder for chaining
          */
-        ShareComponentCommandEntBuilder setLinkType(LinkTypeEnum linkType);
+        ShareComponentCommandEntBuilder setLinkType(LinkTypeEnt linkType);
         
         
         /**

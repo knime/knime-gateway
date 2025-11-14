@@ -48,20 +48,14 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.file.Path;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.NodeID;
@@ -69,10 +63,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.LockFailedException;
-import org.knime.core.util.exception.ResourceAccessException;
-import org.knime.core.util.pathresolve.ResolverUtil;
-import org.knime.core.util.urlresolve.KnimeUrlResolver;
-import org.knime.core.util.urlresolve.URLResolverUtil;
+import org.knime.gateway.api.util.ComponentLinkUtil;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
@@ -122,54 +113,6 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
                 | ServiceExceptions.LoggedOutException e) {
             throw convertException(e);
         }
-    }
-
-    private static URI resolveLinkUri(final KnimeUrlResolver.KnimeUrlVariant requestedVariant,
-        final Space destinationSpace, final String uploadedComponentItemId, final SubNodeContainer component)
-        throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, MutableServiceCallException,
-        ResourceAccessException, MalformedURLException {
-
-        final var absoluteUri = destinationSpace.toKnimeUrl(uploadedComponentItemId);
-        final var pathBasedUri = destinationSpace.toPathBasedKnimeUrl(uploadedComponentItemId);
-
-        final var projectWorkflow = CoreUtil.getProjectWorkflow(component);
-        final var resolver = KnimeUrlResolver.getResolver(projectWorkflow.getContextV2());
-
-        final var translator = createHubUrlTranslator(pathBasedUri);
-        final var variants = new EnumMap<KnimeUrlResolver.KnimeUrlVariant, URL>(KnimeUrlResolver.KnimeUrlVariant.class);
-        variants.putAll(resolver.changeLinkType(URLResolverUtil.toURL(pathBasedUri), translator));
-        variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH,
-            URLResolverUtil.toURL(pathBasedUri));
-        variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID,
-            URLResolverUtil.toURL(absoluteUri));
-
-        final var selectedUrl = variants.get(requestedVariant);
-        if (selectedUrl == null) {
-            throw new IllegalArgumentException("No URL variant found for " + requestedVariant);
-        }
-        return URLResolverUtil.toURI(selectedUrl);
-    }
-
-    private static Function<URL, Optional<KnimeUrlResolver.IdAndPath>> createHubUrlTranslator(final URI pathBasedUri) {
-        return url -> {
-            try {
-                return ResolverUtil.translateHubUrl(pathBasedUri.toURL());
-            } catch (MalformedURLException e) {
-                NodeLogger.getLogger(ShareComponent.class).info("Malformed URI", e);
-                return Optional.empty();
-            }
-        };
-    }
-
-    private static Optional<KnimeUrlResolver.KnimeUrlVariant>
-        parseUrlVariant(final ShareComponentCommandEnt.LinkTypeEnum input) {
-        return switch (input) {
-            case WORKFLOW_RELATIVE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.WORKFLOW_RELATIVE);
-            case SPACE_RELATIVE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.SPACE_RELATIVE);
-            case MOUNTPOINT_ABSOLUTE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH);
-            case MOUNTPOINT_ABSOLUTE_ID_BASED -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID);
-            case NONE -> Optional.empty();
-        };
     }
 
     private static Space.NameCollisionHandling
@@ -241,17 +184,16 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
                 collisionHandling //
             );
 
-            final var requestedLinkVariant = parseUrlVariant(m_command.getLinkType());
+            final var requestedLinkVariant = ComponentLinkUtil.parseUrlVariant(m_command.getLinkType());
             if (requestedLinkVariant.isEmpty()) {
                 return false; // share, but do not create local link
             }
 
-            final var newLink = resolveLinkUri( //
-                requestedLinkVariant.get(), //
-                destinationSpace, //
-                uploadedComponentItemEnt.getId(), //
-                component //
-            );
+            final var newLink = ComponentLinkUtil.getVariant( //
+                    requestedLinkVariant.get(), //
+                    destinationSpace.toPathBasedKnimeUrl(uploadedComponentItemEnt.getId()), //
+                    CoreUtil.getProjectWorkflow(component) //
+            ).orElseThrow();
 
             var newTemplateInfo = originalTemplateInfo.createLink(newLink);
             m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);

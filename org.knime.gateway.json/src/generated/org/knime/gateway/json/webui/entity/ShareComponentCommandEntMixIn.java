@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
@@ -100,7 +101,7 @@ public interface ShareComponentCommandEntMixIn extends ShareComponentCommandEnt 
     
     @Override
     @JsonProperty("linkType")
-    public LinkTypeEnum getLinkType();
+    public LinkTypeEnt getLinkType();
     
 
     /**
@@ -145,7 +146,7 @@ public interface ShareComponentCommandEntMixIn extends ShareComponentCommandEnt 
         
         @Override
         @JsonProperty("linkType")
-        public ShareComponentCommandEntMixInBuilder setLinkType(final LinkTypeEnum linkType);
+        public ShareComponentCommandEntMixInBuilder setLinkType(final LinkTypeEnt linkType);
         
     }
 
