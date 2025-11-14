@@ -60,6 +60,7 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.WorkflowSyncer;
 import org.knime.gateway.impl.webui.kai.CodeKaiHandler;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCategoryExtensions;
@@ -157,7 +158,8 @@ public final class ServiceDependencies {
      * @param nodeCollections
      * @param nodeCategoryExtensions
      * @param selectionEventBus
-     * @since 5.5
+     * @param workflowSyncer
+     * @since 5.9
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
         final ProjectManager projectManager, //
@@ -173,7 +175,8 @@ public final class ServiceDependencies {
         final CodeKaiHandler codeKaiHandler, //
         final NodeCollections nodeCollections, //
         final NodeCategoryExtensions nodeCategoryExtensions, //
-        final SelectionEventBus selectionEventBus) {
+        final SelectionEventBus selectionEventBus,
+        final WorkflowSyncer workflowSyncer) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -189,6 +192,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(NodeRepository.class, nodeRepo);
             ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, nodeCategoryExtensions);
             ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
+            ServiceDependencies.setServiceDependency(WorkflowSyncer.class, workflowSyncer);
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "
