@@ -152,6 +152,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("spaceProviders")
     public java.util.List<SpaceProviderEnt> getSpaceProviders();
     
+    @Override
+    @JsonProperty("syncState")
+    public SyncStateEnum getSyncState();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -244,6 +248,10 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("spaceProviders")
         public AppStateEntMixInBuilder setSpaceProviders(final java.util.List<SpaceProviderEnt> spaceProviders);
+        
+        @Override
+        @JsonProperty("syncState")
+        public AppStateEntMixInBuilder setSyncState(final SyncStateEnum syncState);
         
     }
 

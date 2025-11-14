@@ -72,6 +72,7 @@ import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppModeEnum;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
+import org.knime.gateway.api.webui.entity.AppStateEnt.SyncStateEnum;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
@@ -88,6 +89,7 @@ import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
+import org.knime.gateway.impl.webui.WorkflowSyncer;
 import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
@@ -138,7 +140,8 @@ public final class AppStateEntityFactory {
             SpaceProviders spaceProviders, //
             NodeFactoryProvider nodeFactoryProvider, //
             NodeCollections nodeCollections, //
-            KaiHandler kaiHandler //
+            KaiHandler kaiHandler, //
+            WorkflowSyncer workflowSyncer //
     ) {
     }
 
@@ -164,6 +167,7 @@ public final class AppStateEntityFactory {
             Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
         var kaiHandler = dependencies.kaiHandler();
         var appMode = getAppModeEnum();
+        var workflowSyncer = dependencies.workflowSyncer();
         return builder(AppStateEntBuilder.class) //
             .setAppMode(appMode) //
             .setOpenProjects(projects) //
@@ -195,6 +199,7 @@ public final class AppStateEntityFactory {
             // TODO HUB-9598 only include when not read-only connection?
             .setSpaceProviders(
                 appMode == AppModeEnum.DEFAULT ? buildSpaceProviderEnts(dependencies.spaceProviders(), false) : null) //
+            .setSyncState(mapSyncStatusToSyncState(workflowSyncer.getSyncStatus())) //
             .build();
     }
 
@@ -289,6 +294,7 @@ public final class AppStateEntityFactory {
             if (getAppModeEnum() == AppModeEnum.DEFAULT) {
                 setIfChanged(oldAppState, newAppState, AppStateEnt::getSpaceProviders, builder::setSpaceProviders);
             }
+            setIfChanged(oldAppState, newAppState, AppStateEnt::getSyncState, builder::setSyncState);
             return builder.build();
         }
     }
@@ -433,5 +439,13 @@ public final class AppStateEntityFactory {
             isLocalSpaceProvider ? null : spaceProvider.getServerAddress().orElse(null),
             isLocalSpaceProvider ? null : username,
             optConnection.map(SpaceProviderConnection::getResetOnUploadMode).orElse(null));
+    }
+
+    private static SyncStateEnum mapSyncStatusToSyncState(final WorkflowSyncer.SyncStatus status) {
+        return switch (status) {
+            case SYNCED -> SyncStateEnum.SYNCED;
+            case SYNCING -> SyncStateEnum.SYNCING;
+            case OUT_OF_SYNC -> SyncStateEnum.OUT_OF_SYNC;
+        };
     }
 }
