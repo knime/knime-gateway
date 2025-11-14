@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
+import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -182,6 +183,23 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
     })
     public void deleteSchedulesForWorkflow(@JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId, @JsonRpcParam(value="scheduleId") String scheduleId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
         m_service.get().deleteSchedulesForWorkflow(spaceId, spaceProviderId, itemId, scheduleId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "getLinkVariantsForItem")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.LoggedOutException.class, code = -32600,
+            data = "LoggedOutException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
+            data = "NetworkException" /*per convention the data property contains the exception name*/)
+    })
+    public java.util.List<LinkVariantInfoEnt> getLinkVariantsForItem(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
+        return m_service.get().getLinkVariantsForItem(projectId, spaceId, spaceProviderId, itemId);    
     }
 
 	/**

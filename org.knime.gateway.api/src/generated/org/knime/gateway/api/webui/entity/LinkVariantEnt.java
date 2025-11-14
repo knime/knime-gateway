@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.LinkVariantEnt;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
 
@@ -57,64 +55,71 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Updates a components link information or unlinks a component
+ * Represents the type of link referencing a shared component. NONE unlinks the component instance.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface UpdateComponentLinkInformationCommandEnt extends GatewayEntity, WorkflowCommandEnt {
+public interface LinkVariantEnt extends GatewayEntity {
+
+  /**
+   * Gets or Sets variant
+   */
+  public enum VariantEnum {
+    NODE_RELATIVE("NODE_RELATIVE"),
+    
+    WORKFLOW_RELATIVE("WORKFLOW_RELATIVE"),
+    
+    SPACE_RELATIVE("SPACE_RELATIVE"),
+    
+    MOUNTPOINT_RELATIVE("MOUNTPOINT_RELATIVE"),
+    
+    MOUNTPOINT_ABSOLUTE_PATH("MOUNTPOINT_ABSOLUTE_PATH"),
+    
+    MOUNTPOINT_ABSOLUTE_ID("MOUNTPOINT_ABSOLUTE_ID"),
+    
+    NONE("NONE");
+
+    private String value;
+
+    VariantEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
 
 
   /**
-   * Id of component which link information is to be updated
-   * @return nodeId , never <code>null</code>
+   * Get variant
+   * @return variant , never <code>null</code>
    **/
-  public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
-
-  /**
-   * Get linkVariant
-   * @return linkVariant , never <code>null</code>
-   **/
-  public LinkVariantEnt getLinkVariant();
+  public VariantEnum getVariant();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (UpdateComponentLinkInformationCommandEnt)other;
-      valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
-      valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
-      valueConsumer.accept("linkVariant", Pair.create(getLinkVariant(), e.getLinkVariant()));
+      var e = (LinkVariantEnt)other;
+      valueConsumer.accept("variant", Pair.create(getVariant(), e.getVariant()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface UpdateComponentLinkInformationCommandEntBuilder extends GatewayEntityBuilder<UpdateComponentLinkInformationCommandEnt> {
+    public interface LinkVariantEntBuilder extends GatewayEntityBuilder<LinkVariantEnt> {
 
         /**
-         * The kind of command which directly maps to a specific &#39;implementation&#39;.
+   		 * Set variant
          * 
-         * @param kind the property value, NOT <code>null</code>! 
+         * @param variant the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        UpdateComponentLinkInformationCommandEntBuilder setKind(KindEnum kind);
-        
-        /**
-         * Id of component which link information is to be updated
-         * 
-         * @param nodeId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        UpdateComponentLinkInformationCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
-        
-        /**
-   		 * Set linkVariant
-         * 
-         * @param linkVariant the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        UpdateComponentLinkInformationCommandEntBuilder setLinkVariant(LinkVariantEnt linkVariant);
+        LinkVariantEntBuilder setVariant(VariantEnum variant);
         
         
         /**
@@ -124,7 +129,7 @@ public interface UpdateComponentLinkInformationCommandEnt extends GatewayEntity,
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        UpdateComponentLinkInformationCommandEnt build();
+        LinkVariantEnt build();
     
     }
 

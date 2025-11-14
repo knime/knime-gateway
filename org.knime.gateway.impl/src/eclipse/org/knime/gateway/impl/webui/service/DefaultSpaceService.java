@@ -57,6 +57,9 @@ import java.util.NoSuchElementException;
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -72,6 +75,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -119,6 +123,26 @@ public class DefaultSpaceService implements SpaceService {
             return getSpaceProvider(spaceProviderId).toEntity();
         } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("Failed to fetch space groups");
+        }
+    }
+
+    @Override
+    public List<LinkVariantInfoEnt> getLinkVariantsForItem(final String projectId, final String spaceId,
+        final String spaceProviderId, final String itemId)
+        throws ServiceCallException, LoggedOutException, NetworkException {
+        var projectContext = m_projectManager.getProject(projectId) //
+            .flatMap(Project::getWorkflowManagerIfLoaded) //
+            .map(WorkflowManager::getContextV2) //
+            .orElseThrow(() -> new IllegalStateException("Requested project is not loaded."));
+        try {
+            var spaceUri = getSpaceProvider(spaceProviderId).getSpace(spaceId).toKnimeUrl(itemId);
+            return ServiceDependencies.getServiceDependency(LinkVariants.class, true) //
+                    .getVariantInfoEnts(spaceUri, projectContext);
+        } catch (ResourceAccessException e) {
+            throw ServiceCallException.builder().withTitle("Alternative representations could not be determined")
+                .withDetails(List.of()).canCopy(true).build();
+        } catch (MutableServiceCallException e) {
+            throw e.toGatewayException("Alternative representations could not be determined");
         }
     }
 
@@ -201,7 +225,7 @@ public class DefaultSpaceService implements SpaceService {
                         .getType() == TypeEnum.LOCAL ? WorkflowType.LOCAL : WorkflowType.REMOTE);
             }
             return item;
-        }  catch (final MutableServiceCallException e) { // NOSONAR
+        } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while creating the workflow");
         }
     }
@@ -212,7 +236,7 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             getSpaceProvider(spaceProviderId).getSpace(spaceId).deleteItems(spaceItemIds, softDelete);
-        }  catch (final MutableServiceCallException e) { // NOSONAR
+        } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while deleting item(s)");
         }
     }
@@ -351,8 +375,8 @@ public class DefaultSpaceService implements SpaceService {
             .toList();
     }
 
-    private static List<String> checkForWorkflowsToClose(final List<String> openWorkflowIds,
-        final List<String> itemIds, final LocalSpace localSpace) throws ServiceCallException {
+    private static List<String> checkForWorkflowsToClose(final List<String> openWorkflowIds, final List<String> itemIds,
+        final LocalSpace localSpace) throws ServiceCallException {
         final List<String> toClose = new ArrayList<>();
         for (final String workflowId : openWorkflowIds) {
             try {

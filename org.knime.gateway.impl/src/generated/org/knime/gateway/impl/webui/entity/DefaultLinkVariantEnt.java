@@ -46,105 +46,59 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.LinkVariantEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 
 /**
- * Updates a components link information or unlinks a component
+ * Represents the type of link referencing a shared component. NONE unlinks the component instance.
  *
- * @param kind
- * @param nodeId
- * @param linkVariant
+ * @param variant
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultUpdateComponentLinkInformationCommandEnt(
-    KindEnum kind,
-    org.knime.gateway.api.entity.NodeIDEnt nodeId,
-    LinkVariantEnt linkVariant) implements UpdateComponentLinkInformationCommandEnt {
+public record DefaultLinkVariantEnt(
+    VariantEnum variant) implements LinkVariantEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultUpdateComponentLinkInformationCommandEnt {
-        if(kind == null) {
-            throw new IllegalArgumentException("<kind> must not be null.");
-        }
-        if(nodeId == null) {
-            throw new IllegalArgumentException("<nodeId> must not be null.");
-        }
-        if(linkVariant == null) {
-            throw new IllegalArgumentException("<linkVariant> must not be null.");
+    public DefaultLinkVariantEnt {
+        if(variant == null) {
+            throw new IllegalArgumentException("<variant> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "UpdateComponentLinkInformationCommand";
+        return "LinkVariant";
     }
   
     @Override
-    public KindEnum getKind() {
-        return kind;
-    }
-    
-    @Override
-    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
-        return nodeId;
-    }
-    
-    @Override
-    public LinkVariantEnt getLinkVariant() {
-        return linkVariant;
+    public VariantEnum getVariant() {
+        return variant;
     }
     
     /**
-     * A builder for {@link DefaultUpdateComponentLinkInformationCommandEnt}.
+     * A builder for {@link DefaultLinkVariantEnt}.
      */
-    public static class DefaultUpdateComponentLinkInformationCommandEntBuilder implements UpdateComponentLinkInformationCommandEntBuilder {
+    public static class DefaultLinkVariantEntBuilder implements LinkVariantEntBuilder {
 
-        private KindEnum m_kind;
-
-        private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
-
-        private LinkVariantEnt m_linkVariant;
+        private VariantEnum m_variant;
 
         @Override
-        public DefaultUpdateComponentLinkInformationCommandEntBuilder setKind(KindEnum kind) {
-             if(kind == null) {
-                 throw new IllegalArgumentException("<kind> must not be null.");
+        public DefaultLinkVariantEntBuilder setVariant(VariantEnum variant) {
+             if(variant == null) {
+                 throw new IllegalArgumentException("<variant> must not be null.");
              }
-             m_kind = kind;
+             m_variant = variant;
              return this;
         }
 
         @Override
-        public DefaultUpdateComponentLinkInformationCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
-             if(nodeId == null) {
-                 throw new IllegalArgumentException("<nodeId> must not be null.");
-             }
-             m_nodeId = nodeId;
-             return this;
-        }
-
-        @Override
-        public DefaultUpdateComponentLinkInformationCommandEntBuilder setLinkVariant(LinkVariantEnt linkVariant) {
-             if(linkVariant == null) {
-                 throw new IllegalArgumentException("<linkVariant> must not be null.");
-             }
-             m_linkVariant = linkVariant;
-             return this;
-        }
-
-        @Override
-        public DefaultUpdateComponentLinkInformationCommandEnt build() {
-            return new DefaultUpdateComponentLinkInformationCommandEnt(
-                immutable(m_kind),
-                immutable(m_nodeId),
-                immutable(m_linkVariant));
+        public DefaultLinkVariantEnt build() {
+            return new DefaultLinkVariantEnt(
+                immutable(m_variant));
         }
     
     }

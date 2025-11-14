@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -78,12 +79,16 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
     public UpdateStatusEnum getUpdateStatus();
     
     @Override
-    @JsonProperty("isLinkTypeChangeable")
-    public Boolean isLinkTypeChangeable();
+    @JsonProperty("isLinkVariantChangeable")
+    public Boolean isLinkVariantChangeable();
     
     @Override
     @JsonProperty("isHubItemVersionChangeable")
     public Object getIsHubItemVersionChangeable();
+    
+    @Override
+    @JsonProperty("currentLinkVariant")
+    public LinkVariantEnt getCurrentLinkVariant();
     
 
     /**
@@ -107,12 +112,16 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
         public TemplateLinkEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
         
         @Override
-        @JsonProperty("isLinkTypeChangeable")
-        public TemplateLinkEntMixInBuilder setIsLinkTypeChangeable(final Boolean isLinkTypeChangeable);
+        @JsonProperty("isLinkVariantChangeable")
+        public TemplateLinkEntMixInBuilder setIsLinkVariantChangeable(final Boolean isLinkVariantChangeable);
         
         @Override
         @JsonProperty("isHubItemVersionChangeable")
         public TemplateLinkEntMixInBuilder setIsHubItemVersionChangeable(final Object isHubItemVersionChangeable);
+        
+        @Override
+        @JsonProperty("currentLinkVariant")
+        public TemplateLinkEntMixInBuilder setCurrentLinkVariant(final LinkVariantEnt currentLinkVariant);
         
     }
 

@@ -48,9 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.net.URI;
-import java.util.function.Function;
-
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
@@ -59,8 +56,16 @@ import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
+
+import java.net.URI;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Workflow command to update link types of link components. The command is accessed from outside the package.
@@ -68,18 +73,20 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
  * @author Leonard Wörteler, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH, Germany
  */
-public final class UpdateComponentLinkInformation extends AbstractWorkflowCommand {
+final class UpdateComponentLinkInformation extends AbstractWorkflowCommand {
 
-    private final Function<WorkflowManager,NodeID> m_componentId;
+    private final Function<WorkflowManager, NodeID> m_componentId;
 
-    private final URI m_newURI;
+    private final LinkVariantEnt m_requestedVariant;
+
+    private LinkVariants m_linkVariants;
 
     private MetaNodeTemplateInformation m_oldTemplateInfo;
 
-    UpdateComponentLinkInformation(final UpdateComponentLinkInformationCommandEnt ce) { // For testing the command
+    UpdateComponentLinkInformation(final UpdateComponentLinkInformationCommandEnt ce, final LinkVariants linkVariants) { // For testing the command
         m_componentId = wfm -> ce.getNodeId().toNodeID(wfm);
-        final var newUrl = ce.getNewUrl();
-        m_newURI = newUrl != null ? URI.create(newUrl) : null;
+        m_requestedVariant = ce.getLinkVariant();
+        m_linkVariants = CheckUtils.checkNotNull(linkVariants);
     }
 
     /**
@@ -87,11 +94,11 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
      * the package.
      *
      * @param componentId
-     * @param targetUri
+     * @param linkVariant
      */
-    public UpdateComponentLinkInformation(final NodeID componentId, final URI targetUri) {
+    public UpdateComponentLinkInformation(final NodeID componentId, final LinkVariantEnt linkVariant) {
         m_componentId = wfmIdIgnored -> componentId;
-        m_newURI = targetUri;
+        m_requestedVariant = CheckUtils.checkNotNull(linkVariant);
     }
 
     @Override
@@ -131,24 +138,46 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
                 .build();
         }
 
-        final var newTemplateInfo = updateTemplateInformation(templateInformation, m_newURI);
-        m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
-        return !m_oldTemplateInfo.equals(newTemplateInfo);
+        try {
+            final MetaNodeTemplateInformation newTemplateInfo;
+
+            if (m_requestedVariant.getVariant() == LinkVariantEnt.VariantEnum.NONE) {
+                newTemplateInfo = MetaNodeTemplateInformation.NONE;
+            } else {
+                final var newUri = m_linkVariants.getVariants(
+                        templateInformation.getSourceURI(),
+                        CoreUtil.getProjectWorkflow(component).getContextV2()
+                ).get(m_requestedVariant.getVariant());
+                if (newUri == null) {
+                    throw new ResourceAccessException("Requested link variant not available");
+                }
+                newTemplateInfo = updateTemplateInformation(templateInformation, newUri);
+            }
+
+            m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
+            return !m_oldTemplateInfo.equals(newTemplateInfo);
+        } catch (ResourceAccessException e) {
+            throw ServiceCallException.builder().withTitle("Failed to update component link")
+                .withDetails("Unable to resolve link variant.").canCopy(false).withCause(e).build();
+        }
     }
 
     @Override
-    public void undo() {
+    public void undo() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         final var componentId = m_componentId.apply(wfm.getProjectWFM());
         wfm.setTemplateInformation(componentId, CheckUtils.checkNotNull(m_oldTemplateInfo));
 
     }
 
+    /**
+     *
+     * @param templateInformation
+     * @param newURI the new target URI.
+     * @return
+     */
     private static MetaNodeTemplateInformation
         updateTemplateInformation(final MetaNodeTemplateInformation templateInformation, final URI newURI) {
-        if (newURI == null) {
-            return MetaNodeTemplateInformation.NONE;
-        }
         if (newURI.equals(templateInformation.getSourceURI())) {
             return templateInformation; // Nothing changed
         }

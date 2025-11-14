@@ -48,30 +48,22 @@ package org.knime.gateway.impl.webui.service.commands;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.EnumMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.MetaNodeTemplateInformation;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.FileUtil;
-import org.knime.core.util.exception.ResourceAccessException;
-import org.knime.core.util.pathresolve.ResolverUtil;
-import org.knime.core.util.urlresolve.KnimeUrlResolver;
-import org.knime.core.util.urlresolve.URLResolverUtil;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentResultEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -79,6 +71,7 @@ import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
 import org.knime.gateway.impl.webui.service.commands.util.ComponentExporter;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
@@ -89,19 +82,23 @@ import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
  * @since 5.10
  */
 @SuppressWarnings("java:S1130")
-public class ShareComponent extends AbstractWorkflowCommand implements WithResult {
+class ShareComponent extends AbstractWorkflowCommand implements WithResult {
 
     private final SpaceProviders m_spaceProviders;
 
     private final ShareComponentCommandEnt m_command;
 
+    private final LinkVariants m_linkVariants;
+
     private boolean m_resultIsNameCollision;
 
     private MetaNodeTemplateInformation m_oldTemplateInfo;
 
-    ShareComponent(final ShareComponentCommandEnt ce, final SpaceProviders spaceProviders) {
+    ShareComponent(final ShareComponentCommandEnt ce, final SpaceProviders spaceProviders,
+        final LinkVariants linkVariants) {
         m_command = ce;
         m_spaceProviders = spaceProviders;
+        m_linkVariants = Objects.requireNonNull(linkVariants);
     }
 
     private static SubNodeContainer getSubNodeContainerOrThrow(final WorkflowManager wfm, final NodeID componentId) {
@@ -116,59 +113,6 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
         final Space destinationSpace)
         throws MutableServiceCallException, ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException {
         return destinationSpace.getItemIdForName(destItemId, component.getName()).isPresent();
-    }
-
-    private static URI resolveLinkUri(final KnimeUrlResolver.KnimeUrlVariant requestedVariant,
-        final Space destinationSpace, final String uploadedComponentItemId, final SubNodeContainer component)
-        throws ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException, MutableServiceCallException {
-
-        final var absoluteUri = destinationSpace.toKnimeUrl(uploadedComponentItemId);
-        final var pathBasedUri = destinationSpace.toPathBasedKnimeUrl(uploadedComponentItemId);
-
-        final var projectWorkflow = CoreUtil.getProjectWorkflow(component);
-        final var resolver = KnimeUrlResolver.getResolver(projectWorkflow.getContextV2());
-
-        try {
-            final var translator = createHubUrlTranslator(pathBasedUri);
-            final var variants =
-                new EnumMap<KnimeUrlResolver.KnimeUrlVariant, URL>(KnimeUrlResolver.KnimeUrlVariant.class);
-            variants.putAll(resolver.changeLinkType(URLResolverUtil.toURL(pathBasedUri), translator));
-            variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH,
-                URLResolverUtil.toURL(pathBasedUri));
-            variants.putIfAbsent(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID,
-                URLResolverUtil.toURL(absoluteUri));
-
-            final var selectedUrl = variants.get(requestedVariant);
-            if (selectedUrl == null) {
-                throw new MutableServiceCallException("No URL variant found for " + requestedVariant, true);
-            }
-            return URLResolverUtil.toURI(selectedUrl);
-
-        } catch (ResourceAccessException e) {
-            throw new MutableServiceCallException("Could not resolve link types", true, e);
-        }
-    }
-
-    private static Function<URL, Optional<KnimeUrlResolver.IdAndPath>> createHubUrlTranslator(final URI pathBasedUri) {
-        return url -> {
-            try {
-                return ResolverUtil.translateHubUrl(pathBasedUri.toURL());
-            } catch (MalformedURLException e) {
-                NodeLogger.getLogger(ShareComponent.class).info("Malformed URI", e);
-                return Optional.empty();
-            }
-        };
-    }
-
-    private static Optional<KnimeUrlResolver.KnimeUrlVariant>
-        parseUrlVariant(final ShareComponentCommandEnt.LinkTypeEnum input) {
-        return switch (input) {
-            case WORKFLOW_RELATIVE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.WORKFLOW_RELATIVE);
-            case SPACE_RELATIVE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.SPACE_RELATIVE);
-            case MOUNTPOINT_ABSOLUTE -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH);
-            case MOUNTPOINT_ABSOLUTE_ID_BASED -> Optional.of(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID);
-            case NONE -> Optional.empty();
-        };
     }
 
     private static Space.NameCollisionHandling
@@ -229,18 +173,23 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
                 importToLocal(localSpace, parameters) //
                 : importToSpace(destinationSpace, parameters);
 
-            final var requestedLinkVariant = parseUrlVariant(m_command.getLinkType());
-            if (requestedLinkVariant.isEmpty()) {
-                return false; // share, but do not create local link
+            final var uploadedComponentItemId = importResult.spaceItemEnt().getId();
+            final var uploadedComponentUri = destinationSpace.toKnimeUrl(uploadedComponentItemId);
+            if (m_command.getLinkVariant() == null //
+                || m_command.getLinkVariant().getVariant() == null //
+                || m_command.getLinkVariant().getVariant() == LinkVariantEnt.VariantEnum.NONE) {
+                return false;
             }
-            final var newLink = resolveLinkUri( //
-                requestedLinkVariant.get(), //
-                destinationSpace, //
-                importResult.spaceItemEnt().getId(), //
-                component //
-            );
-
-            var newTemplateInfo = importResult.templateInfo().createLink(newLink);
+            final var requestedVariant = m_command.getLinkVariant().getVariant();
+            final var context = CoreUtil.getProjectWorkflow(component).getContextV2();
+            var uriForRequestedVariant = m_linkVariants.getVariants( //
+                uploadedComponentUri, //
+                context //
+            ).get(requestedVariant);
+            if (uriForRequestedVariant == null) {
+                throw new MutableServiceCallException("Requested link variant unknown", true);
+            }
+            var newTemplateInfo = importResult.templateInfo().createLink(uriForRequestedVariant);
             m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
             return true;
         } catch (MutableServiceCallException e) {
@@ -262,7 +211,7 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
      * @throws CanceledExecutionException if the operation is canceled
      */
     private static ImportResult importToLocal(final LocalSpace localSpace, final ImportParameters params)
-            throws Exception {
+        throws Exception {
         final var result = localSpace.importWithResult( //
             destination -> ComponentExporter.exportToDirectory(params.component, destination, params.includeInputData), //
             params.destinationItemId, //
@@ -285,9 +234,9 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
      * @throws ServiceExceptions.OperationNotAllowedException if the operation is not allowed
      */
     private static ImportResult importToSpace(final Space destinationSpace, final ImportParameters params)
-        throws MutableServiceCallException, CanceledExecutionException,
-            ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException,
-        ServiceExceptions.OperationNotAllowedException, ServiceExceptions.ServiceCallException {
+        throws MutableServiceCallException, CanceledExecutionException, ServiceExceptions.NetworkException,
+        ServiceExceptions.LoggedOutException, ServiceExceptions.OperationNotAllowedException,
+        ServiceExceptions.ServiceCallException {
         try ( //
                 // the directory name determines the name of the item in the Space, so it has to be component.getName()
                 // to avoid name collisions, put it in directory with unique name
@@ -325,7 +274,6 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
             Space.NameCollisionHandling collisionHandling, boolean includeInputData) {
 
     }
-
 
     private record ImportResult(MetaNodeTemplateInformation templateInfo, SpaceItemEnt spaceItemEnt) {
     }

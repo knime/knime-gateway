@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 
@@ -54,8 +55,9 @@ import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
  *
  * @param url
  * @param updateStatus
- * @param isLinkTypeChangeable
+ * @param isLinkVariantChangeable
  * @param isHubItemVersionChangeable
+ * @param currentLinkVariant
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,8 +65,9 @@ import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 public record DefaultTemplateLinkEnt(
     String url,
     UpdateStatusEnum updateStatus,
-    Boolean isLinkTypeChangeable,
-    Object isHubItemVersionChangeable) implements TemplateLinkEnt {
+    Boolean isLinkVariantChangeable,
+    Object isHubItemVersionChangeable,
+    LinkVariantEnt currentLinkVariant) implements TemplateLinkEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -88,13 +91,18 @@ public record DefaultTemplateLinkEnt(
     }
     
     @Override
-    public Boolean isLinkTypeChangeable() {
-        return isLinkTypeChangeable;
+    public Boolean isLinkVariantChangeable() {
+        return isLinkVariantChangeable;
     }
     
     @Override
     public Object getIsHubItemVersionChangeable() {
         return isHubItemVersionChangeable;
+    }
+    
+    @Override
+    public LinkVariantEnt getCurrentLinkVariant() {
+        return currentLinkVariant;
     }
     
     /**
@@ -106,9 +114,11 @@ public record DefaultTemplateLinkEnt(
 
         private UpdateStatusEnum m_updateStatus;
 
-        private Boolean m_isLinkTypeChangeable;
+        private Boolean m_isLinkVariantChangeable;
 
         private Object m_isHubItemVersionChangeable = null;
+
+        private LinkVariantEnt m_currentLinkVariant;
 
         @Override
         public DefaultTemplateLinkEntBuilder setUrl(String url) {
@@ -123,8 +133,8 @@ public record DefaultTemplateLinkEnt(
         }
 
         @Override
-        public DefaultTemplateLinkEntBuilder setIsLinkTypeChangeable(Boolean isLinkTypeChangeable) {
-             m_isLinkTypeChangeable = isLinkTypeChangeable;
+        public DefaultTemplateLinkEntBuilder setIsLinkVariantChangeable(Boolean isLinkVariantChangeable) {
+             m_isLinkVariantChangeable = isLinkVariantChangeable;
              return this;
         }
 
@@ -135,12 +145,19 @@ public record DefaultTemplateLinkEnt(
         }
 
         @Override
+        public DefaultTemplateLinkEntBuilder setCurrentLinkVariant(LinkVariantEnt currentLinkVariant) {
+             m_currentLinkVariant = currentLinkVariant;
+             return this;
+        }
+
+        @Override
         public DefaultTemplateLinkEnt build() {
             return new DefaultTemplateLinkEnt(
                 immutable(m_url),
                 immutable(m_updateStatus),
-                immutable(m_isLinkTypeChangeable),
-                immutable(m_isHubItemVersionChangeable));
+                immutable(m_isLinkVariantChangeable),
+                immutable(m_isHubItemVersionChangeable),
+                immutable(m_currentLinkVariant));
         }
     
     }

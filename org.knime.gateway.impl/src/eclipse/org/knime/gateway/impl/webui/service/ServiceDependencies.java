@@ -67,6 +67,7 @@ import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.repo.NodeRepository;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 
 /**
@@ -157,23 +158,26 @@ public final class ServiceDependencies {
      * @param nodeCollections
      * @param nodeCategoryExtensions
      * @param selectionEventBus
+     * @param linkVariants
      * @since 5.10
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
-        final ProjectManager projectManager, //
-        final WorkflowMiddleware workflowMiddleware, //
-        final AppStateUpdater appStateUpdater, //
-        final EventConsumer eventConsumer, //
-        final SpaceProvidersManager spaceProvidersManager, //
-        final UpdateStateProvider updateStateProvider, //
-        final NodeRepository nodeRepo, //
-        final PreferencesProvider preferencesProvider, //
-        final NodeFactoryProvider nodeFactoryProvider, //
-        final KaiHandler kaiHandler, //
-        final CodeKaiHandler codeKaiHandler, //
-        final NodeCollections nodeCollections, //
-        final NodeCategoryExtensions nodeCategoryExtensions, //
-        final SelectionEventBus selectionEventBus) {
+                                                      final ProjectManager projectManager, //
+                                                      final WorkflowMiddleware workflowMiddleware, //
+                                                      final AppStateUpdater appStateUpdater, //
+                                                      final EventConsumer eventConsumer, //
+                                                      final SpaceProvidersManager spaceProvidersManager, //
+                                                      final UpdateStateProvider updateStateProvider, //
+                                                      final NodeRepository nodeRepo, //
+                                                      final PreferencesProvider preferencesProvider, //
+                                                      final NodeFactoryProvider nodeFactoryProvider, //
+                                                      final KaiHandler kaiHandler, //
+                                                      final CodeKaiHandler codeKaiHandler, //
+                                                      final NodeCollections nodeCollections, //
+                                                      final NodeCategoryExtensions nodeCategoryExtensions, //
+                                                      final SelectionEventBus selectionEventBus, //
+                                                      final LinkVariants linkVariants //
+    ) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -189,6 +193,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(NodeRepository.class, nodeRepo);
             ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, nodeCategoryExtensions);
             ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
+            ServiceDependencies.setServiceDependency(LinkVariants.class, linkVariants);
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "

@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
@@ -76,33 +77,6 @@ public interface ShareComponentCommandEnt extends GatewayEntity, WorkflowCommand
     private String value;
 
     CollisionHandlingEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
-
-  /**
-   * Gets or Sets linkType
-   */
-  public enum LinkTypeEnum {
-    WORKFLOW_RELATIVE("WORKFLOW_RELATIVE"),
-    
-    SPACE_RELATIVE("SPACE_RELATIVE"),
-    
-    MOUNTPOINT_ABSOLUTE("MOUNTPOINT_ABSOLUTE"),
-    
-    MOUNTPOINT_ABSOLUTE_ID_BASED("MOUNTPOINT_ABSOLUTE_ID_BASED"),
-    
-    NONE("NONE");
-
-    private String value;
-
-    LinkTypeEnum(String value) {
       this.value = value;
     }
 
@@ -151,10 +125,10 @@ public interface ShareComponentCommandEnt extends GatewayEntity, WorkflowCommand
   public Boolean isIncludeInputData();
 
   /**
-   * Get linkType
-   * @return linkType 
+   * Get linkVariant
+   * @return linkVariant 
    **/
-  public LinkTypeEnum getLinkType();
+  public LinkVariantEnt getLinkVariant();
 
 
   @Override
@@ -168,7 +142,7 @@ public interface ShareComponentCommandEnt extends GatewayEntity, WorkflowCommand
       valueConsumer.accept("destinationItemId", Pair.create(getDestinationItemId(), e.getDestinationItemId()));
       valueConsumer.accept("collisionHandling", Pair.create(getCollisionHandling(), e.getCollisionHandling()));
       valueConsumer.accept("includeInputData", Pair.create(isIncludeInputData(), e.isIncludeInputData()));
-      valueConsumer.accept("linkType", Pair.create(getLinkType(), e.getLinkType()));
+      valueConsumer.accept("linkVariant", Pair.create(getLinkVariant(), e.getLinkVariant()));
   }
 
     /**
@@ -233,12 +207,12 @@ public interface ShareComponentCommandEnt extends GatewayEntity, WorkflowCommand
         ShareComponentCommandEntBuilder setIncludeInputData(Boolean includeInputData);
         
         /**
-   		 * Set linkType
+   		 * Set linkVariant
          * 
-         * @param linkType the property value,  
+         * @param linkVariant the property value,  
          * @return this entity builder for chaining
          */
-        ShareComponentCommandEntBuilder setLinkType(LinkTypeEnum linkType);
+        ShareComponentCommandEntBuilder setLinkVariant(LinkVariantEnt linkVariant);
         
         
         /**

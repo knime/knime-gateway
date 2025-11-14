@@ -96,6 +96,7 @@ import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -142,7 +143,7 @@ public final class WorkflowCommands {
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt)
         throws ServiceCallException {
-        return execute(wfKey, commandEnt, null, null, null);
+        return execute(wfKey, commandEnt, null, null, null, null);
     }
 
     /**
@@ -155,14 +156,15 @@ public final class WorkflowCommands {
      * @param workflowMiddleware additional dependency required to assemble the command result
      * @param nodeFactoryProvider additional dependency required to execute some commands
      * @param spaceProviders The space providers
-     *
+     * @param m_linkVariants
      * @return The instance of the executed command
      * @throws ServiceCallException
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
-        final SpaceProviders spaceProviders) throws ServiceCallException {
-        var command = createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders, workflowMiddleware);
+        final SpaceProviders spaceProviders, LinkVariants linkVariants) throws ServiceCallException {
+        var command =
+            createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders, workflowMiddleware, linkVariants);
 
         var hasResult = hasCommandResult(wfKey, command);
         WorkflowChangeWaiter wfChangeWaiter = null;
@@ -176,7 +178,7 @@ public final class WorkflowCommands {
     @SuppressWarnings("java:S1541")
     private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
         final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders,
-        final WorkflowMiddleware workflowMiddleware) throws ServiceCallException {
+        final WorkflowMiddleware workflowMiddleware, LinkVariants linkVariants) throws ServiceCallException {
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt ce) {
             command = new Translate(ce);
@@ -231,9 +233,9 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof AddBendpointCommandEnt ce) {
             command = new AddBendpoint(ce);
         } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) {
-            command = new UpdateComponentLinkInformation(ce);
-        }  else if (commandEnt instanceof ShareComponentCommandEnt ce) {
-            command = new ShareComponent(ce, spaceProviders);
+            command = new UpdateComponentLinkInformation(ce, linkVariants);
+        } else if (commandEnt instanceof ShareComponentCommandEnt ce) {
+            command = new ShareComponent(ce, spaceProviders, linkVariants);
         } else if (commandEnt instanceof TransformMetanodePortsBarCommandEnt ce) {
             command = new TransformMetanodePortsBar(ce);
         } else if (commandEnt instanceof UpdateLinkedComponentsCommandEnt ce) {

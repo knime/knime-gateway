@@ -92,6 +92,7 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.WorkflowUtil;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
@@ -113,6 +114,8 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private final ProjectManager m_projectManager =
         ServiceDependencies.getServiceDependency(ProjectManager.class, true);
+
+    private final LinkVariants m_linkVariants = ServiceDependencies.getServiceDependency(LinkVariants.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -245,8 +248,14 @@ public final class DefaultWorkflowService implements WorkflowService {
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager == null ? null : m_spaceProvidersManager.getSpaceProviders(key);
-        return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
-            m_workflowMiddleware, m_nodeFactoryProvider, spaceProviders);
+        return m_workflowMiddleware.getCommands().execute( //
+                new WorkflowKey(projectId, workflowId), //
+                workflowCommandEnt, //
+                m_workflowMiddleware, //
+                m_nodeFactoryProvider, //
+                spaceProviders, //
+                m_linkVariants
+        );
     }
 
     @Override

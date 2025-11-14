@@ -45,6 +45,7 @@
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 
 import com.googlecode.jsonrpc4j.JsonRpcError;
 import com.googlecode.jsonrpc4j.JsonRpcErrors;
@@ -95,6 +96,21 @@ public class JsonRpcComponentServiceWrapper implements ComponentService {
     })
     public ComponentNodeDescriptionEnt getComponentDescription(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="versionId") String versionId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException {
         return m_service.get().getComponentDescription(projectId, workflowId, versionId, nodeId);    
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+    @JsonRpcMethod(value = "getLinkVariants")
+    @JsonRpcErrors(value = {
+        @JsonRpcError(exception = ServiceExceptions.ServiceCallException.class, code = -32600,
+            data = "ServiceCallException" /*per convention the data property contains the exception name*/),
+        @JsonRpcError(exception = ServiceExceptions.NodeNotFoundException.class, code = -32600,
+            data = "NodeNotFoundException" /*per convention the data property contains the exception name*/)
+    })
+    public java.util.List<LinkVariantInfoEnt> getLinkVariants(@JsonRpcParam(value="projectId") String projectId, @JsonRpcParam(value="workflowId") org.knime.gateway.api.entity.NodeIDEnt workflowId, @JsonRpcParam(value="nodeId") org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException {
+        return m_service.get().getLinkVariants(projectId, workflowId, nodeId);    
     }
 
 }

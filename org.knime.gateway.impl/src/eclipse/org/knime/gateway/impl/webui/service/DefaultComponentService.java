@@ -48,16 +48,22 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.util.List;
+
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -128,5 +134,28 @@ public class DefaultComponentService implements ComponentService {
         }
     }
 
-}
+    @Override
+    public List<LinkVariantInfoEnt> getLinkVariants(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
+        if (!(ServiceUtilities.assertProjectIdAndGetNodeContainer(projectId, workflowId, VersionId.currentState(),
+            nodeId) instanceof SubNodeContainer snc)) {
+            throw new IllegalStateException("Node is not a component");
+        }
 
+        try {
+            return ServiceDependencies.getServiceDependency(LinkVariants.class, true) //
+                .getVariantInfoEnts( //
+                    snc.getTemplateInformation().getSourceURI(), //
+                    CoreUtil.getProjectWorkflow(snc).getContextV2() //
+                );
+        } catch (ResourceAccessException e) {
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to resolve component URL") //
+                .withDetails("Failed to resolve component URL: " + e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
+        }
+    }
+
+}

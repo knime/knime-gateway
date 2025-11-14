@@ -81,7 +81,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -92,7 +91,6 @@ import java.util.stream.Stream;
 
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
-import org.hamcrest.core.IsInstanceOf;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.database.DatabasePortObject;
@@ -158,8 +156,6 @@ import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt.TransformWorkflowAnnotationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
 import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
-import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
-import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt.UpdateComponentLinkInformationCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt.UpdateComponentOrMetanodeNameCommandEntBuilder;
@@ -181,7 +177,6 @@ import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommand;
@@ -587,7 +582,7 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
     /**
      * Tests
      * {@link WorkflowService#executeWorkflowCommand(String, NodeIDEnt, org.knime.gateway.api.webui.entity.WorkflowCommandEnt)}
-     * when called {@link UpdateLabelCommandEnt}
+     * when called {@link UpdateNodeLabelCommandEnt}
      */
     public void testExecuteUpdateNodeLabelCommand() throws Exception {
         final var wfId = loadWorkflow(TestWorkflowCollection.HOLLOW);
@@ -630,10 +625,10 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     /**
      * When a node has its default {@link NodeAnnotationData}, the {@link NodeAnnotationEnt} will be set to
-     * {@code null}, see {@link WorkflowEntityFactory#buildNodeAnnotationEnt}. Setting the node label to something else
+     * {@code null}, see {@code WorkflowEntityFactory#buildNodeAnnotationEnt}. Setting the node label to something else
      * and undoing this operation will yield to a non-empty {@link NodeAnnotationEnt}, since the
      * {@link NodeAnnotationData} is no longer considered the default. Instead, the node annotation text will be set to
-     * the empty string, see {@link WorkflowEntityFactory#buildNodeAnnotationEnt}
+     * the empty string, see {@code WorkflowEntityFactory#buildNodeAnnotationEnt}
      */
     private static String getLabelFromNodeInWorkflow(final WorkflowEnt wf, final NodeIDEnt nodeId) {
         var annotation = wf.getNodes().get(nodeId.toString()).getAnnotation();
@@ -1336,7 +1331,7 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests the {@link AddNodeCommandEnt} with {@link AddNodeCommandEnt#getSpaceItemId()} set.
+     * Tests the {@link AddNodeCommandEnt} with {@link AddNodeCommandEnt#getSpaceItemReference()} ()} set.
      */
     public void testAddNodeCommandFromSpaceItemId() throws Exception {
         var nodeFactoryProvider = mock(NodeFactoryProvider.class);
@@ -1493,7 +1488,7 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     /**
-     * Tests {@link ReorderWorkflowAnnotationCommandEnt} with a multiple annotation selected.
+     * Tests {@code ReorderWorkflowAnnotations} with a multiple annotation selected.
      */
     public void testReorderWorkflowAnnotationsCommandWithMultipleAnnotations() throws Exception {
         var projectId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
@@ -1930,82 +1925,6 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
             .setOutPorts(outPorts) //
             .setMetadataType(MetadataTypeEnum.COMPONENT) //
             .build();
-    }
-
-    /**
-     * Tests {@link UpdateComponentOrMetanodeNameCommandEnt}.
-     */
-    public void testUpdateComponentLinkInformation() throws Exception {
-        var projectId = loadWorkflow(TestWorkflowCollection.METANODES_COMPONENTS);
-        var linkedComponent = new NodeIDEnt(1);
-        var notLinkedComponent = new NodeIDEnt(10);
-        var oldLink = "knime://LOCAL/Component/";
-        var newLink = "newUrl";
-
-        // Test happy path
-        var command1 = buildUpdateComponentLinkInformationCommand(linkedComponent, newLink);
-        var nodeBefore = getNodeEntFromWorkflowSnapshotEnt(
-            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.FALSE), linkedComponent);
-        assertComponentWithLink(nodeBefore, oldLink);
-
-        ws().executeWorkflowCommand(projectId, getRootID(), command1);
-        var nodeAfter = getNodeEntFromWorkflowSnapshotEnt(
-            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.FALSE), linkedComponent);
-        assertComponentWithLink(nodeAfter, newLink);
-
-        // Test undo command
-        ws().undoWorkflowCommand(projectId, getRootID());
-        var nodeUndone = getNodeEntFromWorkflowSnapshotEnt(
-            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.FALSE), linkedComponent);
-        assertComponentWithLink(nodeUndone, oldLink);
-
-        // Test not a component
-        var command2 = buildUpdateComponentLinkInformationCommand(new NodeIDEnt(99), newLink);
-        assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(projectId, getRootID(), command2));
-
-        // Test not a linked component
-        var command3 = buildUpdateComponentLinkInformationCommand(notLinkedComponent, newLink);
-        assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(projectId, getRootID(), command3));
-
-        // Test unlink a component
-        var command4 = buildUpdateComponentLinkInformationCommand(linkedComponent, null);
-        ws().executeWorkflowCommand(projectId, getRootID(), command4);
-        var nodeUnlinked = getNodeEntFromWorkflowSnapshotEnt(
-            ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.FALSE), linkedComponent);
-        assertComponentWithLink(nodeUnlinked, null);
-    }
-
-    private static UpdateComponentLinkInformationCommandEnt
-        buildUpdateComponentLinkInformationCommand(final NodeIDEnt nodeIdEnt, final String newUrl) {
-        return builder(UpdateComponentLinkInformationCommandEntBuilder.class)//
-            .setKind(KindEnum.UPDATE_COMPONENT_LINK_INFORMATION)//
-            .setNodeId(nodeIdEnt)//
-            .setNewUrl(newUrl)//
-            .build();
-    }
-
-    private static NodeEnt getNodeEntFromWorkflowSnapshotEnt(final WorkflowSnapshotEnt workflowSnapshotEnt,
-        final NodeIDEnt nodeIdEnt) {
-        return workflowSnapshotEnt//
-            .getWorkflow()//
-            .getNodes()//
-            .entrySet()//
-            .stream()//
-            .filter(entry -> entry.getKey().equals(nodeIdEnt.toString()))//
-            .findFirst()//
-            .map(Entry::getValue)//
-            .orElseThrow();
-    }
-
-    private static void assertComponentWithLink(final NodeEnt nodeEnt, final String expectedUrl) {
-        assertThat("The node is not a component", nodeEnt, new IsInstanceOf(ComponentNodeEnt.class));
-        var link = ((ComponentNodeEnt)nodeEnt).getLink();
-        if (expectedUrl == null) {
-            assertThat("There should not be a link", link, nullValue());
-        } else {
-            var actualUrl = ((ComponentNodeEnt)nodeEnt).getLink().getUrl();
-            assertThat("The links do not match", actualUrl, equalTo(expectedUrl));
-        }
     }
 
     public void testTransformMetanodePortsBarCommand() throws Exception {

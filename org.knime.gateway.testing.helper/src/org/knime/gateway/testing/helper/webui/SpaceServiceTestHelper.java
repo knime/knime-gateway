@@ -52,20 +52,24 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -75,11 +79,16 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
 import org.knime.core.util.Version;
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
+import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -98,7 +107,9 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.project.WorkflowManagerLoader;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceGroup;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -110,6 +121,7 @@ import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
+import org.knime.testing.util.WorkflowManagerUtil;
 import org.mockito.Mockito;
 
 /**
@@ -127,32 +139,93 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         super(SpaceServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }
 
+    private static Space mockSpace() {
+        var mockedSpace = mock(Space.class);
+        when(mockedSpace.getId()).thenReturn("some_space_id");
+        return mockedSpace;
+    }
+
+    public void testGetLinkVariantsForItem() throws Exception {
+        var space = mockSpace();
+        var spaceProvider = createSpaceProvider(space);
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
+            createSpaceProvidersManager(spaceProvider));
+
+        var variants = Map.of( //
+            LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID, new URI("foo"), //
+            LinkVariantEnt.VariantEnum.MOUNTPOINT_RELATIVE, new URI("bar") //
+        );
+        LinkVariants spiedLinkVariants =
+            Mockito.spy(new LinkVariants() {
+                @Override
+                public LinkVariantInfoEnt toLinkVariantInfoEnt(final LinkVariantEnt.VariantEnum variant) {
+                    var variantEnt = builder(LinkVariantEnt.LinkVariantEntBuilder.class) //
+                        .setVariant(variant) //
+                        .build(); //
+                    return builder(LinkVariantInfoEnt.LinkVariantInfoEntBuilder.class) //
+                        .setVariant(variantEnt) //
+                        .setLinkValidity("...") //
+                        .setDescription("...") //
+                        .setTitle("...") //
+                        .build(); //
+                }
+
+                @Override
+                public Map<LinkVariantEnt.VariantEnum, URI> getVariants(final URI originalUri,
+                    final WorkflowContextV2 currentContext) throws ResourceAccessException {
+                    return variants;
+                }
+            });
+        ServiceDependencies.setServiceDependency(LinkVariants.class, spiedLinkVariants);
+
+        var itemId = "some-item-id";
+
+        var spaceKnimeUri = new URI("");
+        when(space.toKnimeUrl(itemId)).thenReturn(spaceKnimeUri);
+
+        var project = Project.builder() //
+                .setWfmLoader(WorkflowManagerLoader.providingOnlyCurrentState(() -> createEmptyWorkflowUnchecked().getSecond())) //
+                .setName("foo") //
+                .setId("some-project-id") //
+                .build(); //
+        project.getFromCacheOrLoadWorkflowManager(); // the service endpoint expects the project to be already loaded
+        ProjectManager.getInstance().addProject(project);
+
+        var returnedVariants =
+            ss().getLinkVariantsForItem(project.getID(), space.getId(), spaceProvider.getId(), itemId);
+
+        verify(spiedLinkVariants).getVariantInfoEnts(eq(spaceKnimeUri), any());
+
+        assertThat( //
+            "Configured variants should be returned", //
+            returnedVariants.size() == variants.size() //
+        );
+    }
+
     /**
      * Test the interfacing between space service, space providers and spaces w.r.t renaming.
      */
     public void testRenameSpaceItem() throws Exception {
-        var spaceId = "some_space_id";
-        var providerId = "some_provider_id";
-        var itemId = "some_item_id";
-        var newName = "some_new_name";
-
-        var mockedSpace = mock(Space.class);
-        when(mockedSpace.getId()).thenReturn(spaceId);
-        var newSpaceItemEnt = EntityFactory.Space.buildSpaceItemEnt(newName, itemId, SpaceItemEnt.TypeEnum.WORKFLOW);
-        when(mockedSpace.renameItem(itemId, newName)).thenReturn(newSpaceItemEnt);
-
-        var spaceProvider = createSpaceProvider(providerId, "mocked_provider_name", mockedSpace);
+        var space = mockSpace();
+        var spaceProvider = createSpaceProvider(space);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
             createSpaceProvidersManager(spaceProvider));
 
+        var itemId = "some_item_id";
+        var newItemName = "some_new_name";
+        var newSpaceItemEnt =
+            EntityFactory.Space.buildSpaceItemEnt(newItemName, itemId, SpaceItemEnt.TypeEnum.WORKFLOW);
+        when(space.renameItem(itemId, newItemName)).thenReturn(newSpaceItemEnt);
+
         // trigger operation under test
-        var renamedItemEnt = ss().renameItem(providerId, spaceId, itemId, newName);
+        var renamedItemEnt = ss().renameItem(spaceProvider.getId(), space.getId(), itemId, newItemName);
         MatcherAssert.assertThat("Rename return value describes renamed item",
             renamedItemEnt.getId().equals(newSpaceItemEnt.getId())
-                && renamedItemEnt.getType() == newSpaceItemEnt.getType() && renamedItemEnt.getName().equals(newName));
+                && renamedItemEnt.getType() == newSpaceItemEnt.getType()
+                && renamedItemEnt.getName().equals(newItemName));
 
         // verify that rename method of individual space was called
-        verify(mockedSpace).renameItem(itemId, newName);
+        verify(space).renameItem(itemId, newItemName);
     }
 
     /**
@@ -400,6 +473,10 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         );
         // not mocked methods will return `null` or an appropriate empty/primitive value
         return space;
+    }
+
+    static SpaceProvider createSpaceProvider(final Space... spaces) {
+        return createSpaceProvider("provider-id", "provider-name", spaces);
     }
 
     /**

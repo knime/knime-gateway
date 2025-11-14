@@ -48,24 +48,6 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.mockito.AdditionalMatchers.not;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.net.URI;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
@@ -73,13 +55,14 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.CollisionHandlingEnum;
-import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.LinkTypeEnum;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.ShareComponentCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ShareComponentResultEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
+import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.project.ProjectManager;
@@ -94,6 +77,25 @@ import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 import org.knime.gateway.testing.helper.webui.node.NoOpDummyNodeFactory;
+
+import java.net.URI;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.util.KnimeUrls.buildLinkVariantEnt;
+import static org.mockito.AdditionalMatchers.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for execution of the {@link ShareComponentCommandEnt}.
@@ -133,7 +135,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
         final var wfm = projectManager.getProject(projectId).orElseThrow().getWorkflowManagerIfLoaded().orElseThrow();
 
         // Create a node and encapsulate it in a component
-        final var componentId = createComponentInWorkflow(wfm, projectId);
+        final var componentId = createComponentInWorkflow(wfm, projectId, ws());
 
         // Build the ShareComponent command
         var command = builder(ShareComponentCommandEntBuilder.class) //
@@ -144,7 +146,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
             .setDestinationItemId(destItemId) //
             .setCollisionHandling(CollisionHandlingEnum.NOOP) //
             .setIncludeInputData(false) //
-            .setLinkType(LinkTypeEnum.MOUNTPOINT_ABSOLUTE) //
+            .setLinkVariant(buildLinkVariantEnt(LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID)) //
             .build();
 
         // Execute the ShareComponent command
@@ -185,7 +187,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
         final var wfm = projectManager.getProject(projectId).orElseThrow().getWorkflowManagerIfLoaded().orElseThrow();
         
         // Create a node and encapsulate it in a component
-        final var componentId = createComponentInWorkflow(wfm, projectId);
+        final var componentId = createComponentInWorkflow(wfm, projectId, ws());
 
         // Build the ShareComponent command WITHOUT collision handling
         var command = builder(ShareComponentCommandEntBuilder.class) //
@@ -195,7 +197,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
             .setDestinationSpaceId(destSpaceId) //
             .setDestinationItemId(destItemId) //
             .setIncludeInputData(false) //
-            .setLinkType(LinkTypeEnum.MOUNTPOINT_ABSOLUTE) //
+            .setLinkVariant(buildLinkVariantEnt(LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID)) //
             .build();
 
         // Execute the ShareComponent command
@@ -231,7 +233,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
         final var wfm = projectManager.getProject(projectId).orElseThrow().getWorkflowManagerIfLoaded().orElseThrow();
         
         // Create a node and encapsulate it in a component
-        final var componentId = createComponentInWorkflow(wfm, projectId);
+        final var componentId = createComponentInWorkflow(wfm, projectId, ws());
 
         // Build the ShareComponent command WITH autorename collision handling
         var command = builder(ShareComponentCommandEntBuilder.class) //
@@ -242,7 +244,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
             .setDestinationItemId(destItemId) //
             .setCollisionHandling(CollisionHandlingEnum.AUTORENAME) //
             .setIncludeInputData(false) //
-            .setLinkType(LinkTypeEnum.MOUNTPOINT_ABSOLUTE) //
+            .setLinkVariant(buildLinkVariantEnt(LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID)) //
             .build();
 
         // Execute the ShareComponent command
@@ -262,7 +264,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
     /**
      * Creates a node and encapsulates it in a component (SubNodeContainer).
      */
-    private NodeID createComponentInWorkflow(WorkflowManager wfm, String projectId) throws Exception {
+    static NodeID createComponentInWorkflow(WorkflowManager wfm, String projectId, WorkflowService workflowService) throws Exception {
         // Create a simple test node using NoOpDummyNodeFactory
         var nodeFactory = new NoOpDummyNodeFactory() {
             @Override
@@ -285,7 +287,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
             .setAnnotationIds(Collections.emptyList())
             .build();
         
-        var result = (CollapseResultEnt)ws().executeWorkflowCommand(
+        var result = (CollapseResultEnt)workflowService.executeWorkflowCommand(
             projectId, NodeIDEnt.getRootID(), command);
         
         // Return the ID of the newly created component
@@ -295,7 +297,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
     /**
      * Creates a space provider with the given space.
      */
-    private static SpaceProvider createSpaceProvider(final Space space) {
+    static SpaceProvider createSpaceProvider(final Space space) {
         return new SpaceProvider() {
             @Override
             public void init(Consumer<String> loginErrorHandler) {
@@ -338,7 +340,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
      * Creates a mock destination space for successful sharing.
      */
     @SuppressWarnings("java:S112") // raw `Exception` is OK in tests
-    private static Space createMockDestinationSpace(final String spaceId, final String destItemId, final String componentName) throws Exception {
+    static Space createMockDestinationSpace(final String spaceId, final String destItemId, final String componentName) throws Exception {
         var spaceMock = mock(Space.class);
         when(spaceMock.getId()).thenReturn(spaceId);
         when(spaceMock.getItemName(anyString())).thenReturn(componentName);

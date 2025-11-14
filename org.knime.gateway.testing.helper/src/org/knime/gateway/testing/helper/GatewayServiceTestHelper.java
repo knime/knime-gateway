@@ -145,6 +145,14 @@ public class GatewayServiceTestHelper {
         return m_workflowLoader.createEmptyWorkflow();
     }
 
+    protected Pair<String, WorkflowManager> createEmptyWorkflowUnchecked() {
+        try {
+            return m_workflowLoader.createEmptyWorkflow();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * See {@link WorkflowLoader#loadComponent(TestWorkflow)}.
      *

@@ -24,6 +24,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.knime.core.util.Pair;
@@ -60,7 +61,8 @@ public final class GatewayTestCollection {
         StreamingExecutionTestHelper.class, //
         TranslateCommandTestHelper.class, //
         WorkflowCommandTestHelper.class, //
-        WorkflowServiceTestHelper.class //
+        WorkflowServiceTestHelper.class, //
+        UpdateComponentLinkCommandTestHelper.class
     );
 
     private GatewayTestCollection() {
@@ -75,10 +77,15 @@ public final class GatewayTestCollection {
      * @return map from the individual test names to a function that allows one to run the test
      */
     public static Map<String, GatewayTestRunner> collectAllGatewayTests() {
-        final var classFilter = System.getProperty("org.knime.gateway.testing.helper.test_class");
+        final var classFilterProperty = System.getProperty("org.knime.gateway.testing.helper.test_class");
+        final Set<String> classFilter = classFilterProperty == null ? null : Arrays.stream(classFilterProperty.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .collect(Collectors.toSet());
+        final boolean hasClassFilter = classFilter != null && !classFilter.isEmpty();
 
         return CONTRIBUTING_CLASSES.stream() //
-            .filter(helper -> classFilter == null || helper.getSimpleName().equals(classFilter)) //
+            .filter(helper -> !hasClassFilter || classFilter.contains(helper.getSimpleName())) //
             .flatMap(helper -> Arrays.stream(helper.getDeclaredMethods())) //
             .filter(method -> !Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers())) //
             .map(method -> {

@@ -47,104 +47,119 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.LinkVariantEnt;
-import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
+import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 
 /**
- * Updates a components link information or unlinks a component
+ * Describes a selectable link variant and its accompanying texts.
  *
- * @param kind
- * @param nodeId
- * @param linkVariant
+ * @param variant
+ * @param title
+ * @param description
+ * @param linkValidity
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultUpdateComponentLinkInformationCommandEnt(
-    KindEnum kind,
-    org.knime.gateway.api.entity.NodeIDEnt nodeId,
-    LinkVariantEnt linkVariant) implements UpdateComponentLinkInformationCommandEnt {
+public record DefaultLinkVariantInfoEnt(
+    LinkVariantEnt variant,
+    String title,
+    String description,
+    String linkValidity) implements LinkVariantInfoEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultUpdateComponentLinkInformationCommandEnt {
-        if(kind == null) {
-            throw new IllegalArgumentException("<kind> must not be null.");
+    public DefaultLinkVariantInfoEnt {
+        if(title == null) {
+            throw new IllegalArgumentException("<title> must not be null.");
         }
-        if(nodeId == null) {
-            throw new IllegalArgumentException("<nodeId> must not be null.");
+        if(description == null) {
+            throw new IllegalArgumentException("<description> must not be null.");
         }
-        if(linkVariant == null) {
-            throw new IllegalArgumentException("<linkVariant> must not be null.");
+        if(linkValidity == null) {
+            throw new IllegalArgumentException("<linkValidity> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "UpdateComponentLinkInformationCommand";
+        return "LinkVariantInfo";
     }
   
     @Override
-    public KindEnum getKind() {
-        return kind;
+    public LinkVariantEnt getVariant() {
+        return variant;
     }
     
     @Override
-    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
-        return nodeId;
+    public String getTitle() {
+        return title;
     }
     
     @Override
-    public LinkVariantEnt getLinkVariant() {
-        return linkVariant;
+    public String getDescription() {
+        return description;
+    }
+    
+    @Override
+    public String getLinkValidity() {
+        return linkValidity;
     }
     
     /**
-     * A builder for {@link DefaultUpdateComponentLinkInformationCommandEnt}.
+     * A builder for {@link DefaultLinkVariantInfoEnt}.
      */
-    public static class DefaultUpdateComponentLinkInformationCommandEntBuilder implements UpdateComponentLinkInformationCommandEntBuilder {
+    public static class DefaultLinkVariantInfoEntBuilder implements LinkVariantInfoEntBuilder {
 
-        private KindEnum m_kind;
+        private LinkVariantEnt m_variant;
 
-        private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
+        private String m_title;
 
-        private LinkVariantEnt m_linkVariant;
+        private String m_description;
+
+        private String m_linkValidity;
 
         @Override
-        public DefaultUpdateComponentLinkInformationCommandEntBuilder setKind(KindEnum kind) {
-             if(kind == null) {
-                 throw new IllegalArgumentException("<kind> must not be null.");
-             }
-             m_kind = kind;
+        public DefaultLinkVariantInfoEntBuilder setVariant(LinkVariantEnt variant) {
+             m_variant = variant;
              return this;
         }
 
         @Override
-        public DefaultUpdateComponentLinkInformationCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
-             if(nodeId == null) {
-                 throw new IllegalArgumentException("<nodeId> must not be null.");
+        public DefaultLinkVariantInfoEntBuilder setTitle(String title) {
+             if(title == null) {
+                 throw new IllegalArgumentException("<title> must not be null.");
              }
-             m_nodeId = nodeId;
+             m_title = title;
              return this;
         }
 
         @Override
-        public DefaultUpdateComponentLinkInformationCommandEntBuilder setLinkVariant(LinkVariantEnt linkVariant) {
-             if(linkVariant == null) {
-                 throw new IllegalArgumentException("<linkVariant> must not be null.");
+        public DefaultLinkVariantInfoEntBuilder setDescription(String description) {
+             if(description == null) {
+                 throw new IllegalArgumentException("<description> must not be null.");
              }
-             m_linkVariant = linkVariant;
+             m_description = description;
              return this;
         }
 
         @Override
-        public DefaultUpdateComponentLinkInformationCommandEnt build() {
-            return new DefaultUpdateComponentLinkInformationCommandEnt(
-                immutable(m_kind),
-                immutable(m_nodeId),
-                immutable(m_linkVariant));
+        public DefaultLinkVariantInfoEntBuilder setLinkValidity(String linkValidity) {
+             if(linkValidity == null) {
+                 throw new IllegalArgumentException("<linkValidity> must not be null.");
+             }
+             m_linkValidity = linkValidity;
+             return this;
+        }
+
+        @Override
+        public DefaultLinkVariantInfoEnt build() {
+            return new DefaultLinkVariantInfoEnt(
+                immutable(m_variant),
+                immutable(m_title),
+                immutable(m_description),
+                immutable(m_linkValidity));
         }
     
     }

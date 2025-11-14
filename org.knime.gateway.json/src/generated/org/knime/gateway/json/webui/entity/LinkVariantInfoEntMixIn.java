@@ -45,7 +45,6 @@
 package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.LinkVariantEnt;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt.DefaultShareComponentCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
+import org.knime.gateway.impl.webui.entity.DefaultLinkVariantInfoEnt.DefaultLinkVariantInfoEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,46 +61,30 @@ import org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt.Defau
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultShareComponentCommandEntBuilder.class)
-@JsonSerialize(as=ShareComponentCommandEnt.class)
+@JsonDeserialize(builder=DefaultLinkVariantInfoEntBuilder.class)
+@JsonSerialize(as=LinkVariantInfoEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ShareComponentCommandEntMixIn extends ShareComponentCommandEnt {
+public interface LinkVariantInfoEntMixIn extends LinkVariantInfoEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
+    @JsonProperty("variant")
+    public LinkVariantEnt getVariant();
     
     @Override
-    @JsonProperty("nodeId")
-    public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
+    @JsonProperty("title")
+    public String getTitle();
     
     @Override
-    @JsonProperty("destinationSpaceProviderId")
-    public String getDestinationSpaceProviderId();
+    @JsonProperty("description")
+    public String getDescription();
     
     @Override
-    @JsonProperty("destinationSpaceId")
-    public String getDestinationSpaceId();
-    
-    @Override
-    @JsonProperty("destinationItemId")
-    public String getDestinationItemId();
-    
-    @Override
-    @JsonProperty("collisionHandling")
-    public CollisionHandlingEnum getCollisionHandling();
-    
-    @Override
-    @JsonProperty("includeInputData")
-    public Boolean isIncludeInputData();
-    
-    @Override
-    @JsonProperty("linkVariant")
-    public LinkVariantEnt getLinkVariant();
+    @JsonProperty("linkValidity")
+    public String getLinkValidity();
     
 
     /**
@@ -111,42 +94,26 @@ public interface ShareComponentCommandEntMixIn extends ShareComponentCommandEnt 
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ShareComponentCommandEntMixInBuilder extends ShareComponentCommandEntBuilder {
+    public static interface LinkVariantInfoEntMixInBuilder extends LinkVariantInfoEntBuilder {
     
         @Override
-        public ShareComponentCommandEntMixIn build();
+        public LinkVariantInfoEntMixIn build();
     
         @Override
-        @JsonProperty("kind")
-        public ShareComponentCommandEntMixInBuilder setKind(final KindEnum kind);
+        @JsonProperty("variant")
+        public LinkVariantInfoEntMixInBuilder setVariant(final LinkVariantEnt variant);
         
         @Override
-        @JsonProperty("nodeId")
-        public ShareComponentCommandEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
+        @JsonProperty("title")
+        public LinkVariantInfoEntMixInBuilder setTitle(final String title);
         
         @Override
-        @JsonProperty("destinationSpaceProviderId")
-        public ShareComponentCommandEntMixInBuilder setDestinationSpaceProviderId(final String destinationSpaceProviderId);
+        @JsonProperty("description")
+        public LinkVariantInfoEntMixInBuilder setDescription(final String description);
         
         @Override
-        @JsonProperty("destinationSpaceId")
-        public ShareComponentCommandEntMixInBuilder setDestinationSpaceId(final String destinationSpaceId);
-        
-        @Override
-        @JsonProperty("destinationItemId")
-        public ShareComponentCommandEntMixInBuilder setDestinationItemId(final String destinationItemId);
-        
-        @Override
-        @JsonProperty("collisionHandling")
-        public ShareComponentCommandEntMixInBuilder setCollisionHandling(final CollisionHandlingEnum collisionHandling);
-        
-        @Override
-        @JsonProperty("includeInputData")
-        public ShareComponentCommandEntMixInBuilder setIncludeInputData(final Boolean includeInputData);
-        
-        @Override
-        @JsonProperty("linkVariant")
-        public ShareComponentCommandEntMixInBuilder setLinkVariant(final LinkVariantEnt linkVariant);
+        @JsonProperty("linkValidity")
+        public LinkVariantInfoEntMixInBuilder setLinkValidity(final String linkValidity);
         
     }
 

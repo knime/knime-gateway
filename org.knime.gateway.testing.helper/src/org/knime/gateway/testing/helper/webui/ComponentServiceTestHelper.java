@@ -48,19 +48,8 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThrows;
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.awaitility.Awaitility;
+import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
@@ -77,6 +66,7 @@ import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.events.EventConsumer;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
@@ -84,6 +74,21 @@ import org.knime.gateway.testing.helper.TestWorkflow;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThrows;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+import static org.knime.gateway.testing.helper.webui.ShareComponentCommandTestHelper.createComponentInWorkflow;
+import static org.knime.gateway.testing.helper.webui.ShareComponentCommandTestHelper.createMockDestinationSpace;
+import static org.knime.gateway.testing.helper.webui.ShareComponentCommandTestHelper.createSpaceProvider;
 
 /**
  * Test for the endpoints of the node service.
@@ -246,6 +251,16 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
         assertThat(statePatch.getValue(), is(StateEnum.LOADING));
         messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
         assertThat(messagePatch.getOp(), is(OpEnum.REPLACE));
+    }
+
+    @Test
+    public void testGetLinkVariants() throws Exception {
+        final var projectId = loadWorkflow(TestWorkflowCollection.UPDATE_LINKED_COMPONENTS);
+        // here it unfortunately is not feasible fully stub out the dependencies because
+        // ComponentService#getLinkVariants uses SubNodeContainer#getTemplateInformation#getSourceURI
+        ServiceDependencies.setServiceDependency(LinkVariants.class, new LinkVariants.KnimeUrlResolverVariants());
+        var result = cs().getLinkVariants(projectId, getRootID(), new NodeIDEnt(7) );
+        assertThat("Returned variants", !result.isEmpty());
     }
 
 }

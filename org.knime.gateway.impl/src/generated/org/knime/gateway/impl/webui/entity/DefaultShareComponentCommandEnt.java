@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
@@ -60,7 +61,7 @@ import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
  * @param destinationItemId
  * @param collisionHandling
  * @param includeInputData
- * @param linkType
+ * @param linkVariant
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -73,7 +74,7 @@ public record DefaultShareComponentCommandEnt(
     String destinationItemId,
     CollisionHandlingEnum collisionHandling,
     Boolean includeInputData,
-    LinkTypeEnum linkType) implements ShareComponentCommandEnt {
+    LinkVariantEnt linkVariant) implements ShareComponentCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -125,8 +126,8 @@ public record DefaultShareComponentCommandEnt(
     }
     
     @Override
-    public LinkTypeEnum getLinkType() {
-        return linkType;
+    public LinkVariantEnt getLinkVariant() {
+        return linkVariant;
     }
     
     /**
@@ -148,7 +149,7 @@ public record DefaultShareComponentCommandEnt(
 
         private Boolean m_includeInputData;
 
-        private LinkTypeEnum m_linkType;
+        private LinkVariantEnt m_linkVariant;
 
         @Override
         public DefaultShareComponentCommandEntBuilder setKind(KindEnum kind) {
@@ -196,8 +197,8 @@ public record DefaultShareComponentCommandEnt(
         }
 
         @Override
-        public DefaultShareComponentCommandEntBuilder setLinkType(LinkTypeEnum linkType) {
-             m_linkType = linkType;
+        public DefaultShareComponentCommandEntBuilder setLinkVariant(LinkVariantEnt linkVariant) {
+             m_linkVariant = linkVariant;
              return this;
         }
 
@@ -211,7 +212,7 @@ public record DefaultShareComponentCommandEnt(
                 immutable(m_destinationItemId),
                 immutable(m_collisionHandling),
                 immutable(m_includeInputData),
-                immutable(m_linkType));
+                immutable(m_linkVariant));
         }
     
     }
