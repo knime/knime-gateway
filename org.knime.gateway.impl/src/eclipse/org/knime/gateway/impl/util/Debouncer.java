@@ -48,10 +48,13 @@
  */
 package org.knime.gateway.impl.util;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * Can be used to wrap actions that should not be executed too frequently.
@@ -64,9 +67,9 @@ public final class Debouncer {
 
     private final int m_delaySeconds;
 
-    private ScheduledFuture<?> m_pendingTask;
+    private final Map<String, ScheduledFuture<?>> m_pendingTasks = new ConcurrentHashMap<>();
 
-    private final Runnable m_task;
+    private Consumer<String> m_task;
 
     /**
      * ...
@@ -74,25 +77,34 @@ public final class Debouncer {
      * @param delaySeconds
      * @param task
      */
-    public Debouncer(final int delaySeconds, final Runnable task) {
+    public Debouncer(final int delaySeconds, final Consumer<String> task) {
         m_delaySeconds = delaySeconds;
         m_task = task;
     }
 
     /**
      * ...
+     *
+     * @param id
      */
-    public void call() {
-        if (m_pendingTask != null && !m_pendingTask.isDone()) {
-            m_pendingTask.cancel(false); // To not the actual sync is already running
+    public void call(final String id) {
+        var pendingTask = m_pendingTasks.get(id);
+        if (pendingTask != null && !pendingTask.isDone()) {
+            pendingTask.cancel(false); // To not the actual sync is already running
         }
-        m_pendingTask = m_scheduler.schedule(m_task::run, m_delaySeconds, TimeUnit.SECONDS);
+
+        pendingTask = m_scheduler.schedule(() -> {
+            m_task.accept(id);
+            m_pendingTasks.remove(id);
+        }, m_delaySeconds, TimeUnit.SECONDS);
+
+        m_pendingTasks.put(id, pendingTask);
     }
 
     /**
      * ...
      */
     public void shutdown() {
-        m_scheduler.shutdown();
+        m_scheduler.shutdown(); // TODO: When should we call this?
     }
 }

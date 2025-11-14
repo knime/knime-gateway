@@ -48,6 +48,9 @@
  */
 package org.knime.gateway.impl.webui;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.impl.util.Debouncer;
 
@@ -57,7 +60,6 @@ import org.knime.gateway.impl.util.Debouncer;
  * @author Kai Franze, KNIME GmbH, Germany
  * @since 5.9
  */
-@FunctionalInterface
 public interface WorkflowSyncer {
 
     /**
@@ -68,29 +70,59 @@ public interface WorkflowSyncer {
     void notifyWorkflowChanged(final String projectId);
 
     /**
+     * Get the current sync status.
+     *
+     * @return ...
+     */
+    SyncStatus getSyncStatus();
+
+    /**
+     * Status of the workflow sync
+     */
+    enum SyncStatus {
+        SYNCED,
+        SYNCING,
+        OUT_OF_SYNC // TODO: When would we need this?
+    }
+
+    /**
      * Default implementation of {@link WorkflowSyncer} that does nothing.
      */
     static final class DefaultWorkflowSyncer implements WorkflowSyncer {
 
         private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowSyncer.class);
 
-        private final Debouncer m_debouncer;
+        private final Debouncer m_debouncer; // Since sync can throw IOException
 
-        public DefaultWorkflowSyncer(final int delaySeconds) {
-            m_debouncer = new Debouncer(delaySeconds, () -> {
-                LOGGER.warn("Sync workflow (debounced)");
+        private final Map<String, SyncStatus> m_statusMap = new ConcurrentHashMap<>();
+
+        public DefaultWorkflowSyncer(final int delaySeconds, final AppStateUpdater appStateUpdater) {
+            m_debouncer = new Debouncer(delaySeconds, (id) -> {
+                m_statusMap.put(id, SyncStatus.SYNCING);
+                appStateUpdater.updateAppState();
+
+                // TODO: Implement actual sync logic here
                 try {
                     Thread.sleep(2000); // Simulate sync time
                 } catch (final InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
+
+                m_statusMap.put(id, SyncStatus.SYNCED);
+                appStateUpdater.updateAppState();
             });
         }
 
         @Override
         public void notifyWorkflowChanged(final String projectId) {
             LOGGER.warn("Workflow change detected for project ID: " + projectId);
-            m_debouncer.call();
+            m_debouncer.call(projectId);
+        }
+
+        @Override
+        public SyncStatus getSyncStatus() {
+            // TODO: We don't use the project ID here...
+            return m_statusMap.entrySet().stream().findFirst().map(Map.Entry::getValue).orElse(SyncStatus.SYNCED);
         }
     }
 }

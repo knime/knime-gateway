@@ -109,6 +109,29 @@ public interface AppStateEnt extends GatewayEntity {
 
   }
 
+  /**
+   * The current workflow synchronization state.
+   */
+  public enum SyncStateEnum {
+    SYNCED("SYNCED"),
+    
+    SYNCING("SYNCING"),
+    
+    OUT_OF_SYNC("OUT_OF_SYNC");
+
+    private String value;
+
+    SyncStateEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * The general mode the app is initialized with.  Control various aspects of the app  (ui elements being hidden/shown, whether a workflow can be edited, ...)
@@ -230,6 +253,12 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public java.util.List<SpaceProviderEnt> getSpaceProviders();
 
+  /**
+   * The current workflow synchronization state.
+   * @return syncState 
+   **/
+  public SyncStateEnum getSyncState();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -255,6 +284,7 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("analyticsPlatformDownloadURL", Pair.create(getAnalyticsPlatformDownloadURL(), e.getAnalyticsPlatformDownloadURL()));
       valueConsumer.accept("isSubnodeLockingEnabled", Pair.create(isSubnodeLockingEnabled(), e.isSubnodeLockingEnabled()));
       valueConsumer.accept("spaceProviders", Pair.create(getSpaceProviders(), e.getSpaceProviders()));
+      valueConsumer.accept("syncState", Pair.create(getSyncState(), e.getSyncState()));
   }
 
     /**
@@ -421,6 +451,14 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setSpaceProviders(java.util.List<SpaceProviderEnt> spaceProviders);
+        
+        /**
+         * The current workflow synchronization state.
+         * 
+         * @param syncState the property value,  
+         * @return this entity builder for chaining
+         */
+        AppStateEntBuilder setSyncState(SyncStateEnum syncState);
         
         
         /**
