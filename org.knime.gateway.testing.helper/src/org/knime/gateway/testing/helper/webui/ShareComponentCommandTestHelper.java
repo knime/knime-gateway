@@ -52,6 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.util.ComponentLinkUtil.getEntity;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -73,9 +74,9 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.CollisionHandlingEnum;
-import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.LinkTypeEnum;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.ShareComponentCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ShareComponentResultEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -144,7 +145,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
             .setDestinationItemId(destItemId) //
             .setCollisionHandling(CollisionHandlingEnum.NOOP) //
             .setIncludeInputData(false) //
-            .setLinkType(LinkTypeEnum.MOUNTPOINT_ABSOLUTE) //
+            .setLinkType(getEntity(LinkTypeEnt.TypeEnum.MOUNTPOINT_ABSOLUTE)) //
             .build();
 
         // Execute the ShareComponent command
@@ -195,7 +196,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
             .setDestinationSpaceId(destSpaceId) //
             .setDestinationItemId(destItemId) //
             .setIncludeInputData(false) //
-            .setLinkType(LinkTypeEnum.MOUNTPOINT_ABSOLUTE) //
+            .setLinkType(getEntity(LinkTypeEnt.TypeEnum.MOUNTPOINT_ABSOLUTE)) //
             .build();
 
         // Execute the ShareComponent command
@@ -242,7 +243,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
             .setDestinationItemId(destItemId) //
             .setCollisionHandling(CollisionHandlingEnum.AUTORENAME) //
             .setIncludeInputData(false) //
-            .setLinkType(LinkTypeEnum.MOUNTPOINT_ABSOLUTE) //
+            .setLinkType(getEntity(LinkTypeEnt.TypeEnum.MOUNTPOINT_ABSOLUTE)) //
             .build();
 
         // Execute the ShareComponent command

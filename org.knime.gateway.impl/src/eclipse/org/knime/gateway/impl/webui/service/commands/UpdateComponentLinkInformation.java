@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.function.Function;
 
@@ -59,6 +60,10 @@ import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.util.ComponentLinkUtil;
+import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
@@ -70,16 +75,15 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
  */
 public final class UpdateComponentLinkInformation extends AbstractWorkflowCommand {
 
-    private final Function<WorkflowManager,NodeID> m_componentId;
+    private final Function<WorkflowManager, NodeID> m_componentId;
 
-    private final URI m_newURI;
+    private final LinkTypeEnt m_linkType;
 
     private MetaNodeTemplateInformation m_oldTemplateInfo;
 
     UpdateComponentLinkInformation(final UpdateComponentLinkInformationCommandEnt ce) { // For testing the command
         m_componentId = wfm -> ce.getNodeId().toNodeID(wfm);
-        final var newUrl = ce.getNewUrl();
-        m_newURI = newUrl != null ? URI.create(newUrl) : null;
+        m_linkType = ce.getLinkType();
     }
 
     /**
@@ -87,11 +91,11 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
      * the package.
      *
      * @param componentId
-     * @param targetUri
+     * @param linkType
      */
-    public UpdateComponentLinkInformation(final NodeID componentId, final URI targetUri) {
+    public UpdateComponentLinkInformation(final NodeID componentId, final LinkTypeEnt linkType) {
         m_componentId = wfmIdIgnored -> componentId;
-        m_newURI = targetUri;
+        m_linkType = CheckUtils.checkNotNull(linkType, "Link type must not be null");
     }
 
     @Override
@@ -131,13 +135,30 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
                 .build();
         }
 
-        final var newTemplateInfo = updateTemplateInformation(templateInformation, m_newURI);
-        m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
-        return !m_oldTemplateInfo.equals(newTemplateInfo);
+        try {
+            final var requestedLinkVariant = ComponentLinkUtil.parseUrlVariant(m_linkType);
+            if (requestedLinkVariant.isEmpty()) {
+                return false;
+            }
+            final var newUri = ComponentLinkUtil.getVariant( //
+                requestedLinkVariant.get(), //
+                templateInformation.getSourceURI(), //
+                CoreUtil.getProjectWorkflow(component) //
+            ).orElseThrow();
+            final var newTemplateInfo = updateTemplateInformation(templateInformation, newUri);
+            m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
+            return !m_oldTemplateInfo.equals(newTemplateInfo);
+        } catch (ResourceAccessException e) {
+            throw ServiceCallException.builder().withTitle("Failed to update component link")
+                .withDetails("Unable to resolve link variant.").canCopy(false).withCause(e).build();
+        } catch (MalformedURLException e) {
+            throw ServiceCallException.builder().withTitle("Failed to update component link")
+                .withDetails("Invalid link URL.").canCopy(false).withCause(e).build();
+        }
     }
 
     @Override
-    public void undo() {
+    public void undo() throws ServiceCallException {
         final var wfm = getWorkflowManager();
         final var componentId = m_componentId.apply(wfm.getProjectWFM());
         wfm.setTemplateInformation(componentId, CheckUtils.checkNotNull(m_oldTemplateInfo));

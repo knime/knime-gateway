@@ -60,7 +60,8 @@ public final class GatewayTestCollection {
         StreamingExecutionTestHelper.class, //
         TranslateCommandTestHelper.class, //
         WorkflowCommandTestHelper.class, //
-        WorkflowServiceTestHelper.class //
+        WorkflowServiceTestHelper.class, //
+        UpdateComponentLinkCommandTestHelper.class
     );
 
     private GatewayTestCollection() {

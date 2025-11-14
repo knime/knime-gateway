@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 
@@ -56,6 +57,7 @@ import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
  * @param updateStatus
  * @param isLinkTypeChangeable
  * @param isHubItemVersionChangeable
+ * @param currentLinkType
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -64,7 +66,8 @@ public record DefaultTemplateLinkEnt(
     String url,
     UpdateStatusEnum updateStatus,
     Boolean isLinkTypeChangeable,
-    Object isHubItemVersionChangeable) implements TemplateLinkEnt {
+    Object isHubItemVersionChangeable,
+    LinkTypeEnt currentLinkType) implements TemplateLinkEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -97,6 +100,11 @@ public record DefaultTemplateLinkEnt(
         return isHubItemVersionChangeable;
     }
     
+    @Override
+    public LinkTypeEnt getCurrentLinkType() {
+        return currentLinkType;
+    }
+    
     /**
      * A builder for {@link DefaultTemplateLinkEnt}.
      */
@@ -109,6 +117,8 @@ public record DefaultTemplateLinkEnt(
         private Boolean m_isLinkTypeChangeable;
 
         private Object m_isHubItemVersionChangeable = null;
+
+        private LinkTypeEnt m_currentLinkType;
 
         @Override
         public DefaultTemplateLinkEntBuilder setUrl(String url) {
@@ -135,12 +145,19 @@ public record DefaultTemplateLinkEnt(
         }
 
         @Override
+        public DefaultTemplateLinkEntBuilder setCurrentLinkType(LinkTypeEnt currentLinkType) {
+             m_currentLinkType = currentLinkType;
+             return this;
+        }
+
+        @Override
         public DefaultTemplateLinkEnt build() {
             return new DefaultTemplateLinkEnt(
                 immutable(m_url),
                 immutable(m_updateStatus),
                 immutable(m_isLinkTypeChangeable),
-                immutable(m_isHubItemVersionChangeable));
+                immutable(m_isHubItemVersionChangeable),
+                immutable(m_currentLinkType));
         }
     
     }

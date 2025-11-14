@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 
 import java.util.function.BiConsumer;
@@ -71,10 +72,10 @@ public interface UpdateComponentLinkInformationCommandEnt extends GatewayEntity,
   public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
 
   /**
-   * New link URL, empty if you want to unlink the component
-   * @return newUrl 
+   * Get linkType
+   * @return linkType , never <code>null</code>
    **/
-  public String getNewUrl();
+  public LinkTypeEnt getLinkType();
 
 
   @Override
@@ -83,7 +84,7 @@ public interface UpdateComponentLinkInformationCommandEnt extends GatewayEntity,
       var e = (UpdateComponentLinkInformationCommandEnt)other;
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("nodeId", Pair.create(getNodeId(), e.getNodeId()));
-      valueConsumer.accept("newUrl", Pair.create(getNewUrl(), e.getNewUrl()));
+      valueConsumer.accept("linkType", Pair.create(getLinkType(), e.getLinkType()));
   }
 
     /**
@@ -108,12 +109,12 @@ public interface UpdateComponentLinkInformationCommandEnt extends GatewayEntity,
         UpdateComponentLinkInformationCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
         /**
-         * New link URL, empty if you want to unlink the component
+   		 * Set linkType
          * 
-         * @param newUrl the property value,  
+         * @param linkType the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        UpdateComponentLinkInformationCommandEntBuilder setNewUrl(String newUrl);
+        UpdateComponentLinkInformationCommandEntBuilder setLinkType(LinkTypeEnt linkType);
         
         
         /**

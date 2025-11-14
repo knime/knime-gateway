@@ -97,6 +97,7 @@ import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
+import org.knime.gateway.api.util.ComponentLinkUtil;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.util.EntityUtil;
@@ -1641,6 +1642,7 @@ public final class WorkflowEntityFactory {
             .setUpdateStatus(updateStatus) //
             .setIsLinkTypeChangeable(isLinkTypeChangeable(linkUri, context, buildContext)) //
             .setIsHubItemVersionChangeable(isHubItemVersionChangeable(linkUri, buildContext)) //
+            .setCurrentLinkType(ComponentLinkUtil.getLinkType(linkUri)) //
             .build();
     }
 

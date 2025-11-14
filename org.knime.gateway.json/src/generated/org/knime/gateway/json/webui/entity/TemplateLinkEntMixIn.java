@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -85,6 +86,10 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
     @JsonProperty("isHubItemVersionChangeable")
     public Object getIsHubItemVersionChangeable();
     
+    @Override
+    @JsonProperty("currentLinkType")
+    public LinkTypeEnt getCurrentLinkType();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -113,6 +118,10 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
         @Override
         @JsonProperty("isHubItemVersionChangeable")
         public TemplateLinkEntMixInBuilder setIsHubItemVersionChangeable(final Object isHubItemVersionChangeable);
+        
+        @Override
+        @JsonProperty("currentLinkType")
+        public TemplateLinkEntMixInBuilder setCurrentLinkType(final LinkTypeEnt currentLinkType);
         
     }
 

@@ -188,6 +188,8 @@ import org.knime.gateway.api.webui.entity.LegacyViewNodeConfigEnt.LegacyViewNode
 import org.knime.gateway.impl.webui.entity.DefaultLegacyViewNodeConfigEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt.LinkEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLinkEnt;
+import org.knime.gateway.api.webui.entity.LinkTypeEnt.LinkTypeEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultLinkTypeEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
@@ -611,6 +613,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == LinkEntBuilder.class) {
             return (B)new DefaultLinkEnt.DefaultLinkEntBuilder();
+        }        
+        if(clazz == LinkTypeEntBuilder.class) {
+            return (B)new DefaultLinkTypeEnt.DefaultLinkTypeEntBuilder();
         }        
         if(clazz == LoopInfoEntBuilder.class) {
             return (B)new DefaultLoopInfoEnt.DefaultLoopInfoEntBuilder();
