@@ -75,6 +75,7 @@ import org.knime.gateway.api.webui.entity.AppStateEnt;
  * @param analyticsPlatformDownloadURL
  * @param isSubnodeLockingEnabled
  * @param spaceProviders
+ * @param syncState
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -99,7 +100,8 @@ public record DefaultAppStateEnt(
     Boolean nodeRepositoryLoaded,
     String analyticsPlatformDownloadURL,
     Boolean isSubnodeLockingEnabled,
-    java.util.List<SpaceProviderEnt> spaceProviders) implements AppStateEnt {
+    java.util.List<SpaceProviderEnt> spaceProviders,
+    SyncStateEnum syncState) implements AppStateEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -212,6 +214,11 @@ public record DefaultAppStateEnt(
         return spaceProviders;
     }
     
+    @Override
+    public SyncStateEnum getSyncState() {
+        return syncState;
+    }
+    
     /**
      * A builder for {@link DefaultAppStateEnt}.
      */
@@ -256,6 +263,8 @@ public record DefaultAppStateEnt(
         private Boolean m_isSubnodeLockingEnabled;
 
         private java.util.List<SpaceProviderEnt> m_spaceProviders;
+
+        private SyncStateEnum m_syncState;
 
         @Override
         public DefaultAppStateEntBuilder setAppMode(AppModeEnum appMode) {
@@ -378,6 +387,12 @@ public record DefaultAppStateEnt(
         }
 
         @Override
+        public DefaultAppStateEntBuilder setSyncState(SyncStateEnum syncState) {
+             m_syncState = syncState;
+             return this;
+        }
+
+        @Override
         public DefaultAppStateEnt build() {
             return new DefaultAppStateEnt(
                 immutable(m_appMode),
@@ -399,7 +414,8 @@ public record DefaultAppStateEnt(
                 immutable(m_nodeRepositoryLoaded),
                 immutable(m_analyticsPlatformDownloadURL),
                 immutable(m_isSubnodeLockingEnabled),
-                immutable(m_spaceProviders));
+                immutable(m_spaceProviders),
+                immutable(m_syncState));
         }
     
     }
