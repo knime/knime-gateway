@@ -48,6 +48,7 @@ package org.knime.gateway.testing.helper.webui.node;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ConfigurableNodeFactory;
@@ -60,6 +61,8 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.context.NodeCreationConfiguration;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+import org.knime.core.util.Pair;
 
 /**
  * No-Op NodeFactory and NodeModel implementations for testing.
@@ -67,9 +70,22 @@ import org.knime.core.node.port.PortObjectSpec;
 public abstract class NoOpDummyNodeFactory extends ConfigurableNodeFactory<NodeModel> {
 
     @Override
+    protected Optional<PortsConfigurationBuilder> createPortsConfigBuilder() {
+        return Optional.empty();
+    }
+
+    @Override
     protected NodeModel createNodeModel(final NodeCreationConfiguration creationConfig) {
-        final var config = creationConfig.getPortConfig().orElseThrow();
-        return new NodeModel(config.getInputPorts(), config.getOutputPorts()) {
+        final var ports = creationConfig.getPortConfig().map( //
+            config -> new Pair<>( //
+                config.getInputPorts(), //
+                config.getOutputPorts() //
+            )).orElse( //
+                new Pair<>( //
+                    new PortType[]{}, //
+                    new PortType[]{} //
+                ));
+        return new NodeModel(ports.getFirst(), ports.getSecond()) {
             @Override
             protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
                 return null;
@@ -77,12 +93,12 @@ public abstract class NoOpDummyNodeFactory extends ConfigurableNodeFactory<NodeM
 
             @Override
             protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
-                    throws IOException, CanceledExecutionException {
+                throws IOException, CanceledExecutionException {
             }
 
             @Override
             protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
-                    throws IOException, CanceledExecutionException {
+                throws IOException, CanceledExecutionException {
             }
 
             @Override
