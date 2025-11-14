@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
 
+import org.apache.commons.io.FileUtils;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -129,7 +130,7 @@ public final class ComponentExporter {
 
     /**
      * Validates that the compressed size does not exceed the specified limit.
-     * 
+     *
      * @param compressedSize the actual size of the compressed archive in bytes
      * @param uploadLimit the maximum allowed size in bytes
      * @throws ServiceExceptions.ServiceCallException if the size limit is exceeded
@@ -142,8 +143,9 @@ public final class ComponentExporter {
         if (compressedSize > uploadLimit.get()) {
             throw ServiceExceptions.ServiceCallException.builder() //
                 .withTitle("Failed to share component") //
-                .withDetails(
-                    "Upload limit exceeded. You may try reducing the size of included assets and resetting nodes.") //
+                .withDetails(List.of(
+                    "Upload limit exceeded. You may try reducing the size of included assets and resetting nodes.",
+                    "Upload limit: " + FileUtils.byteCountToDisplaySize(uploadLimit.get()))) //
                 .canCopy(true) //
                 .build(); //
         }
