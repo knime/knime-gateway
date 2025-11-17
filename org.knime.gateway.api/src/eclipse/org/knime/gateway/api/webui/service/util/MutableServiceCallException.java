@@ -117,6 +117,15 @@ public final class MutableServiceCallException extends Exception {
 
     /**
      * Creates a new mutable exception.
+     * @param firstDetail first detail line (user-oriented explanation/hint), may be {@code null}
+     * @param canCopy whether the details can be copied to the clipboard
+     */
+    public MutableServiceCallException(final String firstDetail, final boolean canCopy) {
+        this(List.of(firstDetail), canCopy);
+    }
+
+    /**
+     * Creates a new mutable exception.
      *
      * @param details list of details (user-oriented explanation/hint), may be {@code null}
      * @param canCopy whether the details can be copied to the clipboard

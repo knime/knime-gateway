@@ -163,8 +163,14 @@ public class UpdateComponentLinkCommandTestHelper extends WebUIGatewayServiceTes
     private static void assertComponentLinkType(final NodeEnt nodeEnt,
         final LinkTypeEnt.TypeEnum expectedLinkType) {
         assertThat("The node is not a component", nodeEnt, new IsInstanceOf(ComponentNodeEnt.class));
+        if (expectedLinkType == LinkTypeEnt.TypeEnum.NONE) {
+            assertThat("There should not be a link", ((ComponentNodeEnt)nodeEnt).getLink(), nullValue());
+            return;
+        }
+
         var link = ((ComponentNodeEnt)nodeEnt).getLink();
         assertThat("There should be a link", link, notNullValue());
-        assertThat("Unexpected link type", link.getCurrentLinkType(), equalTo(expectedLinkType));
+        assertThat("There should be a link type", link.getCurrentLinkType(), notNullValue());
+        assertThat("Unexpected link type", link.getCurrentLinkType().getType(), equalTo(expectedLinkType));
     }
 }

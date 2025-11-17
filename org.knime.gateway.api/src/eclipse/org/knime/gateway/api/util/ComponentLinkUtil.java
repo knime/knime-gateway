@@ -15,6 +15,7 @@ import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.core.util.urlresolve.KnimeUrlResolver;
 import org.knime.core.util.urlresolve.URLResolverUtil;
 import org.knime.gateway.api.webui.entity.LinkTypeEnt;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 
 /**
  * Utility methods for working with component links.
@@ -27,21 +28,26 @@ public final class ComponentLinkUtil {
     /**
      * Map the serializable gateway entity to the core type
      */
-    private static final BidiMap<LinkTypeEnt.TypeEnum, KnimeUrlResolver.KnimeUrlVariant> LINK_TYPE_VARIANTS = new DualHashBidiMap<>(Map.of(
-            LinkTypeEnt.TypeEnum.WORKFLOW_RELATIVE, KnimeUrlResolver.KnimeUrlVariant.WORKFLOW_RELATIVE,
-            LinkTypeEnt.TypeEnum.SPACE_RELATIVE, KnimeUrlResolver.KnimeUrlVariant.SPACE_RELATIVE,
-            LinkTypeEnt.TypeEnum.MOUNTPOINT_ABSOLUTE, KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH,
-            LinkTypeEnt.TypeEnum.MOUNTPOINT_ABSOLUTE_ID_BASED, KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID
+    private static final BidiMap<LinkTypeEnt.TypeEnum, Optional<KnimeUrlResolver.KnimeUrlVariant>> LINK_TYPE_VARIANTS = new DualHashBidiMap<>(Map.of(
+            LinkTypeEnt.TypeEnum.WORKFLOW_RELATIVE, Optional.of(KnimeUrlResolver.KnimeUrlVariant.WORKFLOW_RELATIVE),
+            LinkTypeEnt.TypeEnum.SPACE_RELATIVE, Optional.of(KnimeUrlResolver.KnimeUrlVariant.SPACE_RELATIVE),
+            LinkTypeEnt.TypeEnum.MOUNTPOINT_ABSOLUTE, Optional.of(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_PATH),
+            LinkTypeEnt.TypeEnum.MOUNTPOINT_ABSOLUTE_ID_BASED, Optional.of(KnimeUrlResolver.KnimeUrlVariant.MOUNTPOINT_ABSOLUTE_ID),
+            LinkTypeEnt.TypeEnum.NONE, Optional.empty()
     ));
 
     /**
      * Parse a link type into a {@link KnimeUrlResolver.KnimeUrlVariant}.
      * @param linkType the link type
-     * @return the variant, or empty if the link type is not supported
+     * @return the variant. Throws if the link type is not supported
      */
     public static Optional<KnimeUrlResolver.KnimeUrlVariant>
-        parseUrlVariant(final LinkTypeEnt linkType) {
-        return Optional.ofNullable(LINK_TYPE_VARIANTS.get(linkType.getType()));
+        parseUrlVariant(final LinkTypeEnt linkType) throws MutableServiceCallException {
+        var result =  LINK_TYPE_VARIANTS.get(linkType.getType());
+        if (result == null) {
+            throw new MutableServiceCallException("Unsupported link type: " + linkType.getType(), true);
+        }
+        return result;
     }
 
     /**
@@ -50,7 +56,7 @@ public final class ComponentLinkUtil {
      * @return the link type, or empty if the variant is not supported
      */
     public static Optional<LinkTypeEnt> getLinkType(final KnimeUrlResolver.KnimeUrlVariant variant) {
-        var type = LINK_TYPE_VARIANTS.inverseBidiMap().get(variant);
+        var type = LINK_TYPE_VARIANTS.inverseBidiMap().get(Optional.of(variant));
         if (type == null) {
             return Optional.empty();
         }
