@@ -65,6 +65,7 @@ import org.knime.gateway.api.util.ComponentLinkUtil;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 
 /**
@@ -136,16 +137,18 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
         }
 
         try {
+            final MetaNodeTemplateInformation newTemplateInfo;
             final var requestedLinkVariant = ComponentLinkUtil.parseUrlVariant(m_linkType);
             if (requestedLinkVariant.isEmpty()) {
-                return false;
+                newTemplateInfo = MetaNodeTemplateInformation.NONE;  // unlink
+            } else {
+                final var newUri = ComponentLinkUtil.getVariant( //
+                    requestedLinkVariant.get(), //
+                    templateInformation.getSourceURI(), //
+                    CoreUtil.getProjectWorkflow(component) //
+                ).orElseThrow(() -> new IllegalArgumentException("Unknown link variant"));
+                newTemplateInfo = updateTemplateInformation(templateInformation, newUri);
             }
-            final var newUri = ComponentLinkUtil.getVariant( //
-                requestedLinkVariant.get(), //
-                templateInformation.getSourceURI(), //
-                CoreUtil.getProjectWorkflow(component) //
-            ).orElseThrow();
-            final var newTemplateInfo = updateTemplateInformation(templateInformation, newUri);
             m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
             return !m_oldTemplateInfo.equals(newTemplateInfo);
         } catch (ResourceAccessException e) {
@@ -154,6 +157,8 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
         } catch (MalformedURLException e) {
             throw ServiceCallException.builder().withTitle("Failed to update component link")
                 .withDetails("Invalid link URL.").canCopy(false).withCause(e).build();
+        } catch (MutableServiceCallException e) {
+            throw e.toGatewayException("Failed to update component link");
         }
     }
 
@@ -165,11 +170,14 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
 
     }
 
+    /**
+     *
+     * @param templateInformation
+     * @param newURI the new target URI.
+     * @return
+     */
     private static MetaNodeTemplateInformation
         updateTemplateInformation(final MetaNodeTemplateInformation templateInformation, final URI newURI) {
-        if (newURI == null) {
-            return MetaNodeTemplateInformation.NONE;
-        }
         if (newURI.equals(templateInformation.getSourceURI())) {
             return templateInformation; // Nothing changed
         }
