@@ -48,9 +48,6 @@
  */
 package org.knime.gateway.impl.webui;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.impl.util.Debouncer;
 
@@ -64,10 +61,8 @@ public interface WorkflowSyncer {
 
     /**
      * Notify that the workflow has changed and needs to be synced.
-     *
-     * @param projectId the ID of the project that has changed
      */
-    void notifyWorkflowChanged(final String projectId);
+    void notifyWorkflowChanged();
 
     /**
      * Get the current sync status.
@@ -94,11 +89,11 @@ public interface WorkflowSyncer {
 
         private final Debouncer m_debouncer; // Since sync can throw IOException
 
-        private final Map<String, SyncStatus> m_statusMap = new ConcurrentHashMap<>();
+        private SyncStatus m_syncStatus = SyncStatus.SYNCED; // To provide initial status
 
-        public DefaultWorkflowSyncer(final int delaySeconds, final AppStateUpdater appStateUpdater) {
-            m_debouncer = new Debouncer(delaySeconds, (id) -> {
-                m_statusMap.put(id, SyncStatus.SYNCING);
+        DefaultWorkflowSyncer(final int delaySeconds, final AppStateUpdater appStateUpdater) {
+            m_debouncer = new Debouncer(delaySeconds, () -> {
+                m_syncStatus = SyncStatus.SYNCING;
                 appStateUpdater.updateAppState();
 
                 // TODO: Implement actual sync logic here
@@ -108,21 +103,20 @@ public interface WorkflowSyncer {
                     Thread.currentThread().interrupt();
                 }
 
-                m_statusMap.put(id, SyncStatus.SYNCED);
+                m_syncStatus = SyncStatus.SYNCED;
                 appStateUpdater.updateAppState();
             });
         }
 
         @Override
-        public void notifyWorkflowChanged(final String projectId) {
-            LOGGER.warn("Workflow change detected for project ID: " + projectId);
-            m_debouncer.call(projectId);
+        public void notifyWorkflowChanged() {
+            LOGGER.warn("Workflow change detected");
+            m_debouncer.call();
         }
 
         @Override
         public SyncStatus getSyncStatus() {
-            // TODO: We don't use the project ID here...
-            return m_statusMap.entrySet().stream().findFirst().map(Map.Entry::getValue).orElse(SyncStatus.SYNCED);
+            return m_syncStatus;
         }
     }
 }

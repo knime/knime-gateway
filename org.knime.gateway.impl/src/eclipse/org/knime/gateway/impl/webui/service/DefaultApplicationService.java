@@ -56,7 +56,7 @@ import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.WorkflowSyncer;
+import org.knime.gateway.impl.webui.WorkflowSyncerProvider;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ProjectFilter;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
@@ -93,8 +93,8 @@ public final class DefaultApplicationService implements ApplicationService {
 
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
-    private final WorkflowSyncer m_workflowSyncer =
-        ServiceDependencies.getServiceDependency(WorkflowSyncer.class, true);
+    private final WorkflowSyncerProvider m_workflowSyncerProvider =
+        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -121,9 +121,10 @@ public final class DefaultApplicationService implements ApplicationService {
         var projectId = DefaultServiceContext.getProjectId();
         var key = projectId.map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
+        var workflowSyncer = m_workflowSyncerProvider.getWorkflowSyncerForContext(projectId.orElse(null));
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
-            spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler, m_workflowSyncer);
+            spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler, workflowSyncer);
         var appState = AppStateEntityFactory.buildAppStateEnt(
             projectId.map(ProjectFilter::single).orElse(ProjectFilter.all()), isActiveProject, dependencies);
         if (m_appStateUpdater != null) {
