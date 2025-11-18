@@ -44,56 +44,40 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 14, 2025 (motacilla): created
+ *   Nov 18, 2025 (motacilla): created
  */
-package org.knime.gateway.impl.util;
+package org.knime.gateway.impl.webui;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import org.knime.gateway.impl.webui.WorkflowSyncer.DefaultWorkflowSyncer;
 
 /**
- * Can be used to wrap actions that should not be executed too frequently.
+ * Provides the project specific {@link WorkflowSyncer}.
  *
  * @author Kai Franze, KNIME GmbH, Germany
  * @since 5.9
  */
-public final class Debouncer {
+public final class WorkflowSyncerProvider {
 
-    private final ScheduledExecutorService m_scheduler = Executors.newSingleThreadScheduledExecutor();
-
-    private final int m_delaySeconds;
-
-    private ScheduledFuture<?> m_pendingTask;
-
-    private Runnable m_task;
+    private final WorkflowSyncer m_workflowSyncer;
 
     /**
-     * ...
+     * Creates a new WorkflowSyncProvider.
      *
      * @param delaySeconds
-     * @param task
+     * @param appStateUpdater
      */
-    public Debouncer(final int delaySeconds, final Runnable task) {
-        m_delaySeconds = delaySeconds;
-        m_task = task;
+    public WorkflowSyncerProvider(final int delaySeconds, final AppStateUpdater appStateUpdater) {
+        m_workflowSyncer = new DefaultWorkflowSyncer(delaySeconds, appStateUpdater);
     }
 
     /**
-     * ...
+     * Get the WorkflowSyncer for the given project ID.
+     *
+     * @param projectId
+     * @return ...
      */
-    public void call() {
-        if (m_pendingTask != null && !m_pendingTask.isDone()) {
-            m_pendingTask.cancel(false); // To not the actual sync is already running
-        }
-        m_pendingTask = m_scheduler.schedule(m_task::run, m_delaySeconds, TimeUnit.SECONDS);
-    }
-
-    /**
-     * ...
-     */
-    public void shutdown() {
-        m_scheduler.shutdown(); // TODO: When should we call this?
+    public WorkflowSyncer getWorkflowSyncerForContext(final String projectId) {
+        // TODO: Different instances per project ID
+        return m_workflowSyncer;
     }
 }

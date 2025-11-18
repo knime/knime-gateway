@@ -92,6 +92,7 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.WorkflowSyncer;
+import org.knime.gateway.impl.webui.WorkflowSyncerProvider;
 import org.knime.gateway.impl.webui.WorkflowUtil;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
@@ -115,8 +116,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     private final ProjectManager m_projectManager =
         ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
-    private final WorkflowSyncer m_workflowSyncer =
-        ServiceDependencies.getServiceDependency(WorkflowSyncer.class, true);
+    private final WorkflowSyncerProvider m_workflowSyncerProvider =
+        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -276,7 +277,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     private void assertContextVersionAndNotifyWorkflowChanged(final String projectId) {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
-        m_workflowSyncer.notifyWorkflowChanged(projectId); // TODO: This one or the one from the DefaultServiceContext?
+        m_workflowSyncerProvider.getWorkflowSyncerForContext(projectId).notifyWorkflowChanged();
     }
 
     private void disposeVersion(final String projectId, final VersionId versionId) {
