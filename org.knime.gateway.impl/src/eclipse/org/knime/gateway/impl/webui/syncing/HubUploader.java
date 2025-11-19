@@ -44,79 +44,51 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 14, 2025 (motacilla): created
+ *   Nov 19, 2025 (motacilla): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.syncing;
 
+import java.util.Optional;
+
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.NodeLogger;
-import org.knime.gateway.impl.util.Debouncer;
+import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
+import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
+import org.knime.gateway.impl.webui.syncing.SyncingExceptions.SpaceNotFoundException;
 
 /**
- * Automatically sync the currently open project
+ * ...
  *
  * @author Kai Franze, KNIME GmbH, Germany
- * @since 5.9
  */
-public interface WorkflowSyncer {
+final class HubUploader {
 
-    /**
-     * Notify that the workflow has changed and needs to be synced.
-     */
-    void notifyWorkflowChanged();
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(HubUploader.class);
 
-    /**
-     * Get the current sync status.
-     *
-     * @return ...
-     */
-    SyncStatus getSyncStatus();
-
-    /**
-     * Status of the workflow sync
-     */
-    enum SyncStatus {
-        SYNCED,
-        SYNCING,
-        OUT_OF_SYNC // TODO: When would we need this?
-    }
-
-    /**
-     * Default implementation of {@link WorkflowSyncer} that does nothing.
-     */
-    static final class DefaultWorkflowSyncer implements WorkflowSyncer {
-
-        private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowSyncer.class);
-
-        private final Debouncer m_debouncer; // Since sync can throw IOException
-
-        private SyncStatus m_syncStatus = SyncStatus.SYNCED; // To provide initial status
-
-        DefaultWorkflowSyncer(final int delaySeconds, final AppStateUpdater appStateUpdater) {
-            m_debouncer = new Debouncer(delaySeconds, () -> {
-                m_syncStatus = SyncStatus.SYNCING;
-                appStateUpdater.updateAppState();
-
-                // TODO: Implement actual sync logic here
-                try {
-                    Thread.sleep(2000); // Simulate sync time
-                } catch (final InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-
-                m_syncStatus = SyncStatus.SYNCED;
-                appStateUpdater.updateAppState();
-            });
+    static void uploadToHub(final WorkflowContextV2 context, final SpaceProvidersManager spaceProvidersManager, final Key key) {
+        if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
+            // Not a Hub project, nothing to do
+            return;
         }
 
-        @Override
-        public void notifyWorkflowChanged() {
-            LOGGER.warn("Workflow change detected");
-            m_debouncer.call();
-        }
-
-        @Override
-        public SyncStatus getSyncStatus() {
-            return m_syncStatus;
+        try {
+            final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
+                .map(mgr -> mgr.getSpaceProviders(key)) //
+                .orElseThrow(() -> new SpaceNotFoundException("No SpaceProvidersManager available")); //
+            final var spaceProvider = spaceProviders.getAllSpaceProviders().stream() //
+                .findFirst() //
+                .orElseThrow(() -> new SpaceNotFoundException("No space provider found for key"));
+            final var space = spaceProvider.getSpace(hubInfo.getSpaceItemId());
+            final var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
+            final var spaceKnimeUrl = space.toPathBasedKnimeUrl(hubInfo.getWorkflowItemId());
+            space.saveBackTo(localWorkflowPath, spaceKnimeUrl, false, new NullProgressMonitor());
+        } catch (SpaceNotFoundException | NetworkException | LoggedOutException | MutableServiceCallException e) {
+            LOGGER.error("Failed to upload workflow to Hub for key <%s>".formatted(key), e);
         }
     }
 }

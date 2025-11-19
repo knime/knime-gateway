@@ -46,13 +46,16 @@
  * History
  *   Nov 18, 2025 (motacilla): created
  */
-package org.knime.gateway.impl.webui;
+package org.knime.gateway.impl.webui.syncing;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.knime.gateway.impl.webui.WorkflowSyncer.DefaultWorkflowSyncer;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
 
 /**
  * Provides the project specific {@link WorkflowSyncer}.
@@ -68,15 +71,33 @@ public final class WorkflowSyncerProvider {
 
     private final AppStateUpdater m_appStateUpdater;
 
+    private final SpaceProvidersManager m_spaceProvidersManager;
+
     /**
-     * Creates a new WorkflowSyncProvider.
+     * Creates a new {link WorkflowSyncProvider}.
      *
      * @param delaySeconds
      * @param appStateUpdater
+     * @param spaceProvidersManager
      */
-    public WorkflowSyncerProvider(final int delaySeconds, final AppStateUpdater appStateUpdater) {
+    public WorkflowSyncerProvider(final int delaySeconds, final AppStateUpdater appStateUpdater,
+        final SpaceProvidersManager spaceProvidersManager) {
         m_delaySeconds = delaySeconds;
         m_appStateUpdater = appStateUpdater;
+        m_spaceProvidersManager = spaceProvidersManager;
+    }
+
+    /**
+     * Creates a disabled {link WorkflowSyncProvider} that always returns {link NoOpWorkflowSyncer}.
+     *
+     * @return A disabled {@link WorkflowSyncerProvider}
+     */
+    public static WorkflowSyncerProvider disabled() {
+        return new WorkflowSyncerProvider(0, null, null);
+    }
+
+    private boolean isEnabled() {
+        return m_delaySeconds != 0 && m_appStateUpdater != null && m_spaceProvidersManager != null;
     }
 
     /**
@@ -86,7 +107,8 @@ public final class WorkflowSyncerProvider {
      * @return The {@link WorkflowSyncer} associated with the {@link Key}
      */
     public WorkflowSyncer getWorkflowSyncerForContext(final Key key) {
-        return m_workflowSyncers.computeIfAbsent(key,
-            k -> new DefaultWorkflowSyncer(m_delaySeconds, m_appStateUpdater));
+        return m_workflowSyncers.computeIfAbsent(key, k -> isEnabled() //
+            ? new DefaultWorkflowSyncer(m_delaySeconds, m_appStateUpdater, m_spaceProvidersManager, k) //
+            : new NoOpWorkflowSyncer());
     }
 }

@@ -44,61 +44,48 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 14, 2025 (motacilla): created
+ *   Nov 19, 2025 (motacilla): created
  */
-package org.knime.gateway.impl.util;
+package org.knime.gateway.impl.webui.syncing;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.io.IOException;
 
 /**
- * Can be used to wrap actions that should not be executed too frequently.
+ * ...
  *
  * @author Kai Franze, KNIME GmbH, Germany
- * @since 5.9
  */
-public final class Debouncer {
+final class SyncingExceptions {
 
-    private final ScheduledExecutorService m_scheduler = Executors.newSingleThreadScheduledExecutor();
+    static final class NotAWorkfflowProjectException extends Exception {
+        private static final long serialVersionUID = 1L;
 
-    private final int m_delaySeconds;
-
-    private ScheduledFuture<?> m_pendingTask;
-
-    private Consumer<String> m_task;
-
-    /**
-     * ...
-     *
-     * @param delaySeconds
-     * @param task
-     */
-    public Debouncer(final int delaySeconds, final Consumer<String> task) {
-        m_delaySeconds = delaySeconds;
-        m_task = task;
-    }
-
-    /**
-     * ...
-     *
-     * @param projectId
-     */
-    public void call(final String projectId) {
-        if (m_pendingTask != null && !m_pendingTask.isDone()) {
-            m_pendingTask.cancel(false); // To not the actual sync is already running
+        NotAWorkfflowProjectException(final String msg) {
+            super(msg);
         }
-        m_pendingTask = m_scheduler.schedule(() -> {
-            m_task.accept(projectId);
-        }, m_delaySeconds, TimeUnit.SECONDS);
     }
 
-    /**
-     * ...
-     */
-    public void shutdown() {
-        m_scheduler.shutdown(); // TODO: When should we call this?
+    static final class WorkflowExecutingException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        WorkflowExecutingException(final String msg) {
+            super(msg);
+        }
+    }
+
+    static final class LocalIOException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        LocalIOException(final String msg, final Throwable cause) {
+            super(msg, cause);
+        }
+    }
+
+    static final class SpaceNotFoundException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        SpaceNotFoundException(final String msg) {
+            super(msg);
+        }
     }
 }
