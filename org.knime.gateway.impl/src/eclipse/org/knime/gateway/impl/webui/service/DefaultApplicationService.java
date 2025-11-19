@@ -121,7 +121,7 @@ public final class DefaultApplicationService implements ApplicationService {
         var projectId = DefaultServiceContext.getProjectId();
         var key = projectId.map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
-        var workflowSyncer = m_workflowSyncerProvider.getWorkflowSyncerForContext(projectId.orElse(null));
+        var workflowSyncer = m_workflowSyncerProvider.getWorkflowSyncerForContext(key);
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
             spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler, workflowSyncer);

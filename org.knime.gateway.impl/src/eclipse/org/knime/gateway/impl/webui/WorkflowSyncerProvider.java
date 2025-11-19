@@ -48,7 +48,11 @@
  */
 package org.knime.gateway.impl.webui;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.knime.gateway.impl.webui.WorkflowSyncer.DefaultWorkflowSyncer;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 
 /**
  * Provides the project specific {@link WorkflowSyncer}.
@@ -58,7 +62,11 @@ import org.knime.gateway.impl.webui.WorkflowSyncer.DefaultWorkflowSyncer;
  */
 public final class WorkflowSyncerProvider {
 
-    private final WorkflowSyncer m_workflowSyncer;
+    private final Map<Key, WorkflowSyncer> m_workflowSyncers = new ConcurrentHashMap<>();
+
+    private final int m_delaySeconds;
+
+    private final AppStateUpdater m_appStateUpdater;
 
     /**
      * Creates a new WorkflowSyncProvider.
@@ -67,17 +75,18 @@ public final class WorkflowSyncerProvider {
      * @param appStateUpdater
      */
     public WorkflowSyncerProvider(final int delaySeconds, final AppStateUpdater appStateUpdater) {
-        m_workflowSyncer = new DefaultWorkflowSyncer(delaySeconds, appStateUpdater);
+        m_delaySeconds = delaySeconds;
+        m_appStateUpdater = appStateUpdater;
     }
 
     /**
-     * Get the WorkflowSyncer for the given project ID.
+     * Get the {@link WorkflowSyncer} for the given project ID.
      *
-     * @param projectId
-     * @return ...
+     * @param key
+     * @return The {@link WorkflowSyncer} associated with the {@link Key}
      */
-    public WorkflowSyncer getWorkflowSyncerForContext(final String projectId) {
-        // TODO: Different instances per project ID
-        return m_workflowSyncer;
+    public WorkflowSyncer getWorkflowSyncerForContext(final Key key) {
+        return m_workflowSyncers.computeIfAbsent(key,
+            k -> new DefaultWorkflowSyncer(m_delaySeconds, m_appStateUpdater));
     }
 }

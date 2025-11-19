@@ -244,7 +244,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
-        assertContextVersionAndNotifyWorkflowChanged(projectId);
+        assertContextAndVersionAndSync(projectId);
         var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager == null ? null : m_spaceProvidersManager.getSpaceProviders(key);
         return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
@@ -253,13 +253,13 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
-        assertContextVersionAndNotifyWorkflowChanged(projectId);
+        assertContextAndVersionAndSync(projectId);
         m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
     }
 
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
-        assertContextVersionAndNotifyWorkflowChanged(projectId);
+        assertContextAndVersionAndSync(projectId);
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
     }
 
@@ -274,10 +274,11 @@ public final class DefaultWorkflowService implements WorkflowService {
      * Asserts that the context is set for the given project ID, makes sure the project version is the current state and
      * notifies the {@link WorkflowSyncer} that the workflow has changed.
      */
-    private void assertContextVersionAndNotifyWorkflowChanged(final String projectId) {
+    private void assertContextAndVersionAndSync(final String projectId) {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
-        m_workflowSyncerProvider.getWorkflowSyncerForContext(projectId).notifyWorkflowChanged();
+        final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
+        m_workflowSyncerProvider.getWorkflowSyncerForContext(key).notifyWorkflowChanged();
     }
 
     private void disposeVersion(final String projectId, final VersionId versionId) {
