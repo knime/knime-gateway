@@ -152,11 +152,10 @@ public final class DefaultEventService implements EventService {
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             if (m_appStateUpdater != null) { // TODO: Do we have an app state updater in a browser editing session?
                 eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(), t -> {
-                    var spaceProviders = m_spaceProvidersManager.getSpaceProviders( //
-                        DefaultServiceContext.getProjectId().map(SpaceProvidersManager.Key::of) //
-                            .orElse(SpaceProvidersManager.Key.defaultKey()) //
-                    );
-                    var workflowSyncer = m_workflowSyncerProvider.getWorkflowSyncerForContext(projectId());
+                    var key = DefaultServiceContext.getProjectId().map(SpaceProvidersManager.Key::of) //
+                            .orElse(SpaceProvidersManager.Key.defaultKey());
+                    var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
+                    var workflowSyncer = m_workflowSyncerProvider.getWorkflowSyncerForContext(key);
                     var dependencies = new AppStateEntityFactory.ServiceDependencies( //
                         m_projectManager, //
                         m_preferencesProvider, //
