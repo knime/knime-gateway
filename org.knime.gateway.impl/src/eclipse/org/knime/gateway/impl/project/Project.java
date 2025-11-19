@@ -48,23 +48,25 @@ package org.knime.gateway.impl.project;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.VersionId;
 
 /**
  * A workflow or component project.
  *
- *
- *
  * @see ProjectManager
  * @author Martin Horn, University of Konstanz
  * @noreference This interface is not intended to be referenced by clients.
  */
 public final class Project {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(Project.class);
 
     private final String m_id;
 
@@ -77,6 +79,12 @@ public final class Project {
     private final Function<String, byte[]> m_generateReport;
 
     private ProjectWfmCache m_projectWfmCache;
+
+    private static Consumer<WorkflowManager> onLoadCallback =
+        wfm -> LOGGER.warn("'m_onLoadCallback' called for <%s>".formatted(wfm.getName()));
+
+    private static Consumer<WorkflowManager> onDisposeCallback =
+        wfm -> LOGGER.warn("'m_onDisposeCallback' called for <%s>".formatted(wfm.getName()));
 
     private Project(final Builder builder) {
         this( //
@@ -270,6 +278,24 @@ public final class Project {
         }
     }
 
+    /**
+     * ...
+     *
+     * @param onLoadCallback
+     */
+    public void onLoad(final Consumer<WorkflowManager> onLoadCallback) {
+       //
+    }
+
+    /**
+     * ...
+     *
+     * @param onDisposeCallback
+     */
+    public void onDispose(final Consumer<WorkflowManager> onDisposeCallback) {
+        //
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder() //
@@ -394,14 +420,15 @@ public final class Project {
             Objects.requireNonNull(wfm);
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
-            m_wfmCache = new ProjectWfmCache(wfm, WorkflowManagerLoader.providingOnlyCurrentState(() -> wfm));
+            m_wfmCache = new ProjectWfmCache(wfm, WorkflowManagerLoader.providingOnlyCurrentState(() -> wfm),
+                onLoadCallback, onDisposeCallback);
             return this;
         }
 
         @Override
         public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader) {
             Objects.requireNonNull(wfmLoader);
-            m_wfmCache = new ProjectWfmCache(wfmLoader);
+            m_wfmCache = new ProjectWfmCache(wfmLoader, onLoadCallback, onDisposeCallback);
             return this;
         }
 

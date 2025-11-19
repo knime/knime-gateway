@@ -48,6 +48,7 @@ package org.knime.gateway.impl.project;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -70,12 +71,30 @@ class ProjectWfmCache {
 
     private final LRUCache<VersionId.Fixed, WorkflowManager> m_fixedVersions;
 
+    private Consumer<WorkflowManager> m_onLoadCallback;
+
+    private Consumer<WorkflowManager> m_onDisposeCallback;
+
     ProjectWfmCache(final WorkflowManagerLoader wfmLoader) {
         this(wfmLoader, new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState())));
     }
 
     ProjectWfmCache(final WorkflowManager wfm, final WorkflowManagerLoader wfmLoader) {
         this(wfmLoader, new Lazy.Init<>(wfm, () -> wfmLoader.load(VersionId.currentState())));
+    }
+
+    ProjectWfmCache(final WorkflowManagerLoader wfmLoader, final Consumer<WorkflowManager> onLoadCallback,
+        final Consumer<WorkflowManager> onDisposeCallback) {
+        this(wfmLoader, new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState())));
+        m_onLoadCallback = onLoadCallback;
+        m_onDisposeCallback = onDisposeCallback;
+    }
+
+    ProjectWfmCache(final WorkflowManager wfm, final WorkflowManagerLoader wfmLoader,
+        final Consumer<WorkflowManager> onLoadCallback, final Consumer<WorkflowManager> onDisposeCallback) {
+        this(wfmLoader, new Lazy.Init<>(wfm, () -> wfmLoader.load(VersionId.currentState())));
+        m_onLoadCallback = onLoadCallback;
+        m_onDisposeCallback = onDisposeCallback;
     }
 
     private ProjectWfmCache(final WorkflowManagerLoader wfmLoader,
@@ -119,7 +138,11 @@ class ProjectWfmCache {
             return loaded;
         } else {
             try {
-                return m_currentState.get();
+                final var wfm = m_currentState.get();
+                if (m_onLoadCallback != null) {
+                    m_onLoadCallback.accept(wfm);
+                }
+                return wfm;
             } catch (GatewayException e) {
                 // TODO NXT-3938
                 throw new RuntimeException(e);
@@ -139,7 +162,12 @@ class ProjectWfmCache {
      */
     void dispose(final VersionId version) {
         if (version.isCurrentState()) {
-            m_currentState.ifPresent(ProjectWfmCache::disposeWorkflowManager);
+            m_currentState.ifPresent(wfm -> {
+                if (m_onDisposeCallback != null) {
+                    m_onDisposeCallback.accept(wfm);
+                }
+                disposeWorkflowManager(wfm);
+            });
             m_currentState.clear();
         } else {
             Optional.ofNullable(m_fixedVersions.remove(version)) //
