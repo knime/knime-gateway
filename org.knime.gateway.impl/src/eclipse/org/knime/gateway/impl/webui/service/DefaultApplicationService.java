@@ -56,13 +56,13 @@ import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
-import org.knime.gateway.impl.webui.WorkflowSyncerProvider;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ProjectFilter;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncerProvider;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.
