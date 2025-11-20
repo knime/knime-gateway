@@ -272,7 +272,8 @@ public final class Project {
                 onLoadCallback, //
                 onDisposeCallback);
         } else {
-            m_projectWfmCache = new ProjectWfmCache(loader);
+            // TODO: This is just a hack, remove this.
+            m_projectWfmCache = new ProjectWfmCache(loader, onLoadCallback, onDisposeCallback);
         }
     }
 

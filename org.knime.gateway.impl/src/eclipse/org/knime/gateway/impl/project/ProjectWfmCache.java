@@ -86,6 +86,12 @@ class ProjectWfmCache {
             NOOP_CALLBACK);
     }
 
+    // TODO: This is just a hack, remove this.
+    ProjectWfmCache(final WorkflowManagerLoader wfmLoader, final Consumer<WorkflowManager> onLoadCallback,
+        final Consumer<WorkflowManager> onDisposeCallback) {
+        this(wfmLoader, new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState())), onLoadCallback, onDisposeCallback);
+    }
+
     ProjectWfmCache(final WorkflowManager wfm, final WorkflowManagerLoader wfmLoader,
         final Consumer<WorkflowManager> onLoadCallback, final Consumer<WorkflowManager> onDisposeCallback) {
         this(wfmLoader, new Lazy.Init<>(wfm, () -> wfmLoader.load(VersionId.currentState())), onLoadCallback,
