@@ -80,12 +80,6 @@ public final class Project {
 
     private ProjectWfmCache m_projectWfmCache;
 
-    private static Consumer<WorkflowManager> onLoadCallback =
-        wfm -> LOGGER.warn("'m_onLoadCallback' called for <%s>".formatted(wfm.getName()));
-
-    private static Consumer<WorkflowManager> onDisposeCallback =
-        wfm -> LOGGER.warn("'m_onDisposeCallback' called for <%s>".formatted(wfm.getName()));
-
     private Project(final Builder builder) {
         this( //
             builder.m_id, //
@@ -262,8 +256,11 @@ public final class Project {
      * TODO NXT-3607 Projects can be immutable (NOSONAR)
      *
      * @param loader -
+     * @param onLoadCallback -
+     * @param onDisposeCallback -
      */
-    public void setWfmLoader(final WorkflowManagerLoader loader) {
+    public void setWfmLoader(final WorkflowManagerLoader loader, final Consumer<WorkflowManager> onLoadCallback,
+        final Consumer<WorkflowManager> onDisposeCallback) {
         var previousCache = m_projectWfmCache;
         if (previousCache.contains(VersionId.currentState())) {
             // for full generality one would have to carry over other cached instances too.
@@ -271,29 +268,12 @@ public final class Project {
             // This is acceptable since this method will be removed with NXT-3607.
             m_projectWfmCache = new ProjectWfmCache( //
                 previousCache.getWorkflowManager(VersionId.currentState()), //
-                loader //
-            );
+                loader, //
+                onLoadCallback, //
+                onDisposeCallback);
         } else {
             m_projectWfmCache = new ProjectWfmCache(loader);
         }
-    }
-
-    /**
-     * ...
-     *
-     * @param onLoadCallback
-     */
-    public void onLoad(final Consumer<WorkflowManager> onLoadCallback) {
-       //
-    }
-
-    /**
-     * ...
-     *
-     * @param onDisposeCallback
-     */
-    public void onDispose(final Consumer<WorkflowManager> onDisposeCallback) {
-        //
     }
 
     @Override
@@ -420,15 +400,14 @@ public final class Project {
             Objects.requireNonNull(wfm);
             m_name = wfm.getName();
             m_id = getUniqueProjectId(m_name);
-            m_wfmCache = new ProjectWfmCache(wfm, WorkflowManagerLoader.providingOnlyCurrentState(() -> wfm),
-                onLoadCallback, onDisposeCallback);
+            m_wfmCache = new ProjectWfmCache(wfm, WorkflowManagerLoader.providingOnlyCurrentState(() -> wfm));
             return this;
         }
 
         @Override
         public BuilderStage.RequiresName setWfmLoader(final WorkflowManagerLoader wfmLoader) {
             Objects.requireNonNull(wfmLoader);
-            m_wfmCache = new ProjectWfmCache(wfmLoader, onLoadCallback, onDisposeCallback);
+            m_wfmCache = new ProjectWfmCache(wfmLoader);
             return this;
         }
 

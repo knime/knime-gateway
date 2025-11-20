@@ -71,39 +71,37 @@ class ProjectWfmCache {
 
     private final LRUCache<VersionId.Fixed, WorkflowManager> m_fixedVersions;
 
-    private Consumer<WorkflowManager> m_onLoadCallback;
+    private final Consumer<WorkflowManager> m_onLoadCallback;
 
-    private Consumer<WorkflowManager> m_onDisposeCallback;
+    private final Consumer<WorkflowManager> m_onDisposeCallback;
+
+    private static final Consumer<WorkflowManager> NOOP_CALLBACK = wfm -> {};
 
     ProjectWfmCache(final WorkflowManagerLoader wfmLoader) {
-        this(wfmLoader, new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState())));
+        this(wfmLoader, new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState())), NOOP_CALLBACK, NOOP_CALLBACK);
     }
 
     ProjectWfmCache(final WorkflowManager wfm, final WorkflowManagerLoader wfmLoader) {
-        this(wfmLoader, new Lazy.Init<>(wfm, () -> wfmLoader.load(VersionId.currentState())));
-    }
-
-    ProjectWfmCache(final WorkflowManagerLoader wfmLoader, final Consumer<WorkflowManager> onLoadCallback,
-        final Consumer<WorkflowManager> onDisposeCallback) {
-        this(wfmLoader, new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState())));
-        m_onLoadCallback = onLoadCallback;
-        m_onDisposeCallback = onDisposeCallback;
+        this(wfmLoader, new Lazy.Init<>(wfm, () -> wfmLoader.load(VersionId.currentState())), NOOP_CALLBACK,
+            NOOP_CALLBACK);
     }
 
     ProjectWfmCache(final WorkflowManager wfm, final WorkflowManagerLoader wfmLoader,
         final Consumer<WorkflowManager> onLoadCallback, final Consumer<WorkflowManager> onDisposeCallback) {
-        this(wfmLoader, new Lazy.Init<>(wfm, () -> wfmLoader.load(VersionId.currentState())));
-        m_onLoadCallback = onLoadCallback;
-        m_onDisposeCallback = onDisposeCallback;
+        this(wfmLoader, new Lazy.Init<>(wfm, () -> wfmLoader.load(VersionId.currentState())), onLoadCallback,
+            onDisposeCallback);
     }
 
     private ProjectWfmCache(final WorkflowManagerLoader wfmLoader,
-        final Lazy.Init<WorkflowManager, GatewayException> currentState) {
+        final Lazy.Init<WorkflowManager, GatewayException> currentState, final Consumer<WorkflowManager> onLoadCallback,
+        final Consumer<WorkflowManager> onDisposeCallback) {
         m_wfmLoader = Objects.requireNonNull(wfmLoader);
         m_currentState = Objects.requireNonNull(currentState);
         m_fixedVersions = new LRUCache<>( //
             VERSION_WFM_CACHE_MAX_SIZE, //
             (removedVersion, removedWfm) -> disposeWorkflowManager(removedWfm));
+        m_onLoadCallback = onLoadCallback;
+        m_onDisposeCallback = onDisposeCallback;
     }
 
     Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
@@ -138,11 +136,12 @@ class ProjectWfmCache {
             return loaded;
         } else {
             try {
-                final var wfm = m_currentState.get();
-                if (m_onLoadCallback != null) {
+                if (!m_currentState.isInitialized()) {
+                    final var wfm = m_currentState.get();
                     m_onLoadCallback.accept(wfm);
+                    return wfm;
                 }
-                return wfm;
+                return m_currentState.get();
             } catch (GatewayException e) {
                 // TODO NXT-3938
                 throw new RuntimeException(e);
@@ -163,9 +162,7 @@ class ProjectWfmCache {
     void dispose(final VersionId version) {
         if (version.isCurrentState()) {
             m_currentState.ifPresent(wfm -> {
-                if (m_onDisposeCallback != null) {
-                    m_onDisposeCallback.accept(wfm);
-                }
+                m_onDisposeCallback.accept(wfm);
                 disposeWorkflowManager(wfm);
             });
             m_currentState.clear();
