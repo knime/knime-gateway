@@ -94,8 +94,6 @@ import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.WorkflowUtil;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncer;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncerProvider;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -116,8 +114,8 @@ public final class DefaultWorkflowService implements WorkflowService {
     private final ProjectManager m_projectManager =
         ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
-    private final WorkflowSyncerProvider m_workflowSyncerProvider =
-        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, true);
+//    private final WorkflowSyncerProvider m_workflowSyncerProvider =
+//        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, true);
 
     /**
      * Returns the singleton instance for this service.
@@ -244,7 +242,9 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
-        assertServiceContextIdAndProjectVersionAndSync(projectId);
+       // assertServiceContextIdAndProjectVersionAndSync(projectId);
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager == null ? null : m_spaceProvidersManager.getSpaceProviders(key);
         return m_workflowMiddleware.getCommands().execute(new WorkflowKey(projectId, workflowId), workflowCommandEnt,
@@ -253,13 +253,17 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
-        assertServiceContextIdAndProjectVersionAndSync(projectId);
+        // assertServiceContextIdAndProjectVersionAndSync(projectId);
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
     }
 
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
-        assertServiceContextIdAndProjectVersionAndSync(projectId);
+        // assertServiceContextIdAndProjectVersionAndSync(projectId);
+        DefaultServiceContext.assertWorkflowProjectId(projectId);
+        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
     }
 
@@ -270,16 +274,12 @@ public final class DefaultWorkflowService implements WorkflowService {
             .buildWorkflowMonitorStateSnapshotEnt(new WorkflowKey(projectId, NodeIDEnt.getRootID()));
     }
 
-    /**
-     * Asserts that the context is set for the given project ID, makes sure the project version is the current state and
-     * notifies the {@link WorkflowSyncer} that the workflow has changed.
-     */
-    private void assertServiceContextIdAndProjectVersionAndSync(final String projectId) {
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
-        final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
-        m_workflowSyncerProvider.getWorkflowSyncerForContext(key).notifyWorkflowChanged(projectId);
-    }
+//    private void assertServiceContextIdAndProjectVersionAndSync(final String projectId) {
+//        DefaultServiceContext.assertWorkflowProjectId(projectId);
+//        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
+//        final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
+//        m_workflowSyncerProvider.getWorkflowSyncerForContext(key).notifyWorkflowChanged(projectId);
+//    }
 
     private void disposeVersion(final String projectId, final VersionId versionId) {
         m_projectManager.getProject(projectId).ifPresent(project -> project.disposeCachedWfm(versionId));
