@@ -49,6 +49,8 @@
 package org.knime.gateway.impl.webui.syncing;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.WorkflowListener;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.impl.util.Debouncer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
@@ -63,18 +65,6 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 public interface WorkflowSyncer {
 
     /**
-     * Notify that the workflow has changed and needs to be synced.
-     */
-    void notifyWorkflowChanged();
-
-    /**
-     * Get the current sync status.
-     *
-     * @return ...
-     */
-    SyncStatus getSyncStatus();
-
-    /**
      * Status of the workflow sync
      */
     enum SyncStatus {
@@ -84,13 +74,37 @@ public interface WorkflowSyncer {
     }
 
     /**
+     * Get the current sync status.
+     *
+     * @return ...
+     */
+    SyncStatus getSyncStatus();
+
+    /**
+     * Notify that the workflow has changed and needs to be synced.
+     */
+    void notifyWorkflowChanged();
+
+    /**
+     * The callback to be invoked when a workflow is loaded
+     */
+    void onLoadCallback(final WorkflowManager wfm);
+
+    /**
+     * The callback to be invoked when a workflow is disposed.
+     */
+    void onDisposeCallback(final WorkflowManager wfm);
+
+    /**
      * Default implementation of {@link WorkflowSyncer} that does nothing.
      */
     static final class DefaultWorkflowSyncer implements WorkflowSyncer {
 
         private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowSyncer.class);
 
-        private final Debouncer m_debouncer; // Since sync can throw IOException
+        private final WorkflowListener m_listener = new SyncingListener(this::notifyWorkflowChanged);
+
+        private final Debouncer m_debouncer;
 
         private SyncStatus m_syncStatus = SyncStatus.SYNCED; // To provide initial status
 
@@ -101,14 +115,17 @@ public interface WorkflowSyncer {
                 appStateUpdater.updateAppState();
 
                 // TODO: Improve implementation
-                LocalSaver.saveWorkflowToLocalDisk(key.toString()) // The actual "projectId" is in here
-                    .ifPresent(context -> {
-                        HubUploader.uploadToHub(context, spaceProvidersManager, key);
-                    });
+                final var context = LocalSaver.saveWorkflowToLocalDisk(key.toString()); // The actual "projectId" is in here
+                context.ifPresent(ctx -> HubUploader.uploadToHub(ctx, spaceProvidersManager, key));
 
                 m_syncStatus = SyncStatus.SYNCED;
                 appStateUpdater.updateAppState();
             });
+        }
+
+        @Override
+        public SyncStatus getSyncStatus() {
+            return m_syncStatus;
         }
 
         @Override
@@ -118,8 +135,15 @@ public interface WorkflowSyncer {
         }
 
         @Override
-        public SyncStatus getSyncStatus() {
-            return m_syncStatus;
+        public void onLoadCallback(final WorkflowManager wfm) {
+            LOGGER.warn("'onLoadCallback' called for worklfow <%s>".formatted(wfm.getName()));
+            wfm.addListener(m_listener);
+        }
+
+        @Override
+        public void onDisposeCallback(final WorkflowManager wfm) {
+            LOGGER.warn("'onLoadCallback' called for worklfow <%s>".formatted(wfm.getName()));
+            wfm.addListener(m_listener);
         }
     }
 
@@ -129,13 +153,23 @@ public interface WorkflowSyncer {
     static final class NoOpWorkflowSyncer implements WorkflowSyncer {
 
         @Override
+        public SyncStatus getSyncStatus() {
+            return SyncStatus.SYNCED;
+        }
+
+        @Override
         public void notifyWorkflowChanged() {
             // No-op
         }
 
         @Override
-        public SyncStatus getSyncStatus() {
-            return SyncStatus.SYNCED;
+        public void onLoadCallback(final WorkflowManager wfm) {
+            // No-op
+        }
+
+        @Override
+        public void onDisposeCallback(final WorkflowManager wfm) {
+            // No-op
         }
     }
 }
