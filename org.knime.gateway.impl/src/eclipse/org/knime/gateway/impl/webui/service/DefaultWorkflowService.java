@@ -114,9 +114,6 @@ public final class DefaultWorkflowService implements WorkflowService {
     private final ProjectManager m_projectManager =
         ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
-//    private final WorkflowSyncerProvider m_workflowSyncerProvider =
-//        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, true);
-
     /**
      * Returns the singleton instance for this service.
      *
@@ -242,7 +239,6 @@ public final class DefaultWorkflowService implements WorkflowService {
     @Override
     public CommandResultEnt executeWorkflowCommand(final String projectId, final NodeIDEnt workflowId,
         final WorkflowCommandEnt workflowCommandEnt) throws ServiceCallException {
-       // assertServiceContextIdAndProjectVersionAndSync(projectId);
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
@@ -253,7 +249,6 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public void undoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
-        // assertServiceContextIdAndProjectVersionAndSync(projectId);
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().undo(new WorkflowKey(projectId, workflowId));
@@ -261,7 +256,6 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public void redoWorkflowCommand(final String projectId, final NodeIDEnt workflowId) throws ServiceCallException {
-        // assertServiceContextIdAndProjectVersionAndSync(projectId);
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
         m_workflowMiddleware.getCommands().redo(new WorkflowKey(projectId, workflowId));
@@ -274,13 +268,6 @@ public final class DefaultWorkflowService implements WorkflowService {
             .buildWorkflowMonitorStateSnapshotEnt(new WorkflowKey(projectId, NodeIDEnt.getRootID()));
     }
 
-//    private void assertServiceContextIdAndProjectVersionAndSync(final String projectId) {
-//        DefaultServiceContext.assertWorkflowProjectId(projectId);
-//        DefaultServiceUtil.assertProjectVersion(projectId, VersionId.currentState());
-//        final var key = DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
-//        m_workflowSyncerProvider.getWorkflowSyncerForContext(key).notifyWorkflowChanged(projectId);
-//    }
-
     private void disposeVersion(final String projectId, final VersionId versionId) {
         m_projectManager.getProject(projectId).ifPresent(project -> project.disposeCachedWfm(versionId));
         m_workflowMiddleware.clearWorkflowState(
@@ -288,7 +275,7 @@ public final class DefaultWorkflowService implements WorkflowService {
     }
 
     /**
-     * This temporary helper class will become obsolete with NXT-3634
+     * TODO: Unify with {@link LocalSaver}.
      */
     private static final class SaveProjectHelper {
 
