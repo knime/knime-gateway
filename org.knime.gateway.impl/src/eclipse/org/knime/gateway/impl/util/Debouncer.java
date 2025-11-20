@@ -52,7 +52,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * Can be used to wrap actions that should not be executed too frequently.
@@ -68,31 +67,27 @@ public final class Debouncer {
 
     private ScheduledFuture<?> m_pendingTask;
 
-    private Consumer<String> m_task;
+    private Runnable m_task;
 
     /**
      * ...
      *
-     * @param delaySeconds
-     * @param task
+     * @param delaySeconds -
+     * @param task -
      */
-    public Debouncer(final int delaySeconds, final Consumer<String> task) {
+    public Debouncer(final int delaySeconds, final Runnable task) {
         m_delaySeconds = delaySeconds;
         m_task = task;
     }
 
     /**
      * ...
-     *
-     * @param projectId
      */
-    public void call(final String projectId) {
+    public void call() {
         if (m_pendingTask != null && !m_pendingTask.isDone()) {
             m_pendingTask.cancel(false); // To not the actual sync is already running
         }
-        m_pendingTask = m_scheduler.schedule(() -> {
-            m_task.accept(projectId);
-        }, m_delaySeconds, TimeUnit.SECONDS);
+        m_pendingTask = m_scheduler.schedule(m_task::run, m_delaySeconds, TimeUnit.SECONDS);
     }
 
     /**

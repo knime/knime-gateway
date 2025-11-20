@@ -64,10 +64,8 @@ public interface WorkflowSyncer {
 
     /**
      * Notify that the workflow has changed and needs to be synced.
-     *
-     * @param projectId ...
      */
-    void notifyWorkflowChanged(final String projectId);
+    void notifyWorkflowChanged();
 
     /**
      * Get the current sync status.
@@ -98,12 +96,12 @@ public interface WorkflowSyncer {
 
         DefaultWorkflowSyncer(final int delaySeconds, final AppStateUpdater appStateUpdater,
             final SpaceProvidersManager spaceProvidersManager, final Key key) {
-            m_debouncer = new Debouncer(delaySeconds, projectId -> {
+            m_debouncer = new Debouncer(delaySeconds, () -> {
                 m_syncStatus = SyncStatus.SYNCING;
                 appStateUpdater.updateAppState();
 
                 // TODO: Improve implementation
-                LocalSaver.saveWorkflowToLocalDisk(projectId) //
+                LocalSaver.saveWorkflowToLocalDisk(key.toString()) // The actual "projectId" is in here
                     .ifPresent(context -> {
                         HubUploader.uploadToHub(context, spaceProvidersManager, key);
                     });
@@ -114,9 +112,9 @@ public interface WorkflowSyncer {
         }
 
         @Override
-        public void notifyWorkflowChanged(final String projectId) {
+        public void notifyWorkflowChanged() {
             LOGGER.warn("Workflow change detected");
-            m_debouncer.call(projectId);
+            m_debouncer.call();
         }
 
         @Override
@@ -130,11 +128,9 @@ public interface WorkflowSyncer {
      */
     static final class NoOpWorkflowSyncer implements WorkflowSyncer {
 
-        private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowSyncer.class);
-
         @Override
-        public void notifyWorkflowChanged(final String projectId) {
-            LOGGER.warn("NoOpWorkflowSyncer: Workflow change detected, but no sync will be performed");
+        public void notifyWorkflowChanged() {
+            // No-op
         }
 
         @Override
