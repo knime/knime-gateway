@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.syncing;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
+import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 
 /**
  * ...
@@ -69,15 +70,55 @@ final class SyncingListener implements WorkflowListener {
     }
 
     /**
-     * TODO: This needs to be improved a lot.
+     * TODO: What is still missing here?
+     *  - Node position changes?
+     *  - Node finished execution?
+     *  - Node got reset?
+     *  - Annotation changed?
+     *
+     *  -> Perhaps check with {@link WorkflowChangesListener} what else is tracked there?
      */
     @Override
     public void workflowChanged(final WorkflowEvent event) {
         final var eventType = event.getType();
-        LOGGER.warn("<%s> event received".formatted(eventType));
-        if (eventType == WorkflowEvent.Type.NODE_ADDED || eventType == WorkflowEvent.Type.NODE_REMOVED) {
-            LOGGER.warn("A node was added or removed, we need to auto-sync now");
-            m_notify.run();
+        switch (eventType) {
+            case NODE_ADDED, NODE_REMOVED -> {
+                LOGGER.warn("A node was added or removed, notify syncer");
+                m_notify.run();
+            }
+            case NODE_COLLAPSED, NODE_EXPANDED -> {
+                LOGGER.warn("A node was collapsed or expanded, notify syncer");
+                m_notify.run();
+            }
+            case NODE_PORTS_CHANGED -> {
+                LOGGER.warn("A node's ports were changed, notify syncer");
+                m_notify.run();
+            }
+            case CONNECTION_ADDED, CONNECTION_REMOVED -> {
+                LOGGER.warn("A connection was added or removed, notify syncer");
+                m_notify.run();
+            }
+            case ANNOTATION_ADDED, ANNOTATION_REMOVED -> { // TODO: Not detected when changing text?
+                LOGGER.warn("An annotation was added or removed, notify syncer");
+                m_notify.run();
+            }
+            case NODE_SETTINGS_CHANGED -> { // TODO: Only when executing a node with changed settings
+                LOGGER.warn("A node's settings were changed, notify syncer");
+                m_notify.run();
+            }
+            case WORKFLOW_METADATA_CHANGED -> {
+                LOGGER.warn("Workflow metadata changed, notify syncer");
+                m_notify.run();
+            }
+            case CONTEXT_CHANGED -> {
+                LOGGER.warn("Workflow context changed, notify syncer");
+                m_notify.run();
+            }
+            case PORTS_BAR_UI_INFO_CHANGED -> {
+                LOGGER.warn("Workflow ports-bar UI info changed, notify syncer");
+                m_notify.run();
+            }
+            default -> LOGGER.warn("Unhandled workflow event type: %s".formatted(eventType));
         }
     }
 }

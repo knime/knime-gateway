@@ -102,7 +102,7 @@ public interface WorkflowSyncer {
 
         private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowSyncer.class);
 
-        private final WorkflowListener m_listener = new SyncingListener(this::notifyWorkflowChanged);
+        private final WorkflowListener m_listener;
 
         private final Debouncer m_debouncer;
 
@@ -110,17 +110,21 @@ public interface WorkflowSyncer {
 
         DefaultWorkflowSyncer(final int delaySeconds, final AppStateUpdater appStateUpdater,
             final SpaceProvidersManager spaceProvidersManager, final Key key) {
-            m_debouncer = new Debouncer(delaySeconds, () -> {
-                m_syncStatus = SyncStatus.SYNCING;
-                appStateUpdater.updateAppState();
+            m_listener = new SyncingListener(this::notifyWorkflowChanged);
+            m_debouncer = new Debouncer(delaySeconds, () -> doSync(appStateUpdater, spaceProvidersManager, key));
+        }
 
-                // TODO: Improve implementation
-                final var context = LocalSaver.saveWorkflowToLocalDisk(key.toString()); // The actual "projectId" is in here
-                context.ifPresent(ctx -> HubUploader.uploadToHub(ctx, spaceProvidersManager, key));
+        private void doSync(final AppStateUpdater appStateUpdater, final SpaceProvidersManager spaceProvidersManager,
+            final Key key) {
+            m_syncStatus = SyncStatus.SYNCING;
+            appStateUpdater.updateAppState();
 
-                m_syncStatus = SyncStatus.SYNCED;
-                appStateUpdater.updateAppState();
-            });
+            // TODO: Improve implementation
+            final var context = LocalSaver.saveWorkflowToLocalDisk(key.toString()); // The actual "projectId" is in here
+            context.ifPresent(ctx -> HubUploader.uploadToHub(ctx, spaceProvidersManager, key));
+
+            m_syncStatus = SyncStatus.SYNCED;
+            appStateUpdater.updateAppState();
         }
 
         @Override
@@ -143,7 +147,8 @@ public interface WorkflowSyncer {
         @Override
         public void onDisposeCallback(final WorkflowManager wfm) {
             LOGGER.warn("'onLoadCallback' called for worklfow <%s>".formatted(wfm.getName()));
-            wfm.addListener(m_listener);
+            wfm.removeListener(m_listener);
+            m_debouncer.shutdown();
         }
     }
 

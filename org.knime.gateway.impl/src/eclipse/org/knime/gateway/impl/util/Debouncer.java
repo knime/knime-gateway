@@ -94,6 +94,6 @@ public final class Debouncer {
      * ...
      */
     public void shutdown() {
-        m_scheduler.shutdown(); // TODO: When should we call this?
+        m_scheduler.shutdown();
     }
 }
