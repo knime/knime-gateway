@@ -70,7 +70,7 @@ public class Saving {
 
             }
         }
-        writeRepeatsToCsv(results, new File("/home/ben/git-repositories/workshop-intellij-setup/out/partial-runtime/saving-results/results.csv").toPath());
+        writeRepeatsToCsv(results, new File("/home/ben/git-repositories/workshop-intellij-setup/out/partial-runtime/saving-results/results-without-svg.csv").toPath());
 
     }
 

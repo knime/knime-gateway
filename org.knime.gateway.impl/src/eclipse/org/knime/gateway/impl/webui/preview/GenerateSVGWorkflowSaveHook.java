@@ -56,7 +56,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -162,22 +161,22 @@ public class GenerateSVGWorkflowSaveHook extends WorkflowSaveHook {
          * location with an atomic move operation.
          */
 
-        final Path tempPath = artifactsFolder.toPath().resolve("../" + TEMP_FILE);
-        final Path outputPath = artifactsFolder.toPath().resolve("../" + FILE_NAME);
-
-        // Delete existing workflow preview file first always
-        Files.deleteIfExists(tempPath);
-        Files.deleteIfExists(outputPath); // in case deletion fails, IOException should be thrown here already
-
-        try {
-            renderPreviewSVG(workflow, tempPath);
-            Files.move(tempPath, outputPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (IOException | IllegalArgumentException ex) {
-            Files.deleteIfExists(outputPath);
-            throw new IOException("Workflow preview generation failed", ex);
-        } finally {
-            Files.deleteIfExists(tempPath);
-        }
+//        final Path tempPath = artifactsFolder.toPath().resolve("../" + TEMP_FILE);
+//        final Path outputPath = artifactsFolder.toPath().resolve("../" + FILE_NAME);
+//
+//        // Delete existing workflow preview file first always
+//        Files.deleteIfExists(tempPath);
+//        Files.deleteIfExists(outputPath); // in case deletion fails, IOException should be thrown here already
+//
+//        try {
+//            renderPreviewSVG(workflow, tempPath);
+//            Files.move(tempPath, outputPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+//        } catch (IOException | IllegalArgumentException ex) {
+//            Files.deleteIfExists(outputPath);
+//            throw new IOException("Workflow preview generation failed", ex);
+//        } finally {
+//            Files.deleteIfExists(tempPath);
+//        }
     }
 
 }
