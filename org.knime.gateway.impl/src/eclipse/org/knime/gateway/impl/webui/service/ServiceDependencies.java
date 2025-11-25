@@ -157,7 +157,7 @@ public final class ServiceDependencies {
      * @param nodeCollections
      * @param nodeCategoryExtensions
      * @param selectionEventBus
-     * @since 5.5
+     * @since 5.10
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
         final ProjectManager projectManager, //

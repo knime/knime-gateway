@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.impl" version="2">
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.kai.CodeKaiHandler">
-        <filter comment="CodeKaiHandler was not inteded to be used by clients" id="305324134">
+        <filter id="305324134">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.kai.CodeKaiHandler"/>
-                <message_argument value="org.knime.gateway.impl_5.9.0"/>
+                <message_argument value="org.knime.gateway.impl_5.10.0"/>
             </message_arguments>
         </filter>
     </resource>

@@ -555,7 +555,7 @@ public final class LocalSpace implements Space {
      * @param <E> The type of exception thrown by the importer function
      * @throws E If the importer function throws an exception
      * @throws MutableServiceCallException If an error occurs during name resolving
-     * @since 5.9
+     * @since 5.10
      */
     public <R, E extends Exception> Pair<SpaceItemEnt, R> importWithResult(final FailableFunction<Path, R, E> importer,
         final String destinationParent, final String importItemName, final NameCollisionHandling collisionHandling)

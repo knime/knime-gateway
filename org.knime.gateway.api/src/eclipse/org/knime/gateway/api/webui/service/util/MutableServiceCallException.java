@@ -121,7 +121,7 @@ public final class MutableServiceCallException extends Exception {
      * @param firstDetail first detail line (user-oriented explanation/hint), may be {@code null}
      * @param canCopy whether the details can be copied to the clipboard
      *
-     * @since 5.9
+     * @since 5.10
      */
     public MutableServiceCallException(final String firstDetail, final boolean canCopy) {
         this(List.of(firstDetail), canCopy, null);
