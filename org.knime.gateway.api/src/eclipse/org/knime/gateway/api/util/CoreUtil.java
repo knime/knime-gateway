@@ -810,7 +810,7 @@ public final class CoreUtil {
      *
      * @param snc the sub-node container
      * @return the input data or empty if unavailable
-     * @since 5.9
+     * @since 5.10
      */
     public static PortObject[] getExampleInputData(final SubNodeContainer snc) throws InterruptedException {
         snc.getParent().executePredecessorsAndWait(snc.getID());
