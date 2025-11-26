@@ -1375,6 +1375,7 @@
         "canCollapse" : "resetRequired",
         "canDelete" : true,
         "canExecute" : false,
+        "canOpenLegacyFlowVariableDialog" : true,
         "canReset" : true
       },
       "annotation" : {
@@ -1386,7 +1387,7 @@
         },
         "textAlign" : "center"
       },
-      "dialogType" : "swing",
+      "dialogType" : "web",
       "hasView" : false,
       "id" : "root:20",
       "inPorts" : [ {
@@ -1418,6 +1419,7 @@
         "optional" : true,
         "typeId" : "org.knime.distance.DistanceMeasurePortObject"
       } ],
+      "inputContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "kind" : "node",
       "outPorts" : [ {
         "canRemove" : false,
