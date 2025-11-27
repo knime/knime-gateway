@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.syncing;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 
 import org.knime.core.node.CanceledExecutionException;
@@ -61,6 +62,7 @@ import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.syncing.SyncingExceptions.LocalIOException;
 import org.knime.gateway.impl.webui.syncing.SyncingExceptions.NotAWorkfflowProjectException;
 import org.knime.gateway.impl.webui.syncing.SyncingExceptions.WorkflowExecutingException;
+import org.knime.gateway.impl.webui.syncing.SyncingExceptions.WorkflowSizeException;
 
 /**
  * ...
@@ -71,6 +73,8 @@ final class LocalSaver {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalSaver.class);
 
+    private static final long MAX_WORKFLOW_SIZE = 50L * 1024 * 1024; // 50 MB
+
     static Optional<WorkflowContextV2> saveWorkflowToLocalDisk(final String projectId) {
         try {
             final var wfm = assertIsWorkflowProjectAndNotExecting(projectId);
@@ -79,6 +83,36 @@ final class LocalSaver {
         } catch (NotAWorkfflowProjectException | WorkflowExecutingException | LocalIOException e) {
             LOGGER.error("Failed to save workflow to local disk for project <%s>".formatted(projectId), e);
             return Optional.empty();
+        }
+    }
+
+    static void assertWorkflowSizeWithinLimits(final WorkflowContextV2 context) throws WorkflowSizeException {
+        final var folderSize = calculateFolderSize(context);
+        if (folderSize < 0) {
+            throw new WorkflowSizeException("Could not calculate workflow folder size");
+        }
+        if (folderSize > MAX_WORKFLOW_SIZE) {
+            throw new WorkflowSizeException("Workflow size (%d bytes) exceeds the maximum allowed size of %d bytes"
+                .formatted(folderSize, MAX_WORKFLOW_SIZE));
+        }
+    }
+
+    private static long calculateFolderSize(final WorkflowContextV2 context) {
+        final var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
+        try (var stream = Files.walk(localWorkflowPath)) {
+            return stream.filter(Files::isRegularFile) //
+                .mapToLong(path -> {
+                    try {
+                        return Files.size(path);
+                    } catch (IOException e) {
+                        LOGGER.warn("Could not get size of file: " + path, e);
+                        return 0L;
+                    }
+                })
+                .sum();
+        } catch (IOException e) {
+            LOGGER.error("Failed to calculate folder size for path <%s>".formatted(localWorkflowPath), e);
+            return -1L;
         }
     }
 

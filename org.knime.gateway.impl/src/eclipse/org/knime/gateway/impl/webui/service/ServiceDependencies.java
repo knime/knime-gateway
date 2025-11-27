@@ -61,7 +61,6 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
-import org.knime.gateway.impl.webui.WorkflowSyncerProvider;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCategoryExtensions;
 import org.knime.gateway.impl.webui.repo.NodeCollections;

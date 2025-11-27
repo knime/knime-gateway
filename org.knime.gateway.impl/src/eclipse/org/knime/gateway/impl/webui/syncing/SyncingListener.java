@@ -44,56 +44,51 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 19, 2025 (motacilla): created
+ *   Nov 20, 2025 (motacilla): created
  */
 package org.knime.gateway.impl.webui.syncing;
 
-import java.io.IOException;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.WorkflowEvent;
+import org.knime.core.node.workflow.WorkflowListener;
 
 /**
  * ...
  *
  * @author Kai Franze, KNIME GmbH, Germany
+ * @since 5.9
  */
-final class SyncingExceptions {
+final class SyncingListener implements WorkflowListener {
 
-    static final class NotAWorkfflowProjectException extends Exception {
-        private static final long serialVersionUID = 1L;
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(SyncingListener.class);
 
-        NotAWorkfflowProjectException(final String msg) {
-            super(msg);
-        }
+    private final Runnable m_notify;
+
+    SyncingListener(final Runnable notify) {
+        m_notify = notify;
     }
 
-    static final class WorkflowExecutingException extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        WorkflowExecutingException(final String msg) {
-            super(msg);
-        }
-    }
-
-    static final class LocalIOException extends IOException {
-        private static final long serialVersionUID = 1L;
-
-        LocalIOException(final String msg, final Throwable cause) {
-            super(msg, cause);
-        }
-    }
-
-    static final class SpaceNotFoundException extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        SpaceNotFoundException(final String msg) {
-            super(msg);
-        }
-    }
-
-    static final class WorkflowSizeException extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        WorkflowSizeException(final String msg) {
-            super(msg);
+    /**
+     * TODO: Is there a way to filter for execution state changes?
+     */
+    @Override
+    public void workflowChanged(final WorkflowEvent event) {
+        final var eventType = event.getType();
+        switch (eventType) {
+            case NODE_ADDED -> {
+                final var nc = (NodeContainer)event.getNewValue();
+                LOGGER.info("<%s> event received, we should add a listener to <%s>".formatted(eventType, nc.getID()));
+            }
+            case NODE_REMOVED -> {
+                final var nc = (NodeContainer)event.getOldValue();
+                LOGGER.info("<%s> event received, we should remove a listener from <%s>".formatted(eventType, nc.getID()));
+            }
+            case WORKFLOW_CHANGED -> {
+                LOGGER.info("<%s> event received, notifying syncer.".formatted(eventType));
+                m_notify.run();
+            }
+            default -> LOGGER.info("Unhandled workflow event type: <%s>".formatted(eventType));
         }
     }
 }
