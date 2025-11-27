@@ -111,38 +111,46 @@ public interface WorkflowSyncer {
 
         private final Debouncer m_debouncer;
 
+        private final AppStateUpdater m_appStateUpdater;
+
         private SyncStatus m_syncStatus = SyncStatus.SYNCED; // To provide initial status
 
         DefaultWorkflowSyncer(final int delaySeconds, final AppStateUpdater appStateUpdater,
             final SpaceProvidersManager spaceProvidersManager, final Key key) {
             m_workflowListener = new SyncingListener(this::notifyWorkflowChanged);
-            m_debouncer = new Debouncer(delaySeconds, () -> doSync(appStateUpdater, spaceProvidersManager, key));
+            m_appStateUpdater = appStateUpdater;
+            m_debouncer = new Debouncer(delaySeconds, () -> doSync(spaceProvidersManager, key));
         }
 
-        private void doSync(final AppStateUpdater appStateUpdater, final SpaceProvidersManager spaceProvidersManager,
-            final Key key) {
-            m_syncStatus = SyncStatus.SYNCING;
-            appStateUpdater.updateAppState();
-
-            // TODO: Improve implementation
+        private void doSync(final SpaceProvidersManager spaceProvidersManager, final Key key) {
             LOGGER.info("Writing workflow to disk for <%s>".formatted(key.toString()));
+            updateSyncStatus(SyncStatus.SYNCING);
             final var context = LocalSaver.saveWorkflowToLocalDisk(key.toString()).orElseThrow();
 
+            // Just to add some latency for testing purposes
+            try {
+                Thread.sleep(1000);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            // Just do to a quick size check before uploading
             try {
                 LocalSaver.assertWorkflowSizeWithinLimits(context);
             } catch (WorkflowSizeException e) {
                 LOGGER.error("Workflow size exceeds the maximum allowed limit for <%s>".formatted(key.toString()), e);
-                m_syncStatus = SyncStatus.OUT_OF_SYNC;
+                updateSyncStatus(SyncStatus.OUT_OF_SYNC);
                 return;
             }
 
-            // Note: The Hub is saving without data anyways if it's too large.
-
             LOGGER.info("Writing workflow to Space at <%s>".formatted(context.getLocationInfo()));
             HubUploader.uploadToHub(context, spaceProvidersManager, key);
+            updateSyncStatus(SyncStatus.SYNCED);
+        }
 
-            m_syncStatus = SyncStatus.SYNCED;
-            appStateUpdater.updateAppState();
+        private void updateSyncStatus(final SyncStatus status) {
+            m_syncStatus = status;
+            m_appStateUpdater.updateAppState();
         }
 
         @Override
@@ -153,6 +161,7 @@ public interface WorkflowSyncer {
         @Override
         public void notifyWorkflowChanged() {
             LOGGER.info("Workflow change detected");
+            updateSyncStatus(SyncStatus.OUT_OF_SYNC);
             m_debouncer.call();
         }
 
