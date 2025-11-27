@@ -127,6 +127,10 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         super(SpaceServiceTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }
 
+    public void testgetUrlVariantsForItem() throws Exception {
+
+    }
+
     /**
      * Test the interfacing between space service, space providers and spaces w.r.t renaming.
      */

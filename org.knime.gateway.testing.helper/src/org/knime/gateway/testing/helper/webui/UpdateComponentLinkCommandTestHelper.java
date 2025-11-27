@@ -56,7 +56,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThrows;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
-import static org.knime.gateway.api.util.ComponentLinkUtil.getEntity;
+import static org.knime.gateway.api.util.KnimeUrls.buildLinkTypeEnt;
 
 import java.util.Map.Entry;
 
@@ -91,7 +91,7 @@ public class UpdateComponentLinkCommandTestHelper extends WebUIGatewayServiceTes
         var linkedComponent = new NodeIDEnt(1);
         var notLinkedComponent = new NodeIDEnt(10);
         var oldLink = "knime://LOCAL/Component/";
-        var newLinkType = getEntity(LinkTypeEnt.TypeEnum.WORKFLOW_RELATIVE);
+        var newLinkType = buildLinkTypeEnt(LinkTypeEnt.TypeEnum.WORKFLOW_RELATIVE);
 
         // Test happy path
         var command1 = buildUpdateComponentLinkInformationCommand(linkedComponent, newLinkType);
@@ -120,7 +120,7 @@ public class UpdateComponentLinkCommandTestHelper extends WebUIGatewayServiceTes
         assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(projectId, getRootID(), command3));
 
         // Test unlink a component
-        var command4 = buildUpdateComponentLinkInformationCommand(linkedComponent, getEntity(LinkTypeEnt.TypeEnum.NONE));
+        var command4 = buildUpdateComponentLinkInformationCommand(linkedComponent, buildLinkTypeEnt(LinkTypeEnt.TypeEnum.NONE));
         ws().executeWorkflowCommand(projectId, getRootID(), command4);
         var nodeUnlinked = getNodeEntFromWorkflowSnapshotEnt(
             ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.FALSE), linkedComponent);

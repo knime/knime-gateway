@@ -42,91 +42,64 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.entity;
+
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 
 /**
  * Represents the type of link referencing a shared component. NONE unlinks the component instance.
- * 
+ *
+ * @param type
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkTypeEnt extends GatewayEntity {
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultLinkTypeEnt(
+    TypeEnum type) implements LinkTypeEnt {
 
-  /**
-   * Gets or Sets type
-   */
-  public enum TypeEnum {
-    NODE_RELATIVE("NODE_RELATIVE"),
-    
-    WORKFLOW_RELATIVE("WORKFLOW_RELATIVE"),
-    
-    SPACE_RELATIVE("SPACE_RELATIVE"),
-    
-    MOUNTPOINT_RELATIVE("MOUNTPOINT_RELATIVE"),
-    
-    MOUNTPOINT_ABSOLUTE("MOUNTPOINT_ABSOLUTE"),
-    
-    MOUNTPOINT_ABSOLUTE_ID_BASED("MOUNTPOINT_ABSOLUTE_ID_BASED"),
-    
-    NONE("NONE");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
+    /**
+     * Validation for required parameters not being {@code null}.
+     */
+    public DefaultLinkTypeEnt {
+        if(type == null) {
+            throw new IllegalArgumentException("<type> must not be null.");
+        }
     }
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
+    public String getTypeID() {
+        return "LinkType";
     }
-
-  }
-
-
-  /**
-   * Get type
-   * @return type , never <code>null</code>
-   **/
-  public TypeEnum getType();
-
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (LinkTypeEnt)other;
-      valueConsumer.accept("type", Pair.create(getType(), e.getType()));
-  }
-
+  
+    @Override
+    public TypeEnum getType() {
+        return type;
+    }
+    
     /**
-     * The builder for the entity.
+     * A builder for {@link DefaultLinkTypeEnt}.
      */
-    public interface LinkTypeEntBuilder extends GatewayEntityBuilder<LinkTypeEnt> {
+    public static class DefaultLinkTypeEntBuilder implements LinkTypeEntBuilder {
 
-        /**
-   		 * Set type
-         * 
-         * @param type the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        LinkTypeEntBuilder setType(TypeEnum type);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
+        private TypeEnum m_type;
+
         @Override
-        LinkTypeEnt build();
+        public DefaultLinkTypeEntBuilder setType(TypeEnum type) {
+             if(type == null) {
+                 throw new IllegalArgumentException("<type> must not be null.");
+             }
+             m_type = type;
+             return this;
+        }
+
+        @Override
+        public DefaultLinkTypeEnt build() {
+            return new DefaultLinkTypeEnt(
+                immutable(m_type));
+        }
     
     }
 

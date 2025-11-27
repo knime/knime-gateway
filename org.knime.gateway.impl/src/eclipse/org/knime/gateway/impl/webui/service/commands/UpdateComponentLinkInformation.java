@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.function.Function;
 
@@ -61,12 +60,11 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.exception.ResourceAccessException;
-import org.knime.gateway.api.util.ComponentLinkUtil;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
-import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 
 /**
  * Workflow command to update link types of link components. The command is accessed from outside the package.
@@ -79,12 +77,14 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
     private final Function<WorkflowManager, NodeID> m_componentId;
 
     private final LinkTypeEnt m_linkType;
+    private LinkVariants m_linkVariants;
 
     private MetaNodeTemplateInformation m_oldTemplateInfo;
 
-    UpdateComponentLinkInformation(final UpdateComponentLinkInformationCommandEnt ce) { // For testing the command
+    UpdateComponentLinkInformation(final UpdateComponentLinkInformationCommandEnt ce, LinkVariants linkVariants) { // For testing the command
         m_componentId = wfm -> ce.getNodeId().toNodeID(wfm);
         m_linkType = ce.getLinkType();
+        m_linkVariants = linkVariants;
     }
 
     /**
@@ -138,27 +138,23 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
 
         try {
             final MetaNodeTemplateInformation newTemplateInfo;
-            final var requestedLinkVariant = ComponentLinkUtil.parseUrlVariant(m_linkType);
-            if (requestedLinkVariant.isEmpty()) {
-                newTemplateInfo = MetaNodeTemplateInformation.NONE;  // unlink
+
+            if (m_linkType.getType() == LinkTypeEnt.TypeEnum.NONE) {
+                newTemplateInfo = MetaNodeTemplateInformation.NONE;
             } else {
-                final var newUri = ComponentLinkUtil.getVariant( //
-                    requestedLinkVariant.get(), //
-                    templateInformation.getSourceURI(), //
-                    CoreUtil.getProjectWorkflow(component) //
-                ).orElseThrow(() -> new IllegalArgumentException("Unknown link variant"));
+                final var newUri = m_linkVariants.getVariants(
+                        templateInformation.getSourceURI(),
+                        CoreUtil.getProjectWorkflow(component).getContextV2()
+                ).get(m_linkType.getType());
+                // TODO handle lookup miss
                 newTemplateInfo = updateTemplateInformation(templateInformation, newUri);
             }
+
             m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
             return !m_oldTemplateInfo.equals(newTemplateInfo);
         } catch (ResourceAccessException e) {
             throw ServiceCallException.builder().withTitle("Failed to update component link")
                 .withDetails("Unable to resolve link variant.").canCopy(false).withCause(e).build();
-        } catch (MalformedURLException e) {
-            throw ServiceCallException.builder().withTitle("Failed to update component link")
-                .withDetails("Invalid link URL.").canCopy(false).withCause(e).build();
-        } catch (MutableServiceCallException e) {
-            throw e.toGatewayException("Failed to update component link");
         }
     }
 

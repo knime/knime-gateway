@@ -87,20 +87,16 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2.LocationType;
 import org.knime.core.util.KnimeUrlType;
-import org.knime.core.util.exception.ResourceAccessException;
-import org.knime.core.util.urlresolve.KnimeUrlResolver;
-import org.knime.core.util.urlresolve.KnimeUrlResolver.KnimeUrlVariant;
-import org.knime.core.util.urlresolve.URLResolverUtil;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.dialog.SubNodeContainerDialogFactory;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.entity.AnnotationIDEnt;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.util.ComponentLinkUtil;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.util.EntityUtil;
+import org.knime.gateway.api.util.KnimeUrls;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
@@ -559,7 +555,8 @@ public final class WorkflowEntityFactory {
             metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
         var wantContentVersions = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(snc);
         var inputContentVersion = wantContentVersions ? ContentVersions.getInputContentVersion(snc) : null;
-        var modelSettingsContentVersion = wantContentVersions ? ContentVersions.getModelSettingsContentVersion(snc) : null;
+        var modelSettingsContentVersion =
+            wantContentVersions ? ContentVersions.getModelSettingsContentVersion(snc) : null;
         return builder(ComponentNodeEntBuilder.class).setName(snc.getName())//
             .setId(id)//
             .setType(type) //
@@ -830,7 +827,8 @@ public final class WorkflowEntityFactory {
         }
         var wantContentVersions = buildContext.includeInteractionInfo() && NodeDialogManager.hasNodeDialog(nnc);
         var inputContentVersion = wantContentVersions ? ContentVersions.getInputContentVersion(nnc) : null;
-        var modelSettingsContentVersion = wantContentVersions ? ContentVersions.getModelSettingsContentVersion(nnc) : null;
+        var modelSettingsContentVersion =
+            wantContentVersions ? ContentVersions.getModelSettingsContentVersion(nnc) : null;
         return builder(NativeNodeEntBuilder.class)//
             .setId(id)//
             .setKind(KindEnum.NODE)//
@@ -1311,8 +1309,7 @@ public final class WorkflowEntityFactory {
      * @param ncState The node container state
      * @return Combination of node ID and execution state
      */
-    public NodeIdAndIsExecutedEnt buildNodeIdAndIsExecutedEnt(final NodeID nodeId,
-        final NodeContainerState ncState) {
+    public NodeIdAndIsExecutedEnt buildNodeIdAndIsExecutedEnt(final NodeID nodeId, final NodeContainerState ncState) {
         final var ncStateEnum = getNodeExecutionStateEnum(ncState);
         final var isExecuted =
             ncStateEnum == ExecutionStateEnum.EXECUTED || ncStateEnum == ExecutionStateEnum.EXECUTING;
@@ -1636,46 +1633,19 @@ public final class WorkflowEntityFactory {
         };
 
         final var linkUri = templateInfo.getSourceURI();
-        final var context = CoreUtil.getProjectWorkflow(nct.getParent()).getContextV2();
+
         return builder(TemplateLinkEntBuilder.class) //
             .setUrl(getTemplateLink(nct))//
             .setUpdateStatus(updateStatus) //
-            .setIsLinkTypeChangeable(isLinkTypeChangeable(linkUri, context, buildContext)) //
+            .setIsLinkTypeChangeable( //
+                KnimeUrls.isLinkTypeChangeable( //
+                    linkUri, //
+                    CoreUtil.getProjectWorkflow(nct.getParent()).getContextV2(), //
+                    buildContext::getSpaceProviderType) //
+            ) //
             .setIsHubItemVersionChangeable(isHubItemVersionChangeable(linkUri, buildContext)) //
-            .setCurrentLinkType(ComponentLinkUtil.getLinkType(linkUri)) //
+            .setCurrentLinkType(KnimeUrls.getLinkType(linkUri)) //
             .build();
-    }
-
-    private static boolean isLinkTypeChangeable(final URI templateUri, final WorkflowContextV2 projectContext,
-        final WorkflowBuildContext buildContext) {
-        final var optLinkVariant = KnimeUrlVariant.getVariant(templateUri);
-        if (optLinkVariant.isEmpty()) {
-            return false;
-        }
-
-        try {
-            final var resolver = KnimeUrlResolver.getResolver(projectContext);
-
-            // find the space provider ID by converting the URL to mountpoint-absolute
-            final var spaceProviderType = resolver.resolveToAbsolute(templateUri) //
-                .flatMap(url -> buildContext.getSpaceProviderType(url.getAuthority())) //
-                .orElse(null);
-            if (spaceProviderType == SpaceProviderEnt.TypeEnum.HUB) {
-                // can convert between ID-based and path-based URLs (not done here because it needs a REST call)
-                return true;
-            }
-
-            final var urls = resolver.changeLinkType(URLResolverUtil.toURL(templateUri), null);
-            final var linkVariant = optLinkVariant.get();
-            if (urls.size() > (urls.containsKey(linkVariant) ? 1 : 0)) {
-                // there are other options available
-                return true;
-            }
-        } catch (ResourceAccessException e) {
-            LOGGER.debug(
-                () -> "Cannot compute alternative KNIME URL types for '" + templateUri + "': " + e.getMessage(), e);
-        }
-        return false;
     }
 
     /**
@@ -1691,8 +1661,8 @@ public final class WorkflowEntityFactory {
     }
 
     /**
-     * Returns null if the node has no node view; false, if there is a node view but there is nothing to display,
-     * true, if there is a node view which also has something to display.
+     * Returns null if the node has no node view; false, if there is a node view but there is nothing to display, true,
+     * if there is a node view which also has something to display.
      * <p>
      * See org.knime.ui.java.api.NodeAPI#executeNodeAndOpenView
      */

@@ -42,92 +42,56 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
 
-import java.util.function.BiConsumer;
 
-import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
+import org.knime.gateway.impl.webui.entity.DefaultLinkTypeEnt.DefaultLinkTypeEntBuilder;
 
 /**
- * Represents the type of link referencing a shared component. NONE unlinks the component instance.
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkTypeEnt extends GatewayEntity {
 
-  /**
-   * Gets or Sets type
-   */
-  public enum TypeEnum {
-    NODE_RELATIVE("NODE_RELATIVE"),
-    
-    WORKFLOW_RELATIVE("WORKFLOW_RELATIVE"),
-    
-    SPACE_RELATIVE("SPACE_RELATIVE"),
-    
-    MOUNTPOINT_RELATIVE("MOUNTPOINT_RELATIVE"),
-    
-    MOUNTPOINT_ABSOLUTE("MOUNTPOINT_ABSOLUTE"),
-    
-    MOUNTPOINT_ABSOLUTE_ID_BASED("MOUNTPOINT_ABSOLUTE_ID_BASED"),
-    
-    NONE("NONE");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
+@JsonDeserialize(builder=DefaultLinkTypeEntBuilder.class)
+@JsonSerialize(as=LinkTypeEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface LinkTypeEntMixIn extends LinkTypeEnt {
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
+    @JsonIgnore
+    public String getTypeID();
 
-  }
-
-
-  /**
-   * Get type
-   * @return type , never <code>null</code>
-   **/
-  public TypeEnum getType();
-
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (LinkTypeEnt)other;
-      valueConsumer.accept("type", Pair.create(getType(), e.getType()));
-  }
+    @Override
+    @JsonProperty("type")
+    public TypeEnum getType();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface LinkTypeEntBuilder extends GatewayEntityBuilder<LinkTypeEnt> {
 
-        /**
-   		 * Set type
-         * 
-         * @param type the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        LinkTypeEntBuilder setType(TypeEnum type);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        LinkTypeEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface LinkTypeEntMixInBuilder extends LinkTypeEntBuilder {
     
+        @Override
+        public LinkTypeEntMixIn build();
+    
+        @Override
+        @JsonProperty("type")
+        public LinkTypeEntMixInBuilder setType(final TypeEnum type);
+        
     }
 
+
 }
+

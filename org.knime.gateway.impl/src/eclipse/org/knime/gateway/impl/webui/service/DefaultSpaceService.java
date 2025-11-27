@@ -57,6 +57,9 @@ import java.util.NoSuchElementException;
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -72,6 +75,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -101,6 +105,8 @@ public class DefaultSpaceService implements SpaceService {
     private final ProjectManager m_projectManager =
         ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
+    private final LinkVariants m_linkVariants = ServiceDependencies.getServiceDependency(LinkVariants.class, true);
+
     DefaultSpaceService() {
         //
     }
@@ -119,6 +125,25 @@ public class DefaultSpaceService implements SpaceService {
             return getSpaceProvider(spaceProviderId).toEntity();
         } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("Failed to fetch space groups");
+        }
+    }
+
+    @Override
+    public List<LinkVariantEnt> getUrlVariantsForItem(final String projectId, final String spaceId,
+        final String spaceProviderId, final String itemId)
+        throws ServiceCallException, LoggedOutException, NetworkException {
+        var projectContext = m_projectManager.getProject(projectId).flatMap(Project::getWorkflowManagerIfLoaded)
+            .map(WorkflowManager::getContextV2).orElseThrow(() -> new IllegalStateException("Project not loaded"));
+        // todo would be good to have a guideline when to throw runtime exceptions or service call exceptions
+        try {
+            // this is a shortcut: Since the actual item (the uploaded component) does not exist yet,
+            // we query link type variants for the parent destination selected in the UI.
+            var spaceUri = getSpaceProvider(spaceProviderId).getSpace(spaceId).toKnimeUrl(itemId);
+            return m_linkVariants.getVariantEnts(spaceUri, projectContext);
+        } catch (ResourceAccessException e) {
+            throw new RuntimeException(e); // TODO
+        } catch (MutableServiceCallException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -201,7 +226,7 @@ public class DefaultSpaceService implements SpaceService {
                         .getType() == TypeEnum.LOCAL ? WorkflowType.LOCAL : WorkflowType.REMOTE);
             }
             return item;
-        }  catch (final MutableServiceCallException e) { // NOSONAR
+        } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while creating the workflow");
         }
     }
@@ -212,7 +237,7 @@ public class DefaultSpaceService implements SpaceService {
         throws ServiceCallException, LoggedOutException, NetworkException, OperationNotAllowedException {
         try {
             getSpaceProvider(spaceProviderId).getSpace(spaceId).deleteItems(spaceItemIds, softDelete);
-        }  catch (final MutableServiceCallException e) { // NOSONAR
+        } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while deleting item(s)");
         }
     }
@@ -351,8 +376,8 @@ public class DefaultSpaceService implements SpaceService {
             .toList();
     }
 
-    private static List<String> checkForWorkflowsToClose(final List<String> openWorkflowIds,
-        final List<String> itemIds, final LocalSpace localSpace) throws ServiceCallException {
+    private static List<String> checkForWorkflowsToClose(final List<String> openWorkflowIds, final List<String> itemIds,
+        final LocalSpace localSpace) throws ServiceCallException {
         final List<String> toClose = new ArrayList<>();
         for (final String workflowId : openWorkflowIds) {
             try {

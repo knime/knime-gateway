@@ -44,71 +44,65 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.LinkTypeEnt;
 
 import java.util.function.BiConsumer;
 
 import org.knime.core.util.Pair;
-import org.knime.gateway.api.entity.GatewayEntity;
+
 import org.knime.gateway.api.entity.GatewayEntityBuilder;
 
+
+import org.knime.gateway.api.entity.GatewayEntity;
+
 /**
- * Represents the type of link referencing a shared component. NONE unlinks the component instance.
+ * Describes a selectable link type variant and its accompanying texts.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface LinkTypeEnt extends GatewayEntity {
-
-  /**
-   * Gets or Sets type
-   */
-  public enum TypeEnum {
-    NODE_RELATIVE("NODE_RELATIVE"),
-    
-    WORKFLOW_RELATIVE("WORKFLOW_RELATIVE"),
-    
-    SPACE_RELATIVE("SPACE_RELATIVE"),
-    
-    MOUNTPOINT_RELATIVE("MOUNTPOINT_RELATIVE"),
-    
-    MOUNTPOINT_ABSOLUTE("MOUNTPOINT_ABSOLUTE"),
-    
-    MOUNTPOINT_ABSOLUTE_ID_BASED("MOUNTPOINT_ABSOLUTE_ID_BASED"),
-    
-    NONE("NONE");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface LinkVariantEnt extends GatewayEntity {
 
 
   /**
    * Get type
    * @return type , never <code>null</code>
    **/
-  public TypeEnum getType();
+  public LinkTypeEnt getType();
+
+  /**
+   * User-facing name of the link variant.
+   * @return title , never <code>null</code>
+   **/
+  public String getTitle();
+
+  /**
+   * Longer explanatory text shown with the variant choice.
+   * @return description , never <code>null</code>
+   **/
+  public String getDescription();
+
+  /**
+   * Message communicating how long or under which conditions the generated link remains valid.
+   * @return linkValidity , never <code>null</code>
+   **/
+  public String getLinkValidity();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (LinkTypeEnt)other;
+      var e = (LinkVariantEnt)other;
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
+      valueConsumer.accept("title", Pair.create(getTitle(), e.getTitle()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("linkValidity", Pair.create(getLinkValidity(), e.getLinkValidity()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface LinkTypeEntBuilder extends GatewayEntityBuilder<LinkTypeEnt> {
+    public interface LinkVariantEntBuilder extends GatewayEntityBuilder<LinkVariantEnt> {
 
         /**
    		 * Set type
@@ -116,7 +110,31 @@ public interface LinkTypeEnt extends GatewayEntity {
          * @param type the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        LinkTypeEntBuilder setType(TypeEnum type);
+        LinkVariantEntBuilder setType(LinkTypeEnt type);
+        
+        /**
+         * User-facing name of the link variant.
+         * 
+         * @param title the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        LinkVariantEntBuilder setTitle(String title);
+        
+        /**
+         * Longer explanatory text shown with the variant choice.
+         * 
+         * @param description the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        LinkVariantEntBuilder setDescription(String description);
+        
+        /**
+         * Message communicating how long or under which conditions the generated link remains valid.
+         * 
+         * @param linkValidity the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        LinkVariantEntBuilder setLinkValidity(String linkValidity);
         
         
         /**
@@ -126,7 +144,7 @@ public interface LinkTypeEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        LinkTypeEnt build();
+        LinkVariantEnt build();
     
     }
 
