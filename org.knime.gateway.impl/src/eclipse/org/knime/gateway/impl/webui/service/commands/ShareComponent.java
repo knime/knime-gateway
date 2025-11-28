@@ -80,7 +80,7 @@ import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
  * @since 5.10
  */
 @SuppressWarnings("java:S1130")
-public class ShareComponent extends AbstractWorkflowCommand implements WithResult {
+class ShareComponent extends AbstractWorkflowCommand implements WithResult {
 
     private final SpaceProviders m_spaceProviders;
 

@@ -72,7 +72,7 @@ import org.knime.gateway.impl.webui.spaces.LinkVariants;
  * @author Leonard Wörteler, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH, Germany
  */
-public final class UpdateComponentLinkInformation extends AbstractWorkflowCommand {
+final class UpdateComponentLinkInformation extends AbstractWorkflowCommand {
 
     private final Function<WorkflowManager, NodeID> m_componentId;
 
