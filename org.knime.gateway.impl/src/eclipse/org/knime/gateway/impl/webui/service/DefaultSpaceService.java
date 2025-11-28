@@ -138,12 +138,14 @@ public class DefaultSpaceService implements SpaceService {
         try {
             // this is a shortcut: Since the actual item (the uploaded component) does not exist yet,
             // we query link type variants for the parent destination selected in the UI.
+            // todo: there were problems in using a synthetic url, check notes
             var spaceUri = getSpaceProvider(spaceProviderId).getSpace(spaceId).toKnimeUrl(itemId);
             return m_linkVariants.getVariantEnts(spaceUri, projectContext);
         } catch (ResourceAccessException e) {
-            throw new RuntimeException(e); // TODO
+            throw ServiceCallException.builder().withTitle("Alternative representations could not be determined")
+                .withDetails(List.of()).canCopy(true).build();
         } catch (MutableServiceCallException e) {
-            throw new RuntimeException(e);
+            throw e.toGatewayException("Alternative representations could not be determined");
         }
     }
 

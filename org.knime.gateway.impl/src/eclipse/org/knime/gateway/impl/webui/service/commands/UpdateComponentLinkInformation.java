@@ -146,7 +146,9 @@ public final class UpdateComponentLinkInformation extends AbstractWorkflowComman
                         templateInformation.getSourceURI(),
                         CoreUtil.getProjectWorkflow(component).getContextV2()
                 ).get(m_linkType.getType());
-                // TODO handle lookup miss
+                if (newUri == null) {
+                    throw new ResourceAccessException("Requested link variant not available");
+                }
                 newTemplateInfo = updateTemplateInformation(templateInformation, newUri);
             }
 

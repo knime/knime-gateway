@@ -45,6 +45,13 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.util.CheckUtils;
@@ -66,13 +73,6 @@ import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 /**
  * Export and link a component
@@ -174,12 +174,14 @@ public class ShareComponent extends AbstractWorkflowCommand implements WithResul
             final var uploadedComponentUri = destinationSpace.toKnimeUrl(uploadedComponentItemId);
             final var requestedVariant = m_command.getLinkType().getType();
             final var context = CoreUtil.getProjectWorkflow(component).getContextV2();
-            final var newUri = m_linkVariants.getVariants( //
-                uploadedComponentUri, //
-                context //
+            var uriForRequestedVariant = m_linkVariants.getVariants( //
+                    uploadedComponentUri, //
+                    context //
             ).get(requestedVariant);
-
-            var newTemplateInfo = importResult.templateInfo().createLink(newUri);
+            if (uriForRequestedVariant == null) {
+                throw new MutableServiceCallException("Requested link variant unknown", true);
+            }
+            var newTemplateInfo = importResult.templateInfo().createLink(uriForRequestedVariant);
             m_oldTemplateInfo = wfm.setTemplateInformation(componentId, newTemplateInfo);
             return true;
         } catch (MutableServiceCallException e) {

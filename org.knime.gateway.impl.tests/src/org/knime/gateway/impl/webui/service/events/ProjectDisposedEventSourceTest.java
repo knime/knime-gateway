@@ -107,7 +107,9 @@ public class ProjectDisposedEventSourceTest {
             null, //
             nodeCollections, //
             null, //
-            null);
+            null, //
+            null //
+        );
 
         // register event listener
         DefaultEventService.getInstance()
