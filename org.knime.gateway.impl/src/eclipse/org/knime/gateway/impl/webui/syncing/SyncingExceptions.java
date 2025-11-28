@@ -48,8 +48,6 @@
  */
 package org.knime.gateway.impl.webui.syncing;
 
-import java.io.IOException;
-
 /**
  * ...
  *
@@ -57,43 +55,14 @@ import java.io.IOException;
  */
 final class SyncingExceptions {
 
-    static final class NotAWorkfflowProjectException extends Exception {
+    /**
+     * TODO: Not sure if we need this
+     */
+    static final class SyncThresholdExceededException extends Exception {
         private static final long serialVersionUID = 1L;
 
-        NotAWorkfflowProjectException(final String msg) {
-            super(msg);
-        }
-    }
-
-    static final class WorkflowExecutingException extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        WorkflowExecutingException(final String msg) {
-            super(msg);
-        }
-    }
-
-    static final class LocalIOException extends IOException {
-        private static final long serialVersionUID = 1L;
-
-        LocalIOException(final String msg, final Throwable cause) {
-            super(msg, cause);
-        }
-    }
-
-    static final class SpaceNotFoundException extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        SpaceNotFoundException(final String msg) {
-            super(msg);
-        }
-    }
-
-    static final class WorkflowSizeException extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        WorkflowSizeException(final String msg) {
-            super(msg);
+        SyncThresholdExceededException(final String message) {
+            super(message);
         }
     }
 }

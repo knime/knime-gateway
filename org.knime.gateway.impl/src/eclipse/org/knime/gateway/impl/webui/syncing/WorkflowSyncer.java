@@ -48,14 +48,17 @@
  */
 package org.knime.gateway.impl.webui.syncing;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.impl.util.Debouncer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
-import org.knime.gateway.impl.webui.syncing.SyncingExceptions.WorkflowSizeException;
 
 /**
  * Automatically sync the currently open project
@@ -87,14 +90,21 @@ public interface WorkflowSyncer {
     void notifyWorkflowChanged();
 
     /**
-     * The callback to be invoked when a workflow is loaded
+     * To manually trigger a project sync
+     *
+     * @throws IOException -
+     */
+    void syncProjectNow() throws IOException;
+
+    /**
+     * To register listeners on the workflow when it is loaded.
      *
      * @param wfm -
      */
     void onWfmLoad(final WorkflowManager wfm);
 
     /**
-     * The callback to be invoked when a workflow is disposed.
+     * To unregister listeners on the workflow when it is disposed.
      *
      * @param wfm -
      */
@@ -109,48 +119,18 @@ public interface WorkflowSyncer {
 
         private final WorkflowListener m_workflowListener;
 
-        private final Debouncer m_debouncer;
+        private final Debouncer<UncheckedIOException> m_debouncer;
 
         private final AppStateUpdater m_appStateUpdater;
 
         private SyncStatus m_syncStatus = SyncStatus.SYNCED; // To provide initial status
 
-        DefaultWorkflowSyncer(final int delaySeconds, final AppStateUpdater appStateUpdater,
-            final SpaceProvidersManager spaceProvidersManager, final Key key) {
+        DefaultWorkflowSyncer(final AppStateUpdater appStateUpdater, final SpaceProvidersManager spaceProvidersManager,
+            final int syncDelaySeconds, final int syncThresholdMegaBytes, final Key key) {
             m_workflowListener = new SyncingListener(this::notifyWorkflowChanged);
             m_appStateUpdater = appStateUpdater;
-            m_debouncer = new Debouncer(delaySeconds, () -> doSync(spaceProvidersManager, key));
-        }
-
-        private void doSync(final SpaceProvidersManager spaceProvidersManager, final Key key) {
-            LOGGER.info("Writing workflow to disk for <%s>".formatted(key.toString()));
-            updateSyncStatus(SyncStatus.SYNCING);
-            final var context = LocalSaver.saveWorkflowToLocalDisk(key.toString()).orElseThrow();
-
-            // Just to add some latency for testing purposes
-            try {
-                Thread.sleep(1000);
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-
-            // Just do to a quick size check before uploading
-            try {
-                LocalSaver.assertWorkflowSizeWithinLimits(context);
-            } catch (WorkflowSizeException e) {
-                LOGGER.error("Workflow size exceeds the maximum allowed limit for <%s>".formatted(key.toString()), e);
-                updateSyncStatus(SyncStatus.OUT_OF_SYNC);
-                return;
-            }
-
-            LOGGER.info("Writing workflow to Space at <%s>".formatted(context.getLocationInfo()));
-            HubUploader.uploadToHub(context, spaceProvidersManager, key);
-            updateSyncStatus(SyncStatus.SYNCED);
-        }
-
-        private void updateSyncStatus(final SyncStatus status) {
-            m_syncStatus = status;
-            m_appStateUpdater.updateAppState();
+            m_debouncer = new Debouncer<>(syncDelaySeconds, //
+                () -> syncProject(spaceProvidersManager, syncThresholdMegaBytes, key));
         }
 
         @Override
@@ -165,6 +145,42 @@ public interface WorkflowSyncer {
             m_debouncer.call();
         }
 
+
+        private void syncProject(final SpaceProvidersManager spaceProvidersManager, final int syncThresholdMegaBytes,
+            final Key key) throws UncheckedIOException {
+            LOGGER.info("Writing workflow to local disk for <%s>".formatted(key.toString()));
+            updateSyncStatus(SyncStatus.SYNCING);
+
+            // Just to add some latency for testing purposes
+            try {
+                Thread.sleep(2000);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            // TODO: We should do all the error handling in here, since we do not want to forward exceptions
+            // from there to the frontend? Or do we?
+
+             LOGGER.info("Writing workflow to remote space for <%s>".formatted(key.toString()));
+             updateSyncStatus(SyncStatus.SYNCED);
+        }
+
+        /**
+         * TODO: Merge with {@link WorkflowService#saveProject(String)}.
+         */
+        @Override
+        public void syncProjectNow() throws IOException {
+            // Just to add some latency for testing purposes
+            try {
+                Thread.sleep(1000);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            // Just to try things out
+            throw new IOException("Manual sync not implemented yet.");
+        }
+
         @Override
         public void onWfmLoad(final WorkflowManager wfm) {
             LOGGER.info("'onWfmLoad' called for worklfow <%s>".formatted(wfm.getName()));
@@ -176,6 +192,11 @@ public interface WorkflowSyncer {
             LOGGER.info("'onWfmDispose' called for worklfow <%s>".formatted(wfm.getName()));
             wfm.removeListener(m_workflowListener);
             m_debouncer.shutdown();
+        }
+
+        private void updateSyncStatus(final SyncStatus status) {
+            m_syncStatus = status;
+            m_appStateUpdater.updateAppState();
         }
     }
 
@@ -191,6 +212,11 @@ public interface WorkflowSyncer {
 
         @Override
         public void notifyWorkflowChanged() {
+            // No-op
+        }
+
+        @Override
+        public void syncProjectNow() throws IOException{
             // No-op
         }
 

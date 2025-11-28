@@ -53,13 +53,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.function.FailableRunnable;
+
 /**
  * Can be used to wrap actions that should not be executed too frequently.
  *
  * @author Kai Franze, KNIME GmbH, Germany
- * @since 5.9
+ * @since 5.10
+ * @param <E> the type of exception that the task can throw
  */
-public final class Debouncer {
+public final class Debouncer<E extends RuntimeException> {
 
     private final ScheduledExecutorService m_scheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -67,7 +70,7 @@ public final class Debouncer {
 
     private ScheduledFuture<?> m_pendingTask;
 
-    private Runnable m_task;
+    private final FailableRunnable<E> m_task;
 
     /**
      * ...
@@ -75,15 +78,17 @@ public final class Debouncer {
      * @param delaySeconds -
      * @param task -
      */
-    public Debouncer(final int delaySeconds, final Runnable task) {
+    public Debouncer(final int delaySeconds, final FailableRunnable<E> task) {
         m_delaySeconds = delaySeconds;
         m_task = task;
     }
 
     /**
      * ...
+     *
+     * @throws E -
      */
-    public void call() {
+    public void call() throws E {
         if (m_pendingTask != null && !m_pendingTask.isDone()) {
             m_pendingTask.cancel(false); // To not the actual sync is already running
         }

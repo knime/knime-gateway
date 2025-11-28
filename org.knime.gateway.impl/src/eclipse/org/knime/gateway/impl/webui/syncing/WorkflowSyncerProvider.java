@@ -61,30 +61,35 @@ import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
  * Provides the project specific {@link WorkflowSyncer}.
  *
  * @author Kai Franze, KNIME GmbH, Germany
- * @since 5.9
+ * @since 5.10
  */
 public final class WorkflowSyncerProvider {
 
     private final Map<Key, WorkflowSyncer> m_workflowSyncers = new ConcurrentHashMap<>();
 
-    private final int m_delaySeconds;
-
     private final AppStateUpdater m_appStateUpdater;
 
     private final SpaceProvidersManager m_spaceProvidersManager;
 
+    private final int m_syncDelaySeconds;
+
+    private final int m_syncThresholdMegaBytes;
+
     /**
      * Creates a new {link WorkflowSyncProvider}.
      *
-     * @param delaySeconds
-     * @param appStateUpdater
-     * @param spaceProvidersManager
+     * @param appStateUpdater -
+     * @param spaceProvidersManager -
+     * @param syncDelaySeconds -
+     * @param syncThresholdMegaBytes -
      */
-    public WorkflowSyncerProvider(final int delaySeconds, final AppStateUpdater appStateUpdater,
-        final SpaceProvidersManager spaceProvidersManager) {
-        m_delaySeconds = delaySeconds;
+    public WorkflowSyncerProvider(final AppStateUpdater appStateUpdater,
+        final SpaceProvidersManager spaceProvidersManager, final int syncDelaySeconds,
+        final int syncThresholdMegaBytes) {
         m_appStateUpdater = appStateUpdater;
         m_spaceProvidersManager = spaceProvidersManager;
+        m_syncDelaySeconds = syncDelaySeconds;
+        m_syncThresholdMegaBytes = syncThresholdMegaBytes;
     }
 
     /**
@@ -93,11 +98,14 @@ public final class WorkflowSyncerProvider {
      * @return A disabled {@link WorkflowSyncerProvider}
      */
     public static WorkflowSyncerProvider disabled() {
-        return new WorkflowSyncerProvider(0, null, null);
+        return new WorkflowSyncerProvider(null, null, 0, 0);
     }
 
     private boolean isEnabled() {
-        return m_delaySeconds != 0 && m_appStateUpdater != null && m_spaceProvidersManager != null;
+        return m_syncDelaySeconds != 0 //
+            && m_syncThresholdMegaBytes != 00 //
+            && m_appStateUpdater != null //
+            && m_spaceProvidersManager != null;
     }
 
     /**
@@ -108,7 +116,8 @@ public final class WorkflowSyncerProvider {
      */
     public WorkflowSyncer getWorkflowSyncerForContext(final Key key) {
         return m_workflowSyncers.computeIfAbsent(key, k -> isEnabled() //
-            ? new DefaultWorkflowSyncer(m_delaySeconds, m_appStateUpdater, m_spaceProvidersManager, k) //
+            ? new DefaultWorkflowSyncer(m_appStateUpdater, m_spaceProvidersManager, m_syncDelaySeconds,
+                m_syncThresholdMegaBytes, k) //
             : new NoOpWorkflowSyncer());
     }
 }

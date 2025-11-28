@@ -48,19 +48,6 @@
  */
 package org.knime.gateway.impl.webui.syncing;
 
-import java.util.Optional;
-
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
-import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
-import org.knime.gateway.impl.webui.syncing.SyncingExceptions.SpaceNotFoundException;
-
 /**
  * ...
  *
@@ -68,27 +55,27 @@ import org.knime.gateway.impl.webui.syncing.SyncingExceptions.SpaceNotFoundExcep
  */
 final class HubUploader {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(HubUploader.class);
-
-    static void uploadToHub(final WorkflowContextV2 context, final SpaceProvidersManager spaceProvidersManager, final Key key) {
-        if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
-            // Not a Hub project, nothing to do
-            return;
-        }
-
-        try {
-            final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
-                .map(mgr -> mgr.getSpaceProviders(key)) //
-                .orElseThrow(() -> new SpaceNotFoundException("No SpaceProvidersManager available")); //
-            final var spaceProvider = spaceProviders.getAllSpaceProviders().stream() //
-                .findFirst() //
-                .orElseThrow(() -> new SpaceNotFoundException("No space provider found for key"));
-            final var space = spaceProvider.getSpace(hubInfo.getSpaceItemId());
-            final var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
-            final var spaceKnimeUrl = space.toPathBasedKnimeUrl(hubInfo.getWorkflowItemId());
-            space.saveBackTo(localWorkflowPath, spaceKnimeUrl, false, new NullProgressMonitor());
-        } catch (SpaceNotFoundException | NetworkException | LoggedOutException | MutableServiceCallException e) {
-            LOGGER.error("Failed to upload workflow to Hub for key <%s>".formatted(key), e);
-        }
-    }
+//    private static final NodeLogger LOGGER = NodeLogger.getLogger(HubUploader.class);
+//
+//    static void uploadToHub(final WorkflowContextV2 context, final SpaceProvidersManager spaceProvidersManager, final Key key) {
+//        if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
+//            // Not a Hub project, nothing to do
+//            return;
+//        }
+//
+//        try {
+//            final var spaceProviders = Optional.ofNullable(spaceProvidersManager) //
+//                .map(mgr -> mgr.getSpaceProviders(key)) //
+//                .orElseThrow(() -> new SpaceNotFoundException("No SpaceProvidersManager available")); //
+//            final var spaceProvider = spaceProviders.getAllSpaceProviders().stream() //
+//                .findFirst() //
+//                .orElseThrow(() -> new SpaceNotFoundException("No space provider found for key"));
+//            final var space = spaceProvider.getSpace(hubInfo.getSpaceItemId());
+//            final var localWorkflowPath = context.getExecutorInfo().getLocalWorkflowPath();
+//            final var spaceKnimeUrl = space.toPathBasedKnimeUrl(hubInfo.getWorkflowItemId());
+//            space.saveBackTo(localWorkflowPath, spaceKnimeUrl, false, new NullProgressMonitor());
+//        } catch (SpaceNotFoundException | NetworkException | LoggedOutException | MutableServiceCallException e) {
+//            LOGGER.error("Failed to upload workflow to Hub for key <%s>".formatted(key), e);
+//        }
+//    }
 }
