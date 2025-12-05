@@ -45,9 +45,12 @@
  */
 package org.knime.gateway.impl.project;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -57,8 +60,6 @@ import org.knime.gateway.api.util.VersionId;
 
 /**
  * A workflow or component project.
- *
- *
  *
  * @see ProjectManager
  * @author Martin Horn, University of Konstanz
@@ -77,6 +78,10 @@ public final class Project {
     private final Function<String, byte[]> m_generateReport;
 
     private ProjectWfmCache m_projectWfmCache;
+
+    private final Deque<Consumer<WorkflowManager>> m_onWfmLoad = new ArrayDeque<>();
+
+    private final Deque<Consumer<WorkflowManager>> m_onWfmDispose = new ArrayDeque<>();
 
     private Project(final Builder builder) {
         this( //
@@ -169,7 +174,7 @@ public final class Project {
      * @return The workflow manager of the project of the current state
      */
     public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager() {
-        return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(VersionId.currentState()));
+        return getFromCacheOrLoadWorkflowManager(VersionId.currentState());
     }
 
     /**
@@ -179,7 +184,13 @@ public final class Project {
      * @return The workflow manager of the project of a given {@link VersionId}.
      */
     public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version) {
-        return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version));
+        return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version)) //
+            .map(wfm -> {
+                if (version.isCurrentState() && !m_onWfmLoad.isEmpty()) {
+                    m_onWfmLoad.pop().accept(wfm); // Call only once
+                }
+                return wfm;
+            });
     }
 
     /**
@@ -219,6 +230,17 @@ public final class Project {
     }
 
     /**
+     * Call the {@code onWfmDispose} consumer for the current version's loaded {@link WorkflowManager}, if any.
+     */
+    public void callOnWfmDispose() {
+        m_projectWfmCache.getWorkflowManagerIfLoaded(VersionId.currentState()).ifPresent(wfm -> {
+            if (!m_onWfmDispose.isEmpty()) {
+                m_onWfmDispose.pop().accept(wfm); // Call only once
+            }
+        });
+    }
+
+    /**
      * Dispose the loaded {@link WorkflowManager} instance for the given version.
      *
      * @param version -
@@ -254,20 +276,43 @@ public final class Project {
      * TODO NXT-3607 Projects can be immutable (NOSONAR)
      *
      * @param loader -
+     * @return -
      */
-    public void setWfmLoader(final WorkflowManagerLoader loader) {
+    public Project setWfmLoader(final WorkflowManagerLoader loader) {
         var previousCache = m_projectWfmCache;
         if (previousCache.contains(VersionId.currentState())) {
             // for full generality one would have to carry over other cached instances too.
             // However, this case (only current-version available) is the only circumstance in which this method is called.
             // This is acceptable since this method will be removed with NXT-3607.
-            m_projectWfmCache = new ProjectWfmCache( //
-                previousCache.getWorkflowManager(VersionId.currentState()), //
-                loader //
-            );
+            m_projectWfmCache = new ProjectWfmCache(previousCache.getWorkflowManager( //
+                VersionId.currentState()), //
+                loader);
         } else {
             m_projectWfmCache = new ProjectWfmCache(loader);
         }
+        return this;
+    }
+
+    /**
+     * ...
+     *
+     * @param onWfmLoad -
+     * @return -
+     */
+    public Project setOnWfmLoad(final Consumer<WorkflowManager> onWfmLoad) {
+        m_onWfmLoad.add(onWfmLoad);
+        return this;
+    }
+
+    /**
+     * ...
+     *
+     * @param onWfmLoad -
+     * @return -
+     */
+    public Project setOnWfmDispose(final Consumer<WorkflowManager> onWfmLoad) {
+        m_onWfmDispose.add(onWfmLoad);
+        return this;
     }
 
     @Override
