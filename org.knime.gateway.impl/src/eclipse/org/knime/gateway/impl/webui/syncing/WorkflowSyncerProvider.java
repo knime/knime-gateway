@@ -73,7 +73,7 @@ public final class WorkflowSyncerProvider {
 
     private final int m_syncDelaySeconds;
 
-    private final int m_syncThresholdMegaBytes;
+    private final int m_syncThresholdMB;
 
     /**
      * Creates a new {link WorkflowSyncProvider}.
@@ -81,15 +81,14 @@ public final class WorkflowSyncerProvider {
      * @param appStateUpdater -
      * @param spaceProvidersManager -
      * @param syncDelaySeconds -
-     * @param syncThresholdMegaBytes -
+     * @param syncThresholdMB -
      */
     public WorkflowSyncerProvider(final AppStateUpdater appStateUpdater,
-        final SpaceProvidersManager spaceProvidersManager, final int syncDelaySeconds,
-        final int syncThresholdMegaBytes) {
+        final SpaceProvidersManager spaceProvidersManager, final int syncDelaySeconds, final int syncThresholdMB) {
         m_appStateUpdater = appStateUpdater;
         m_spaceProvidersManager = spaceProvidersManager;
         m_syncDelaySeconds = syncDelaySeconds;
-        m_syncThresholdMegaBytes = syncThresholdMegaBytes;
+        m_syncThresholdMB = syncThresholdMB;
     }
 
     /**
@@ -103,7 +102,7 @@ public final class WorkflowSyncerProvider {
 
     private boolean isEnabled() {
         return m_syncDelaySeconds != 0 //
-            && m_syncThresholdMegaBytes != 00 //
+            && m_syncThresholdMB != 00 //
             && m_appStateUpdater != null //
             && m_spaceProvidersManager != null;
     }
@@ -117,7 +116,7 @@ public final class WorkflowSyncerProvider {
     public WorkflowSyncer getWorkflowSyncerForContext(final Key key) {
         return m_workflowSyncers.computeIfAbsent(key, k -> isEnabled() //
             ? new DefaultWorkflowSyncer(m_appStateUpdater, m_spaceProvidersManager, m_syncDelaySeconds,
-                m_syncThresholdMegaBytes, k) //
+                m_syncThresholdMB, k) //
             : new NoOpWorkflowSyncer());
     }
 }
