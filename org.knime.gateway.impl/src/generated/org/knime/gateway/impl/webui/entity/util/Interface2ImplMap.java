@@ -280,6 +280,8 @@ import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultProjectMetadataEnt;
+import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt.ProjectSyncStateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultProjectSyncStateEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt.RemovePortCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultRemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder;
@@ -314,6 +316,8 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
+import org.knime.gateway.api.webui.entity.SyncStateDetailsEnt.SyncStateDetailsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSyncStateDetailsEnt;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt.TemplateLinkEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt;
 import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt.TransformMetanodePortsBarCommandEntBuilder;
@@ -754,6 +758,9 @@ public class Interface2ImplMap {
         if(clazz == ProjectMetadataEntBuilder.class) {
             return (B)new DefaultProjectMetadataEnt.DefaultProjectMetadataEntBuilder();
         }        
+        if(clazz == ProjectSyncStateEntBuilder.class) {
+            return (B)new DefaultProjectSyncStateEnt.DefaultProjectSyncStateEntBuilder();
+        }        
         if(clazz == RemovePortCommandEntBuilder.class) {
             return (B)new DefaultRemovePortCommandEnt.DefaultRemovePortCommandEntBuilder();
         }        
@@ -804,6 +811,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();
+        }        
+        if(clazz == SyncStateDetailsEntBuilder.class) {
+            return (B)new DefaultSyncStateDetailsEnt.DefaultSyncStateDetailsEntBuilder();
         }        
         if(clazz == TemplateLinkEntBuilder.class) {
             return (B)new DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder();
