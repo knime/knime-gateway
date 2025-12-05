@@ -56,6 +56,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.IPath;
@@ -703,6 +704,27 @@ public interface Space {
     default boolean saveBackTo(final Path localWorkflow, final URI targetURI, final boolean excludeDataInWorkflows,
         final IProgressMonitor progressMonitor)
         throws UnsupportedOperationException, NetworkException, LoggedOutException, MutableServiceCallException {
+        throw new UnsupportedOperationException("Cannot call this method on spaces other than Hub spaces.");
+    }
+
+    /**
+     * ...
+     *
+     * @param localWorkflow -
+     * @param targetURI -
+     * @param excludeDataInWorkflows -
+     * @param uploadLimitBytes -
+     * @param exception -
+     * @throws UnsupportedOperationException -
+     * @throws NetworkException -
+     * @throws LoggedOutException -
+     * @throws MutableServiceCallException -
+     * @throws E If the upload fails due to the upload limit being exceeded.
+     * @since 5.10
+     */
+    default <E extends Exception> void saveBackToWithLimit(final Path localWorkflow, final URI targetURI,
+        final boolean excludeDataInWorkflows, final long uploadLimitBytes, final Function<String, E> exception)
+        throws UnsupportedOperationException, NetworkException, LoggedOutException, MutableServiceCallException, E {
         throw new UnsupportedOperationException("Cannot call this method on spaces other than Hub spaces.");
     }
 
