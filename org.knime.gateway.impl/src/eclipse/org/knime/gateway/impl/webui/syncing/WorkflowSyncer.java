@@ -133,7 +133,7 @@ public interface WorkflowSyncer {
         }
 
         private void notifyWorkflowChanged() {
-            m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.DIRTY);
+            m_syncStateStore.deferrableUpdate(ProjectSyncStateEnt.StateEnum.DIRTY);
             m_debouncedProjectSync.call();
         }
 
@@ -167,18 +167,17 @@ public interface WorkflowSyncer {
             }
 
             m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.UPLOAD);
+            m_syncStateStore.lock(); // We lock the sync state store to defer the latest deferrable update
             try {
-                // TODO: Cache or queue state updates while uploading.
                 m_hubUploader.uploadProjectWithThreshold(projectId, context, syncThresholdMB);
+                m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.SYNCED);
             } catch (IOException e) {
                 m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
-                return;
             } catch (SyncThresholdException e) {
                 m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.DIRTY, new SyncStateStore.Details(e), false);
-                return;
+            } finally {
+                m_syncStateStore.unlock(); // We unlock the sync state store and apply the latest deferrable update
             }
-
-            m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.SYNCED);
         }
 
         @Override
@@ -199,15 +198,15 @@ public interface WorkflowSyncer {
             }
 
             m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.UPLOAD);
+            m_syncStateStore.lock(); // We lock the sync state store to defer the latest deferrable update
             try {
-                // TODO: Cache or queue state updates while uploading.
                 m_hubUploader.uploadProject(projectId, context);
+                m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.SYNCED);
             } catch (IOException e) {
                 handleSyncIOException(e);
-                return;
+            } finally {
+                m_syncStateStore.unlock(); // We unlock the sync state store and apply the latest deferrable update
             }
-
-            m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.SYNCED);
         }
 
         private static void assertIsNotSyncing(final ProjectSyncStateEnt.StateEnum state) throws ServiceCallException {

@@ -86,7 +86,7 @@ public final class Debouncer {
      */
     public void call() {
         if (m_pendingTask != null && !m_pendingTask.isDone()) {
-            m_pendingTask.cancel(false); // To not the actual sync is already running
+            m_pendingTask.cancel(false); // Set to 'false' to not cancel if the actual sync is already running
         }
         m_pendingTask = m_scheduler.schedule(m_task::run, m_delaySeconds, TimeUnit.SECONDS);
     }

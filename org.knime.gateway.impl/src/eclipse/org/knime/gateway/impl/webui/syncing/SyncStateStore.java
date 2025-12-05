@@ -54,8 +54,11 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.entity.SyncStateDetailsEnt;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
 
 /**
  * ...
@@ -63,6 +66,8 @@ import org.knime.gateway.api.webui.entity.SyncStateDetailsEnt;
  * @author Kai Franze, KNIME GmbH, Germany
  */
 final class SyncStateStore {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(SyncStateStore.class);
 
     private final Runnable m_callback;
 
@@ -72,17 +77,27 @@ final class SyncStateStore {
 
     private boolean m_autoSyncEnabled;
 
+    private boolean m_locked;
+
+    private Runnable m_unlockCallback;
+
+    /**
+     * Constructor needed for the {@link NoOpWorkflowSyncer}
+     */
     SyncStateStore() {
-        m_callback = () -> {
-            // No-op
-        };
+        m_callback = () -> {};
     }
 
+    /**
+     * Constructor needed for the {@link DefaultWorkflowSyncer}
+     */
     SyncStateStore(final Runnable callback) {
         m_callback = callback;
         m_state = ProjectSyncStateEnt.StateEnum.SYNCED;
         m_details = Optional.empty();
         m_autoSyncEnabled = true;
+        m_locked = false;
+        m_unlockCallback = () -> {};
     }
 
     ProjectSyncStateEnt.StateEnum state() {
@@ -91,6 +106,18 @@ final class SyncStateStore {
 
     boolean isAutoSyncEnabled() {
         return m_autoSyncEnabled;
+    }
+
+    void lock() {
+        LOGGER.info("Locking SyncStateStore");
+        m_locked = true;
+    }
+
+    void unlock() {
+        LOGGER.info("Unlocking SyncStateStore");
+        m_locked = false;
+        m_unlockCallback.run();
+        m_unlockCallback = () -> {};
     }
 
     ProjectSyncStateEnt buildSyncStateEnt() {
@@ -111,6 +138,20 @@ final class SyncStateStore {
             .setCanCopy(canCopy) //
             .setStackTrace(details.stackTrace()) //
             .build();
+    }
+
+    /**
+     * When the store is locked, the update will be deferred until it is unlocked. This can happen when
+     * {@link WorkflowSyncer#notifyWorkflowChanged()} is called during an ongoing workflow upload.
+     *
+     */
+    void deferrableUpdate(final ProjectSyncStateEnt.StateEnum state) {
+        if (m_locked) {
+            // We defer the update until unlock
+            m_unlockCallback = () -> update(state);
+            return;
+        }
+        update(state);
     }
 
     void update(final ProjectSyncStateEnt.StateEnum state) {
