@@ -71,15 +71,15 @@ final class SyncStateStore {
 
     private final Runnable m_callback;
 
-    private ProjectSyncStateEnt.StateEnum m_state;
+    private ProjectSyncStateEnt.StateEnum m_state = ProjectSyncStateEnt.StateEnum.SYNCED;
 
-    private Optional<Details> m_details;
+    private Optional<Details> m_details = Optional.empty();
 
-    private boolean m_autoSyncEnabled;
+    private boolean m_autoSyncEnabled = true;
 
-    private boolean m_locked;
+    private boolean m_locked = false;
 
-    private Runnable m_unlockCallback;
+    private Runnable m_unlockCallback = () -> {};
 
     /**
      * Constructor needed for the {@link NoOpWorkflowSyncer}
@@ -93,11 +93,6 @@ final class SyncStateStore {
      */
     SyncStateStore(final Runnable callback) {
         m_callback = callback;
-        m_state = ProjectSyncStateEnt.StateEnum.SYNCED;
-        m_details = Optional.empty();
-        m_autoSyncEnabled = true;
-        m_locked = false;
-        m_unlockCallback = () -> {};
     }
 
     ProjectSyncStateEnt.StateEnum state() {
