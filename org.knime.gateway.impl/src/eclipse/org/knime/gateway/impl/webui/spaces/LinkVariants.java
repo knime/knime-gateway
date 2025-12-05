@@ -76,7 +76,7 @@ public interface LinkVariants {
 
     /**
      * Map the enum to a richer entity with human-readable descriptions
-     * 
+     *
      * @param type -
      * @return -
      */
@@ -98,7 +98,7 @@ public interface LinkVariants {
     /**
      * Map {@link this#toLinkVariantInfoEnt(LinkVariantEnt.VariantEnum)} over {@link this#getVariants(URI,
      * WorkflowContextV2)}
-     * 
+     *
      * @see LinkVariants#getVariants(URI, WorkflowContextV2)
      * @param originalUri -
      * @param currentContext -
@@ -161,7 +161,7 @@ public interface LinkVariants {
 
         /**
          * Map enum values to richer entities with descriptions
-         * 
+         *
          * @param type The value to map
          * @return The mapped value
          */

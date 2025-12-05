@@ -1,10 +1,61 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.impl" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.10.0"/>
+                <message_argument value="5.7.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.kai.CodeKaiHandler">
         <filter id="305324134">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.kai.CodeKaiHandler"/>
                 <message_argument value="org.knime.gateway.impl_5.10.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/WorkflowManagerLoader.java" type="org.knime.gateway.impl.project.WorkflowManagerLoader">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.WorkflowManagerLoader"/>
+                <message_argument value="fetch(Origin, VersionId, SpaceProviders, ExecutionMonitor)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1209008130">
+            <message_arguments>
+                <message_argument value="5.8"/>
+                <message_argument value="5.10"/>
+                <message_argument value="fetch(Origin, VersionId, Space, ExecutionMonitor)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/KaiHandler.java" type="org.knime.gateway.impl.webui.kai.KaiHandler">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandler"/>
+                <message_argument value="executeQuickAction(String, KaiQuickActionRequestEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandler"/>
+                <message_argument value="listQuickActions(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1209008130">
+            <message_arguments>
+                <message_argument value="5.8"/>
+                <message_argument value="5.10"/>
+                <message_argument value="executeQuickAction(String, KaiQuickActionRequestEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1209008130">
+            <message_arguments>
+                <message_argument value="5.8"/>
+                <message_argument value="5.10"/>
+                <message_argument value="listQuickActions(String)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -83,6 +134,34 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/commands/UpdateComponentLinkInformation.java" type="org.knime.gateway.impl.webui.service.commands.UpdateComponentLinkInformation">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.UpdateComponentLinkInformation"/>
+                <message_argument value="org.knime.gateway.impl_5.10.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/commands/WorkflowCommands.java" type="org.knime.gateway.impl.webui.service.commands.WorkflowCommands">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.WorkflowCommands"/>
+                <message_argument value="execute(WorkflowKey, E, WorkflowMiddleware, NodeFactoryProvider, SpaceProviders)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="execute(WorkflowKey, E, WorkflowMiddleware, NodeFactoryProvider, SpaceProviders, LinkVariants)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/LinkVariants.java" type="org.knime.gateway.impl.webui.spaces.LinkVariants">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.LinkVariants"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentEditorConfigEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentEditorConfigEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -97,11 +176,126 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentNodeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt"/>
+                <message_argument value="DefaultComponentNodeEnt(NodeIDEnt, List&lt;? extends NodePortEnt&gt;, List&lt;? extends NodePortEnt&gt;, Boolean, NodeAnnotationEnt, XYEnt, NodeEnt.KindEnum, NodeEnt.DialogTypeEnum, Integer, AllowedNodeActionsEnt, NodeExecutionInfoEnt, String, ComponentNodeAndDescriptionEnt.TypeEnum, String, NodeStateEnt, TemplateLinkEnt, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultComponentNodeEnt(NodeIDEnt, List&lt;? extends NodePortEnt&gt;, List&lt;? extends NodePortEnt&gt;, Boolean, NodeAnnotationEnt, XYEnt, NodeEnt.KindEnum, NodeEnt.DialogTypeEnum, Integer, Integer, AllowedNodeActionsEnt, NodeExecutionInfoEnt, String, ComponentNodeAndDescriptionEnt.TypeEnum, String, NodeStateEnt, TemplateLinkEnt, Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentNodeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentNodeEnt$DefaultComponentNodeEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultDeleteComponentPlaceholderCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultDeleteComponentPlaceholderCommandEnt">
         <filter comment="AP-4024" id="337682486">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultDeleteComponentPlaceholderCommandEnt"/>
                 <message_argument value="org.knime.gateway.api.webui.entity.WorkflowCommandEnt,org.knime.gateway.api.entity.GatewayEntity,org.knime.gateway.api.webui.entity.DeleteComponentPlaceholderCommandEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultGatewayProblemDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt"/>
+                <message_argument value="DefaultGatewayProblemDescriptionEnt(String, String, Boolean, Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultGatewayProblemDescriptionEnt(String, String, Integer, List&lt;String&gt;, Boolean, Map&lt;String,String&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultGatewayProblemDescriptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt$DefaultGatewayProblemDescriptionEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setDetails(List&lt;String&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setStatus(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiQuickActionContextEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionContextEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionContextEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiQuickActionErrorEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionErrorEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionErrorEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiQuickActionGenerateAnnotationContextEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationContextEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationContextEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiQuickActionGenerateAnnotationRequestEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationRequestEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationRequestEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiQuickActionGenerateAnnotationResponseEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationResponseEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationResponseEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiQuickActionGenerateAnnotationResultEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationResultEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionGenerateAnnotationResultEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiQuickActionRequestEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionRequestEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionRequestEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiQuickActionResponseEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResponseEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResponseEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiQuickActionResultEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResultEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResultEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiQuickActionsAvailableEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionsAvailableEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionsAvailableEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -120,6 +314,80 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultLinkVariantEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultLinkVariantEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultLinkVariantEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultLinkVariantInfoEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultLinkVariantInfoEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultLinkVariantInfoEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultMetaNodeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt"/>
+                <message_argument value="DefaultMetaNodeEnt(NodeIDEnt, List&lt;MetaNodePortEnt&gt;, List&lt;MetaNodePortEnt&gt;, Boolean, NodeAnnotationEnt, XYEnt, NodeEnt.KindEnum, NodeEnt.DialogTypeEnum, Integer, AllowedNodeActionsEnt, NodeExecutionInfoEnt, String, MetaNodeStateEnt, TemplateLinkEnt, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultMetaNodeEnt(NodeIDEnt, List&lt;MetaNodePortEnt&gt;, List&lt;MetaNodePortEnt&gt;, Boolean, NodeAnnotationEnt, XYEnt, NodeEnt.KindEnum, NodeEnt.DialogTypeEnum, Integer, Integer, AllowedNodeActionsEnt, NodeExecutionInfoEnt, String, MetaNodeStateEnt, TemplateLinkEnt, Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultMetaNodeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultMetaNodeEnt$DefaultMetaNodeEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultNativeNodeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt"/>
+                <message_argument value="DefaultNativeNodeEnt(NodeIDEnt, List&lt;? extends NodePortEnt&gt;, List&lt;? extends NodePortEnt&gt;, Boolean, NodeAnnotationEnt, XYEnt, NodeEnt.KindEnum, NodeEnt.DialogTypeEnum, Integer, AllowedNodeActionsEnt, NodeExecutionInfoEnt, String, NodeStateEnt, LoopInfoEnt, Map&lt;String,PortGroupEnt&gt;, Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultNativeNodeEnt(NodeIDEnt, List&lt;? extends NodePortEnt&gt;, List&lt;? extends NodePortEnt&gt;, Boolean, NodeAnnotationEnt, XYEnt, NodeEnt.KindEnum, NodeEnt.DialogTypeEnum, Integer, Integer, AllowedNodeActionsEnt, NodeExecutionInfoEnt, String, NodeStateEnt, LoopInfoEnt, Map&lt;String,PortGroupEnt&gt;, Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultNativeNodeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultNativeNodeEnt$DefaultNativeNodeEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultNodeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultNodeEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultNodeEnt"/>
+                <message_argument value="DefaultNodeEnt(NodeIDEnt, List&lt;? extends NodePortEnt&gt;, List&lt;? extends NodePortEnt&gt;, Boolean, NodeAnnotationEnt, XYEnt, NodeEnt.KindEnum, NodeEnt.DialogTypeEnum, Integer, AllowedNodeActionsEnt, NodeExecutionInfoEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultNodeEnt(NodeIDEnt, List&lt;? extends NodePortEnt&gt;, List&lt;? extends NodePortEnt&gt;, Boolean, NodeAnnotationEnt, XYEnt, NodeEnt.KindEnum, NodeEnt.DialogTypeEnum, Integer, Integer, AllowedNodeActionsEnt, NodeExecutionInfoEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultNodeEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultNodeEnt$DefaultNodeEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultShareComponentCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -131,6 +399,101 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultShareComponentResultEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSpaceGroupEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt"/>
+                <message_argument value="DefaultSpaceGroupEnt(String, String, SpaceGroupEnt.TypeEnum, List&lt;SpaceEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultSpaceGroupEnt(String, String, SpaceGroupEnt.TypeEnum, List&lt;SpaceEnt&gt;, Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSpaceGroupEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSpaceGroupEnt$DefaultSpaceGroupEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setCanSoftDelete(Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultTemplateLinkEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt"/>
+                <message_argument value="DefaultTemplateLinkEnt(String, TemplateLinkEnt.UpdateStatusEnum, Boolean, Object)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt"/>
+                <message_argument value="isLinkTypeChangeable()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultTemplateLinkEnt(String, TemplateLinkEnt.UpdateStatusEnum, Boolean, Object, LinkVariantEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultTemplateLinkEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt$DefaultTemplateLinkEntBuilder">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder"/>
+                <message_argument value="setIsLinkTypeChangeable(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setCurrentLinkVariant(LinkVariantEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setIsLinkVariantChangeable(Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultUpdateComponentLinkInformationCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformationCommandEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformationCommandEnt"/>
+                <message_argument value="DefaultUpdateComponentLinkInformationCommandEnt(WorkflowCommandEnt.KindEnum, NodeIDEnt, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformationCommandEnt"/>
+                <message_argument value="getNewUrl()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformationCommandEnt"/>
+                <message_argument value="newUrl()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultUpdateComponentLinkInformationCommandEnt(WorkflowCommandEnt.KindEnum, NodeIDEnt, LinkVariantEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultUpdateComponentLinkInformationCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformationCommandEnt$DefaultUpdateComponentLinkInformationCommandEntBuilder">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformationCommandEnt.DefaultUpdateComponentLinkInformationCommandEntBuilder"/>
+                <message_argument value="setNewUrl(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setLinkVariant(LinkVariantEnt)"/>
             </message_arguments>
         </filter>
     </resource>
