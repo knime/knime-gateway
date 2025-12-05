@@ -67,6 +67,7 @@ import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentResultEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker;
@@ -90,9 +91,9 @@ class ShareComponent extends AbstractWorkflowCommand implements WithResult {
 
     private final LinkVariants m_linkVariants;
 
-    private boolean m_resultIsNameCollision;
-
     private MetaNodeTemplateInformation m_oldTemplateInfo;
+
+    private CommandResult m_commandResult;
 
     ShareComponent(final ShareComponentCommandEnt ce, final SpaceProviders spaceProviders,
         final LinkVariants linkVariants) {
@@ -124,12 +125,22 @@ class ShareComponent extends AbstractWorkflowCommand implements WithResult {
         };
     }
 
+    /**
+     *
+     * @param isNameCollision required
+     * @param uploadedItem May be null if the command aborted with a name collision
+     */
+    private record CommandResult(boolean isNameCollision, SpaceItemReferenceEnt uploadedItem) {
+
+    }
+
     @Override
     public ShareComponentResultEnt buildEntity(final String snapshotId) {
         return builder(ShareComponentResultEnt.ShareComponentResultEntBuilder.class) //
             .setKind(CommandResultEnt.KindEnum.SHARE_COMPONENT_RESULT) //
             .setSnapshotId(snapshotId) //
-            .setIsNameCollision(m_resultIsNameCollision) //
+            .setIsNameCollision(m_commandResult.isNameCollision()) //
+            .setUploadedItem(m_commandResult.uploadedItem()) // may be null
             .build();
     }
 
@@ -159,7 +170,7 @@ class ShareComponent extends AbstractWorkflowCommand implements WithResult {
             collisionHandling == Space.NameCollisionHandling.NOOP //
                 && hasCollision(m_command.getDestinationItemId(), component, destinationSpace) //
             ) {
-                m_resultIsNameCollision = true; // command result
+                m_commandResult = new CommandResult(true, null);
                 return false;
             }
 
@@ -175,11 +186,22 @@ class ShareComponent extends AbstractWorkflowCommand implements WithResult {
 
             final var uploadedComponentItemId = importResult.spaceItemEnt().getId();
             final var uploadedComponentUri = destinationSpace.toKnimeUrl(uploadedComponentItemId);
+
+            m_commandResult = new CommandResult( //
+                false, //
+                builder(SpaceItemReferenceEnt.SpaceItemReferenceEntBuilder.class) //
+                    .setProviderId(m_command.getDestinationSpaceProviderId()) //
+                    .setSpaceId(destinationSpace.getId()) //
+                    .setItemId(uploadedComponentItemId) //
+                    .build());
+
             if (m_command.getLinkVariant() == null //
                 || m_command.getLinkVariant().getVariant() == null //
                 || m_command.getLinkVariant().getVariant() == LinkVariantEnt.VariantEnum.NONE) {
+                // user has requested "do not link"
                 return false;
             }
+
             final var requestedVariant = m_command.getLinkVariant().getVariant();
             final var context = CoreUtil.getProjectWorkflow(component).getContextV2();
             var uriForRequestedVariant = m_linkVariants.getVariants( //

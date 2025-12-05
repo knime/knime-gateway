@@ -46,6 +46,7 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.impl.webui.entity.DefaultCommandResultEnt;
 
 import org.knime.gateway.api.webui.entity.ShareComponentResultEnt;
@@ -56,6 +57,7 @@ import org.knime.gateway.api.webui.entity.ShareComponentResultEnt;
  * @param snapshotId
  * @param kind
  * @param isNameCollision
+ * @param uploadedItem
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -63,12 +65,16 @@ import org.knime.gateway.api.webui.entity.ShareComponentResultEnt;
 public record DefaultShareComponentResultEnt(
     String snapshotId,
     KindEnum kind,
-    Boolean isNameCollision) implements ShareComponentResultEnt {
+    Boolean isNameCollision,
+    SpaceItemReferenceEnt uploadedItem) implements ShareComponentResultEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
     public DefaultShareComponentResultEnt {
+        if(isNameCollision == null) {
+            throw new IllegalArgumentException("<isNameCollision> must not be null.");
+        }
     }
 
     @Override
@@ -91,6 +97,11 @@ public record DefaultShareComponentResultEnt(
         return isNameCollision;
     }
     
+    @Override
+    public SpaceItemReferenceEnt getUploadedItem() {
+        return uploadedItem;
+    }
+    
     /**
      * A builder for {@link DefaultShareComponentResultEnt}.
      */
@@ -101,6 +112,8 @@ public record DefaultShareComponentResultEnt(
         private KindEnum m_kind;
 
         private Boolean m_isNameCollision;
+
+        private SpaceItemReferenceEnt m_uploadedItem;
 
         @Override
         public DefaultShareComponentResultEntBuilder setSnapshotId(String snapshotId) {
@@ -116,7 +129,16 @@ public record DefaultShareComponentResultEnt(
 
         @Override
         public DefaultShareComponentResultEntBuilder setIsNameCollision(Boolean isNameCollision) {
+             if(isNameCollision == null) {
+                 throw new IllegalArgumentException("<isNameCollision> must not be null.");
+             }
              m_isNameCollision = isNameCollision;
+             return this;
+        }
+
+        @Override
+        public DefaultShareComponentResultEntBuilder setUploadedItem(SpaceItemReferenceEnt uploadedItem) {
+             m_uploadedItem = uploadedItem;
              return this;
         }
 
@@ -125,7 +147,8 @@ public record DefaultShareComponentResultEnt(
             return new DefaultShareComponentResultEnt(
                 immutable(m_snapshotId),
                 immutable(m_kind),
-                immutable(m_isNameCollision));
+                immutable(m_isNameCollision),
+                immutable(m_uploadedItem));
         }
     
     }
