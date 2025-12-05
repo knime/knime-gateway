@@ -44,6 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 import org.knime.gateway.json.webui.entity.CommandResultEntMixIn;
 
 
@@ -82,6 +83,10 @@ public interface ShareComponentResultEntMixIn extends ShareComponentResultEnt {
     @JsonProperty("isNameCollision")
     public Boolean isNameCollision();
     
+    @Override
+    @JsonProperty("uploadedItem")
+    public SpaceItemReferenceEnt getUploadedItem();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -106,6 +111,10 @@ public interface ShareComponentResultEntMixIn extends ShareComponentResultEnt {
         @Override
         @JsonProperty("isNameCollision")
         public ShareComponentResultEntMixInBuilder setIsNameCollision(final Boolean isNameCollision);
+        
+        @Override
+        @JsonProperty("uploadedItem")
+        public ShareComponentResultEntMixInBuilder setUploadedItem(final SpaceItemReferenceEnt uploadedItem);
         
     }
 

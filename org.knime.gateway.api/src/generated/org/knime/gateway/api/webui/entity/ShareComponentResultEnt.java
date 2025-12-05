@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 import java.util.function.BiConsumer;
 
@@ -66,9 +67,15 @@ public interface ShareComponentResultEnt extends GatewayEntity, CommandResultEnt
 
   /**
    * Get isNameCollision
-   * @return isNameCollision 
+   * @return isNameCollision , never <code>null</code>
    **/
   public Boolean isNameCollision();
+
+  /**
+   * Get uploadedItem
+   * @return uploadedItem 
+   **/
+  public SpaceItemReferenceEnt getUploadedItem();
 
 
   @Override
@@ -78,6 +85,7 @@ public interface ShareComponentResultEnt extends GatewayEntity, CommandResultEnt
       valueConsumer.accept("snapshotId", Pair.create(getSnapshotId(), e.getSnapshotId()));
       valueConsumer.accept("kind", Pair.create(getKind(), e.getKind()));
       valueConsumer.accept("isNameCollision", Pair.create(isNameCollision(), e.isNameCollision()));
+      valueConsumer.accept("uploadedItem", Pair.create(getUploadedItem(), e.getUploadedItem()));
   }
 
     /**
@@ -104,10 +112,18 @@ public interface ShareComponentResultEnt extends GatewayEntity, CommandResultEnt
         /**
    		 * Set isNameCollision
          * 
-         * @param isNameCollision the property value,  
+         * @param isNameCollision the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         ShareComponentResultEntBuilder setIsNameCollision(Boolean isNameCollision);
+        
+        /**
+   		 * Set uploadedItem
+         * 
+         * @param uploadedItem the property value,  
+         * @return this entity builder for chaining
+         */
+        ShareComponentResultEntBuilder setUploadedItem(SpaceItemReferenceEnt uploadedItem);
         
         
         /**
