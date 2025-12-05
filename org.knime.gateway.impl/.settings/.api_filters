@@ -7,6 +7,12 @@
                 <message_argument value="5.7.0"/>
             </message_arguments>
         </filter>
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.10.0"/>
+                <message_argument value="5.9.0"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.kai.CodeKaiHandler">
         <filter id="305324134">
@@ -131,6 +137,14 @@
                 <message_argument value="5.5"/>
                 <message_argument value="5.9"/>
                 <message_argument value="setDefaultServiceDependencies(ProjectManager, WorkflowMiddleware, AppStateUpdater, EventConsumer, SpaceProvidersManager, UpdateStateProvider, NodeRepository, PreferencesProvider, NodeFactoryProvider, KaiHandler, CodeKaiHandler, NodeCollections, NodeCategoryExtensions, SelectionEventBus)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/commands/ShareComponent.java" type="org.knime.gateway.impl.webui.service.commands.ShareComponent">
+        <filter id="305365105">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.commands.ShareComponent"/>
+                <message_argument value="org.knime.gateway.impl_5.10.0"/>
             </message_arguments>
         </filter>
     </resource>
@@ -389,9 +403,45 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultShareComponentCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt"/>
+                <message_argument value="DefaultShareComponentCommandEnt(WorkflowCommandEnt.KindEnum, NodeIDEnt, String, String, String, ShareComponentCommandEnt.CollisionHandlingEnum, Boolean, ShareComponentCommandEnt.LinkTypeEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt"/>
+                <message_argument value="getLinkType()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt"/>
+                <message_argument value="linkType()"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultShareComponentCommandEnt(WorkflowCommandEnt.KindEnum, NodeIDEnt, String, String, String, ShareComponentCommandEnt.CollisionHandlingEnum, Boolean, LinkVariantEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultShareComponentCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt$DefaultShareComponentCommandEntBuilder">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt.DefaultShareComponentCommandEntBuilder"/>
+                <message_argument value="setLinkType(ShareComponentCommandEnt.LinkTypeEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setLinkVariant(LinkVariantEnt)"/>
             </message_arguments>
         </filter>
     </resource>

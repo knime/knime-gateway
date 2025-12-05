@@ -288,9 +288,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/MetaNodeEnt.java">
-        <filter id="0"/>
-    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/MetaNodeEnt.java" type="org.knime.gateway.api.webui.entity.MetaNodeEnt$MetaNodeEntBuilder">
         <filter id="403804204">
             <message_arguments>
@@ -344,9 +341,51 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/ShareComponentCommandEnt.java" type="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt"/>
+                <message_argument value="getLinkVariant()"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt"/>
+                <message_argument value="getLinkType()"/>
+            </message_arguments>
+        </filter>
+        <filter id="405995624">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.LinkTypeEnum"/>
+                <message_argument value="org.knime.gateway.api_5.10.0"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getLinkVariant()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ShareComponentCommandEnt.java" type="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt$ShareComponentCommandEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.ShareComponentCommandEntBuilder"/>
+                <message_argument value="setLinkVariant(LinkVariantEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.ShareComponentCommandEntBuilder"/>
+                <message_argument value="setLinkType(ShareComponentCommandEnt.LinkTypeEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setLinkVariant(LinkVariantEnt)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -382,9 +421,6 @@
                 <message_argument value="setCanSoftDelete(Boolean)"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/TemplateLinkEnt.java">
-        <filter id="0"/>
     </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/TemplateLinkEnt.java" type="org.knime.gateway.api.webui.entity.TemplateLinkEnt">
         <filter id="403804204">
@@ -564,9 +600,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/service/KaiService.java">
-        <filter id="0"/>
-    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/service/KaiService.java" type="org.knime.gateway.api.webui.service.KaiService">
         <filter id="403804204">
             <message_arguments>
@@ -590,9 +623,6 @@
                 <message_argument value="listQuickActions(String)"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/service/SpaceService.java">
-        <filter id="0"/>
     </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/service/SpaceService.java" type="org.knime.gateway.api.webui.service.SpaceService">
         <filter id="403804204">
