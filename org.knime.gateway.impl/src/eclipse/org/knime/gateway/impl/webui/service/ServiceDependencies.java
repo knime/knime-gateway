@@ -90,7 +90,7 @@ public final class ServiceDependencies {
     private static final Map<Class<?>, Object> DEPENDENCIES = synchronizedMap(new HashMap<>());
 
     // Hack - to be removed with NXT-3420
-    public static boolean allowDependencyOverwrite = false;
+    public static boolean allowDependencyOverwrite;
 
     private ServiceDependencies() {
         // Utility class
@@ -162,21 +162,20 @@ public final class ServiceDependencies {
      * @since 5.10
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
-                                                      final ProjectManager projectManager, //
-                                                      final WorkflowMiddleware workflowMiddleware, //
-                                                      final AppStateUpdater appStateUpdater, //
-                                                      final EventConsumer eventConsumer, //
-                                                      final SpaceProvidersManager spaceProvidersManager, //
-                                                      final UpdateStateProvider updateStateProvider, //
-                                                      final NodeRepository nodeRepo, //
-                                                      final PreferencesProvider preferencesProvider, //
-                                                      final NodeFactoryProvider nodeFactoryProvider, //
-                                                      final KaiHandler kaiHandler, //
-                                                      final CodeKaiHandler codeKaiHandler, //
-                                                      final NodeCollections nodeCollections, //
-                                                      final NodeCategoryExtensions nodeCategoryExtensions, //
-                                                      final SelectionEventBus selectionEventBus, //
-                                                      final LinkVariants linkVariants //
+        final ProjectManager projectManager, //
+        final WorkflowMiddleware workflowMiddleware, //
+        final AppStateUpdater appStateUpdater, //
+        final EventConsumer eventConsumer, //
+        final SpaceProvidersManager spaceProvidersManager, //
+        final UpdateStateProvider updateStateProvider, //
+        final NodeRepository nodeRepo, //
+        final PreferencesProvider preferencesProvider, //
+        final NodeFactoryProvider nodeFactoryProvider, //
+        final KaiHandler kaiHandler, //
+        final CodeKaiHandler codeKaiHandler, //
+        final NodeCollections nodeCollections, //
+        final NodeCategoryExtensions nodeCategoryExtensions, //
+        final SelectionEventBus selectionEventBus, final LinkVariants linkVariants //
     ) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);

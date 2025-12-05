@@ -122,7 +122,7 @@ class ProjectWfmCache {
                 return m_currentState.get();
             } catch (GatewayException e) {
                 // TODO NXT-3938
-                throw new RuntimeException(e);
+                throw new IllegalStateException("Failed to load current-state workflow", e);
             }
         }
     }
@@ -135,7 +135,7 @@ class ProjectWfmCache {
     /**
      * Dispose the workflow manager instance corresponding to the given version, if present.
      *
-     * @param version -
+     * @param version version identifier to dispose
      */
     void dispose(final VersionId version) {
         if (version.isCurrentState()) {
@@ -143,14 +143,14 @@ class ProjectWfmCache {
             m_currentState.clear();
         } else {
             Optional.ofNullable(m_fixedVersions.remove(version)) //
-                .ifPresent(ProjectWfmCache::disposeWorkflowManager);
+                .ifPresent(wfm -> disposeWorkflowManager(wfm));
         }
     }
 
     /**
-     * -
+     * Checks whether a workflow manager is already loaded for the given version.
      *
-     * @param version -
+     * @param version version identifier
      * @return Whether a workflow manager instance corresponding to the given version is already loaded
      */
     boolean contains(final VersionId version) {
@@ -173,4 +173,5 @@ class ProjectWfmCache {
             NodeLogger.getLogger(ProjectWfmCache.class).error(e);
         }
     }
+
 }

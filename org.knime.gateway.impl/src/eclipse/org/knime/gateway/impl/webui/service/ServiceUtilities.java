@@ -52,12 +52,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
 import org.knime.core.data.RowKey;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowResourceCache;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.port.PortViewManager;
@@ -71,6 +74,7 @@ import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer;
 
 /**
  * Logic shared between web-ui default service implementations.
@@ -177,6 +181,15 @@ final class ServiceUtilities {
      */
     static Key getSpaceProvidersKey() {
         return DefaultServiceContext.getProjectId().map(Key::of).orElse(Key.defaultKey());
+    }
+
+    static Optional<WorkflowSyncer> getWorkflowSyncerFor(final WorkflowManager wfm) {
+        NodeContext.pushContext(wfm);
+        try {
+            return WorkflowResourceCache.get(WorkflowSyncer.class);
+        } finally {
+            NodeContext.removeLastContext();
+        }
     }
 
 }

@@ -52,6 +52,7 @@ import java.util.function.Predicate;
 
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.service.ApplicationService;
+import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -117,11 +118,25 @@ public final class DefaultApplicationService implements ApplicationService {
         var projectId = DefaultServiceContext.getProjectId();
         var key = projectId.map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
+        var workflowSyncer = projectId.flatMap(m_projectManager::getProject) //
+            .flatMap(Project::getWorkflowManagerIfLoaded) //
+            .flatMap(ServiceUtilities::getWorkflowSyncerFor) //
+            .orElse(null);
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
-        var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
-            spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
-        var appState = AppStateEntityFactory.buildAppStateEnt(
-            projectId.map(ProjectFilter::single).orElse(ProjectFilter.all()), isActiveProject, dependencies);
+        var dependencies = new AppStateEntityFactory.ServiceDependencies( //
+            m_projectManager, //
+            m_preferencesProvider, //
+            spaceProviders, //
+            m_nodeFactoryProvider, //
+            m_nodeCollections, //
+            m_kaiHandler, //
+            workflowSyncer //
+        );
+        var appState = AppStateEntityFactory.buildAppStateEnt( //
+            projectId.map(ProjectFilter::single).orElse(ProjectFilter.all()), //
+            isActiveProject, //
+            dependencies //
+        );
         if (m_appStateUpdater != null) {
             m_appStateUpdater.setLastAppState(appState);
         }

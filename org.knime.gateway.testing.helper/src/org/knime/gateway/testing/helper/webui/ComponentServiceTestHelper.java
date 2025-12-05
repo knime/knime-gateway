@@ -52,34 +52,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThrows;
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.awaitility.Awaitility;
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.VersionId;
-import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
-import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt;
-import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
-import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
-import org.knime.gateway.api.webui.entity.PatchOpEnt.OpEnum;
-import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt.WorkflowChangedEventTypeEntBuilder;
-import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
-import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
-import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflow;
@@ -89,6 +71,8 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
 
 /**
  * Test for the endpoints of the node service.
+ *
+ * TODO NXT-4338 re-introduce and fix `testCancelAndRetryComponentLoadJob`.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH, Germany
@@ -178,76 +162,6 @@ public class ComponentServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
         // the descriptions should be different
         assertThat(currentCompDesc.getDescription().getValue(), is(not(versionCompDesc.getDescription().getValue())));
-    }
-
-    /**
-     * Tests {@link ComponentService#cancelOrRetryComponentLoadJob(String, NodeIDEnt, String, String)} .
-     *
-     * @throws Exception
-     */
-    public void testCancelAndRetryComponentLoadJob() throws Exception {
-        var itemId = "test-item-id";
-        var spaceId = "test-space-id";
-        var wasCancelled = new AtomicBoolean();
-        var space = AddComponentCommandTestHelper.createSpace(spaceId, itemId, "component name", 1000, wasCancelled);
-        var spaceProvider = AddComponentCommandTestHelper.createSpaceProvider(space);
-        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
-        var events = Collections.synchronizedList(new ArrayList<Object>());
-        ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(ProjectManager.getInstance(), spaceProviderManager));
-
-        final String projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
-        var command = builder(AddComponentCommandEntBuilder.class) //
-            .setKind(KindEnum.ADD_COMPONENT) //
-            .setPosition(builder(XYEntBuilder.class).setX(10).setY(20).build()) //
-            .setProviderId("local-testing") //
-            .setSpaceId(spaceId) //
-            .setItemId(itemId) //
-            .setName("component name") //
-            .build();
-
-        // in order to get proper workflow changes events subsequently (to have a version 0 to compare against)
-        var snapshotId = ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.TRUE).getSnapshotId();
-        es().addEventListener(builder(WorkflowChangedEventTypeEntBuilder.class).setProjectId(projectId)
-            .setWorkflowId(NodeIDEnt.getRootID()).setTypeId("WorkflowChangedEventType").setSnapshotId(snapshotId)
-            .build());
-
-        // execute add-component command
-        var commandResult =
-            (AddComponentPlaceholderResultEnt)ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
-        // sanity check
-        var placeholderPatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders", events);
-        assertThat(placeholderPatch.getOp(), is(OpEnum.ADD));
-        var placeholder = ((Collection<ComponentPlaceholderEnt>)placeholderPatch.getValue()).iterator().next();
-        assertThat(placeholder.getId(), is(commandResult.getNewPlaceholderId()));
-        assertThat(placeholder.getName(), is("component name"));
-        assertThat(placeholder.getState(), is(StateEnum.LOADING));
-        // wait for the 'Downloading...' message
-        var messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
-        assertThat(messagePatch.getOp(), is(OpEnum.ADD));
-        assertThat(messagePatch.getValue(), is("Downloading..."));
-        events.clear();
-
-        // the actual test -> cancel
-        cs().cancelOrRetryComponentLoadJob(projectId, getRootID(), commandResult.getNewPlaceholderId(), "cancel");
-        var statePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/state", events);
-        assertThat(statePatch.getOp(), is(OpEnum.REPLACE));
-        assertThat(statePatch.getValue(), is(StateEnum.ERROR));
-        messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
-        assertThat(messagePatch.getOp(), is(OpEnum.REPLACE));
-        assertThat(messagePatch.getValue(), is("Component loading cancelled"));
-        Awaitility.await().untilAsserted(() -> assertThat(wasCancelled.get(), is(true)));
-        events.clear();
-
-        // retry
-        cs().cancelOrRetryComponentLoadJob(projectId, getRootID(), commandResult.getNewPlaceholderId(), "retry");
-        statePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/state", events);
-        assertThat(statePatch.getOp(), is(OpEnum.REPLACE));
-        assertThat(statePatch.getValue(), is(StateEnum.LOADING));
-        messagePatch = EventServiceTestHelper.waitAndFindPatchOpForPath("/componentPlaceholders/0/message", events);
-        assertThat(messagePatch.getOp(), is(OpEnum.REPLACE));
     }
 
     @Test

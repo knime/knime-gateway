@@ -22,6 +22,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/Project.java" type="org.knime.gateway.impl.project.Project">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.Project"/>
+                <message_argument value="setWfmLoader(WorkflowManagerLoader)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/project/WorkflowManagerLoader.java" type="org.knime.gateway.impl.project.WorkflowManagerLoader">
         <filter id="405901410">
             <message_arguments>
@@ -34,6 +42,14 @@
                 <message_argument value="5.8"/>
                 <message_argument value="5.10"/>
                 <message_argument value="fetch(Origin, VersionId, Space, ExecutionMonitor)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/entity/AppStateEntityFactory.java" type="org.knime.gateway.impl.webui.entity.AppStateEntityFactory$ServiceDependencies">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ServiceDependencies"/>
+                <message_argument value="ServiceDependencies(ProjectManager, PreferencesProvider, SpaceProviders, NodeFactoryProvider, NodeCollections, KaiHandler)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -180,6 +196,26 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAncestorInfoEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAppStateEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, AppStateEnt.CanvasRendererEnum, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean, List&lt;SpaceProviderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, AppStateEnt.CanvasRendererEnum, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean, List&lt;SpaceProviderEnt&gt;, ProjectSyncStateEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAppStateEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt$DefaultAppStateEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setProjectSyncState(ProjectSyncStateEnt)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -409,6 +445,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultProjectSyncStateEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultProjectSyncStateEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultProjectSyncStateEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultShareComponentCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt">
         <filter id="338722907">
             <message_arguments>
@@ -494,6 +537,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setCanSoftDelete(Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSyncStateErrorEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSyncStateErrorEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSyncStateErrorEnt"/>
             </message_arguments>
         </filter>
     </resource>
