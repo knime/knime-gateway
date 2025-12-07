@@ -79,7 +79,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
@@ -121,7 +120,6 @@ import org.knime.gateway.testing.helper.ResultChecker;
 import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
-import org.knime.testing.util.WorkflowManagerUtil;
 import org.mockito.Mockito;
 
 /**
@@ -184,10 +182,11 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(space.toKnimeUrl(itemId)).thenReturn(spaceKnimeUri);
 
         var project = Project.builder() //
-                .setWfmLoader(WorkflowManagerLoader.providingOnlyCurrentState(() -> createEmptyWorkflowUnchecked().getSecond())) //
-                .setName("foo") //
-                .setId("some-project-id") //
-                .build(); //
+            .setWfmLoader(
+                WorkflowManagerLoader.providingOnlyCurrentState(() -> createEmptyWorkflowUnchecked().getSecond())) //
+            .setName("foo") //
+            .setId("some-project-id") //
+            .build(); //
         project.getFromCacheOrLoadWorkflowManager(); // the service endpoint expects the project to be already loaded
         ProjectManager.getInstance().addProject(project);
 

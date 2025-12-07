@@ -48,6 +48,18 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThrows;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.awaitility.Awaitility;
 import org.junit.Test;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -74,21 +86,6 @@ import org.knime.gateway.testing.helper.TestWorkflow;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThrows;
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
-import static org.knime.gateway.testing.helper.webui.ShareComponentCommandTestHelper.createComponentInWorkflow;
-import static org.knime.gateway.testing.helper.webui.ShareComponentCommandTestHelper.createMockDestinationSpace;
-import static org.knime.gateway.testing.helper.webui.ShareComponentCommandTestHelper.createSpaceProvider;
 
 /**
  * Test for the endpoints of the node service.

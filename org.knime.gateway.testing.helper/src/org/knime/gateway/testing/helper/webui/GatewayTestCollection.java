@@ -78,10 +78,9 @@ public final class GatewayTestCollection {
      */
     public static Map<String, GatewayTestRunner> collectAllGatewayTests() {
         final var classFilterProperty = System.getProperty("org.knime.gateway.testing.helper.test_class");
-        final Set<String> classFilter = classFilterProperty == null ? null : Arrays.stream(classFilterProperty.split(","))
-            .map(String::trim)
-            .filter(s -> !s.isEmpty())
-            .collect(Collectors.toSet());
+        final Set<String> classFilter =
+            classFilterProperty == null ? null : Arrays.stream(classFilterProperty.split(",")).map(String::trim)
+                .filter(s -> !s.isEmpty()).collect(Collectors.toSet());
         final boolean hasClassFilter = classFilter != null && !classFilter.isEmpty();
 
         return CONTRIBUTING_CLASSES.stream() //

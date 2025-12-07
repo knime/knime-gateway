@@ -48,13 +48,22 @@
  */
 package org.knime.gateway.testing.helper.webui;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThrows;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
+import static org.knime.gateway.api.util.KnimeUrls.buildLinkVariantEnt;
+
+import java.util.Map.Entry;
+
 import org.hamcrest.core.IsInstanceOf;
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
-import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantEnt;
-import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.NodeEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt.UpdateComponentLinkInformationCommandEntBuilder;
@@ -68,29 +77,15 @@ import org.knime.gateway.testing.helper.ServiceProvider;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
-import org.mockito.Mockito;
-
-import java.net.URI;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThrows;
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
-import static org.knime.gateway.api.util.KnimeUrls.buildLinkVariantEnt;
 
 /**
  * Dedicated tests for {@link UpdateComponentLinkInformationCommandEnt}.
  */
 public class UpdateComponentLinkCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
-    public UpdateComponentLinkCommandTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
-                                     final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
+    public UpdateComponentLinkCommandTestHelper(final ResultChecker entityResultChecker,
+        final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader,
+        final WorkflowExecutor workflowExecutor) {
         super(WorkflowCommandTestHelper.class, entityResultChecker, serviceProvider, workflowLoader, workflowExecutor);
     }
 
@@ -129,7 +124,8 @@ public class UpdateComponentLinkCommandTestHelper extends WebUIGatewayServiceTes
         assertThrows(ServiceCallException.class, () -> ws().executeWorkflowCommand(projectId, getRootID(), command3));
 
         // Test unlink a component
-        var command4 = buildUpdateComponentLinkInformationCommand(linkedComponent, buildLinkVariantEnt(LinkVariantEnt.VariantEnum.NONE));
+        var command4 = buildUpdateComponentLinkInformationCommand(linkedComponent,
+            buildLinkVariantEnt(LinkVariantEnt.VariantEnum.NONE));
         ws().executeWorkflowCommand(projectId, getRootID(), command4);
         var nodeUnlinked = getNodeEntFromWorkflowSnapshotEnt(
             ws().getWorkflow(projectId, NodeIDEnt.getRootID(), null, Boolean.FALSE), linkedComponent);

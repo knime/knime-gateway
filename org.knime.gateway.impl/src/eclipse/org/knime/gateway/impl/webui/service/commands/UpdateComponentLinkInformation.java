@@ -48,6 +48,9 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.net.URI;
+import java.util.function.Function;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
@@ -62,10 +65,6 @@ import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
-
-import java.net.URI;
-import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Workflow command to update link types of link components. The command is accessed from outside the package.
@@ -83,7 +82,10 @@ final class UpdateComponentLinkInformation extends AbstractWorkflowCommand {
 
     private MetaNodeTemplateInformation m_oldTemplateInfo;
 
-    UpdateComponentLinkInformation(final UpdateComponentLinkInformationCommandEnt ce, final LinkVariants linkVariants) { // For testing the command
+    /*
+     * For testing the command.
+     */
+    UpdateComponentLinkInformation(final UpdateComponentLinkInformationCommandEnt ce, final LinkVariants linkVariants) {
         m_componentId = wfm -> ce.getNodeId().toNodeID(wfm);
         m_requestedVariant = ce.getLinkVariant();
         m_linkVariants = CheckUtils.checkNotNull(linkVariants);

@@ -549,7 +549,7 @@ public final class WorkflowEntityFactory {
     }
 
     private static ComponentNodeEnt buildComponentNodeEnt(final NodeIDEnt id, final SubNodeContainer snc,
-                                                          final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
+        final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
         var metadata = snc.getMetadata();
         var type =
             metadata.getNodeType().map(t -> ComponentNodeAndDescriptionEnt.TypeEnum.valueOf(t.name())).orElse(null);
@@ -740,7 +740,7 @@ public final class WorkflowEntityFactory {
     }
 
     private static MetaNodeEnt buildMetaNodeEnt(final NodeIDEnt id, final WorkflowManager wm,
-                                                final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
+        final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
         return builder(MetaNodeEntBuilder.class).setName(wm.getName()).setId(id)//
             .setOutPorts(buildMetaNodePortEnts(wm, false, buildContext))//
             .setAnnotation(buildNodeAnnotationEnt(wm.getNodeAnnotation()))//
@@ -816,7 +816,7 @@ public final class WorkflowEntityFactory {
      * TODO: NXT-1189 Gateway API: Add `ExchangeablePortGroup` port types to `buildNativeNodeEnt()` method
      */
     private static NativeNodeEnt buildNativeNodeEnt(final NodeIDEnt id, final NativeNodeContainer nnc,
-                                                    final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
+        final AllowedNodeActionsEnt allowedActions, final WorkflowBuildContext buildContext) {
         var inPorts = buildNodePortEnts(nnc, true, buildContext);
         var outPorts = buildNodePortEnts(nnc, false, buildContext);
         var portGroups = buildPortGroupEntsMapOptional(nnc, inPorts, outPorts, buildContext).orElse(null);
@@ -942,7 +942,7 @@ public final class WorkflowEntityFactory {
     }
 
     private static NodeExecutionInfoEnt buildNodeExecutionInfoEntFromParentJobManager(
-            final NodeExecutionJobManager parentJobManager, final NodeContainer nc) {
+        final NodeExecutionJobManager parentJobManager, final NodeContainer nc) {
         if (CoreUtil.isStreamingJobManager(parentJobManager)) {
             if (nc instanceof NativeNodeContainer nnc) {
                 return builder(NodeExecutionInfoEntBuilder.class).setStreamable(isStreamable(nnc)).build();
