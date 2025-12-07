@@ -1138,8 +1138,11 @@
       } ],
       "kind" : "component",
       "link" : {
+        "currentLinkVariant" : {
+          "variant" : "MOUNTPOINT_RELATIVE"
+        },
         "isHubItemVersionChangeable" : false,
-        "isLinkTypeChangeable" : true,
+        "isLinkVariantChangeable" : true,
         "updateStatus" : "UP_TO_DATE",
         "url" : "knime://knime.mountpoint/Streaming%20Component"
       },

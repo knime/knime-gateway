@@ -82,8 +82,11 @@
       } ],
       "kind" : "component",
       "link" : {
+        "currentLinkVariant" : {
+          "variant" : "MOUNTPOINT_ABSOLUTE_PATH"
+        },
         "isHubItemVersionChangeable" : false,
-        "isLinkTypeChangeable" : true,
+        "isLinkVariantChangeable" : true,
         "updateStatus" : "UP_TO_DATE",
         "url" : "knime://LOCAL/Component/"
       },
