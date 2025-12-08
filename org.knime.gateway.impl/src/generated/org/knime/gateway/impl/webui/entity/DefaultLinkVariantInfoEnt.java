@@ -71,6 +71,9 @@ public record DefaultLinkVariantInfoEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultLinkVariantInfoEnt {
+        if(variant == null) {
+            throw new IllegalArgumentException("<variant> must not be null.");
+        }
         if(title == null) {
             throw new IllegalArgumentException("<title> must not be null.");
         }
@@ -122,6 +125,9 @@ public record DefaultLinkVariantInfoEnt(
 
         @Override
         public DefaultLinkVariantInfoEntBuilder setVariant(LinkVariantEnt variant) {
+             if(variant == null) {
+                 throw new IllegalArgumentException("<variant> must not be null.");
+             }
              m_variant = variant;
              return this;
         }

@@ -66,7 +66,7 @@ public interface LinkVariantInfoEnt extends GatewayEntity {
 
   /**
    * Get variant
-   * @return variant 
+   * @return variant , never <code>null</code>
    **/
   public LinkVariantEnt getVariant();
 
@@ -107,7 +107,7 @@ public interface LinkVariantInfoEnt extends GatewayEntity {
         /**
    		 * Set variant
          * 
-         * @param variant the property value,  
+         * @param variant the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         LinkVariantInfoEntBuilder setVariant(LinkVariantEnt variant);
