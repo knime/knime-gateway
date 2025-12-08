@@ -390,9 +390,33 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/ShareComponentResultEnt.java" type="org.knime.gateway.api.webui.entity.ShareComponentResultEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentResultEnt"/>
+                <message_argument value="getUploadedItem()"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentResultEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getUploadedItem()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ShareComponentResultEnt.java" type="org.knime.gateway.api.webui.entity.ShareComponentResultEnt$ShareComponentResultEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentResultEnt.ShareComponentResultEntBuilder"/>
+                <message_argument value="setUploadedItem(SpaceItemReferenceEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setUploadedItem(SpaceItemReferenceEnt)"/>
             </message_arguments>
         </filter>
     </resource>

@@ -446,9 +446,27 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultShareComponentResultEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultShareComponentResultEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultShareComponentResultEnt"/>
+                <message_argument value="DefaultShareComponentResultEnt(String, CommandResultEnt.KindEnum, Boolean)"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultShareComponentResultEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultShareComponentResultEnt(String, CommandResultEnt.KindEnum, Boolean, SpaceItemReferenceEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultShareComponentResultEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultShareComponentResultEnt$DefaultShareComponentResultEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setUploadedItem(SpaceItemReferenceEnt)"/>
             </message_arguments>
         </filter>
     </resource>
