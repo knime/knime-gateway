@@ -244,13 +244,13 @@ public interface WorkflowSyncer {
 
         @Override
         public void onWfmLoad(final WorkflowManager wfm) {
-            LOGGER.info("'onWfmLoad' called for worklfow <%s>".formatted(wfm.getName()));
+            LOGGER.info("'onWfmLoad' called for workflow <%s>".formatted(wfm.getName()));
             wfm.addListener(m_workflowListener);
         }
 
         @Override
         public void onWfmDispose(final WorkflowManager wfm) {
-            LOGGER.info("'onWfmDispose' called for worklfow <%s>".formatted(wfm.getName()));
+            LOGGER.info("'onWfmDispose' called for workflow <%s>".formatted(wfm.getName()));
             wfm.removeListener(m_workflowListener);
             m_syncStateStore.reset();
         }
