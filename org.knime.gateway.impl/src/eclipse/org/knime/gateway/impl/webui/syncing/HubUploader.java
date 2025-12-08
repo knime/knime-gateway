@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 
 /**
@@ -85,8 +86,10 @@ final class HubUploader {
      *
      * @throws SyncThresholdException if the workflow exceeds the sync threshold
      */
-    void uploadProjectWithThreshold(final String projectId, final WorkflowContextV2 context, final int syncThresholdMB)
+    void uploadProjectWithThreshold(final String projectId, final int syncThresholdMB)
         throws IOException, SyncThresholdException {
+        var context = WorkflowManagerResolver.get(projectId).getContextV2();
+
         if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
             throw new UnsupportedOperationException("Uploading is only supported for workflows stored in Hub spaces.");
         }
@@ -111,7 +114,8 @@ final class HubUploader {
         }
     }
 
-    void uploadProject(final String projectId, final WorkflowContextV2 context) throws IOException {
+    void uploadProject(final String projectId) throws IOException {
+        var context = WorkflowManagerResolver.get(projectId).getContextV2();
         if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
             return; // TODO: Log ot throw?
         }

@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.util.Debouncer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -155,9 +156,8 @@ public interface WorkflowSyncer {
             }
 
             m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.BLOCKED);
-            final WorkflowContextV2 context;
             try {
-                context = LocalSaver.saveProject(projectId);
+                LocalSaver.saveProject(projectId);
             } catch (IOException e) {
                 m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
                 return;
@@ -169,7 +169,7 @@ public interface WorkflowSyncer {
             m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.UPLOAD);
             m_syncStateStore.lock(); // We lock the sync state store to defer the latest deferrable update
             try {
-                m_hubUploader.uploadProjectWithThreshold(projectId, context, syncThresholdMB);
+                m_hubUploader.uploadProjectWithThreshold(projectId, syncThresholdMB);
                 m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.SYNCED);
             } catch (IOException e) {
                 m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
@@ -186,9 +186,8 @@ public interface WorkflowSyncer {
             assertIsNotSyncing(m_syncStateStore.state());
 
             m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.BLOCKED);
-            final WorkflowContextV2 context;
             try {
-                context = LocalSaver.saveProject(projectId);
+                LocalSaver.saveProject(projectId);
             } catch (IOException e) {
                 handleSyncIOException(e);
                 return;
@@ -200,7 +199,7 @@ public interface WorkflowSyncer {
             m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.UPLOAD);
             m_syncStateStore.lock(); // We lock the sync state store to defer the latest deferrable update
             try {
-                m_hubUploader.uploadProject(projectId, context);
+                m_hubUploader.uploadProject(projectId);
                 m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.SYNCED);
             } catch (IOException e) {
                 handleSyncIOException(e);

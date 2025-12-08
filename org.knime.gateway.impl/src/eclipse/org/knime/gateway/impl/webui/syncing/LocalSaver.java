@@ -76,7 +76,7 @@ final class LocalSaver {
      * @throws SyncWhileWorkflowExecutingException if the workflow is currently executing
      * @throws IOException if saving the workflow fails
      */
-    static WorkflowContextV2 saveProject(final String projectId)
+    static void saveProject(final String projectId)
         throws IOException, SyncWhileWorkflowExecutingException {
         LOGGER.info("Saving workflow with project ID: " + projectId);
 
@@ -84,15 +84,17 @@ final class LocalSaver {
         assertIsWorkflowProject(wfm);
         assertWorkflowNotExecuting(wfm);
 
-        final var context = wfm.getContextV2();
         try {
-            wfm.save(context.getExecutorInfo().getLocalWorkflowPath().toFile(), new ExecutionMonitor(), true);
+            wfm.save( //
+                wfm.getContextV2().getExecutorInfo().getLocalWorkflowPath().toFile(), //
+                new ExecutionMonitor(), //
+                true //
+            );
         } catch (final IOException | CanceledExecutionException | LockFailedException e) {
             throw new IOException("Failed to save workflow for project ID <%s>".formatted(projectId), e);
         }
 
         LOGGER.info("Workflow saved successfully for project ID: " + projectId);
-        return context;
     }
 
     /**
