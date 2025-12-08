@@ -102,7 +102,7 @@ public final class WorkflowSyncerProvider {
 
     private boolean isEnabled() {
         return m_syncDelaySeconds != 0 //
-            && m_syncThresholdMB != 00 //
+            && m_syncThresholdMB != 0 //
             && m_appStateUpdater != null //
             && m_spaceProvidersManager != null;
     }
