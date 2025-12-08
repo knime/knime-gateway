@@ -24,7 +24,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.knime.core.util.Pair;
@@ -57,12 +57,13 @@ public final class GatewayTestCollection {
         NodeRecommendationsTestHelper.class, //
         NodeServiceTestHelper.class, //
         PortServiceTestHelper.class, //
+        ShareComponentCommandTestHelper.class, //
         SpaceServiceTestHelper.class, //
         StreamingExecutionTestHelper.class, //
         TranslateCommandTestHelper.class, //
+        UpdateComponentLinkCommandTestHelper.class, //
         WorkflowCommandTestHelper.class, //
-        WorkflowServiceTestHelper.class, //
-        UpdateComponentLinkCommandTestHelper.class
+        WorkflowServiceTestHelper.class //
     );
 
     private GatewayTestCollection() {
@@ -77,14 +78,9 @@ public final class GatewayTestCollection {
      * @return map from the individual test names to a function that allows one to run the test
      */
     public static Map<String, GatewayTestRunner> collectAllGatewayTests() {
-        final var classFilterProperty = System.getProperty("org.knime.gateway.testing.helper.test_class");
-        final Set<String> classFilter =
-            classFilterProperty == null ? null : Arrays.stream(classFilterProperty.split(",")).map(String::trim)
-                .filter(s -> !s.isEmpty()).collect(Collectors.toSet());
-        final boolean hasClassFilter = classFilter != null && !classFilter.isEmpty();
-
+        var classFilter = parseFilters(System.getProperty("org.knime.gateway.testing.helper.test_class"));
         return CONTRIBUTING_CLASSES.stream() //
-            .filter(helper -> !hasClassFilter || classFilter.contains(helper.getSimpleName())) //
+            .filter(helper -> classFilter.test(helper.getSimpleName())) //
             .flatMap(helper -> Arrays.stream(helper.getDeclaredMethods())) //
             .filter(method -> !Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers())) //
             .map(method -> {
@@ -93,6 +89,17 @@ public final class GatewayTestCollection {
                     createGatewayTestRunner(declaringClass, method));
             }) //
             .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+    }
+
+    private static Predicate<String> parseFilters(final String property) {
+        if (property == null || property.isEmpty() || property.isBlank()) {
+            return s -> true;
+        }
+        var filter = Arrays.stream(property.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+        return filter::contains;
     }
 
     private static boolean hasConstructor(final Class<?> clazz, final Class<?>... parameterTypes) {

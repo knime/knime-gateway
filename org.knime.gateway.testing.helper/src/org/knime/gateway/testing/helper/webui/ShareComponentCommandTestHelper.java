@@ -61,25 +61,34 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
+import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantEnt;
+import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.CollisionHandlingEnum;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.ShareComponentCommandEntBuilder;
 import org.knime.gateway.api.webui.entity.ShareComponentResultEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
+import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.service.WorkflowService;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
@@ -87,7 +96,9 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
+import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
+import org.knime.gateway.impl.webui.spaces.SpaceGroup;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -100,15 +111,124 @@ import org.knime.gateway.testing.helper.webui.node.NoOpDummyNodeFactory;
 /**
  * Tests for execution of the {@link ShareComponentCommandEnt}.
  *
- * @author Assistant
+ * @author
  */
+@SuppressWarnings({"java:S1130", "java:S1186", "java:S112", "java:S1188"})
 public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelper {
 
     @SuppressWarnings("javadoc")
-    public ShareComponentCommandTestHelper(final ResultChecker entityResultChecker, final ServiceProvider serviceProvider,
-                                           final WorkflowLoader workflowLoader, final WorkflowExecutor workflowExecutor) {
+    public ShareComponentCommandTestHelper(final ResultChecker entityResultChecker,
+        final ServiceProvider serviceProvider, final WorkflowLoader workflowLoader,
+        final WorkflowExecutor workflowExecutor) {
         super(ShareComponentCommandTestHelper.class, entityResultChecker, serviceProvider, workflowLoader,
             workflowExecutor);
+    }
+
+    private record TestContext(Map<String, Space> spaces, Map<LinkVariantEnt.VariantEnum, URI> variants,
+            SpaceProvider provider, String projectId, WorkflowManager wfm, NodeID componentId) {
+
+        SubNodeContainer getComponent() {
+            return this.wfm().getNodeContainer(this.componentId(), SubNodeContainer.class, false);
+        }
+
+        ShareComponentResultEnt executeCommand(ShareComponentCommandEnt command, WorkflowService workflowService)
+            throws ServiceExceptions.ServiceCallException {
+            return (ShareComponentResultEnt)workflowService.executeWorkflowCommand(this.projectId(),
+                NodeIDEnt.getRootID(), command);
+        }
+
+    }
+
+    private TestContext m_context;
+
+    private void setUp() throws Exception {
+
+        var provider = new SpaceProvider() {
+
+            @Override
+            public void init(Consumer<String> loginErrorHandler) {
+
+            }
+
+            @Override
+            public String getId() {
+                return "provider-id";
+            }
+
+            @Override
+            public String getName() {
+                return "provider-name";
+            }
+
+            @Override
+            public Space getSpace(String spaceId) throws ServiceExceptions.NetworkException,
+                ServiceExceptions.LoggedOutException, MutableServiceCallException {
+                return m_context.spaces().get(spaceId);
+            }
+
+            @Override
+            public SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName)
+                throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException,
+                MutableServiceCallException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<SpaceGroupEnt> toEntity() throws ServiceExceptions.NetworkException,
+                ServiceExceptions.LoggedOutException, MutableServiceCallException {
+                return List.of();
+            }
+        };
+
+        var spaceProvidersManager = SpaceServiceTestHelper.createSpaceProvidersManager(provider);
+
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProvidersManager);
+
+        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
+            new WorkflowMiddleware(ProjectManager.getInstance(), spaceProvidersManager));
+
+        ServiceDependencies.setServiceDependency(LinkVariants.class, new LinkVariants() {
+            @Override
+            public LinkVariantInfoEnt toLinkVariantInfoEnt(LinkVariantEnt.VariantEnum type) {
+                return null;
+            }
+
+            @Override
+            public Map<LinkVariantEnt.VariantEnum, URI> getVariants(URI originalUri, WorkflowContextV2 currentContext)
+                throws ResourceAccessException {
+                return m_context.variants();
+            }
+        });
+
+        final var projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
+        final var wfm =
+            ProjectManager.getInstance().getProject(projectId).orElseThrow().getWorkflowManagerIfLoaded().orElseThrow();
+        // Create a node and encapsulate it in a component
+        final var componentId = createComponentInWorkflow(wfm, projectId, ws());
+
+        m_context = new TestContext( //
+            new HashMap<>(), //
+            new EnumMap<>(LinkVariantEnt.VariantEnum.class), //
+            provider, projectId, wfm, componentId //
+        );
+
+    }
+
+    private void tearDown() {
+        m_context = null;
+    }
+
+    private static Space mockSpace()
+        throws CanceledExecutionException, MutableServiceCallException, ServiceExceptions.NetworkException,
+        ServiceExceptions.LoggedOutException, ServiceExceptions.OperationNotAllowedException, URISyntaxException {
+        var space = mock(Space.class);
+        when(space.getId()).thenReturn("some-space-id");
+
+        var uri = new URI("knime://provider-id/destination-group"); // NOSONAR
+        when(space.toKnimeUrl(anyString())).thenReturn(uri);
+        when(space.toPathBasedKnimeUrl(anyString())).thenReturn(uri);
+
+        return space;
     }
 
     /**
@@ -117,50 +237,59 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
      * @throws Exception -
      */
     public void testShareComponentCommand() throws Exception {
-        var destSpaceId = "test-dest-space-id";
-        var destItemId = "test-dest-item-id";
-        var componentName = "test-component";
+        setUp();
+        var space = mockSpace();
+        m_context.spaces().put(space.getId(), space);
+        // no collisions
+        when(space.getItemIdForName(anyString(), anyString())).thenReturn(Optional.empty());
 
-        // Create a mock destination space
-        var destinationSpace = createMockDestinationSpace(destSpaceId, destItemId, componentName);
-        var spaceProvider = createSpaceProvider(destinationSpace);
-        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
-        var projectManager = ProjectManager.getInstance();
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(projectManager, spaceProviderManager));
+        var linkVariant = LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID;
+        m_context.variants().put(linkVariant, new URI("foo"));
 
-        // Load a workflow to host our test component
-        final var projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
-        final var wfm = projectManager.getProject(projectId).orElseThrow().getWorkflowManagerIfLoaded().orElseThrow();
-
-        // Create a node and encapsulate it in a component
-        final var componentId = createComponentInWorkflow(wfm, projectId, ws());
+        var importedItemId = "imported-item-id";
+        when(space.importWorkflowOrWorkflowGroup( //
+            any(Path.class), //
+            anyString(), //
+            any(), //
+            any(), //
+            any()) //
+        ).thenReturn(builder(SpaceItemEnt.SpaceItemEntBuilder.class) //
+            .setId(importedItemId) //
+            .setName("imported-item-name") //
+            .setType(SpaceItemEnt.TypeEnum.COMPONENT) //
+            .build());
 
         // Build the ShareComponent command
-        var command = builder(ShareComponentCommandEntBuilder.class) //
+        // Execute the ShareComponent command
+        var commandResult = m_context.executeCommand(builder(ShareComponentCommandEntBuilder.class) //
             .setKind(KindEnum.SHARE_COMPONENT) //
-            .setNodeId(new NodeIDEnt(componentId)) //
-            .setDestinationSpaceProviderId("local-testing") //
-            .setDestinationSpaceId(destSpaceId) //
-            .setDestinationItemId(destItemId) //
+            .setNodeId(new NodeIDEnt(m_context.componentId())) //
+            .setDestinationSpaceProviderId(m_context.provider().getId()) //
+            .setDestinationSpaceId(space.getId()) //
+            .setDestinationItemId("some-item-id") //
             .setCollisionHandling(CollisionHandlingEnum.NOOP) //
             .setIncludeInputData(false) //
-            .setLinkVariant(buildLinkVariantEnt(LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID)) //
-            .build();
+            .setLinkVariant(buildLinkVariantEnt(linkVariant)) //
+            .build(), ws());
 
-        // Execute the ShareComponent command
-        var commandResult = (ShareComponentResultEnt)ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
-
-        // Verify the result
+        // Verify command result
         assertThat(commandResult, is(notNullValue()));
         assertThat(commandResult.isNameCollision(), is(false));
+        assertThat(commandResult.getUploadedItem().getProviderId(), is(m_context.provider().getId()));
+        assertThat(commandResult.getUploadedItem().getSpaceId(), is(space.getId()));
+        assertThat(commandResult.getUploadedItem().getItemId(), is(importedItemId));
 
-        // Verify the component was shared (check template information)
-        final var component = wfm.getNodeContainer(componentId, SubNodeContainer.class, false);
+        // Verify workflow state
+        final var component = m_context.getComponent();
+        // component exists
         assertThat(component, is(notNullValue()));
+        // component is now a link
         assertThat(component.getTemplateInformation().getRole().name(),
             is(org.knime.core.node.workflow.MetaNodeTemplateInformation.Role.Link.name()));
+        var componentLinkTarget = component.getTemplateInformation().getSourceURI();
+        // component link points to URI provided by LinkVariants
+        assertThat(componentLinkTarget, is(new URI("foo")));
+        tearDown();
     }
 
     /**
@@ -169,39 +298,41 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
      * @throws Exception -
      */
     public void testShareComponentCommandWithNameCollision() throws Exception {
-        var destSpaceId = "test-dest-space-id";
-        var destItemId = "test-dest-item-id";
-        var componentName = "test-component";
+        setUp();
+        var space = mockSpace();
+        m_context.spaces().put(space.getId(), space);
+        // Force name collision
+        when(space.getItemIdForName(anyString(), anyString())) //
+            .thenReturn(Optional.of("existing-item-id"));
 
-        // Create a mock destination space that reports a collision
-        var destinationSpace = createMockDestinationSpaceWithCollision(destSpaceId, destItemId, componentName);
-        var spaceProvider = createSpaceProvider(destinationSpace);
-        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
-        var projectManager = ProjectManager.getInstance();
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(projectManager, spaceProviderManager));
+        var variant = LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID;
+        m_context.variants().put(variant, new URI("foo"));
 
-        // Load a workflow to host our test component
-        final var projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
-        final var wfm = projectManager.getProject(projectId).orElseThrow().getWorkflowManagerIfLoaded().orElseThrow();
-
-        // Create a node and encapsulate it in a component
-        final var componentId = createComponentInWorkflow(wfm, projectId, ws());
+        var importedItemId = "imported-item-id";
+        when(space.importWorkflowOrWorkflowGroup( //
+            any(Path.class), //
+            anyString(), //
+            any(), //
+            any(), //
+            any()) //
+        ).thenReturn(builder(SpaceItemEnt.SpaceItemEntBuilder.class) //
+            .setId(importedItemId) //
+            .setName("imported-item-name") //
+            .setType(SpaceItemEnt.TypeEnum.COMPONENT) //
+            .build());
 
         // Build the ShareComponent command WITHOUT collision handling
-        var command = builder(ShareComponentCommandEntBuilder.class) //
-            .setKind(KindEnum.SHARE_COMPONENT) //
-            .setNodeId(new NodeIDEnt(componentId)) //
-            .setDestinationSpaceProviderId("local-testing") //
-            .setDestinationSpaceId(destSpaceId) //
-            .setDestinationItemId(destItemId) //
-            .setIncludeInputData(false) //
-            .setLinkVariant(buildLinkVariantEnt(LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID)) //
-            .build();
 
         // Execute the ShareComponent command
-        var commandResult = (ShareComponentResultEnt)ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
+        var commandResult = m_context.executeCommand(builder(ShareComponentCommandEntBuilder.class) //
+            .setKind(KindEnum.SHARE_COMPONENT) //
+            .setNodeId(new NodeIDEnt(m_context.componentId())) //
+            .setDestinationSpaceProviderId(m_context.provider().getId()) //
+            .setDestinationSpaceId(space.getId()) //
+            .setDestinationItemId("some-item-id") //
+            .setIncludeInputData(false) //
+            .setLinkVariant(buildLinkVariantEnt(variant)) //
+            .build(), ws());
 
         // Verify the collision was detected
         assertThat(commandResult, is(notNullValue()));
@@ -214,58 +345,62 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
      * @throws Exception -
      */
     public void testShareComponentCommandWithAutorename() throws Exception {
-        var destSpaceId = "test-dest-space-id";
-        var destItemId = "test-dest-item-id";
-        var componentName = "test-component";
-        var renamedItemId = "test-dest-item-id-renamed";
+        setUp();
+        var space = mockSpace();
+        m_context.spaces().put(space.getId(), space);
 
-        // Create a mock destination space that reports a collision but supports autorename
-        var destinationSpace = createMockDestinationSpaceWithAutorename(destSpaceId, destItemId, renamedItemId, componentName);
-        var spaceProvider = createSpaceProvider(destinationSpace);
-        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
-        var projectManager = ProjectManager.getInstance();
-        ServiceDependencies.setServiceDependency(WorkflowMiddleware.class,
-            new WorkflowMiddleware(projectManager, spaceProviderManager));
+        final var component = m_context.wfm().getNodeContainer(m_context.componentId(), SubNodeContainer.class, false);
+        // facilitate name collision
+        when(space.getItemIdForName(anyString(), eq(component.getName()))) //
+            .thenReturn(Optional.of("existing-item-id"));
+        when(space.getItemIdForName(anyString(), not(eq(component.getName())))) //
+            .thenReturn(Optional.empty());
 
-        // Load a workflow to host our test component
-        final String projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
-        final var wfm = projectManager.getProject(projectId).orElseThrow().getWorkflowManagerIfLoaded().orElseThrow();
+        var importedItemId = "imported-item-id";
+        when(space.importWorkflowOrWorkflowGroup( //
+            any(Path.class), //
+            anyString(), //
+            any(), //
+            any(), //
+            any()) //
+        ).thenReturn(builder(SpaceItemEnt.SpaceItemEntBuilder.class) //
+            .setId(importedItemId) //
+            .setName("imported-item-name") //
+            .setType(SpaceItemEnt.TypeEnum.COMPONENT) //
+            .build());
 
-        // Create a node and encapsulate it in a component
-        final var componentId = createComponentInWorkflow(wfm, projectId, ws());
-
-        // Build the ShareComponent command WITH autorename collision handling
-        var command = builder(ShareComponentCommandEntBuilder.class) //
-            .setKind(KindEnum.SHARE_COMPONENT) //
-            .setNodeId(new NodeIDEnt(componentId)) //
-            .setDestinationSpaceProviderId("local-testing") //
-            .setDestinationSpaceId(destSpaceId) //
-            .setDestinationItemId(destItemId) //
-            .setCollisionHandling(CollisionHandlingEnum.AUTORENAME) //
-            .setIncludeInputData(false) //
-            .setLinkVariant(buildLinkVariantEnt(LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID)) //
-            .build();
+        var linkVariant = LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID;
+        m_context.variants().put(linkVariant, new URI("foo"));
 
         // Execute the ShareComponent command
-        var commandResult = (ShareComponentResultEnt)ws().executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
+        var commandResult = m_context.executeCommand(builder(ShareComponentCommandEntBuilder.class) //
+            .setKind(KindEnum.SHARE_COMPONENT) //
+            .setNodeId(new NodeIDEnt(m_context.componentId())) //
+            .setDestinationSpaceProviderId(m_context.provider().getId()) //
+            .setDestinationSpaceId(space.getId()) //
+            .setDestinationItemId("some-item-id") //
+            // Build the ShareComponent command WITH autorename collision handling
+            .setCollisionHandling(CollisionHandlingEnum.AUTORENAME) //
+            .setIncludeInputData(false) //
+            .setLinkVariant(buildLinkVariantEnt(linkVariant)) //
+            .build(), ws());
 
         // Verify the command succeeded and item was renamed
         assertThat(commandResult, is(notNullValue()));
         assertThat(commandResult.isNameCollision(), is(false));
 
         // Verify the component was shared (check template information)
-        final var component = wfm.getNodeContainer(componentId, SubNodeContainer.class, false);
         assertThat(component, is(notNullValue()));
         assertThat(component.getTemplateInformation().getRole().name(),
             is(org.knime.core.node.workflow.MetaNodeTemplateInformation.Role.Link.name()));
+        tearDown();
     }
 
     /**
      * Creates a node and encapsulates it in a component (SubNodeContainer).
      */
-    static NodeID createComponentInWorkflow(final WorkflowManager wfm, final String projectId, final WorkflowService workflowService)
-        throws Exception {
+    static NodeID createComponentInWorkflow(final WorkflowManager wfm, final String projectId,
+        final WorkflowService workflowService) throws Exception {
         // Create a simple test node using NoOpDummyNodeFactory
         var nodeFactory = new NoOpDummyNodeFactory() {
             @Override
@@ -281,136 +416,18 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
         var nnc = org.knime.testing.util.WorkflowManagerUtil.createAndAddNode(wfm, nodeFactory);
 
         // Collapse the node into a component
-        var command = builder(CollapseCommandEnt.CollapseCommandEntBuilder.class)
-            .setKind(KindEnum.COLLAPSE)
-            .setContainerType(CollapseCommandEnt.ContainerTypeEnum.COMPONENT)
-            .setNodeIds(List.of(new NodeIDEnt(nnc.getID())))
-            .setAnnotationIds(Collections.emptyList())
-            .build();
+        var command = builder(CollapseCommandEnt.CollapseCommandEntBuilder.class) //
+            .setKind(KindEnum.COLLAPSE) //
+            .setContainerType(CollapseCommandEnt.ContainerTypeEnum.COMPONENT) //
+            .setNodeIds(List.of(new NodeIDEnt(nnc.getID()))) //
+            .setAnnotationIds(Collections.emptyList()) //
+            .build(); //
 
-        var result = (CollapseResultEnt)workflowService.executeWorkflowCommand(
-            projectId, NodeIDEnt.getRootID(), command);
+        var result =
+            (CollapseResultEnt)workflowService.executeWorkflowCommand(projectId, NodeIDEnt.getRootID(), command);
 
         // Return the ID of the newly created component
         return result.getNewNodeId().toNodeID(wfm);
     }
 
-    /**
-     * Creates a space provider with the given space.
-     */
-    static SpaceProvider createSpaceProvider(final Space space) {
-        return new SpaceProvider() {
-            @Override
-            public void init(final Consumer<String> loginErrorHandler) {
-
-            }
-
-            @Override
-            public String getId() {
-                return "local-testing";
-            }
-
-            @Override
-            public String getName() {
-                return "local-testing-name";
-            }
-
-            @Override
-            public Space getSpace(final String spaceId) {
-                return Optional.of(space).filter(s -> s.getId().equals(spaceId)).orElseThrow();
-            }
-
-            @Override
-            public org.knime.core.util.Version getServerVersion() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public org.knime.gateway.impl.webui.spaces.SpaceGroup<Space> getSpaceGroup(final String spaceGroupName) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public List<SpaceGroupEnt> toEntity() throws ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, MutableServiceCallException {
-                return List.of();
-            }
-        };
-    }
-
-    /**
-     * Creates a mock destination space for successful sharing.
-     */
-    @SuppressWarnings("java:S112") // raw `Exception` is OK in tests
-    static Space createMockDestinationSpace(final String spaceId, final String destItemId, final String componentName)
-        throws Exception {
-        var spaceMock = mock(Space.class);
-        when(spaceMock.getId()).thenReturn(spaceId);
-        when(spaceMock.getItemName(anyString())).thenReturn(componentName);
-
-        // No collision
-        when(spaceMock.getItemIdForName(anyString(), anyString())).thenReturn(Optional.empty());
-
-        // Mock space upload methods
-        var uri = new URI("knime://LOCAL/shared-component/");
-        when(spaceMock.toKnimeUrl(anyString())).thenReturn(uri);
-        when(spaceMock.toPathBasedKnimeUrl(anyString())).thenReturn(uri);
-
-        // Mock importWorkflowOrWorkflowGroup method - this is what ShareComponent actually calls
-        var mockItemEnt = mock(org.knime.gateway.api.webui.entity.SpaceItemEnt.class);
-        when(mockItemEnt.getId()).thenReturn(destItemId);
-        when(mockItemEnt.getName()).thenReturn(componentName);
-        when(spaceMock.importWorkflowOrWorkflowGroup(any(Path.class), anyString(), any(), any(), any()))
-            .thenReturn(mockItemEnt);
-
-        return spaceMock;
-    }
-
-    /**
-     * Creates a mock destination space that reports a name collision.
-     */
-    @SuppressWarnings("java:S112") // raw `Exception` is OK in tests
-    private static Space createMockDestinationSpaceWithCollision(final String spaceId, final String destItemId, final String componentName) throws Exception {
-        var spaceMock = mock(Space.class);
-        when(spaceMock.getId()).thenReturn(spaceId);
-        when(spaceMock.getItemName(anyString())).thenReturn(componentName);
-
-        // Simulate collision - item already exists
-        when(spaceMock.getItemIdForName(anyString(), anyString())).thenReturn(Optional.of("existing-item-id"));
-
-        // Mock space URLs (though these won't be called in collision case)
-        var uri = new URI("knime://LOCAL/shared-component/");
-        when(spaceMock.toKnimeUrl(anyString())).thenReturn(uri);
-        when(spaceMock.toPathBasedKnimeUrl(anyString())).thenReturn(uri);
-
-        return spaceMock;
-    }
-
-    /**
-     * Creates a mock destination space that reports a name collision but supports autorename.
-     */
-    @SuppressWarnings("java:S112") // raw `Exception` is OK in tests
-    private static Space createMockDestinationSpaceWithAutorename(final String spaceId, final String destItemId,
-            final String renamedItemId, final String componentName) throws Exception {
-        var spaceMock = mock(Space.class);
-        when(spaceMock.getId()).thenReturn(spaceId);
-        when(spaceMock.getItemName(anyString())).thenReturn(componentName);
-
-        // Simulate collision for the original name, but no collision for autorename
-        when(spaceMock.getItemIdForName(anyString(), eq(componentName))).thenReturn(Optional.of("existing-item-id"));
-        when(spaceMock.getItemIdForName(anyString(), not(eq(componentName)))).thenReturn(Optional.empty());
-
-        // Mock space URLs
-        var uri = new URI("knime://LOCAL/shared-component/");
-        when(spaceMock.toKnimeUrl(anyString())).thenReturn(uri);
-        when(spaceMock.toPathBasedKnimeUrl(anyString())).thenReturn(uri);
-
-        // Mock importWorkflowOrWorkflowGroup method to return the renamed item
-        var mockItemEnt = mock(org.knime.gateway.api.webui.entity.SpaceItemEnt.class);
-        when(mockItemEnt.getId()).thenReturn(renamedItemId);
-        when(mockItemEnt.getName()).thenReturn(componentName); // The component keeps its original name
-        when(spaceMock.importWorkflowOrWorkflowGroup(any(Path.class), anyString(), any(), any(), any()))
-            .thenReturn(mockItemEnt);
-
-        return spaceMock;
-    }
 }
