@@ -65,6 +65,8 @@ import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
  */
 public final class WorkflowSyncerProvider {
 
+    private static final WorkflowSyncerProvider NO_OP = new WorkflowSyncerProvider(null, null, 0, 0);
+
     private final Map<Key, WorkflowSyncer> m_workflowSyncers = new ConcurrentHashMap<>();
 
     private final AppStateUpdater m_appStateUpdater;
@@ -97,7 +99,7 @@ public final class WorkflowSyncerProvider {
      * @return A disabled {@link WorkflowSyncerProvider}
      */
     public static WorkflowSyncerProvider disabled() {
-        return new WorkflowSyncerProvider(null, null, 0, 0);
+        return NO_OP;
     }
 
     private boolean isEnabled() {

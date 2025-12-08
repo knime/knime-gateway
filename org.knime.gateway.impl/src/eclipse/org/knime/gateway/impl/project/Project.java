@@ -284,9 +284,10 @@ public final class Project {
             // for full generality one would have to carry over other cached instances too.
             // However, this case (only current-version available) is the only circumstance in which this method is called.
             // This is acceptable since this method will be removed with NXT-3607.
-            m_projectWfmCache = new ProjectWfmCache(previousCache.getWorkflowManager( //
-                VersionId.currentState()), //
-                loader);
+            m_projectWfmCache = new ProjectWfmCache(//
+                previousCache.getWorkflowManager(VersionId.currentState()), //
+                loader //
+            );
         } else {
             m_projectWfmCache = new ProjectWfmCache(loader);
         }
