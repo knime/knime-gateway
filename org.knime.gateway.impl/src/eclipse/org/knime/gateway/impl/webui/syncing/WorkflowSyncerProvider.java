@@ -119,6 +119,6 @@ public final class WorkflowSyncerProvider {
         return m_workflowSyncers.computeIfAbsent(key, k -> isEnabled() //
             ? new DefaultWorkflowSyncer(m_appStateUpdater, m_spaceProvidersManager, m_syncDelaySeconds,
                 m_syncThresholdMB, k) //
-            : new NoOpWorkflowSyncer());
+            : NoOpWorkflowSyncer.INSTANCE);
     }
 }

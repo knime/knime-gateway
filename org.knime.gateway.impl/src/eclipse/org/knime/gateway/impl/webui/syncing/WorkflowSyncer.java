@@ -260,6 +260,8 @@ public interface WorkflowSyncer {
      */
     static final class NoOpWorkflowSyncer implements WorkflowSyncer {
 
+        static final WorkflowSyncer INSTANCE = new NoOpWorkflowSyncer();
+
         private static final ProjectSyncStateEnt SYNCED_STATE = new SyncStateStore().buildSyncStateEnt();
 
         @Override
