@@ -69,7 +69,7 @@ final class SyncStateStore {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(SyncStateStore.class);
 
-    private final Runnable m_callback;
+    private final Runnable m_onUpdate;
 
     private ProjectSyncStateEnt.StateEnum m_state = ProjectSyncStateEnt.StateEnum.SYNCED;
 
@@ -79,20 +79,22 @@ final class SyncStateStore {
 
     private boolean m_locked = false;
 
-    private Runnable m_unlockCallback = () -> {};
+    private Runnable m_unlockCallback = () -> {
+    };
 
     /**
      * Constructor needed for the {@link NoOpWorkflowSyncer}
      */
     SyncStateStore() {
-        m_callback = () -> {};
+        m_onUpdate = () -> {
+        };
     }
 
     /**
      * Constructor needed for the {@link DefaultWorkflowSyncer}
      */
     SyncStateStore(final Runnable callback) {
-        m_callback = callback;
+        m_onUpdate = callback;
     }
 
     ProjectSyncStateEnt.StateEnum state() {
@@ -112,7 +114,8 @@ final class SyncStateStore {
         LOGGER.info("Unlocking SyncStateStore");
         m_locked = false;
         m_unlockCallback.run();
-        m_unlockCallback = () -> {};
+        m_unlockCallback = () -> {
+        };
     }
 
     ProjectSyncStateEnt buildSyncStateEnt() {
@@ -161,7 +164,7 @@ final class SyncStateStore {
         m_state = state;
         m_details = Optional.ofNullable(details);
         m_autoSyncEnabled = autoSyncEnabled;
-        m_callback.run();
+        m_onUpdate.run();
     }
 
     void reset() {
@@ -172,9 +175,14 @@ final class SyncStateStore {
     record Details(String code, String title, String stackTrace) {
 
         Details(final Exception e) {
-            this(e.getClass().toString(), e.getMessage(), Arrays.stream(e.getStackTrace()) //
-                .map(StackTraceElement::toString) //
-                .collect(Collectors.joining("\n")));
+            this( //
+                e.getClass().toString(), //
+                e.getMessage(), //
+                Arrays.stream(e.getStackTrace()) //
+                    .map(StackTraceElement::toString) //
+                    .collect(Collectors.joining("\n") //
+                    ) //
+            );
         }
     }
 }

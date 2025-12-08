@@ -104,7 +104,7 @@ public interface WorkflowSyncer {
     void onWfmDispose(final WorkflowManager wfm);
 
     /**
-     * Default implementation of {@link WorkflowSyncer} that does nothing.
+     * Default implementation of {@link WorkflowSyncer}.
      */
     static final class DefaultWorkflowSyncer implements WorkflowSyncer {
 

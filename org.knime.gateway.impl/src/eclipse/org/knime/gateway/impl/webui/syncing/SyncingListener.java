@@ -63,10 +63,10 @@ final class SyncingListener implements WorkflowListener {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(SyncingListener.class);
 
-    private final Runnable m_callback;
+    private final Runnable m_onChange;
 
     SyncingListener(final Runnable callback) {
-        m_callback = callback;
+        m_onChange = callback;
     }
 
     /**
@@ -88,7 +88,7 @@ final class SyncingListener implements WorkflowListener {
             }
             case WORKFLOW_CHANGED -> {
                 LOGGER.info("<%s> event received, notifying syncer.".formatted(eventType));
-                m_callback.run();
+                m_onChange.run();
             }
             default -> LOGGER.info("Unhandled workflow event type: <%s>".formatted(eventType));
         }
