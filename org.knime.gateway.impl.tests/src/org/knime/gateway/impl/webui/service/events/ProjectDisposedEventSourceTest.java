@@ -66,7 +66,6 @@ import org.knime.gateway.impl.webui.service.DefaultEventService;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.service.ServiceInstances;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncerProvider;
 
 /**
  * Tests the {@link ProjectDisposedEventSource} (via the {@link DefaultEventService}).
@@ -110,7 +109,7 @@ public class ProjectDisposedEventSourceTest {
             null, //
             null, //
             null,
-            WorkflowSyncerProvider.disabled() //
+            null //
         );
 
         // register event listener

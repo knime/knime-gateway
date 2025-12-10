@@ -54,12 +54,11 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.LockFailedException;
 import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 
 /**
- * ...
+ * Saves a local workflow project.
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */
@@ -67,16 +66,13 @@ final class LocalSaver {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalSaver.class);
 
-    private LocalSaver() {
-        // state-less
-    }
-
     /**
      * @throws UnsupportedOperationException if the workflow is a component project
      * @throws SyncWhileWorkflowExecutingException if the workflow is currently executing
      * @throws IOException if saving the workflow fails
      */
-    static void saveProject(final String projectId)
+    @SuppressWarnings("static-method") // Even though this method is static, we keep it non-static for consistency.
+    void saveProject(final String projectId)
         throws IOException, SyncWhileWorkflowExecutingException {
         LOGGER.info("Saving workflow with project ID: " + projectId);
 

@@ -49,16 +49,15 @@
 package org.knime.gateway.impl.webui.syncing;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.util.Debouncer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -115,16 +114,19 @@ public interface WorkflowSyncer {
 
         private final WorkflowListener m_workflowListener;
 
+        private final LocalSaver m_localSaver;
+
         private final HubUploader m_hubUploader;
 
         private final Debouncer m_debouncedProjectSync;
 
         DefaultWorkflowSyncer(final AppStateUpdater appStateUpdater, final SpaceProvidersManager spaceProvidersManager,
-            final int syncDelaySeconds, final int syncThresholdMB, final Key key) {
+            final Duration syncDelay, final int syncThresholdMB, final Key key) {
             m_syncStateStore = new SyncStateStore(appStateUpdater::updateAppState);
             m_workflowListener = new SyncingListener(this::notifyWorkflowChanged);
+            m_localSaver = new LocalSaver();
             m_hubUploader = new HubUploader(getSpaceProvider(spaceProvidersManager, key));
-            m_debouncedProjectSync = new Debouncer(syncDelaySeconds, //
+            m_debouncedProjectSync = new Debouncer(syncDelay, //
                 () -> syncProjectAutomatically(key.toString(), syncThresholdMB));
         }
 
@@ -155,26 +157,26 @@ public interface WorkflowSyncer {
                 return;
             }
 
-            m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.BLOCKED);
+            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.WRITING);
             try {
-                LocalSaver.saveProject(projectId);
+                m_localSaver.saveProject(projectId);
             } catch (IOException e) {
-                m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
+                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
                 return;
             } catch (SyncWhileWorkflowExecutingException e) {
-                m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.DIRTY, new SyncStateStore.Details(e));
+                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.DIRTY, new SyncStateStore.Details(e));
                 return;
             }
 
-            m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.UPLOAD);
+            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
             m_syncStateStore.lock(); // We lock the sync state store to defer the latest deferrable update
             try {
                 m_hubUploader.uploadProjectWithThreshold(projectId, syncThresholdMB);
-                m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.SYNCED);
+                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
             } catch (IOException e) {
-                m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
+                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
             } catch (SyncThresholdException e) {
-                m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.DIRTY, new SyncStateStore.Details(e), false);
+                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.DIRTY, new SyncStateStore.Details(e), false);
             } finally {
                 m_syncStateStore.unlock(); // We unlock the sync state store and apply the latest deferrable update
             }
@@ -185,9 +187,9 @@ public interface WorkflowSyncer {
             throws ServiceCallException, LoggedOutException, NetworkException {
             assertIsNotSyncing(m_syncStateStore.state());
 
-            m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.BLOCKED);
+            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.WRITING);
             try {
-                LocalSaver.saveProject(projectId);
+                m_localSaver.saveProject(projectId);
             } catch (IOException e) {
                 handleSyncIOException(e);
                 return;
@@ -196,11 +198,11 @@ public interface WorkflowSyncer {
                 return;
             }
 
-            m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.UPLOAD);
+            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
             m_syncStateStore.lock(); // We lock the sync state store to defer the latest deferrable update
             try {
                 m_hubUploader.uploadProject(projectId);
-                m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.SYNCED);
+                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
             } catch (IOException e) {
                 handleSyncIOException(e);
             } finally {
@@ -209,7 +211,7 @@ public interface WorkflowSyncer {
         }
 
         private static void assertIsNotSyncing(final ProjectSyncStateEnt.StateEnum state) throws ServiceCallException {
-            if (state == ProjectSyncStateEnt.StateEnum.BLOCKED || state == ProjectSyncStateEnt.StateEnum.UPLOAD) {
+            if (state == ProjectSyncStateEnt.StateEnum.WRITING || state == ProjectSyncStateEnt.StateEnum.UPLOAD) {
                 throw ServiceCallException.builder() //
                     .withTitle("Workflow is currently syncing") //
                     .withDetails("Please wait until the current sync operation is finished.") //
@@ -220,7 +222,7 @@ public interface WorkflowSyncer {
 
         private void handleSyncIOException(final IOException e) throws ServiceCallException {
             LOGGER.error("Error during manual project sync: %s".formatted(e.getMessage()), e);
-            m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.ERROR);
+            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR);
             throw ServiceCallException.builder() //
                 .withTitle("Failed to save workflow") //
                 .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
@@ -232,7 +234,7 @@ public interface WorkflowSyncer {
         private void handleSyncWhileExecutingException(final SyncWhileWorkflowExecutingException e)
             throws ServiceCallException {
             LOGGER.error("Project sync skipped because workflow is executing: %s".formatted(e.getMessage()), e);
-            m_syncStateStore.update(ProjectSyncStateEnt.StateEnum.ERROR);
+            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR);
             throw ServiceCallException.builder() //
                 .withTitle("Workflow is currently executing") //
                 .withDetails("Cannot save workflow while it is executing.") //
