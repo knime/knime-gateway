@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.util.SafeCloseable;
 import org.knime.gateway.api.service.GatewayService;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,6 +68,9 @@ import com.googlecode.jsonrpc4j.JsonRpcMultiServer;
  * @since 4.11
  */
 public class JsonRpcRequestHandler {
+
+    private static final ClassLoader defaultContextClassLoader =
+        JsonRpcBundleActivator.getDefaultContextClassLoader().orElse(null);
 
     private final JsonRpcMultiServer m_jsonRpcMultiServer;
     private final ExceptionToJsonRpcErrorTranslator m_exceptionTranslator;
@@ -102,7 +106,9 @@ public class JsonRpcRequestHandler {
      * @return a jsonrpc response
      */
     public byte[] handle(final byte[] jsonRpcRequest) {
-        try (var out = new ByteArrayOutputStream(); var in = new ByteArrayInputStream(jsonRpcRequest)) {
+        try (var out = new ByteArrayOutputStream();
+                var in = new ByteArrayInputStream(jsonRpcRequest);
+                var clCloser = new WithDefaultContextClassLoaderCloseable()) {
             m_jsonRpcMultiServer.handleRequest(in, out);
             return out.toByteArray();
         } catch (IOException e) {
@@ -132,4 +138,34 @@ public class JsonRpcRequestHandler {
         return jsonRpc.toPrettyString();
     }
 
+    /**
+     * A resource that temporarily sets the context finder class loader as the thread context class loader
+     * (if available), restoring the previous class loader when closed.
+     *
+     * <p>
+     * Introduced as part of AP-25450 to fix class loading issues in semi-isolated third-party (node) bundles that
+     * rely on {@code ServiceLoader}-type class loading. For example, a partner extension that bundled 50+ jars
+     * wired via plain old services.
+     */
+    private static final class WithDefaultContextClassLoaderCloseable implements SafeCloseable {
+        private final ClassLoader m_previousCL;
+
+        /**
+         * Saves the current thread context class loader and sets it to the context finder class loader.
+         */
+        WithDefaultContextClassLoaderCloseable() {
+            m_previousCL = Thread.currentThread().getContextClassLoader();
+            if (defaultContextClassLoader != null) {
+                Thread.currentThread().setContextClassLoader(defaultContextClassLoader);
+            }
+        }
+
+        /**
+         * Restores the previous thread context class loader.
+         */
+        @Override
+        public void close() {
+            Thread.currentThread().setContextClassLoader(m_previousCL);
+        }
+    }
 }
