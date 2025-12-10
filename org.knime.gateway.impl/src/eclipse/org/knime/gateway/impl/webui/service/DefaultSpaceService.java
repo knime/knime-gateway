@@ -59,6 +59,7 @@ import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -137,7 +138,7 @@ public class DefaultSpaceService implements SpaceService {
         try {
             var spaceUri = getSpaceProvider(spaceProviderId).getSpace(spaceId).toKnimeUrl(itemId);
             return ServiceDependencies.getServiceDependency(LinkVariants.class, true) //
-                    .getVariantInfoEnts(spaceUri, projectContext);
+                .getVariantInfoEnts(spaceUri, projectContext);
         } catch (ResourceAccessException e) {
             throw ServiceCallException.builder().withTitle("Alternative representations could not be determined")
                 .withDetails(List.of()).canCopy(true).build();
@@ -311,6 +312,18 @@ public class DefaultSpaceService implements SpaceService {
             return getSpaceProvider(spaceProviderId).getSpace(spaceId).renameSpace(spaceName);
         } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while renaming space");
+        }
+    }
+
+    @Override
+    public List<ComponentSearchItemEnt> searchComponents(String spaceProviderId, String query, Integer limit,
+        Integer offset) throws ServiceCallException, LoggedOutException, NetworkException {
+        try {
+            return getSpaceProvider(spaceProviderId) //
+                .searchComponents(query, limit, offset).stream() //
+                .toList();
+        } catch (MutableServiceCallException e) {
+            throw e.toGatewayException("Component search not available");
         }
     }
 

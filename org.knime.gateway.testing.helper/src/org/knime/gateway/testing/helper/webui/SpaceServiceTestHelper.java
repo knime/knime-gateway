@@ -52,12 +52,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,7 +76,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -86,8 +92,10 @@ import org.knime.core.util.PathUtils;
 import org.knime.core.util.Version;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.util.CoreUtil;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
+import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
@@ -143,6 +151,38 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return mockedSpace;
     }
 
+    public void testSearchComponents() throws Exception {
+        var space = mockSpace();
+        var spaceProvider = spy(createSpaceProvider(space));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
+            createSpaceProvidersManager(spaceProvider));
+
+        var queriedComponentType = NativeNodeInvariantsEnt.TypeEnum.LEARNER;
+
+        var expectedEntities = List.of(builder(ComponentSearchItemEnt.ComponentSearchItemEntBuilder.class) //
+            .setName("some name") //
+            .setType(ComponentSearchItemEnt.TypeEnum.LEARNER) //
+            .setDescription("some description") //
+            .setInPorts(List.of()) //
+            .setOutPorts(List.of()) //
+            .build());
+        doReturn(expectedEntities) //
+            .when(spaceProvider).searchComponents(anyString(), anyInt(), anyInt());
+
+        var returnedEntities = ss().searchComponents(spaceProvider.getId(), queriedComponentType.toString(), 0, 0);
+
+        assertTrue(!returnedEntities.isEmpty());
+        assertEquals(returnedEntities.size(), expectedEntities.size());
+        forEachZipped(returnedEntities, expectedEntities, (returnedEnt, expectedEnt) -> {
+            expectedEnt.forEachPropertyValue(returnedEnt,
+                (propName, values) -> assertEquals(values.getFirst(), values.getSecond()));
+        });
+    }
+
+    private static <S, T> void forEachZipped(final List<S> left, final List<T> right, final BiConsumer<S, T> fn) {
+        IntStream.range(0, Math.min(left.size(), right.size())).forEach(i -> fn.accept(left.get(i), right.get(i)));
+    }
+
     public void testGetLinkVariantsForItem() throws Exception {
         var space = mockSpace();
         var spaceProvider = createSpaceProvider(space);
@@ -153,27 +193,26 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID, new URI("foo"), //
             LinkVariantEnt.VariantEnum.MOUNTPOINT_RELATIVE, new URI("bar") //
         );
-        LinkVariants spiedLinkVariants =
-            Mockito.spy(new LinkVariants() {
-                @Override
-                public LinkVariantInfoEnt toLinkVariantInfoEnt(final LinkVariantEnt.VariantEnum variant) {
-                    var variantEnt = builder(LinkVariantEnt.LinkVariantEntBuilder.class) //
-                        .setVariant(variant) //
-                        .build(); //
-                    return builder(LinkVariantInfoEnt.LinkVariantInfoEntBuilder.class) //
-                        .setVariant(variantEnt) //
-                        .setLinkValidity("...") //
-                        .setDescription("...") //
-                        .setTitle("...") //
-                        .build(); //
-                }
+        LinkVariants spiedLinkVariants = spy(new LinkVariants() {
+            @Override
+            public LinkVariantInfoEnt toLinkVariantInfoEnt(final LinkVariantEnt.VariantEnum variant) {
+                var variantEnt = builder(LinkVariantEnt.LinkVariantEntBuilder.class) //
+                    .setVariant(variant) //
+                    .build(); //
+                return builder(LinkVariantInfoEnt.LinkVariantInfoEntBuilder.class) //
+                    .setVariant(variantEnt) //
+                    .setLinkValidity("...") //
+                    .setDescription("...") //
+                    .setTitle("...") //
+                    .build(); //
+            }
 
-                @Override
-                public Map<LinkVariantEnt.VariantEnum, URI> getVariants(final URI originalUri,
-                    final WorkflowContextV2 currentContext) throws ResourceAccessException {
-                    return variants;
-                }
-            });
+            @Override
+            public Map<LinkVariantEnt.VariantEnum, URI> getVariants(final URI originalUri,
+                final WorkflowContextV2 currentContext) throws ResourceAccessException {
+                return variants;
+            }
+        });
         ServiceDependencies.setServiceDependency(LinkVariants.class, spiedLinkVariants);
 
         var itemId = "some-item-id";
