@@ -61,8 +61,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
 import org.knime.gateway.impl.util.Debouncer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 import org.knime.gateway.impl.webui.syncing.HubUploader.SyncThresholdException;
 import org.knime.gateway.impl.webui.syncing.LocalSaver.SyncWhileWorkflowExecutingException;
 
@@ -120,14 +118,14 @@ public interface WorkflowSyncer {
 
         private final Debouncer m_debouncedProjectSync;
 
-        DefaultWorkflowSyncer(final AppStateUpdater appStateUpdater, final SpaceProvidersManager spaceProvidersManager,
-            final Duration syncDelay, final int syncThresholdMB, final Key key) {
+        DefaultWorkflowSyncer(final AppStateUpdater appStateUpdater, final SpaceProvider spaceProvider,
+            final Duration syncDelay, final int syncThresholdMB, final String projectId) {
             m_syncStateStore = new SyncStateStore(appStateUpdater::updateAppState);
             m_workflowListener = new SyncingListener(this::notifyWorkflowChanged);
             m_localSaver = new LocalSaver();
-            m_hubUploader = new HubUploader(getSpaceProvider(spaceProvidersManager, key));
+            m_hubUploader = new HubUploader(spaceProvider);
             m_debouncedProjectSync = new Debouncer(syncDelay, //
-                () -> syncProjectAutomatically(key.toString(), syncThresholdMB));
+                () -> syncProjectAutomatically(projectId, syncThresholdMB));
         }
 
         @Override
@@ -138,15 +136,6 @@ public interface WorkflowSyncer {
         private void notifyWorkflowChanged() {
             m_syncStateStore.deferrableUpdate(ProjectSyncStateEnt.StateEnum.DIRTY);
             m_debouncedProjectSync.call();
-        }
-
-        private static SpaceProvider getSpaceProvider(final SpaceProvidersManager spaceProvidersManager,
-            final Key key) {
-            return spaceProvidersManager.getSpaceProviders(key) //
-                .getAllSpaceProviders() //
-                .stream() //
-                .findFirst() //
-                .orElseThrow();
         }
 
         /**
@@ -203,8 +192,10 @@ public interface WorkflowSyncer {
             try {
                 m_hubUploader.uploadProject(projectId);
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
-            } catch (IOException e) {
-                handleSyncIOException(e);
+            } catch (LoggedOutException | NetworkException | ServiceCallException e) {
+                LOGGER.error("Error during manual project sync: %s".formatted(e.getMessage()), e);
+                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR);
+                throw e;
             } finally {
                 m_syncStateStore.unlock(); // We unlock the sync state store and apply the latest deferrable update
             }
