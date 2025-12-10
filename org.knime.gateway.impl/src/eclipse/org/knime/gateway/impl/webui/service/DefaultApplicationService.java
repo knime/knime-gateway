@@ -58,6 +58,7 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory.ProjectFilter;
+import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
@@ -92,6 +93,8 @@ public final class DefaultApplicationService implements ApplicationService {
 
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
+    private final FeatureFlags m_featureFlags = ServiceDependencies.getServiceDependency(FeatureFlags.class, false);
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -124,7 +127,8 @@ public final class DefaultApplicationService implements ApplicationService {
             spaceProviders, //
             m_nodeFactoryProvider, //
             m_nodeCollections, //
-            m_kaiHandler //
+            m_kaiHandler, //
+            m_featureFlags //
         );
         var appState = AppStateEntityFactory.buildAppStateEnt( //
             projectId.map(ProjectFilter::single).orElse(ProjectFilter.all()), //

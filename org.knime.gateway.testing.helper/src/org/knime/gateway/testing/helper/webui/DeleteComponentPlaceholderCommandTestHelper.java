@@ -107,7 +107,7 @@ public class DeleteComponentPlaceholderCommandTestHelper extends WebUIGatewaySer
         var wasCancelled = new AtomicBoolean();
         var space = AddComponentCommandTestHelper.createSpace(spaceId, itemId, "component name", 1000, wasCancelled);
         var spaceProvider = AddComponentCommandTestHelper.createSpaceProvider(space);
-        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
+        var spaceProviderManager = SpaceProviderUtilities.createSpaceProvidersManager(spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
         var events = Collections.synchronizedList(new ArrayList<Object>());
         ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));

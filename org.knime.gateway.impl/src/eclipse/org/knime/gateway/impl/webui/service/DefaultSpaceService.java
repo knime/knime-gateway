@@ -62,6 +62,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.webui.entity.AncestorInfoEnt;
 import org.knime.gateway.api.webui.entity.AncestorInfoEnt.AncestorInfoEntBuilder;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -140,7 +141,7 @@ public class DefaultSpaceService implements SpaceService {
         try {
             var spaceUri = getSpaceProvider(spaceProviderId).getSpace(spaceId).toKnimeUrl(itemId);
             return ServiceDependencies.getServiceDependency(LinkVariants.class, true) //
-                    .getVariantInfoEnts(spaceUri, projectContext);
+                .getVariantInfoEnts(spaceUri, projectContext);
         } catch (ResourceAccessException e) {
             throw ServiceCallException.builder().withTitle("Alternative representations could not be determined")
                 .withDetails(List.of()).canCopy(true).build();
@@ -307,7 +308,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-
     @Override
     public AncestorInfoEnt getAncestorInfo(final String providerId, final String spaceId, final String itemId)
         throws ServiceCallException, LoggedOutException, NetworkException {
@@ -338,6 +338,29 @@ public class DefaultSpaceService implements SpaceService {
             return getSpaceProvider(spaceProviderId).getSpace(spaceId).renameSpace(spaceName);
         } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while renaming space");
+        }
+    }
+
+    @Override
+    public List<ComponentSearchItemEnt> searchComponents(final String query, final Integer limit, final Integer offset)
+        throws ServiceCallException, LoggedOutException, NetworkException {
+        try {
+            final var hubProvider = m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
+                .getAllSpaceProviders().stream() //
+                .filter(prov -> prov.getType() == TypeEnum.HUB) //
+                .findFirst() //
+                // Note that the provider does not have to be connected (#getConnection(false) is empty)
+                //   because searchComponents only hits public API and does not require login.
+                // TODO NXT-4362 Do not offer component search in frontend if no provider is connected/configured.
+                .orElseThrow(() -> ServiceCallException.builder() //
+                    .withTitle("Component search not available") //
+                    .withDetails("No Hub space provider is configured.") //
+                    .canCopy(true) //
+                    .build());
+            return hubProvider.searchComponents(query, limit, offset).stream() //
+                .toList();
+        } catch (MutableServiceCallException e) {
+            throw e.toGatewayException("Component search not available");
         }
     }
 

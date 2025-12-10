@@ -81,7 +81,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviderFactory;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
-import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
+import org.knime.gateway.testing.helper.webui.SpaceProviderUtilities;
 
 /**
  * Tests for the {@link DefaultApplicationService}-implementation.
@@ -137,7 +137,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         when(spaceProviderConnection.getUsername()).thenReturn("test-username");
         when(connectedSpaceProvider.getConnection(false)).thenReturn(Optional.of(spaceProviderConnection));
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            SpaceServiceTestHelper.createSpaceProvidersManager(localSpaceProvider, connectedSpaceProvider));
+            SpaceProviderUtilities.createSpaceProvidersManager(localSpaceProvider, connectedSpaceProvider));
     }
 
     /**

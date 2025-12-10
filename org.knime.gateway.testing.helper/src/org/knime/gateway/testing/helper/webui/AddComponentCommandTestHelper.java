@@ -121,7 +121,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
         var spaceId = "test-space-id";
         var space = createSpace(spaceId, itemId, "component name", 200, null);
         var spaceProvider = createSpaceProvider(space);
-        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
+        var spaceProviderManager = SpaceProviderUtilities.createSpaceProvidersManager(spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
         var events = Collections.synchronizedList(new ArrayList<Object>());
         ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
@@ -182,7 +182,7 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
         var wasCancelled = new AtomicBoolean();
         var space = createSpace(spaceId, itemId, "component name", 200, wasCancelled);
         var spaceProvider = createSpaceProvider(space);
-        var spaceProviderManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
+        var spaceProviderManager = SpaceProviderUtilities.createSpaceProvidersManager(spaceProvider);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProviderManager);
         var events = Collections.synchronizedList(new ArrayList<Object>());
         ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));

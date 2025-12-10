@@ -78,6 +78,8 @@ import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.ComponentNodeEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.ConnectablesBasedCommandEnt;
@@ -275,6 +277,8 @@ public class ListEntities {
         res.add(ComponentNodeEnt.class);
         res.add(ComponentPlaceholderEnt.class);
         res.add(ComponentPortDescriptionEnt.class);
+        res.add(ComponentSearchItemEnt.class);
+        res.add(ComponentSearchItemPortEnt.class);
         res.add(CompositeEventEnt.class);
         res.add(ConnectCommandEnt.class);
         res.add(ConnectablesBasedCommandEnt.class);
@@ -457,6 +461,8 @@ public class ListEntities {
         res.add(ComponentNodeEnt.ComponentNodeEntBuilder.class);
         res.add(ComponentPlaceholderEnt.ComponentPlaceholderEntBuilder.class);
         res.add(ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder.class);
+        res.add(ComponentSearchItemEnt.ComponentSearchItemEntBuilder.class);
+        res.add(ComponentSearchItemPortEnt.ComponentSearchItemPortEntBuilder.class);
         res.add(CompositeEventEnt.CompositeEventEntBuilder.class);
         res.add(ConnectCommandEnt.ConnectCommandEntBuilder.class);
         res.add(ConnectablesBasedCommandEnt.ConnectablesBasedCommandEntBuilder.class);

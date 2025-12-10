@@ -180,7 +180,7 @@ public class ShareComponentCommandTestHelper extends WebUIGatewayServiceTestHelp
             }
         };
 
-        var spaceProvidersManager = SpaceServiceTestHelper.createSpaceProvidersManager(provider);
+        var spaceProvidersManager = SpaceProviderUtilities.createSpaceProvidersManager(provider);
 
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, spaceProvidersManager);
 

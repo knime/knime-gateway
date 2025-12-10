@@ -112,6 +112,10 @@ import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.ComponentPlace
 import org.knime.gateway.impl.webui.entity.DefaultComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPortDescriptionEnt.ComponentPortDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultComponentPortDescriptionEnt;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt.ComponentSearchItemEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt.ComponentSearchItemPortEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemPortEnt;
 import org.knime.gateway.api.webui.entity.CompositeEventEnt.CompositeEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCompositeEventEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt.ConnectCommandEntBuilder;
@@ -513,6 +517,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == ComponentPortDescriptionEntBuilder.class) {
             return (B)new DefaultComponentPortDescriptionEnt.DefaultComponentPortDescriptionEntBuilder();
+        }        
+        if(clazz == ComponentSearchItemEntBuilder.class) {
+            return (B)new DefaultComponentSearchItemEnt.DefaultComponentSearchItemEntBuilder();
+        }        
+        if(clazz == ComponentSearchItemPortEntBuilder.class) {
+            return (B)new DefaultComponentSearchItemPortEnt.DefaultComponentSearchItemPortEntBuilder();
         }        
         if(clazz == CompositeEventEntBuilder.class) {
             return (B)new DefaultCompositeEventEnt.DefaultCompositeEventEntBuilder();

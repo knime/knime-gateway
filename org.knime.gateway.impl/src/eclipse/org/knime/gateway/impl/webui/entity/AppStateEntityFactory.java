@@ -133,12 +133,13 @@ public final class AppStateEntityFactory {
      */
     @SuppressWarnings("javadoc")
     public record ServiceDependencies( //
-        ProjectManager projectManager, //
-        PreferencesProvider preferencesProvider, //
-        SpaceProviders spaceProviders, //
-        NodeFactoryProvider nodeFactoryProvider, //
-        NodeCollections nodeCollections, //
-        KaiHandler kaiHandler //
+            ProjectManager projectManager, //
+            PreferencesProvider preferencesProvider, //
+            SpaceProviders spaceProviders, //
+            NodeFactoryProvider nodeFactoryProvider, //
+            NodeCollections nodeCollections, //
+            KaiHandler kaiHandler, //
+           FeatureFlags featureFlags //
     ) {
     }
 
@@ -164,6 +165,9 @@ public final class AppStateEntityFactory {
             .flatMap(NodeCollections::getActiveCollection);
         var kaiHandler = dependencies.kaiHandler();
         var appMode = getAppModeEnum();
+        var featureFlags = Optional.ofNullable(dependencies.featureFlags()) //
+                .map(FeatureFlags::getFeatureFlags) //
+                .orElse(Map.of());
         return builder(AppStateEntBuilder.class) //
             .setAppMode(appMode) //
             .setOpenProjects(projects) //
@@ -179,7 +183,7 @@ public final class AppStateEntityFactory {
             ) //
             .setConfirmNodeConfigChanges(dependencies.preferencesProvider().confirmNodeConfigChanges()) //
             .setHasNodeRecommendationsEnabled(dependencies.preferencesProvider().hasNodeRecommendationsEnabled()) //
-            .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
+            .setFeatureFlags(featureFlags) //
             .setDevMode(WebUIUtil.isInDevMode()) //
             .setUseEmbeddedDialogs(dependencies.preferencesProvider().useEmbeddedDialogs()) //
             .setCanvasRenderer(dependencies.preferencesProvider().canvasRenderer()) //
@@ -426,9 +430,9 @@ public final class AppStateEntityFactory {
         final var connectionMode = ConnectionModeEnum.valueOf(isLocalSpaceProvider ? "AUTOMATIC" : "AUTHENTICATED");
         final var optConnection = spaceProvider.getConnection(doConnect); // connect if necessary
         final var username = optConnection //
-                .map(SpaceProviderConnection::getUsername) //
-                .filter(Predicate.not(String::isEmpty)) //
-                .orElse(null);
+            .map(SpaceProviderConnection::getUsername) //
+            .filter(Predicate.not(String::isEmpty)) //
+            .orElse(null);
         return EntityFactory.Space.buildSpaceProviderEnt(spaceProvider.getId(), spaceProvider.getName(), type,
             isLocalSpaceProvider || optConnection.isPresent(), connectionMode,
             isLocalSpaceProvider ? null : spaceProvider.getServerAddress().orElse(null),

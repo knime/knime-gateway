@@ -48,22 +48,23 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
-import java.net.URI;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+
+import java.net.URI;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Represents an entity that holds spaces. E.g. a Hub instance.
@@ -125,6 +126,24 @@ public interface SpaceProvider {
     @SuppressWarnings("java:S1452") // wildcard is needed so `HubSpaceGroup implements SpaceGroup<HubSpace>` works here
     SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName)
         throws NetworkException, LoggedOutException, MutableServiceCallException;
+
+    /**
+     * Executes a component search against the provider's repository.
+     *
+     * @param query searchComponents text
+     * @param limit result limit, {@code null} to use the provider default
+     * @param offset result offset, {@code null} to use the provider default
+     * @since 5.10
+     * @return searchComponents results
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws UnsupportedOperationException if not supported
+     */
+    default List<ComponentSearchItemEnt> searchComponents(final String query, final Integer limit,
+        final Integer offset)
+        throws NetworkException, LoggedOutException, MutableServiceCallException {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the server address of the current space provider

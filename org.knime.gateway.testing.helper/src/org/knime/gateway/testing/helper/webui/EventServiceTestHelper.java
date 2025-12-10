@@ -119,7 +119,7 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var spaceProvider = mock(SpaceProvider.class);
         Mockito.when(spaceProvider.getType()).thenReturn(TypeEnum.LOCAL);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider));
+            SpaceProviderUtilities.createSpaceProvidersManager(spaceProvider));
         ServiceDependencies.setServiceDependency(EventConsumer.class, (name, event) -> events.add(event));
 
         WorkflowSnapshotEnt wf = ws().getWorkflow(wfId, getRootID(), null, Boolean.TRUE);

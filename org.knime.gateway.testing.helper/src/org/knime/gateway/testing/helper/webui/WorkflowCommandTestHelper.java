@@ -1341,7 +1341,7 @@ public class WorkflowCommandTestHelper extends WebUIGatewayServiceTestHelper {
         when(spaceProvider.getId()).thenReturn("providerId");
         when(spaceProvider.getType()).thenReturn(SpaceProviderEnt.TypeEnum.HUB);
         when(space.toPathBasedKnimeUrl(eq("itemId"))).thenReturn(URI.create("knime://LOCAL/test.csv"));
-        var spaceProvidersManager = SpaceServiceTestHelper.createSpaceProvidersManager(spaceProvider);
+        var spaceProvidersManager = SpaceProviderUtilities.createSpaceProvidersManager(spaceProvider);
 
         Class nodeFactoryClass = org.knime.core.node.extension.NodeFactoryProvider.getInstance() // NOSONAR
             .getNodeFactory("org.knime.base.node.io.filehandling.csv.reader.CSVTableReaderNodeFactory").orElseThrow()

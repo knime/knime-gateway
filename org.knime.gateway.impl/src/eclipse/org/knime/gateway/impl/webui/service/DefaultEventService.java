@@ -70,6 +70,7 @@ import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
+import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
@@ -122,6 +123,8 @@ public final class DefaultEventService implements EventService {
 
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
+    private final FeatureFlags m_featureFlags = ServiceDependencies.getServiceDependency(FeatureFlags.class, false);
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -136,7 +139,7 @@ public final class DefaultEventService implements EventService {
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "java:S5612" })
+    @SuppressWarnings({"unchecked", "java:S5612"})
     public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
@@ -158,7 +161,8 @@ public final class DefaultEventService implements EventService {
                         spaceProviders,
                         m_nodeFactoryProvider, //
                         m_nodeCollections, //
-                        m_kaiHandler //
+                        m_kaiHandler, //
+                        m_featureFlags //
                     );
                     return new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, dependencies);
                 });

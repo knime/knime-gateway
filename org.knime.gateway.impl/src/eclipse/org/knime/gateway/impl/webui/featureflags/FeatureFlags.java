@@ -55,26 +55,30 @@ import java.util.Map;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class FeatureFlags {
-
-    @SuppressWarnings("unused")
-    private static final String FEATURE_FLAGS_PREFIX = "org.knime.ui.feature.";
-
-    private FeatureFlags() {
-        // utility
-    }
+public interface FeatureFlags {
 
     /**
      * Returns the map of available feature flags.
-     * Currently returns an empty map as no features require flagging.
-     *
-     * To add a new feature flag, e.g.:
-     * var myFlag = FEATURE_FLAGS_PREFIX + "my_feature_name";
-     * return Map.of(myFlag, Boolean.getBoolean(myFlag));
      *
      * @return the available feature flags
      */
-    public static Map<String, Object> getFeatureFlags() {
-        return Map.of();
+    Map<String, Object> getFeatureFlags();
+
+    @SuppressWarnings({"MissingJavadoc", "java:S1176"})
+    class FromSystemProperties implements FeatureFlags {
+
+        @SuppressWarnings("unused")
+        private static final String FEATURE_FLAGS_PREFIX = "org.knime.ui.feature.";
+
+        public FromSystemProperties() {
+            // read configuration once, we do not support changing values during runtime.
+        }
+
+        @Override
+        public Map<String, Object> getFeatureFlags() {
+            return Map.of();
+        }
+
     }
+
 }

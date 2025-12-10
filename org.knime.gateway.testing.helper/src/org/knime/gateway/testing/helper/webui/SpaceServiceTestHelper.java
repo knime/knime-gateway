@@ -58,6 +58,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,39 +67,29 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.DosFileAttributeView;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
 import org.knime.core.util.PathUtils;
-import org.knime.core.util.Version;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
-import org.knime.gateway.api.webui.entity.SpaceEnt;
-import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
-import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.CollisionException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.OperationNotAllowedException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -112,8 +103,6 @@ import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.SpaceGroup;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.SpaceProviderFactory;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 import org.knime.gateway.testing.helper.ResultChecker;
@@ -145,35 +134,34 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testGetLinkVariantsForItem() throws Exception {
         var space = mockSpace();
-        var spaceProvider = createSpaceProvider(space);
+        var spaceProvider = SpaceProviderUtilities.createSpaceProvider(space);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            createSpaceProvidersManager(spaceProvider));
+            SpaceProviderUtilities.createSpaceProvidersManager(spaceProvider));
 
         var variants = Map.of( //
             LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID, new URI("foo"), //
             LinkVariantEnt.VariantEnum.MOUNTPOINT_RELATIVE, new URI("bar") //
         );
-        LinkVariants spiedLinkVariants =
-            Mockito.spy(new LinkVariants() {
-                @Override
-                public LinkVariantInfoEnt toLinkVariantInfoEnt(final LinkVariantEnt.VariantEnum variant) {
-                    var variantEnt = builder(LinkVariantEnt.LinkVariantEntBuilder.class) //
-                        .setVariant(variant) //
-                        .build(); //
-                    return builder(LinkVariantInfoEnt.LinkVariantInfoEntBuilder.class) //
-                        .setVariant(variantEnt) //
-                        .setLinkValidity("...") //
-                        .setDescription("...") //
-                        .setTitle("...") //
-                        .build(); //
-                }
+        LinkVariants spiedLinkVariants = spy(new LinkVariants() {
+            @Override
+            public LinkVariantInfoEnt toLinkVariantInfoEnt(final LinkVariantEnt.VariantEnum variant) {
+                var variantEnt = builder(LinkVariantEnt.LinkVariantEntBuilder.class) //
+                    .setVariant(variant) //
+                    .build(); //
+                return builder(LinkVariantInfoEnt.LinkVariantInfoEntBuilder.class) //
+                    .setVariant(variantEnt) //
+                    .setLinkValidity("...") //
+                    .setDescription("...") //
+                    .setTitle("...") //
+                    .build(); //
+            }
 
-                @Override
-                public Map<LinkVariantEnt.VariantEnum, URI> getVariants(final URI originalUri,
-                    final WorkflowContextV2 currentContext) throws ResourceAccessException {
-                    return variants;
-                }
-            });
+            @Override
+            public Map<LinkVariantEnt.VariantEnum, URI> getVariants(final URI originalUri,
+                final WorkflowContextV2 currentContext) throws ResourceAccessException {
+                return variants;
+            }
+        });
         ServiceDependencies.setServiceDependency(LinkVariants.class, spiedLinkVariants);
 
         var itemId = "some-item-id";
@@ -206,9 +194,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testRenameSpaceItem() throws Exception {
         var space = mockSpace();
-        var spaceProvider = createSpaceProvider(space);
+        var spaceProvider = SpaceProviderUtilities.createSpaceProvider(space);
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            createSpaceProvidersManager(spaceProvider));
+            SpaceProviderUtilities.createSpaceProvidersManager(spaceProvider));
 
         var itemId = "some_item_id";
         var newItemName = "some_new_name";
@@ -227,26 +215,10 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         verify(space).renameItem(itemId, newItemName);
     }
 
-    /**
-     * Helper to create a {@link SpaceProviders}-instance for testing.
-     *
-     * @param spaceProviders
-     * @return
-     */
-    public static SpaceProvidersManager createSpaceProvidersManager(final SpaceProvider... spaceProviders) {
-        var spaceProvidersFactory = mock(SpaceProviderFactory.class);
-        var providers = List.of(spaceProviders);
-        when(spaceProvidersFactory.createSpaceProviders()).thenReturn(providers);
-        var res = new SpaceProvidersManager(id -> {
-        }, null, List.of(spaceProvidersFactory));
-        res.update();
-        return res;
-    }
-
     private static Pair<SpaceProvider, Space> createTempLocalSpaceProvider(final String directoryNamePrefix,
         final String workspaceName) throws Exception {
         var tempPath = PathUtils.createTempDir(directoryNamePrefix);
-        var spaceProvider = createLocalSpaceProviderForTesting(tempPath);
+        var spaceProvider = SpaceProviderUtilities.createLocalSpaceProviderForTesting(tempPath);
         var space = spaceProvider.getSpace(LocalSpace.LOCAL_SPACE_ID);
         PathUtils.copyDirectory(getTestWorkspacePath(workspaceName), tempPath);
         return new Pair<>(spaceProvider, space);
@@ -255,7 +227,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testRenameSpaceItemLocal() throws Exception {
         var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            createSpaceProvidersManager(p.getFirst()));
+            SpaceProviderUtilities.createSpaceProvidersManager(p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
 
@@ -288,7 +260,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testRenameToExistingLocal() throws Exception {
         var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            createSpaceProvidersManager(p.getFirst()));
+            SpaceProviderUtilities.createSpaceProvidersManager(p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
 
@@ -306,7 +278,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testRenameRootLocal() throws Exception {
         var p = createTempLocalSpaceProvider("testRenameSpaceItemLocal", "test_workspace_to_list");
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            createSpaceProvidersManager(p.getFirst()));
+            SpaceProviderUtilities.createSpaceProvidersManager(p.getFirst()));
         var providerId = p.getFirst().getId();
         var space = p.getSecond();
         assertThrows(OperationNotAllowedException.class,
@@ -320,7 +292,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var renamedSpaceEnt = EntityFactory.Space.buildSpaceEnt("space id", "test name", "some owner", "", true);
         when(space.renameSpace(any(String.class))).thenReturn(renamedSpaceEnt);
         when(provider.getSpace(anyString())).thenReturn(space);
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManager(provider));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, SpaceProviderUtilities.createSpaceProvidersManager(provider));
 
         // call service
         assertEquals("Should return an Space entity", //
@@ -359,7 +331,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testListWorkflowGroupForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath("test_workspace_to_list");
 
-        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = SpaceProviderUtilities.registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalSpace.LOCAL_SPACE_ID;
         var root = ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID);
         cr(root, "workspace_to_list_root");
@@ -391,9 +363,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testListWorkflowGroupNotReachable() throws Exception {
         var space = mockSpaceWithFailingListWorkflowGroup("id0", "name0");
-        var provider = createSpaceProvider("id0", "name0", space);
+        var provider = SpaceProviderUtilities.createSpaceProvider("id0", "name0", space);
 
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManager(provider));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, SpaceProviderUtilities.createSpaceProvidersManager(provider));
 
         assertThrows(NetworkException.class, () -> ss().listWorkflowGroup("id0", "id0", "blub"));
     }
@@ -435,13 +407,13 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testGetSpaceGroups() throws Exception {
         var spaces = new Space[5];
         for (var i = 0; i < 4; i++) {
-            spaces[i] = mockSpace("id" + i, "name" + i, "owner" + i, "description" + i, i % 2 == 0);
+            spaces[i] = SpaceProviderUtilities.mockSpace("id" + i, "name" + i, "owner" + i, "description" + i, i % 2 == 0);
         }
-        var provider1 = createSpaceProvider("id1", "name1", spaces[0], spaces[1]);
-        var provider2 = createSpaceProvider("id2", "name2", spaces[2], spaces[3]);
+        var provider1 = SpaceProviderUtilities.createSpaceProvider("id1", "name1", spaces[0], spaces[1]);
+        var provider2 = SpaceProviderUtilities.createSpaceProvider("id2", "name2", spaces[2], spaces[3]);
 
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            createSpaceProvidersManager(provider1, provider2));
+            SpaceProviderUtilities.createSpaceProvidersManager(provider1, provider2));
 
         var spaceProvider = ss().getSpaceGroups("id1");
         cr(spaceProvider, "space_provider1");
@@ -455,9 +427,9 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testGetSpacesNotReachable() throws Exception {
         var space = mockSpaceWithFailingToEntity("id0", "name0");
-        var provider = createSpaceProvider("id0", "name0", space);
+        var provider = SpaceProviderUtilities.createSpaceProvider("id0", "name0", space);
 
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManager(provider));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, SpaceProviderUtilities.createSpaceProvidersManager(provider));
 
         assertThrows(NetworkException.class, () -> ss().getSpaceGroups("id0"));
     }
@@ -474,162 +446,6 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return space;
     }
 
-    static SpaceProvider createSpaceProvider(final Space... spaces) {
-        return createSpaceProvider("provider-id", "provider-name", spaces);
-    }
-
-    /**
-     * Create a trivial space provider implementation that can be used to set up tests.
-     *
-     * @param id
-     * @param spaceProviderName
-     * @param spaces
-     * @param isReachable
-     * @return
-     */
-    static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName, final Space... spaces) {
-        return new SpaceProvider() {
-
-            @Override
-            public void init(final Consumer<String> loginErrorHandler) {
-                // do nothing
-            }
-
-            @Override
-            public String getId() {
-                return id;
-            }
-
-            @Override
-            public String getName() {
-                return spaceProviderName;
-            }
-
-            @Override
-            public List<SpaceGroupEnt> toEntity()
-                throws NetworkException, LoggedOutException, MutableServiceCallException {
-                return List.of(getLocalSpaceGroupForTesting(spaces).toEntity());
-            }
-
-            @Override
-            public Space getSpace(final String spaceId) {
-                return Arrays.stream(spaces).filter(s -> s.getId().equals(spaceId)).findFirst() //
-                    .orElseThrow(() -> new NoSuchElementException("No space with ID " + spaceId + " found."));
-            }
-
-            @Override
-            public Version getServerVersion() {
-                return new Version(1, 2, 3);
-            }
-
-            @Override
-            public SpaceGroup<?> getSpaceGroup(final String spaceGroupName) {
-                return getLocalSpaceGroupForTesting(spaces);
-            }
-        };
-    }
-
-    private static Space mockSpace(final String id, final String name, final String owner, final String description,
-        final boolean isPrivate) throws Exception {
-        var space = mock(Space.class);
-        when(space.getId()).thenReturn(id);
-        when(space.getName()).thenReturn(name);
-        when(space.toEntity()).thenReturn(EntityFactory.Space.buildSpaceEnt(id, name, owner, description, isPrivate));
-        // not mocked methods will return `null` or an appropriate empty/primitive value
-        return space;
-    }
-
-    private static SpaceProvider createLocalSpaceProviderForTesting(final Path testWorkspacePath) {
-        var localWorkspace = new LocalSpace(testWorkspacePath);
-        return new SpaceProvider() {
-
-            @Override
-            public void init(final Consumer<String> loginErrorHandler) {
-                // do nothing
-            }
-
-            @Override
-            public String getId() {
-                return "local-testing";
-            }
-
-            @Override
-            public List<SpaceGroupEnt> toEntity()
-                throws NetworkException, LoggedOutException, MutableServiceCallException {
-                return List.of(getLocalSpaceGroupForTesting(localWorkspace).toEntity());
-            }
-
-            @Override
-            public String getName() {
-                return "local-testing-name";
-            }
-
-            @Override
-            public Space getSpace(final String spaceId) {
-                return Optional.of(localWorkspace).filter(space -> space.getId().equals(spaceId)).orElseThrow();
-            }
-
-            @Override
-            public Version getServerVersion() {
-                return new Version(1, 2, 3);
-            }
-
-            @Override
-            public SpaceGroup<?> getSpaceGroup(final String spaceGroupName) {
-                return getLocalSpaceGroupForTesting(localWorkspace);
-            }
-        };
-    }
-
-    private static SpaceGroup<Space> getLocalSpaceGroupForTesting(final Space... spaces) {
-        return new SpaceGroup<>() {
-
-            static final String ID = "Local-Testing-space-id";
-
-            static final String NAME = "Local Testing Group";
-
-            @Override
-            public String getName() {
-                return NAME;
-            }
-
-            @Override
-            public SpaceGroupEnt toEntity() throws NetworkException, LoggedOutException, MutableServiceCallException {
-                final List<SpaceEnt> spaceEnts = new ArrayList<>();
-                for (final var space : spaces) {
-                    spaceEnts.add(space.toEntity());
-                }
-                return EntityFactory.Space.buildSpaceGroupEnt(ID, NAME, SpaceGroupEnt.TypeEnum.USER, spaceEnts);
-            }
-
-            @Override
-            public SpaceGroupType getType() {
-                return SpaceGroupType.USER;
-            }
-
-            @Override
-            public List<Space> getSpaces() {
-                return List.of(spaces);
-            }
-
-            @Override
-            public Space createSpace() {
-                try {
-                    return SpaceServiceTestHelper.mockSpace("*newId", "New space", "testUser", "", true);
-                } catch (Exception ex) {
-                    throw ExceptionUtils.asRuntimeException(ex);
-                }
-            }
-
-        };
-    }
-
-    private static String registerLocalSpaceProviderForTesting(final Path testWorkspacePath) {
-        var spaceProvider = createLocalSpaceProviderForTesting(testWorkspacePath);
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            createSpaceProvidersManager(spaceProvider));
-        return spaceProvider.getId();
-    }
 
     private static Path getTestWorkspacePath(final String name) throws IOException {
         var path = CoreUtil.resolveToFile("/files/" + name, SpaceServiceTestHelper.class).toPath();
@@ -647,7 +463,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testCreateWorkflowForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath("test_workspace_to_create");
-        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = SpaceProviderUtilities.registerLocalSpaceProviderForTesting(testWorkspacePath);
 
         try {
             // Create workflows and check
@@ -692,7 +508,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testDeleteItemForLocalWorkspace() throws Exception {
         var testWorkspacePath = FileUtil.createTempDir("delete").toPath();
-        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = SpaceProviderUtilities.registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalSpace.LOCAL_SPACE_ID;
         var workflowGroupName = "workflow_group";
         var fileName = "testfile.txt";
@@ -772,7 +588,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(destinationSpace.getItemIdForName(destWorkflowGroupItemId, "Item name"))
             .thenReturn(Optional.of("dest-item-id"));
 
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManager(provider));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, SpaceProviderUtilities.createSpaceProvidersManager(provider));
 
         assertThrows("Should fail with CollisionException", CollisionException.class,
             () -> ss().moveOrCopyItems(sourceSpaceId, spaceProviderId, itemIds, destinationSpaceId,
@@ -786,7 +602,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(provider.getId()).thenReturn(providerId);
         var spaceId = "some-id";
         List<String> itemIds = List.of();
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManager(provider));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, SpaceProviderUtilities.createSpaceProvidersManager(provider));
 
         ss().moveOrCopyItems(spaceId, providerId, itemIds, spaceId, spaceId, false, null);
         verify(provider, never()).getSpace(anyString());
@@ -800,7 +616,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     public void testCreateWorkflowGroupForLocalWorkspace() throws Exception {
         var testWorkspacePath = getTestWorkspacePath("test_workspace_to_create_group");
 
-        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = SpaceProviderUtilities.registerLocalSpaceProviderForTesting(testWorkspacePath);
         try {
             // Create workflow groups and check
             var spaceId = LocalSpace.LOCAL_SPACE_ID;
@@ -838,7 +654,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testMoveItemsLocal() throws Exception {
         var testWorkspacePath = FileUtil.createTempDir("move").toPath();
-        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = SpaceProviderUtilities.registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalSpace.LOCAL_SPACE_ID;
         var fileName = "testfile.txt";
         var level1 = "level1";
@@ -916,7 +732,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testMoveItemsWithOpenWorkflowLocal() throws Exception {
         var testWorkspacePath = getTestWorkspacePath("test_workspace_to_list");
-        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = SpaceProviderUtilities.registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalSpace.LOCAL_SPACE_ID;
         var wfName = "workflow";
         var wfGroupName = "EmptyGroup";
@@ -948,7 +764,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testMoveItemsLocalWithOpenHubWorkflow() throws Exception {
         var testWorkspacePath = FileUtil.createTempDir("move").toPath();
-        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = SpaceProviderUtilities.registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalSpace.LOCAL_SPACE_ID;
         var wfName = "workflow";
         var wfGroupName = "EmptyGroup";
@@ -984,7 +800,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testMoveItemsWithNameCollisionsLocal() throws Exception {
         var testWorkspacePath = FileUtil.createTempDir("move-with-collisions").toPath();
-        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = SpaceProviderUtilities.registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalSpace.LOCAL_SPACE_ID;
         var level1 = "level1";
         var level1Path = testWorkspacePath.resolve(level1);
@@ -997,7 +813,8 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             Files.createFile(level1Path.resolve(fileName));
             var level1Id = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), level1);
             var wfLevel0 = ss().createWorkflow(spaceId, providerId, Space.ROOT_ITEM_ID, Space.DEFAULT_WORKFLOW_NAME);
-            ss().createWorkflow(spaceId, providerId, level1Id, Space.DEFAULT_WORKFLOW_NAME); // This space item is not needed
+            ss().createWorkflow(spaceId, providerId, level1Id, Space.DEFAULT_WORKFLOW_NAME); //
+            // This space item is not needed
 
             // Try to move without name collision handling
             var fileIdLevel0 = findItemId(ss().listWorkflowGroup(spaceId, providerId, Space.ROOT_ITEM_ID), fileName);
@@ -1051,7 +868,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
      */
     public void testMoveItemsWithDestinationContainingSource() throws Exception {
         var testWorkspacePath = FileUtil.createTempDir("move-with-destination-containing-source").toPath();
-        var providerId = registerLocalSpaceProviderForTesting(testWorkspacePath);
+        var providerId = SpaceProviderUtilities.registerLocalSpaceProviderForTesting(testWorkspacePath);
         var spaceId = LocalSpace.LOCAL_SPACE_ID;
         var wfGroupName = "wfGroup";
         var wfGroupPath = testWorkspacePath.resolve(wfGroupName);
@@ -1082,7 +899,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         when(space.getId()).thenReturn("space id");
         when(group.createSpace()).thenReturn(space);
         when(provider.getSpaceGroup(group.getName())).thenReturn(group);
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, createSpaceProvidersManager(provider));
+        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class, SpaceProviderUtilities.createSpaceProvidersManager(provider));
         // make call to service: create a space in this provider in this group
         assertEquals("Should return the new Space entity", ss().createSpace(provider.getId(), group.getName()),
             newSpaceEnt);

@@ -95,7 +95,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowTransformations;
-import org.knime.gateway.testing.helper.webui.SpaceServiceTestHelper;
+import org.knime.gateway.testing.helper.webui.SpaceProviderUtilities;
 import org.mockito.Mockito;
 
 /**
@@ -309,7 +309,7 @@ public class DefaultEventServiceTest extends GatewayServiceTest {
         when(provider.getId()).thenReturn(PROVIDER_ID);
         when(provider.getType()).thenReturn(TypeEnum.HUB);
         when(provider.getChangeNotifier()).thenReturn(Optional.of(m_notifier));
-        return SpaceServiceTestHelper.createSpaceProvidersManager(provider);
+        return SpaceProviderUtilities.createSpaceProvidersManager(provider);
     }
 
     private static final class DummyNotifier implements SpaceProvider.SpaceItemChangeNotifier {

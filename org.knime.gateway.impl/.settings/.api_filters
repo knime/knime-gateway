@@ -61,6 +61,15 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/featureflags/FeatureFlags.java" type="org.knime.gateway.impl.webui.featureflags.FeatureFlags">
+        <filter id="337809484">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.featureflags.FeatureFlags"/>
+                <message_argument value="4"/>
+                <message_argument value="8"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/kai/KaiHandler.java" type="org.knime.gateway.impl.webui.kai.KaiHandler">
         <filter id="403804204">
             <message_arguments>
@@ -206,6 +215,30 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProviders.java" type="org.knime.gateway.impl.webui.spaces.SpaceProviders">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProviders"/>
+                <message_argument value="getAllSpaceProviders()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProviders"/>
+                <message_argument value="getProviderTypes()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getAllSpaceProviders()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="getProviderTypes()"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAncestorInfoEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAncestorInfoEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -218,6 +251,102 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
                 <message_argument value="DefaultAppStateEnt(AppStateEnt.AppModeEnum, List&lt;ProjectEnt&gt;, Map&lt;String,PortTypeEnt&gt;, List&lt;String&gt;, List&lt;String&gt;, Boolean, Map&lt;String,Object&gt;, Boolean, Boolean, Boolean, AppStateEnt.CanvasRendererEnum, Boolean, String, Boolean, Boolean, Map&lt;String,String&gt;, Boolean, String, Boolean, List&lt;SpaceProviderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="activeNodeCollection()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="analyticsPlatformDownloadURL()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="appMode()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="availableComponentTypes()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="availablePortTypes()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="canvasRenderer()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="confirmNodeConfigChanges()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="devMode()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="featureFlags()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="fileExtensionToNodeTemplateId()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="nodeRepositoryLoaded()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="openProjects()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="scrollToZoomEnabled()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="spaceProviders()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="suggestedPortTypeIds()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAppStateEnt"/>
+                <message_argument value="useEmbeddedDialogs()"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
@@ -264,6 +393,20 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentSearchItemEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentSearchItemPortEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemPortEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemPortEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -477,6 +620,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultProjectSyncStateEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultProjectSyncStateEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultProjectSyncStateEnt"/>
             </message_arguments>
         </filter>
     </resource>
