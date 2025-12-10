@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.util;
 
+import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -63,7 +64,7 @@ public final class Debouncer {
 
     private final ScheduledExecutorService m_scheduler = Executors.newSingleThreadScheduledExecutor();
 
-    private final int m_delaySeconds;
+    private final Duration m_delay;
 
     private ScheduledFuture<?> m_pendingTask;
 
@@ -72,11 +73,11 @@ public final class Debouncer {
     /**
      * Creates a new Debouncer.
      *
-     * @param delaySeconds -
+     * @param delay -
      * @param task -
      */
-    public Debouncer(final int delaySeconds, final Runnable task) {
-        m_delaySeconds = delaySeconds;
+    public Debouncer(final Duration delay, final Runnable task) {
+        m_delay = delay;
         m_task = task;
     }
 
@@ -88,10 +89,13 @@ public final class Debouncer {
         if (m_pendingTask != null && !m_pendingTask.isDone()) {
             m_pendingTask.cancel(false); // Set to 'false' to not cancel if the actual sync is already running
         }
-        m_pendingTask = m_scheduler.schedule(m_task::run, m_delaySeconds, TimeUnit.SECONDS);
+        m_pendingTask = m_scheduler.schedule(m_task::run, m_delay.toSeconds(), TimeUnit.SECONDS);
     }
 
-//    public void shutdown() {
-//        m_scheduler.shutdown();
-//    }
+    /**
+     * TODO: Do we need to call this, and if so, when?
+     */
+    public void shutdown() {
+        m_scheduler.shutdown();
+    }
 }
