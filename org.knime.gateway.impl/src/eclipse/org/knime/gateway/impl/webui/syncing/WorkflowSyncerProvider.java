@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
@@ -111,14 +112,33 @@ public final class WorkflowSyncerProvider {
     }
 
     /**
+     * @throws IllegalStateException if no {@link SpaceProvider} is available for the given key
+     */
+    private static SpaceProvider getSpaceProvider(final SpaceProvidersManager spaceProvidersManager,
+        final Key key) {
+        return spaceProvidersManager.getSpaceProviders(key) //
+            .getAllSpaceProviders() //
+            .stream() //
+            .findFirst() //
+            .orElseThrow(() -> new IllegalStateException("No SpaceProvider available for key: " + key));
+    }
+
+    /**
      * Get the {@link WorkflowSyncer} for the given project ID.
      *
      * @param key
      * @return The {@link WorkflowSyncer} associated with the {@link Key}
      */
     public WorkflowSyncer getWorkflowSyncer(final Key key) {
-        return m_workflowSyncers.computeIfAbsent(key, k -> isEnabled() //
-            ? new DefaultWorkflowSyncer(m_appStateUpdater, m_spaceProvidersManager, m_syncDelay, m_syncThresholdMB, k) //
-            : NoOpWorkflowSyncer.INSTANCE);
+        return m_workflowSyncers.computeIfAbsent(key, k -> {
+            if (!isEnabled()) {
+                return new NoOpWorkflowSyncer();
+            }
+
+            final var spaceProvider = getSpaceProvider(m_spaceProvidersManager, k);
+            final var projectId = key.toString();
+            return new DefaultWorkflowSyncer(m_appStateUpdater, spaceProvider, m_syncDelay, m_syncThresholdMB,
+                projectId);
+        });
     }
 }
