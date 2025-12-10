@@ -52,8 +52,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -71,14 +73,36 @@ import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
 @SuppressWarnings("javadoc")
 public class WorkflowSyncerProviderTest {
 
+    private static final Key KEY_1 = mock(Key.class);
+
+    private static final Key KEY_2 = mock(Key.class);
+
+    private WorkflowSyncerProvider m_workflowSyncerProvider;
+
+    @Before
+    public void setUp() {
+        var spaceProvidersManager = mock(SpaceProvidersManager.class);
+        var appStateUpdater = mock(AppStateUpdater.class);
+        var spaceProviders = mock(SpaceProviders.class);
+        var spaceProvider = mock(SpaceProvider.class);
+
+        // Mock the space providers manager to return a space provider
+        when(spaceProvidersManager.getSpaceProviders(KEY_1)).thenReturn(spaceProviders);
+        when(spaceProvidersManager.getSpaceProviders(KEY_2)).thenReturn(spaceProviders);
+        when(spaceProviders.getAllSpaceProviders()).thenReturn(List.of(spaceProvider));
+
+        m_workflowSyncerProvider =
+            new WorkflowSyncerProvider(appStateUpdater, spaceProvidersManager, Duration.ofSeconds(5), 100);
+    }
+
+
     @Test
     public void testDisabledProviderReturnsNoOpWorkflowSyncer() {
         // Given a disabled provider
         var provider = WorkflowSyncerProvider.disabled();
-        var key = mock(Key.class);
 
         // When getting a workflow syncer
-        var syncer = provider.getWorkflowSyncerForContext(key);
+        var syncer = provider.getWorkflowSyncer(KEY_1);
 
         // Then it should return a NoOpWorkflowSyncer
         assertThat(syncer).isInstanceOf(NoOpWorkflowSyncer.class);
@@ -87,13 +111,11 @@ public class WorkflowSyncerProviderTest {
     @Test
     public void testDisabledProviderWithZeroSyncDelayReturnsNoOpWorkflowSyncer() {
         // Given a provider with zero sync delay (disabled)
-        var appStateUpdater = mock(AppStateUpdater.class);
-        var spaceProvidersManager = mock(SpaceProvidersManager.class);
-        var provider = new WorkflowSyncerProvider(appStateUpdater, spaceProvidersManager, 0, 100);
-        var key = mock(Key.class);
+        var provider = new WorkflowSyncerProvider(mock(AppStateUpdater.class), mock(SpaceProvidersManager.class),
+            Duration.ofSeconds(0), 100);
 
         // When getting a workflow syncer
-        var syncer = provider.getWorkflowSyncerForContext(key);
+        var syncer = provider.getWorkflowSyncer(KEY_1);
 
         // Then it should return a NoOpWorkflowSyncer
         assertThat(syncer).isInstanceOf(NoOpWorkflowSyncer.class);
@@ -101,13 +123,9 @@ public class WorkflowSyncerProviderTest {
 
     @Test
     public void testGetWorkflowSyncerForContextReturnsSameInstance() {
-        // Given a disabled provider (for simplicity)
-        var provider = WorkflowSyncerProvider.disabled();
-        var key = mock(Key.class);
-
         // When getting the workflow syncer twice for the same key
-        var syncer1 = provider.getWorkflowSyncerForContext(key);
-        var syncer2 = provider.getWorkflowSyncerForContext(key);
+        var syncer1 = m_workflowSyncerProvider.getWorkflowSyncer(KEY_1);
+        var syncer2 = m_workflowSyncerProvider.getWorkflowSyncer(KEY_1);
 
         // Then it should return the same instance (cached)
         assertThat(syncer1).isSameAs(syncer2);
@@ -115,14 +133,9 @@ public class WorkflowSyncerProviderTest {
 
     @Test
     public void testGetWorkflowSyncerForContextReturnsDifferentInstancesForDifferentKeys() {
-        // Given a disabled provider (for simplicity)
-        var provider = WorkflowSyncerProvider.disabled();
-        var key1 = mock(Key.class);
-        var key2 = mock(Key.class);
-
         // When getting workflow syncers for different keys
-        var syncer1 = provider.getWorkflowSyncerForContext(key1);
-        var syncer2 = provider.getWorkflowSyncerForContext(key2);
+        var syncer1 = m_workflowSyncerProvider.getWorkflowSyncer(KEY_1);
+        var syncer2 = m_workflowSyncerProvider.getWorkflowSyncer(KEY_2);
 
         // Then it should return different instances
         assertThat(syncer1).isNotSameAs(syncer2);
@@ -130,21 +143,8 @@ public class WorkflowSyncerProviderTest {
 
     @Test
     public void testEnabledProviderReturnsDefaultWorkflowSyncer() {
-        // Given an enabled provider with all required dependencies
-        var appStateUpdater = mock(AppStateUpdater.class);
-        var spaceProvidersManager = mock(SpaceProvidersManager.class);
-        var spaceProviders = mock(SpaceProviders.class);
-        var spaceProvider = mock(SpaceProvider.class);
-        var key = mock(Key.class);
-
-        // Mock the space providers manager to return a space provider
-        when(spaceProvidersManager.getSpaceProviders(key)).thenReturn(spaceProviders);
-        when(spaceProviders.getAllSpaceProviders()).thenReturn(List.of(spaceProvider));
-
-        var provider = new WorkflowSyncerProvider(appStateUpdater, spaceProvidersManager, 5, 100);
-
         // When getting a workflow syncer
-        var syncer = provider.getWorkflowSyncerForContext(key);
+        var syncer = m_workflowSyncerProvider.getWorkflowSyncer(KEY_1);
 
         // Then it should return a DefaultWorkflowSyncer
         assertThat(syncer).isInstanceOf(DefaultWorkflowSyncer.class);

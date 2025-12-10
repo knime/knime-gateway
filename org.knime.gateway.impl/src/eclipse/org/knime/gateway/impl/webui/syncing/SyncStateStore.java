@@ -61,7 +61,7 @@ import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer
 import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
 
 /**
- * ...
+ * Stores the current sync state of a workflow and notifies a callback on updates.
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */
@@ -79,15 +79,13 @@ final class SyncStateStore {
 
     private boolean m_locked = false;
 
-    private Runnable m_unlockCallback = () -> {
-    };
+    private Runnable m_unlockCallback = () -> {};
 
     /**
      * Constructor needed for the {@link NoOpWorkflowSyncer}
      */
     SyncStateStore() {
-        m_onUpdate = () -> {
-        };
+        m_onUpdate = () -> {};
     }
 
     /**
@@ -146,21 +144,21 @@ final class SyncStateStore {
     void deferrableUpdate(final ProjectSyncStateEnt.StateEnum state) {
         if (m_locked) {
             // We defer the update until unlock
-            m_unlockCallback = () -> update(state);
+            m_unlockCallback = () -> changeState(state);
             return;
         }
-        update(state);
+        changeState(state);
     }
 
-    void update(final ProjectSyncStateEnt.StateEnum state) {
-        update(state, null);
+    void changeState(final ProjectSyncStateEnt.StateEnum state) {
+        changeState(state, null);
     }
 
-    void update(final ProjectSyncStateEnt.StateEnum state, final Details details) {
-        update(state, details, m_autoSyncEnabled);
+    void changeState(final ProjectSyncStateEnt.StateEnum state, final Details details) {
+        changeState(state, details, m_autoSyncEnabled);
     }
 
-    void update(final ProjectSyncStateEnt.StateEnum state, final Details details, final boolean autoSyncEnabled) {
+    void changeState(final ProjectSyncStateEnt.StateEnum state, final Details details, final boolean autoSyncEnabled) {
         m_state = state;
         m_details = Optional.ofNullable(details);
         m_autoSyncEnabled = autoSyncEnabled;
