@@ -1,5 +1,5 @@
 {
-  "description" : "\n            This node helps handle missing values found in cells of the input \n            table. The first tab in the dialog (labeled \"Default\") provides \n            default handling options for all columns of a given type. \n            These settings apply to all columns in the input table that are not\n            explicitly mentioned in the second tab, labeled \"Individual\". This\n            second tab permits individual settings for each available column \n            (thus, overriding the default). To make use of this second approach,\n            select a column or a list of columns which needs\n            extra handling, click \"Add\", and set the parameters. Click on the \n            label with the column name(s), will select all covered columns \n            in the column list. To remove this extra handling (and instead use \n            the default handling), click the \"Remove\" button for this column.<br/>\n            Options marked with an asterisk (*) will result in non-standard PMML,\n            which uses extensions that cannot be read by other tools than KNIME.\n        ",
+  "description" : "\n            This node helps handle missing values found in cells of the input \n            table.\n            <p>\n            The first section \"Treatment by Column\" permits individual settings for each available column.\n            Only columns that are not listed here are treated according to the settings in the second \n            section \"Treatment by Data Type\". \n            It is possible to select more than one column within one \n            element leaving only treatment options that are applicable to all selected columns enabled. \n            </p>\n            <p>\n            The second section \"Treatment by Data Type\" provides \n            default handling options for all columns of a given type. \n            These settings apply to all columns in the input table that are not\n            explicitly mentioned in the first section \"Treatment by Column\". \n            </p>\n            <p>\n            Treatment options marked with an asterisk (*) will result in non-standard PMML,\n            which uses extensions that cannot be read by other tools than KNIME.\n            </p>\n        ",
   "extension" : {
     "name" : "KNIME Base Nodes",
     "vendor" : {
@@ -8,7 +8,7 @@
     }
   },
   "inPorts" : [ {
-    "description" : "Table with missing values",
+    "description" : "Table with missing values.",
     "name" : "Input table",
     "optional" : false,
     "typeId" : "org.knime.core.node.BufferedDataTable"
@@ -21,12 +21,12 @@
     } ]
   } ],
   "outPorts" : [ {
-    "description" : "Table with replaced missing values",
+    "description" : "Table with replaced missing values.",
     "name" : "Output table",
     "optional" : false,
     "typeId" : "org.knime.core.node.BufferedDataTable"
   }, {
-    "description" : "Table with PMML documenting the missing value replacement",
+    "description" : "Table with PMML documenting the missing value replacement.",
     "name" : "PMML Transformations",
     "optional" : false,
     "typeId" : "org.knime.core.node.port.pmml.PMMLPortObject"
