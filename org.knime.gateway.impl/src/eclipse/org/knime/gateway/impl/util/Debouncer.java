@@ -93,7 +93,7 @@ public final class Debouncer {
     }
 
     /**
-     * TODO: Do we need to call this, and if so, when?
+     * Shuts down the internal scheduler.
      */
     public void shutdown() {
         m_scheduler.shutdown();
