@@ -48,6 +48,7 @@ package org.knime.gateway.impl.project;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -70,6 +71,10 @@ class ProjectWfmCache {
 
     private final LRUCache<VersionId.Fixed, WorkflowManager> m_fixedVersions;
 
+    private Consumer<WorkflowManager> m_onWfmLoad = wfm -> {};
+
+    private Consumer<WorkflowManager> m_onWfmDispose = wfm -> {};
+
     ProjectWfmCache(final WorkflowManagerLoader wfmLoader) {
         this(wfmLoader, new Lazy.Init<>(() -> wfmLoader.load(VersionId.currentState())));
     }
@@ -85,6 +90,14 @@ class ProjectWfmCache {
         m_fixedVersions = new LRUCache<>( //
             VERSION_WFM_CACHE_MAX_SIZE, //
             (removedVersion, removedWfm) -> disposeWorkflowManager(removedWfm));
+    }
+
+    void setOnWfmLoad(final Consumer<WorkflowManager> onWfmLoad) {
+        this.m_onWfmLoad = onWfmLoad;
+    }
+
+    void setOnWfmDispose(final Consumer<WorkflowManager> onWfmDispose) {
+        this.m_onWfmDispose = onWfmDispose;
     }
 
     Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
@@ -139,7 +152,10 @@ class ProjectWfmCache {
      */
     void dispose(final VersionId version) {
         if (version.isCurrentState()) {
-            m_currentState.ifPresent(ProjectWfmCache::disposeWorkflowManager);
+            m_currentState.ifPresent(wfm -> {
+                m_onWfmDispose.accept(wfm);
+                disposeWorkflowManager(wfm);
+            });
             m_currentState.clear();
         } else {
             Optional.ofNullable(m_fixedVersions.remove(version)) //
