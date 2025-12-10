@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 
@@ -113,10 +114,11 @@ final class HubUploader {
         }
     }
 
-    void uploadProject(final String projectId) throws IOException {
+    void uploadProject(final String projectId) throws LoggedOutException, NetworkException, ServiceCallException {
         var context = WorkflowManagerResolver.get(projectId).getContextV2();
         if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
-            return; // TODO: Log ot throw?
+            // This should not happen
+            throw new UnsupportedOperationException("Uploading is only supported for workflows stored in Hub spaces.");
         }
 
         try {
@@ -132,9 +134,11 @@ final class HubUploader {
             space.saveBackTo(localWorkflow, targetURI, excludeDataInWorkflows, new NullProgressMonitor());
 
             LOGGER.info("Upload to Hub for project ID " + projectId + " completed successfully.");
-        } catch (LoggedOutException | MutableServiceCallException | NetworkException
-                | UnsupportedOperationException e) {
-            return; // TODO: Log or throw?
+        } catch (MutableServiceCallException e) {
+            throw e.toGatewayException(projectId);
+        } catch (UnsupportedOperationException e) {
+            // This should not happen
+            throw new IllegalStateException("Uploading is only supported for workflows stored in Hub spaces.", e);
         }
     }
 
