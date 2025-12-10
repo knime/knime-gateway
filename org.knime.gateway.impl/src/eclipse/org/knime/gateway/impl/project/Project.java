@@ -45,8 +45,6 @@
  */
 package org.knime.gateway.impl.project;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -78,10 +76,6 @@ public final class Project {
     private final Function<String, byte[]> m_generateReport;
 
     private ProjectWfmCache m_projectWfmCache;
-
-    private final Deque<Consumer<WorkflowManager>> m_onWfmLoad = new ArrayDeque<>();
-
-    private final Deque<Consumer<WorkflowManager>> m_onWfmDispose = new ArrayDeque<>();
 
     private Project(final Builder builder) {
         this( //
@@ -184,13 +178,7 @@ public final class Project {
      * @return The workflow manager of the project of a given {@link VersionId}.
      */
     public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager(final VersionId version) {
-        return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version)) //
-            .map(wfm -> {
-                if (version.isCurrentState() && !m_onWfmLoad.isEmpty()) {
-                    m_onWfmLoad.pop().accept(wfm); // Call only once
-                }
-                return wfm;
-            });
+        return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(version));
     }
 
     /**
@@ -227,17 +215,6 @@ public final class Project {
      */
     public void dispose() {
         m_projectWfmCache.dispose();
-    }
-
-    /**
-     * Call the {@code onWfmDispose} consumer for the current version's loaded {@link WorkflowManager}, if any.
-     */
-    public void callOnWfmDispose() {
-        m_projectWfmCache.getWorkflowManagerIfLoaded(VersionId.currentState()).ifPresent(wfm -> {
-            if (!m_onWfmDispose.isEmpty()) {
-                m_onWfmDispose.pop().accept(wfm); // Call only once
-            }
-        });
     }
 
     /**
@@ -301,7 +278,7 @@ public final class Project {
      * @return -
      */
     public Project setOnWfmLoad(final Consumer<WorkflowManager> onWfmLoad) {
-        m_onWfmLoad.add(onWfmLoad);
+        m_projectWfmCache.setOnWfmLoad(onWfmLoad);
         return this;
     }
 
@@ -312,7 +289,7 @@ public final class Project {
      * @return -
      */
     public Project setOnWfmDispose(final Consumer<WorkflowManager> onWfmLoad) {
-        m_onWfmDispose.add(onWfmLoad);
+        m_projectWfmCache.setOnWfmDispose(onWfmLoad);
         return this;
     }
 

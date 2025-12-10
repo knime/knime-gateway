@@ -78,6 +78,11 @@ public interface WorkflowSyncer {
     ProjectSyncStateEnt getProjectSyncState();
 
     /**
+     * Resets the project sync state.
+     */
+    void resetProjectSyncState();
+
+    /**
      * To manually synchronize the project
      *
      * @param projectId -
@@ -131,6 +136,11 @@ public interface WorkflowSyncer {
         @Override
         public ProjectSyncStateEnt getProjectSyncState() {
             return m_syncStateStore.buildSyncStateEnt();
+        }
+
+        @Override
+        public void resetProjectSyncState() {
+            m_syncStateStore.reset();
         }
 
         private void notifyWorkflowChanged() {
@@ -244,7 +254,7 @@ public interface WorkflowSyncer {
         public void onWfmDispose(final WorkflowManager wfm) {
             LOGGER.info("'onWfmDispose' called for workflow <%s>".formatted(wfm.getName()));
             wfm.removeListener(m_workflowListener);
-            m_syncStateStore.reset();
+            m_debouncedProjectSync.shutdown();
         }
     }
 
@@ -260,6 +270,11 @@ public interface WorkflowSyncer {
         @Override
         public ProjectSyncStateEnt getProjectSyncState() {
             return SYNCED_STATE;
+        }
+
+        @Override
+        public void resetProjectSyncState() {
+            // No-op
         }
 
         @Override
