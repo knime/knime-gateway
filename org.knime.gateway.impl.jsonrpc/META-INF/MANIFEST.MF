@@ -7,6 +7,7 @@ Bundle-ClassPath: .
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.knime.gateway.impl.jsonrpc.JsonRpcBundleActivator
 Export-Package: org.knime.gateway.impl.jsonrpc,
  org.knime.gateway.impl.webui.jsonrpc,
  org.knime.gateway.impl.webui.jsonrpc.service.util
