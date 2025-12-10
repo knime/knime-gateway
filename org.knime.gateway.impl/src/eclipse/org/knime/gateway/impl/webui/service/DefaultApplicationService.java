@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.knime.gateway.api.webui.entity.AppStateEnt;
@@ -94,7 +95,7 @@ public final class DefaultApplicationService implements ApplicationService {
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
     private final WorkflowSyncerProvider m_workflowSyncerProvider =
-        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, true);
+        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -121,7 +122,9 @@ public final class DefaultApplicationService implements ApplicationService {
         var projectId = DefaultServiceContext.getProjectId();
         var key = projectId.map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
-        var workflowSyncer = m_workflowSyncerProvider.getWorkflowSyncerForContext(key);
+        var workflowSyncer = Optional.ofNullable(m_workflowSyncerProvider) //
+            .map(provider -> provider.getWorkflowSyncer(key)) //
+            .orElse(null);
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
             spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler, workflowSyncer);

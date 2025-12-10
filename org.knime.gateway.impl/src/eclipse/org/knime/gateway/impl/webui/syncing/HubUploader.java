@@ -53,7 +53,6 @@ import java.io.IOException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
-import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
@@ -62,7 +61,7 @@ import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 
 /**
- * ...
+ * Uploads workflows to Hub spaces.
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */

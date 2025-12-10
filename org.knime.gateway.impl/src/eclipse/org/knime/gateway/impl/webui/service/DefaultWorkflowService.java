@@ -111,7 +111,7 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private final LinkVariants m_linkVariants = ServiceDependencies.getServiceDependency(LinkVariants.class, false);
 
-    private final WorkflowSyncerProvider m_workflowSyncerProvider = // TODO: Required or not?
+    private final WorkflowSyncerProvider m_workflowSyncerProvider =
         ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, false);
 
     /**
@@ -198,8 +198,14 @@ public final class DefaultWorkflowService implements WorkflowService {
             return;
         }
 
+        if (m_workflowSyncerProvider == null) {
+            LOGGER
+                .warn("Called 'saveProject' workflow syncer provider set, indicating usage from Desktop environment.");
+            return;
+        }
+
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        m_workflowSyncerProvider.getWorkflowSyncerForContext(Key.of(projectId)).syncProjectNow(projectId);
+        m_workflowSyncerProvider.getWorkflowSyncer(Key.of(projectId)).syncProjectNow(projectId);
     }
 
     @Override

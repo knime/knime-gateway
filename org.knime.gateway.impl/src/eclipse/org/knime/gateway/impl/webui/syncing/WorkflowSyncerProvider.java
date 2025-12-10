@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.syncing;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -65,7 +66,7 @@ import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
  */
 public final class WorkflowSyncerProvider {
 
-    private static final WorkflowSyncerProvider NO_OP = new WorkflowSyncerProvider(null, null, 0, 0);
+    private static final WorkflowSyncerProvider NO_OP = new WorkflowSyncerProvider(null, null, Duration.ZERO, 0);
 
     private final Map<Key, WorkflowSyncer> m_workflowSyncers = new ConcurrentHashMap<>();
 
@@ -73,7 +74,7 @@ public final class WorkflowSyncerProvider {
 
     private final SpaceProvidersManager m_spaceProvidersManager;
 
-    private final int m_syncDelaySeconds;
+    private final Duration m_syncDelay;
 
     private final int m_syncThresholdMB;
 
@@ -82,14 +83,14 @@ public final class WorkflowSyncerProvider {
      *
      * @param appStateUpdater -
      * @param spaceProvidersManager -
-     * @param syncDelaySeconds -
+     * @param syncDelay -
      * @param syncThresholdMB -
      */
     public WorkflowSyncerProvider(final AppStateUpdater appStateUpdater,
-        final SpaceProvidersManager spaceProvidersManager, final int syncDelaySeconds, final int syncThresholdMB) {
+        final SpaceProvidersManager spaceProvidersManager, final Duration syncDelay, final int syncThresholdMB) {
         m_appStateUpdater = appStateUpdater;
         m_spaceProvidersManager = spaceProvidersManager;
-        m_syncDelaySeconds = syncDelaySeconds;
+        m_syncDelay = syncDelay;
         m_syncThresholdMB = syncThresholdMB;
     }
 
@@ -103,8 +104,8 @@ public final class WorkflowSyncerProvider {
     }
 
     private boolean isEnabled() {
-        return m_syncDelaySeconds != 0 //
-            && m_syncThresholdMB != 0 //
+        return m_syncDelay.isPositive() //
+            && m_syncThresholdMB >= 0 //
             && m_appStateUpdater != null //
             && m_spaceProvidersManager != null;
     }
@@ -115,10 +116,9 @@ public final class WorkflowSyncerProvider {
      * @param key
      * @return The {@link WorkflowSyncer} associated with the {@link Key}
      */
-    public WorkflowSyncer getWorkflowSyncerForContext(final Key key) {
+    public WorkflowSyncer getWorkflowSyncer(final Key key) {
         return m_workflowSyncers.computeIfAbsent(key, k -> isEnabled() //
-            ? new DefaultWorkflowSyncer(m_appStateUpdater, m_spaceProvidersManager, m_syncDelaySeconds,
-                m_syncThresholdMB, k) //
+            ? new DefaultWorkflowSyncer(m_appStateUpdater, m_spaceProvidersManager, m_syncDelay, m_syncThresholdMB, k) //
             : NoOpWorkflowSyncer.INSTANCE);
     }
 }

@@ -71,7 +71,7 @@ public interface ProjectSyncStateEnt extends GatewayEntity {
     
     DIRTY("DIRTY"),
     
-    BLOCKED("BLOCKED"),
+    WRITING("WRITING"),
     
     UPLOAD("UPLOAD"),
     

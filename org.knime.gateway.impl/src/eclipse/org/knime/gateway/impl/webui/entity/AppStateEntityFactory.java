@@ -160,13 +160,15 @@ public final class AppStateEntityFactory {
             dependencies.projectManager(), //
             dependencies.spaceProviders(), //
             projectFilter.predicate(), //
-            isActiveProject == null ? dependencies.projectManager()::isActiveProject : isActiveProject //
+            Optional.ofNullable(isActiveProject).orElse(dependencies.projectManager()::isActiveProject) //
         );
-        var activeCollection =
-            Optional.ofNullable(dependencies.nodeCollections()).flatMap(NodeCollections::getActiveCollection);
+        var activeCollection = Optional.ofNullable(dependencies.nodeCollections()) //
+            .flatMap(NodeCollections::getActiveCollection);
         var kaiHandler = dependencies.kaiHandler();
         var appMode = getAppModeEnum();
-        var workflowSyncer = dependencies.workflowSyncer();
+        var projectSyncState = Optional.ofNullable(dependencies.workflowSyncer()) //
+            .map(WorkflowSyncer::getProjectSyncState) //
+            .orElse(null);
         return builder(AppStateEntBuilder.class) //
             .setAppMode(appMode) //
             .setOpenProjects(projects) //
@@ -198,7 +200,7 @@ public final class AppStateEntityFactory {
             // TODO HUB-9598 only include when not read-only connection?
             .setSpaceProviders(
                 appMode == AppModeEnum.DEFAULT ? buildSpaceProviderEnts(dependencies.spaceProviders(), false) : null) //
-            .setProjectSyncState(workflowSyncer.getProjectSyncState()) //
+            .setProjectSyncState(projectSyncState) //
             .build();
     }
 

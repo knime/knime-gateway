@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
@@ -124,7 +125,7 @@ public final class DefaultEventService implements EventService {
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
     private final WorkflowSyncerProvider m_workflowSyncerProvider =
-        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, true);
+        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -146,16 +147,18 @@ public final class DefaultEventService implements EventService {
         EventSource eventSource;
 
         // Set the event source depending on the event type
-        if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) { // TODO: If we don't have an app state updater, use the workflow changed event source?
+        if (eventTypeEnt instanceof WorkflowChangedEventTypeEnt) {
             eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(),
                 t -> new WorkflowChangedEventSource(m_eventConsumer, m_workflowMiddleware, m_projectManager));
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
-            if (m_appStateUpdater != null) { // TODO: Do we have an app state updater in a browser editing session?
+            if (m_appStateUpdater != null) {
                 eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(), t -> {
                     var key = DefaultServiceContext.getProjectId().map(SpaceProvidersManager.Key::of) //
-                            .orElse(SpaceProvidersManager.Key.defaultKey());
+                        .orElse(SpaceProvidersManager.Key.defaultKey());
                     var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
-                    var workflowSyncer = m_workflowSyncerProvider.getWorkflowSyncerForContext(key);
+                    var workflowSyncer = Optional.ofNullable(m_workflowSyncerProvider) //
+                        .map(provider -> provider.getWorkflowSyncer(key)) //
+                        .orElse(null);
                     var dependencies = new AppStateEntityFactory.ServiceDependencies( //
                         m_projectManager, //
                         m_preferencesProvider, //
