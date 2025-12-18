@@ -53,6 +53,7 @@ import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 /**
  * ...
  *
+ * @param id
  * @param name
  * @param description
  * @param icon
@@ -64,6 +65,7 @@ import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultComponentSearchItemEnt(
+    String id,
     String name,
     String description,
     String icon,
@@ -75,6 +77,9 @@ public record DefaultComponentSearchItemEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultComponentSearchItemEnt {
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
+        }
         if(name == null) {
             throw new IllegalArgumentException("<name> must not be null.");
         }
@@ -88,6 +93,11 @@ public record DefaultComponentSearchItemEnt(
         return "ComponentSearchItem";
     }
   
+    @Override
+    public String getId() {
+        return id;
+    }
+    
     @Override
     public String getName() {
         return name;
@@ -123,6 +133,8 @@ public record DefaultComponentSearchItemEnt(
      */
     public static class DefaultComponentSearchItemEntBuilder implements ComponentSearchItemEntBuilder {
 
+        private String m_id;
+
         private String m_name;
 
         private String m_description;
@@ -134,6 +146,15 @@ public record DefaultComponentSearchItemEnt(
         private java.util.List<ComponentSearchItemPortEnt> m_inPorts;
 
         private java.util.List<ComponentSearchItemPortEnt> m_outPorts;
+
+        @Override
+        public DefaultComponentSearchItemEntBuilder setId(String id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("<id> must not be null.");
+             }
+             m_id = id;
+             return this;
+        }
 
         @Override
         public DefaultComponentSearchItemEntBuilder setName(String name) {
@@ -180,6 +201,7 @@ public record DefaultComponentSearchItemEnt(
         @Override
         public DefaultComponentSearchItemEnt build() {
             return new DefaultComponentSearchItemEnt(
+                immutable(m_id),
                 immutable(m_name),
                 immutable(m_description),
                 immutable(m_icon),

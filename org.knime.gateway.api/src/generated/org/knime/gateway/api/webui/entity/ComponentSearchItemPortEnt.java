@@ -65,7 +65,7 @@ public interface ComponentSearchItemPortEnt extends GatewayEntity {
 
   /**
    * The name of the port as given by the component creator. Not to be confused with the human-readable name of the port _type_.
-   * @return name , never <code>null</code>
+   * @return name 
    **/
   public String getName();
 
@@ -77,7 +77,7 @@ public interface ComponentSearchItemPortEnt extends GatewayEntity {
 
   /**
    * The human-readable name of the port type. This is given by the port type implementation.
-   * @return portTypeName 
+   * @return portTypeName , never <code>null</code>
    **/
   public String getPortTypeName();
 
@@ -113,7 +113,7 @@ public interface ComponentSearchItemPortEnt extends GatewayEntity {
         /**
          * The name of the port as given by the component creator. Not to be confused with the human-readable name of the port _type_.
          * 
-         * @param name the property value, NOT <code>null</code>! 
+         * @param name the property value,  
          * @return this entity builder for chaining
          */
         ComponentSearchItemPortEntBuilder setName(String name);
@@ -129,7 +129,7 @@ public interface ComponentSearchItemPortEnt extends GatewayEntity {
         /**
          * The human-readable name of the port type. This is given by the port type implementation.
          * 
-         * @param portTypeName the property value,  
+         * @param portTypeName the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
         ComponentSearchItemPortEntBuilder setPortTypeName(String portTypeName);

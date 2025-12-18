@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service;
 import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProvidersKey;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -315,11 +316,16 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    @Override
-    public List<ComponentSearchItemEnt> searchComponents(String spaceProviderId, String query, Integer limit,
-        Integer offset) throws ServiceCallException, LoggedOutException, NetworkException {
+    public List<ComponentSearchItemEnt> searchComponents(String query, Integer limit,
+                                                         Integer offset) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
-            return getSpaceProvider(spaceProviderId) //
+            // ~TODO pick based on new eclipse preference
+            var allSpaceProviders = m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()).getAllSpaceProviders();
+            var provider = allSpaceProviders
+                    .stream().filter(prov -> {
+                        return prov.getServerAddress().filter(a -> a.contains("hub.knime.com")).isPresent();
+                    }).findFirst().orElseThrow();
+            return provider //
                 .searchComponents(query, limit, offset).stream() //
                 .toList();
         } catch (MutableServiceCallException e) {
