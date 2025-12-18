@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service;
 import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProvidersKey;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -59,6 +60,7 @@ import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -137,7 +139,7 @@ public class DefaultSpaceService implements SpaceService {
         try {
             var spaceUri = getSpaceProvider(spaceProviderId).getSpace(spaceId).toKnimeUrl(itemId);
             return ServiceDependencies.getServiceDependency(LinkVariants.class, true) //
-                    .getVariantInfoEnts(spaceUri, projectContext);
+                .getVariantInfoEnts(spaceUri, projectContext);
         } catch (ResourceAccessException e) {
             throw ServiceCallException.builder().withTitle("Alternative representations could not be determined")
                 .withDetails(List.of()).canCopy(true).build();
@@ -311,6 +313,23 @@ public class DefaultSpaceService implements SpaceService {
             return getSpaceProvider(spaceProviderId).getSpace(spaceId).renameSpace(spaceName);
         } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while renaming space");
+        }
+    }
+
+    public List<ComponentSearchItemEnt> searchComponents(String query, Integer limit,
+                                                         Integer offset) throws ServiceCallException, LoggedOutException, NetworkException {
+        try {
+            // ~TODO pick based on new eclipse preference
+            var allSpaceProviders = m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()).getAllSpaceProviders();
+            var provider = allSpaceProviders
+                    .stream().filter(prov -> {
+                        return prov.getServerAddress().filter(a -> a.contains("hub.knime.com")).isPresent();
+                    }).findFirst().orElseThrow();
+            return provider //
+                .searchComponents(query, limit, offset).stream() //
+                .toList();
+        } catch (MutableServiceCallException e) {
+            throw e.toGatewayException("Component search not available");
         }
     }
 
