@@ -153,6 +153,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testSearchComponents() throws Exception {
         var space = mockSpace();
+        // ~TODO need to mock / inject / configure "primary" provider
         var spaceProvider = spy(createSpaceProvider(space));
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
             createSpaceProvidersManager(spaceProvider));
@@ -169,7 +170,7 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         doReturn(expectedEntities) //
             .when(spaceProvider).searchComponents(anyString(), anyInt(), anyInt());
 
-        var returnedEntities = ss().searchComponents(spaceProvider.getId(), queriedComponentType.toString(), 0, 0);
+        var returnedEntities = ss().searchComponents(queriedComponentType.toString(), 0, 0);
 
         assertTrue(!returnedEntities.isEmpty());
         assertEquals(returnedEntities.size(), expectedEntities.size());

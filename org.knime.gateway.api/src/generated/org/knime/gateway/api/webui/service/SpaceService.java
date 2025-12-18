@@ -291,7 +291,6 @@ public interface SpaceService extends GatewayService {
     /**
      * Search among components in this provider
      *
-     * @param spaceProviderId Identifies a space-provider.
      * @param query
      * @param limit
      * @param offset
@@ -301,6 +300,5 @@ public interface SpaceService extends GatewayService {
      * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
      * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    java.util.List<ComponentSearchItemEnt> searchComponents(String spaceProviderId, String query, Integer limit, Integer offset)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
-
+    java.util.List<ComponentSearchItemEnt> searchComponents(String query, Integer limit, Integer offset)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
 }

@@ -72,8 +72,8 @@ public record DefaultComponentSearchItemPortEnt(
      * Validation for required parameters not being {@code null}.
      */
     public DefaultComponentSearchItemPortEnt {
-        if(name == null) {
-            throw new IllegalArgumentException("<name> must not be null.");
+        if(portTypeName == null) {
+            throw new IllegalArgumentException("<portTypeName> must not be null.");
         }
     }
 
@@ -124,9 +124,6 @@ public record DefaultComponentSearchItemPortEnt(
 
         @Override
         public DefaultComponentSearchItemPortEntBuilder setName(String name) {
-             if(name == null) {
-                 throw new IllegalArgumentException("<name> must not be null.");
-             }
              m_name = name;
              return this;
         }
@@ -139,6 +136,9 @@ public record DefaultComponentSearchItemPortEnt(
 
         @Override
         public DefaultComponentSearchItemPortEntBuilder setPortTypeName(String portTypeName) {
+             if(portTypeName == null) {
+                 throw new IllegalArgumentException("<portTypeName> must not be null.");
+             }
              m_portTypeName = portTypeName;
              return this;
         }

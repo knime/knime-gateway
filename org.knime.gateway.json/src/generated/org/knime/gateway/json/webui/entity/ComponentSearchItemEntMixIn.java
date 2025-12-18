@@ -71,6 +71,10 @@ public interface ComponentSearchItemEntMixIn extends ComponentSearchItemEnt {
     public String getTypeID();
 
     @Override
+    @JsonProperty("id")
+    public String getId();
+    
+    @Override
     @JsonProperty("name")
     public String getName();
     
@@ -107,6 +111,10 @@ public interface ComponentSearchItemEntMixIn extends ComponentSearchItemEnt {
         @Override
         public ComponentSearchItemEntMixIn build();
     
+        @Override
+        @JsonProperty("id")
+        public ComponentSearchItemEntMixInBuilder setId(final String id);
+        
         @Override
         @JsonProperty("name")
         public ComponentSearchItemEntMixInBuilder setName(final String name);

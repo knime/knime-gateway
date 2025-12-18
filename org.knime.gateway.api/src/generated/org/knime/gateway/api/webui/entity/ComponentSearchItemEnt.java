@@ -94,6 +94,12 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
 
 
   /**
+   * Space item ID of this component
+   * @return id , never <code>null</code>
+   **/
+  public String getId();
+
+  /**
    * The name of the component as given by the component creator
    * @return name , never <code>null</code>
    **/
@@ -134,6 +140,7 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (ComponentSearchItemEnt)other;
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
@@ -147,6 +154,14 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
      */
     public interface ComponentSearchItemEntBuilder extends GatewayEntityBuilder<ComponentSearchItemEnt> {
 
+        /**
+         * Space item ID of this component
+         * 
+         * @param id the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ComponentSearchItemEntBuilder setId(String id);
+        
         /**
          * The name of the component as given by the component creator
          * 
