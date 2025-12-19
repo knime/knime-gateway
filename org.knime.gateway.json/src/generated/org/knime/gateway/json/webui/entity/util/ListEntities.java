@@ -59,6 +59,7 @@ import org.knime.gateway.json.webui.entity.AllowedConnectionActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedLoopActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedNodeActionsEntMixIn;
 import org.knime.gateway.json.webui.entity.AllowedWorkflowActionsEntMixIn;
+import org.knime.gateway.json.webui.entity.AncestorInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.AnnotationEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateChangedEventEntMixIn;
 import org.knime.gateway.json.webui.entity.AppStateChangedEventTypeEntMixIn;
@@ -249,6 +250,7 @@ public class ListEntities {
         res.add(AllowedLoopActionsEntMixIn.class);
         res.add(AllowedNodeActionsEntMixIn.class);
         res.add(AllowedWorkflowActionsEntMixIn.class);
+        res.add(AncestorInfoEntMixIn.class);
         res.add(AnnotationEntMixIn.class);
         res.add(AppStateChangedEventEntMixIn.class);
         res.add(AppStateChangedEventTypeEntMixIn.class);
@@ -425,6 +427,7 @@ public class ListEntities {
         res.add(AllowedLoopActionsEntMixIn.AllowedLoopActionsEntMixInBuilder.class);
         res.add(AllowedNodeActionsEntMixIn.AllowedNodeActionsEntMixInBuilder.class);
         res.add(AllowedWorkflowActionsEntMixIn.AllowedWorkflowActionsEntMixInBuilder.class);
+        res.add(AncestorInfoEntMixIn.AncestorInfoEntMixInBuilder.class);
         res.add(AnnotationEntMixIn.AnnotationEntMixInBuilder.class);
         res.add(AppStateChangedEventEntMixIn.AppStateChangedEventEntMixInBuilder.class);
         res.add(AppStateChangedEventTypeEntMixIn.AppStateChangedEventTypeEntMixInBuilder.class);

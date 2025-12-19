@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProvidersKey;
 
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.webui.entity.AncestorInfoEnt;
+import org.knime.gateway.api.webui.entity.AncestorInfoEnt.AncestorInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -301,6 +304,30 @@ public class DefaultSpaceService implements SpaceService {
             return getSpaceProvider(spaceProviderId).getSpace(spaceId).renameItem(itemId, newName);
         } catch (final MutableServiceCallException e) { // NOSONAR
             throw e.toGatewayException("An error occurred while renaming item");
+        }
+    }
+
+
+    @Override
+    public AncestorInfoEnt getAncestorInfo(final String providerId, final String spaceId, final String itemId)
+        throws ServiceCallException, LoggedOutException, NetworkException {
+        try {
+            var space = getSpaceProvider(providerId).getSpace(spaceId);
+            final var ancestorItemIds = space.getAncestorItemIds(itemId);
+            // The known project name may be outdated. Return the new name to check this e.g. on "Reveal in Space
+            // Explorer" and display a notification.
+            final var itemName = space.getItemName(itemId);
+            return builder(AncestorInfoEntBuilder.class).setItemName(itemName).setAncestorItemIds(ancestorItemIds)
+                .build();
+        } catch (MutableServiceCallException e) { // NOSONAR
+            // The project name may have changed on the remote side, so for an informative message, the name as
+            // currently known by the application is used.
+            final var projectName = m_projectManager //
+                .getProject(providerId, spaceId, itemId) //
+                .map(Project::getName) //
+                .orElse("the project");
+            throw e.toGatewayException( //
+                "Failed to reveal '%s' in space. Maybe it was deleted remotely?".formatted(projectName));
         }
     }
 

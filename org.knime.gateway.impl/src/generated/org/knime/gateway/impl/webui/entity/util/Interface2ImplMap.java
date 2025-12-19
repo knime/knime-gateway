@@ -74,6 +74,8 @@ import org.knime.gateway.api.webui.entity.AllowedNodeActionsEnt.AllowedNodeActio
 import org.knime.gateway.impl.webui.entity.DefaultAllowedNodeActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedWorkflowActionsEnt.AllowedWorkflowActionsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAllowedWorkflowActionsEnt;
+import org.knime.gateway.api.webui.entity.AncestorInfoEnt.AncestorInfoEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAncestorInfoEnt;
 import org.knime.gateway.api.webui.entity.AnnotationEnt.AnnotationEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAnnotationEnt;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventEnt.AppStateChangedEventEntBuilder;
@@ -444,6 +446,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == AllowedWorkflowActionsEntBuilder.class) {
             return (B)new DefaultAllowedWorkflowActionsEnt.DefaultAllowedWorkflowActionsEntBuilder();
+        }        
+        if(clazz == AncestorInfoEntBuilder.class) {
+            return (B)new DefaultAncestorInfoEnt.DefaultAncestorInfoEntBuilder();
         }        
         if(clazz == AnnotationEntBuilder.class) {
             return (B)new DefaultAnnotationEnt.DefaultAnnotationEntBuilder();
