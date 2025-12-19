@@ -176,6 +176,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAncestorInfoEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAncestorInfoEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAncestorInfoEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentEditorConfigEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentEditorConfigEnt">
         <filter id="1110441988">
             <message_arguments>

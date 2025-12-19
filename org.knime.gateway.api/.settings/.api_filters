@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.api" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.10.0"/>
+                <message_argument value="5.9.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/api/service/GatewayException.java" type="org.knime.gateway.api.service.GatewayException">
         <filter id="338792546">
             <message_arguments>
@@ -112,6 +120,13 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="buildSpaceGroupEnt(String, String, SpaceGroupEnt.TypeEnum, List&lt;SpaceEnt&gt;, boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AncestorInfoEnt.java" type="org.knime.gateway.api.webui.entity.AncestorInfoEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AncestorInfoEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -652,7 +667,18 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="getAncestorInfo(String, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
                 <message_argument value="getLinkVariantsForItem(String, String, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getAncestorInfo(String, String, String)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">

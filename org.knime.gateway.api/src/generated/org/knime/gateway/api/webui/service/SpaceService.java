@@ -47,6 +47,7 @@ package org.knime.gateway.api.webui.service;
 import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
+import org.knime.gateway.api.webui.entity.AncestorInfoEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -151,6 +152,20 @@ public interface SpaceService extends GatewayService {
      * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
     void deleteSchedulesForWorkflow(String spaceId, String spaceProviderId, String itemId, String scheduleId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
+        
+    /**
+     * Get ancestor information for a given space item.
+     *
+     * @param spaceProviderId Identifies a space-provider.
+     * @param spaceId The unique identifier of the space (local workspace, hub space). If &#39;local&#39; it refers to the local workspace.
+     * @param itemId The unique identifier of the space item. If &#39;root&#39;, it refers to the root directory (workflow group).
+     *
+     * @return the result
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
+     * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
+     */
+    AncestorInfoEnt getAncestorInfo(String spaceProviderId, String spaceId, String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
         
     /**
      * Returns the available link variants for the destination represented by the given provider and path.
