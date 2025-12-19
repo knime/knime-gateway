@@ -44,64 +44,53 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 27, 2023 (Paul Bärnreuther): created
+ *   Dec 19, 2025 (Paul Bärnreuther): created
  */
 package org.knime.gateway.api.entity;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.knime.core.data.property.ColorModel;
-import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ColorModelRange;
 
 /**
- * A representation of a {@link ColorModel} which is used by the frontend to handle colors. For a nominal color column,
- * we provide a map from string values to colors. For numeric columns, we provide a {@link NumericColorModelEnt}.
+ * A POJO representation of a {@link ColorModelRange} with CIELab color space interpolation, which is serialized and
+ * provided to the frontend for color interpolation with stop values and special colors.
  *
  * @author Paul Bärnreuther
+ * @since 5.10
  */
-public final class ColorModelEnt {
+public final class StopValuesCIELabModelEnt {
 
-    private enum Type {
-            NOMINAL, NUMERIC
+    private final double[] m_stopValues;
+
+    private final double[][] m_stopColorsCIELab;
+
+    private final Map<String, double[]> m_specialColors;
+
+    StopValuesCIELabModelEnt(final ColorModelRange colorModel) {
+        this.m_stopValues = colorModel.getStopValues();
+        this.m_stopColorsCIELab = colorModel.getStopColorsCIELab();
+        this.m_specialColors = convertSpecialColorsToCIELab(colorModel);
     }
 
-    private final Type m_type;
-
-    private final Object m_model;
-
-    ColorModelEnt(final ColorModel colorModel) {
-        if (colorModel instanceof ColorModelNominal) {
-            m_type = Type.NOMINAL;
-            m_model = getNominalValueToColorMap((ColorModelNominal)colorModel);
-        } else {
-            m_type = Type.NUMERIC;
-            final var colorModelRange = (ColorModelRange)colorModel;
-            if (colorModelRange.usesCIELabInterpolation()) {
-                m_model = new StopValuesCIELabModelEnt(colorModelRange);
-            } else {
-                m_model = new NumericColorModelEnt(colorModelRange);
-            }
+    private static Map<String, double[]> convertSpecialColorsToCIELab(final ColorModelRange colorModel) {
+        final Map<String, double[]> specialColorsCIELab = new HashMap<>();
+        for (final var entry : colorModel.getSpecialColorsCIELab().entrySet()) {
+            specialColorsCIELab.put(entry.getKey().name(), entry.getValue());
         }
+        return specialColorsCIELab;
     }
 
-    private static Map<String, String> getNominalValueToColorMap(final ColorModelNominal colorModel) {
-        final Map<String, String> nominalValueToColorMap = new HashMap<>();
-        for (var entry : colorModel.getColorToValueMap().entrySet()) {
-            final var color = entry.getKey();
-            final var values = entry.getValue();
-            values.forEach(value -> nominalValueToColorMap.put(value, color));
-        }
-        return nominalValueToColorMap;
+    public double[] getStopValues() {
+        return m_stopValues;
     }
 
-    public Type getType() {
-        return m_type;
+    public double[][] getStopColorsCIELab() {
+        return m_stopColorsCIELab;
     }
 
-    public Object getModel() {
-        return m_model;
+    public Map<String, double[]> getSpecialColors() {
+        return m_specialColors;
     }
-
 }
