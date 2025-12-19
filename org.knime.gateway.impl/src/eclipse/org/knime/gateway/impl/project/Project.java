@@ -274,22 +274,22 @@ public final class Project {
     /**
      * -
      *
-     * @param onWfmLoad -
+     * @param onLoad -
      * @return -
      */
-    public Project setOnWfmLoad(final Consumer<WorkflowManager> onWfmLoad) {
-        m_projectWfmCache.setOnWfmLoad(onWfmLoad);
+    public Project setOnWfmLoad(final Consumer<WorkflowManager> onLoad) {
+        m_projectWfmCache.setOnWfmLoad(onLoad);
         return this;
     }
 
     /**
      * -
      *
-     * @param onWfmLoad -
+     * @param onDispose -
      * @return -
      */
-    public Project setOnWfmDispose(final Consumer<WorkflowManager> onWfmLoad) {
-        m_projectWfmCache.setOnWfmDispose(onWfmLoad);
+    public Project setOnWfmDispose(final Consumer<WorkflowManager> onDispose) {
+        m_projectWfmCache.setOnWfmDispose(onDispose);
         return this;
     }
 

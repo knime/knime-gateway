@@ -61,7 +61,7 @@ import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer
 import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
 
 /**
- * Stores the current sync state of a workflow and notifies a callback on updates.
+ * Stores the current sync state of a project and notifies a callback on updates.
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */
@@ -69,7 +69,7 @@ final class SyncStateStore {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(SyncStateStore.class);
 
-    private final Runnable m_onUpdate;
+    private final Runnable m_onStateChange;
 
     private ProjectSyncStateEnt.StateEnum m_state = ProjectSyncStateEnt.StateEnum.SYNCED;
 
@@ -79,20 +79,20 @@ final class SyncStateStore {
 
     private boolean m_locked = false;
 
-    private Runnable m_unlockCallback = () -> {};
+    private Runnable m_onUnlock = () -> {};
 
     /**
      * Constructor needed for the {@link NoOpWorkflowSyncer}
      */
     SyncStateStore() {
-        m_onUpdate = () -> {};
+        m_onStateChange = () -> {};
     }
 
     /**
      * Constructor needed for the {@link DefaultWorkflowSyncer}
      */
-    SyncStateStore(final Runnable callback) {
-        m_onUpdate = callback;
+    SyncStateStore(final Runnable onStateChange) {
+        m_onStateChange = onStateChange;
     }
 
     ProjectSyncStateEnt.StateEnum state() {
@@ -103,16 +103,16 @@ final class SyncStateStore {
         return m_autoSyncEnabled;
     }
 
-    void lock() {
+    void deferStateChanges() {
         LOGGER.info("Locking SyncStateStore");
         m_locked = true;
     }
 
-    void unlock() {
+    void allowStateChanges() {
         LOGGER.info("Unlocking SyncStateStore");
         m_locked = false;
-        m_unlockCallback.run();
-        m_unlockCallback = () -> {
+        m_onUnlock.run();
+        m_onUnlock = () -> {
         };
     }
 
@@ -141,13 +141,13 @@ final class SyncStateStore {
      * {@link WorkflowSyncer#notifyWorkflowChanged()} is called during an ongoing workflow upload.
      *
      */
-    void deferrableUpdate(final ProjectSyncStateEnt.StateEnum state) {
+    void changeStateDeferrable(final ProjectSyncStateEnt.StateEnum newState) {
         if (m_locked) {
-            // We defer the update until unlock
-            m_unlockCallback = () -> changeState(state);
+            // We defer the update until allowStateChanges
+            m_onUnlock = () -> changeState(newState);
             return;
         }
-        changeState(state);
+        changeState(newState);
     }
 
     void changeState(final ProjectSyncStateEnt.StateEnum state) {
@@ -162,7 +162,7 @@ final class SyncStateStore {
         m_state = state;
         m_details = Optional.ofNullable(details);
         m_autoSyncEnabled = autoSyncEnabled;
-        m_onUpdate.run();
+        m_onStateChange.run();
     }
 
     void reset() {

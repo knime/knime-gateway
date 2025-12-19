@@ -144,7 +144,7 @@ public interface WorkflowSyncer {
         }
 
         private void notifyWorkflowChanged() {
-            m_syncStateStore.deferrableUpdate(ProjectSyncStateEnt.StateEnum.DIRTY);
+            m_syncStateStore.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.DIRTY);
             m_debouncedProjectSync.call();
         }
 
@@ -168,7 +168,7 @@ public interface WorkflowSyncer {
             }
 
             m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
-            m_syncStateStore.lock(); // We lock the sync state store to defer the latest deferrable update
+            m_syncStateStore.deferStateChanges(); // We deferStateChanges the sync state store to defer the latest deferrable update
             try {
                 m_hubUploader.uploadProjectWithThreshold(projectId, syncThresholdMB);
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
@@ -177,7 +177,7 @@ public interface WorkflowSyncer {
             } catch (SyncThresholdException e) {
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.DIRTY, new SyncStateStore.Details(e), false);
             } finally {
-                m_syncStateStore.unlock(); // We unlock the sync state store and apply the latest deferrable update
+                m_syncStateStore.allowStateChanges(); // We allowStateChanges the sync state store and apply the latest deferrable state change
             }
         }
 
@@ -198,7 +198,7 @@ public interface WorkflowSyncer {
             }
 
             m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
-            m_syncStateStore.lock(); // We lock the sync state store to defer the latest deferrable update
+            m_syncStateStore.deferStateChanges(); // We deferStateChanges the sync state store to defer the latest deferrable update
             try {
                 m_hubUploader.uploadProject(projectId);
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
@@ -207,7 +207,7 @@ public interface WorkflowSyncer {
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR);
                 throw e;
             } finally {
-                m_syncStateStore.unlock(); // We unlock the sync state store and apply the latest deferrable update
+                m_syncStateStore.allowStateChanges(); // We allowStateChanges the sync state store and apply the latest deferrable state change
             }
         }
 

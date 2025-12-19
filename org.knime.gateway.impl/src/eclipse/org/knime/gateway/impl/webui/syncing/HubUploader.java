@@ -78,12 +78,7 @@ final class HubUploader {
 
     /**
      * TODO:
-     *  - Get space, get item ID
      *  - How to handle "exclude data" a.k.a. reset before upload?
-     *  - Basically call {@code HubSpace.saveBackTo(...)}, but we need to handle the size check
-     *    happening in {@code HubSpaceAsyncTransfor.performAsyncUploadWithLimit(...)} a little different
-     *  - We want to either catch the exception or at least return the information that the threshold was exceeded
-     *
      * @throws SyncThresholdException if the workflow exceeds the sync threshold
      */
     void uploadProjectWithThreshold(final String projectId, final int syncThresholdMB)
