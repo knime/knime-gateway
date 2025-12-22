@@ -276,17 +276,27 @@ public interface WorkflowSyncer {
         private static final DataSize SYNC_AUTO_SAVE_THRESHOLD_DEFAULT = DataSize.ofMebibytes(10);
 
         public static SyncerConfig of(String debounceIntervalString, String sizeThresholdString) {
-            final var debounceInterval = Optional.ofNullable(debounceIntervalString) //
-                .map(s -> Integer.parseInt(s)) //
-                .map(i -> Duration.ofSeconds(i)) //
-                .orElse(SYNC_AUTO_SAVE_INTERVAL_DEFAULT);
+            final var debounceIntervalSeconds = parseNonNegativeInt(debounceIntervalString,
+                (int)SYNC_AUTO_SAVE_INTERVAL_DEFAULT.getSeconds());
+            final var sizeThresholdMebibytes = parseNonNegativeInt(sizeThresholdString,
+                (int)(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT.bytes() / (1024 * 1024)));
 
-            final var sizeThreshold = Optional.ofNullable(sizeThresholdString) //
-                .map(s -> Integer.parseInt(s)) //
-                .map(i -> DataSize.ofMebibytes(i)) //
-                .orElse(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT);
+            final var debounceInterval = Duration.ofSeconds(debounceIntervalSeconds);
+            final var sizeThreshold = DataSize.ofMebibytes(sizeThresholdMebibytes);
 
             return new SyncerConfig(debounceInterval, sizeThreshold);
+        }
+
+        private static int parseNonNegativeInt(final String value, final int defaultValue) {
+            if (value == null || value.isBlank()) {
+                return defaultValue;
+            }
+            try {
+                final var parsed = Integer.parseInt(value.trim());
+                return parsed >= 0 ? parsed : defaultValue;
+            } catch (NumberFormatException e) {
+                return defaultValue;
+            }
         }
     }
 }
