@@ -60,7 +60,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
 
 /**
- * Provides the project specific {@link WorkflowSyncer}.
+ * Provides the project-specific {@link WorkflowSyncer}.
  *
  * @author Kai Franze, KNIME GmbH, Germany
  * @since 5.10
