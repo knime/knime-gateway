@@ -197,15 +197,12 @@ public final class DefaultWorkflowService implements WorkflowService {
             LOGGER.warn("Called 'saveProject' without project id, indicating usage from Desktop environment.");
             return;
         }
-
-        if (m_workflowSyncerManager == null) {
-            LOGGER
-                .warn("Called 'saveProject' workflow syncer provider set, indicating usage from Desktop environment.");
-            return;
+        if (m_workflowSyncerManager != null) {
+            DefaultServiceContext.assertWorkflowProjectId(projectId);
+            m_workflowSyncerManager.getWorkflowSyncer(Key.of(projectId)) //
+                    .syncProjectNow(projectId);
         }
 
-        DefaultServiceContext.assertWorkflowProjectId(projectId);
-        m_workflowSyncerManager.getWorkflowSyncer(Key.of(projectId)).syncProjectNow(projectId);
     }
 
     @Override
