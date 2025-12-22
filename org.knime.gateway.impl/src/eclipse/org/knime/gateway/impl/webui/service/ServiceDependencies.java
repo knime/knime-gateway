@@ -69,7 +69,7 @@ import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncerProvider;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncerManager;
 
 /**
  * Provides and manages specific object instances that are considered to be
@@ -168,7 +168,7 @@ public final class ServiceDependencies {
      * @param nodeCategoryExtensions
      * @param selectionEventBus
      * @param linkVariants
-     * @param workflowSyncerProvider
+     * @param workflowSyncerManager
      * @since 5.10
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
@@ -187,7 +187,7 @@ public final class ServiceDependencies {
             final NodeCategoryExtensions nodeCategoryExtensions, //
             final SelectionEventBus selectionEventBus,
             final LinkVariants linkVariants, //
-            final WorkflowSyncerProvider workflowSyncerProvider) {
+            final WorkflowSyncerManager workflowSyncerManager) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -204,7 +204,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, nodeCategoryExtensions);
             ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
             ServiceDependencies.setServiceDependency(LinkVariants.class, linkVariants);
-            ServiceDependencies.setServiceDependency(WorkflowSyncerProvider.class, workflowSyncerProvider);
+            ServiceDependencies.setServiceDependency(WorkflowSyncerManager.class, workflowSyncerManager);
         } else {
             throw new IllegalStateException(
                     "Some services are already initialized. Service dependencies can't be set anymore. "
