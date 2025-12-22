@@ -59,6 +59,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutExcep
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
+import org.knime.gateway.api.util.DataSize;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 
 /**
@@ -81,7 +82,7 @@ final class HubUploader {
      *  - How to handle "exclude data" a.k.a. reset before upload?
      * @throws SyncThresholdException if the workflow exceeds the sync threshold
      */
-    void uploadProjectWithThreshold(final String projectId, final int syncThresholdMB)
+    void uploadProjectWithThreshold(final String projectId, final DataSize syncThreshold)
         throws IOException, SyncThresholdException {
         var context = WorkflowManagerResolver.get(projectId).getContextV2();
 
@@ -99,8 +100,7 @@ final class HubUploader {
                 .map(SpaceProvider.SpaceProviderConnection::getResetOnUploadMode) //
                 .map(ResetOnUploadEnum.MANDATORY::equals) //
                 .orElse(false);
-            final var uploadLimitBytes = syncThresholdMB * 1024L * 1024L;
-            space.saveBackToWithLimit(localWorkflow, targetURI, excludeDataInWorkflows, uploadLimitBytes,
+            space.saveBackToWithLimit(localWorkflow, targetURI, excludeDataInWorkflows, syncThreshold.bytes(),
                 msg -> new SyncThresholdException(msg));
 
             LOGGER.info("Upload to Hub for project ID " + projectId + " completed successfully.");

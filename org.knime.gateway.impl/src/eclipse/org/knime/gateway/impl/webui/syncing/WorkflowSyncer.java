@@ -58,6 +58,7 @@ import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.api.util.DataSize;
 import org.knime.gateway.impl.util.Debouncer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -124,13 +125,13 @@ public interface WorkflowSyncer {
         private final Debouncer m_debouncedProjectSync;
 
         DefaultWorkflowSyncer(final AppStateUpdater appStateUpdater, final SpaceProvider spaceProvider,
-            final Duration syncDelay, final int syncThresholdMB, final String projectId) {
+                              final Duration syncDelay, final DataSize syncThreshold, final String projectId) {
             m_syncStateStore = new SyncStateStore(appStateUpdater::updateAppState);
             m_workflowListener = new SyncingListener(this::notifyWorkflowChanged);
             m_localSaver = new LocalSaver();
             m_hubUploader = new HubUploader(spaceProvider);
             m_debouncedProjectSync = new Debouncer(syncDelay, //
-                () -> syncProjectAutomatically(projectId, syncThresholdMB));
+                () -> syncProjectAutomatically(projectId, syncThreshold));
         }
 
         @Override
@@ -151,7 +152,7 @@ public interface WorkflowSyncer {
         /**
          * Synchronizes the project via the auto-sync mechanism
          */
-        private void syncProjectAutomatically(final String projectId, final int syncThresholdMB) {
+        private void syncProjectAutomatically(final String projectId, final DataSize syncThreshold) {
             if (!m_syncStateStore.isAutoSyncEnabled()) {
                 return;
             }
@@ -170,7 +171,7 @@ public interface WorkflowSyncer {
             m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
             m_syncStateStore.deferStateChanges(); // We deferStateChanges the sync state store to defer the latest deferrable update
             try {
-                m_hubUploader.uploadProjectWithThreshold(projectId, syncThresholdMB);
+                m_hubUploader.uploadProjectWithThreshold(projectId, syncThreshold);
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
             } catch (IOException e) {
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
