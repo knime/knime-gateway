@@ -89,11 +89,6 @@ public interface WorkflowSyncer {
     ProjectSyncStateEnt getProjectSyncState();
 
     /**
-     * Resets the project sync state.
-     */
-    void resetProjectSyncState();
-
-    /**
      * To manually synchronize the project
      *
      * @throws ServiceCallException -
@@ -147,11 +142,6 @@ public interface WorkflowSyncer {
         @Override
         public ProjectSyncStateEnt getProjectSyncState() {
             return m_syncStateStore.buildSyncStateEnt();
-        }
-
-        @Override
-        public void resetProjectSyncState() {
-            m_syncStateStore.reset();
         }
 
         private void notifyWorkflowChanged() {
