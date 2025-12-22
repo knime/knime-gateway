@@ -69,14 +69,6 @@ public final class WorkflowSyncerManager {
 
     private final Map<Key, WorkflowSyncer> m_workflowSyncers = new ConcurrentHashMap<>();
 
-    private final AppStateUpdater m_appStateUpdater;
-
-    private final SpaceProvidersManager m_spaceProvidersManager;
-
-    private final Duration m_debounceInterval;
-
-    private final DataSize m_syncThreshold;
-
     /**
      * Creates a new {link WorkflowSyncProvider}.
      *
@@ -85,23 +77,7 @@ public final class WorkflowSyncerManager {
      * @param syncDelay -
      * @param syncThresholdMB -
      */
-    public WorkflowSyncerManager(final AppStateUpdater appStateUpdater,
-        final SpaceProvidersManager spaceProvidersManager, final Duration syncDelay, final DataSize syncThresholdMB) {
-        m_appStateUpdater = appStateUpdater;
-        m_spaceProvidersManager = spaceProvidersManager;
-        m_debounceInterval = syncDelay;
-        m_syncThreshold = syncThresholdMB;
-    }
-
-    /**
-     * @throws IllegalStateException if no {@link SpaceProvider} is available for the given key
-     */
-    private static SpaceProvider getSpaceProvider(final SpaceProvidersManager spaceProvidersManager, final Key key) {
-        return spaceProvidersManager.getSpaceProviders(key) //
-            .getAllSpaceProviders() //
-            .stream() //
-            .findFirst() //
-            .orElseThrow(() -> new IllegalStateException("No SpaceProvider available for key: " + key));
+    public WorkflowSyncerManager() {
     }
 
     /**
@@ -111,11 +87,14 @@ public final class WorkflowSyncerManager {
      * @return The {@link WorkflowSyncer} associated with the {@link Key}
      */
     public WorkflowSyncer getWorkflowSyncer(final Key key) {
-        return m_workflowSyncers.computeIfAbsent(key, k -> {
-            final var spaceProvider = getSpaceProvider(m_spaceProvidersManager, k);
-            final var projectId = key.toString();
-            return new DefaultWorkflowSyncer(m_appStateUpdater, spaceProvider, m_debounceInterval, m_syncThreshold,
-                projectId);
-        });
+        return m_workflowSyncers.get(key);
+    }
+
+    public void put(final Key key, final WorkflowSyncer syncer) {
+        m_workflowSyncers.put(key, syncer);
+    }
+
+    public void remove(Key sessionKey) {
+        m_workflowSyncers.remove(sessionKey);
     }
 }

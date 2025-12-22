@@ -54,11 +54,11 @@ import java.time.Duration;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.util.DataSize;
 import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.api.util.DataSize;
 import org.knime.gateway.impl.util.Debouncer;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -72,6 +72,18 @@ import org.knime.gateway.impl.webui.syncing.LocalSaver.SyncWhileWorkflowExecutin
  * @since 5.10
  */
 public interface WorkflowSyncer {
+
+    /** Defines the auto-save interval for syncing workflows in seconds */
+    String SYNC_AUTO_SAVE_INTERVAL_PROP = "com.knime.gateway.executor.sync.autoSaveInterval";
+
+    /** Defines the auto-save threshold for syncing workflows in megabytes */
+    String SYNC_AUTO_SAVE_THRESHOLD_PROP = "com.knime.gateway.executor.sync.autoSaveThreshold";
+
+    Duration SYNC_AUTO_SAVE_INTERVAL_DEFAULT = Duration.ofSeconds(15);
+
+    DataSize SYNC_AUTO_SAVE_THRESHOLD_DEFAULT = DataSize.ofMebibytes(10);
+
+    String SYNC_AUTO_SAVE_DISABLED = "com.knime.gateway.executor.sync.disabled";
 
     /**
      * @return the current project sync state
@@ -110,7 +122,7 @@ public interface WorkflowSyncer {
     /**
      * Default implementation of {@link WorkflowSyncer}.
      */
-    static final class DefaultWorkflowSyncer implements WorkflowSyncer {
+    public static final class DefaultWorkflowSyncer implements WorkflowSyncer {
 
         private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowSyncer.class);
 
@@ -124,8 +136,8 @@ public interface WorkflowSyncer {
 
         private final Debouncer m_debouncedProjectSync;
 
-        DefaultWorkflowSyncer(final AppStateUpdater appStateUpdater, final SpaceProvider spaceProvider,
-                              final Duration syncDelay, final DataSize syncThreshold, final String projectId) {
+        public DefaultWorkflowSyncer(final AppStateUpdater appStateUpdater, final SpaceProvider spaceProvider,
+            final Duration syncDelay, final DataSize syncThreshold, final String projectId) {
             m_syncStateStore = new SyncStateStore(appStateUpdater::updateAppState);
             m_workflowListener = new SyncingListener(this::notifyWorkflowChanged);
             m_localSaver = new LocalSaver();
