@@ -63,7 +63,7 @@ import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncerProvider;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncerManager;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.
@@ -94,8 +94,8 @@ public final class DefaultApplicationService implements ApplicationService {
 
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
-    private final WorkflowSyncerProvider m_workflowSyncerProvider =
-        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, false);
+    private final WorkflowSyncerManager m_workflowSyncerManager =
+        ServiceDependencies.getServiceDependency(WorkflowSyncerManager.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -122,7 +122,7 @@ public final class DefaultApplicationService implements ApplicationService {
         var projectId = DefaultServiceContext.getProjectId();
         var key = projectId.map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
-        var workflowSyncer = Optional.ofNullable(m_workflowSyncerProvider) //
+        var workflowSyncer = Optional.ofNullable(m_workflowSyncerManager) //
             .map(provider -> provider.getWorkflowSyncer(key)) //
             .orElse(null);
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;

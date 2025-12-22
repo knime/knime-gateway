@@ -86,7 +86,7 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncerProvider;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncerManager;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -111,8 +111,8 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     private final LinkVariants m_linkVariants = ServiceDependencies.getServiceDependency(LinkVariants.class, false);
 
-    private final WorkflowSyncerProvider m_workflowSyncerProvider =
-        ServiceDependencies.getServiceDependency(WorkflowSyncerProvider.class, false);
+    private final WorkflowSyncerManager m_workflowSyncerManager =
+        ServiceDependencies.getServiceDependency(WorkflowSyncerManager.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -198,14 +198,14 @@ public final class DefaultWorkflowService implements WorkflowService {
             return;
         }
 
-        if (m_workflowSyncerProvider == null) {
+        if (m_workflowSyncerManager == null) {
             LOGGER
                 .warn("Called 'saveProject' workflow syncer provider set, indicating usage from Desktop environment.");
             return;
         }
 
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        m_workflowSyncerProvider.getWorkflowSyncer(Key.of(projectId)).syncProjectNow(projectId);
+        m_workflowSyncerManager.getWorkflowSyncer(Key.of(projectId)).syncProjectNow(projectId);
     }
 
     @Override

@@ -58,7 +58,6 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
 import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
 
 /**
  * Provides the project specific {@link WorkflowSyncer}.
@@ -66,9 +65,7 @@ import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
  * @author Kai Franze, KNIME GmbH, Germany
  * @since 5.10
  */
-public final class WorkflowSyncerProvider {
-
-    private static final WorkflowSyncerProvider NO_OP = new WorkflowSyncerProvider(null, null, Duration.ZERO, DataSize.ZERO);
+public final class WorkflowSyncerManager {
 
     private final Map<Key, WorkflowSyncer> m_workflowSyncers = new ConcurrentHashMap<>();
 
@@ -88,7 +85,7 @@ public final class WorkflowSyncerProvider {
      * @param syncDelay -
      * @param syncThresholdMB -
      */
-    public WorkflowSyncerProvider(final AppStateUpdater appStateUpdater,
+    public WorkflowSyncerManager(final AppStateUpdater appStateUpdater,
         final SpaceProvidersManager spaceProvidersManager, final Duration syncDelay, final DataSize syncThresholdMB) {
         m_appStateUpdater = appStateUpdater;
         m_spaceProvidersManager = spaceProvidersManager;
@@ -97,26 +94,9 @@ public final class WorkflowSyncerProvider {
     }
 
     /**
-     * Creates a disabled {link WorkflowSyncProvider} that always returns {link NoOpWorkflowSyncer}.
-     *
-     * @return A disabled {@link WorkflowSyncerProvider}
-     */
-    public static WorkflowSyncerProvider disabled() {
-        return NO_OP;
-    }
-
-    private boolean isEnabled() {
-        return m_debounceInterval.isPositive() //
-            && m_syncThreshold.bytes() >= 0 //
-            && m_appStateUpdater != null //
-            && m_spaceProvidersManager != null;
-    }
-
-    /**
      * @throws IllegalStateException if no {@link SpaceProvider} is available for the given key
      */
-    private static SpaceProvider getSpaceProvider(final SpaceProvidersManager spaceProvidersManager,
-        final Key key) {
+    private static SpaceProvider getSpaceProvider(final SpaceProvidersManager spaceProvidersManager, final Key key) {
         return spaceProvidersManager.getSpaceProviders(key) //
             .getAllSpaceProviders() //
             .stream() //
@@ -132,10 +112,6 @@ public final class WorkflowSyncerProvider {
      */
     public WorkflowSyncer getWorkflowSyncer(final Key key) {
         return m_workflowSyncers.computeIfAbsent(key, k -> {
-            if (!isEnabled()) {
-                return new NoOpWorkflowSyncer();
-            }
-
             final var spaceProvider = getSpaceProvider(m_spaceProvidersManager, k);
             final var projectId = key.toString();
             return new DefaultWorkflowSyncer(m_appStateUpdater, spaceProvider, m_debounceInterval, m_syncThreshold,
