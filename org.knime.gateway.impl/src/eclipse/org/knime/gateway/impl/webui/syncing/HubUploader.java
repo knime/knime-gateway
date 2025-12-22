@@ -83,16 +83,16 @@ final class HubUploader {
      *  - How to handle "exclude data" a.k.a. reset before upload?
      * @throws SyncThresholdException if the workflow exceeds the sync threshold
      */
-    void uploadProjectWithThreshold(final String projectId, final DataSize syncThreshold)
+    void uploadProjectWithThreshold(final WorkflowManager wfm, final DataSize syncThreshold)
         throws IOException, SyncThresholdException {
-        var context = WorkflowManagerResolver.get(projectId).getContextV2();
+        var context = wfm.getContextV2();
 
         if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
             throw new UnsupportedOperationException("Uploading is only supported for workflows stored in Hub spaces.");
         }
 
         try {
-            LOGGER.info("Uploading workflow to Hub for project ID: " + projectId);
+            LOGGER.info("Uploading workflow to Hub");
 
             final var space = m_spaceProvider.getSpace(hubInfo.getSpaceItemId());
             final var localWorkflow = context.getExecutorInfo().getLocalWorkflowPath();
@@ -104,9 +104,9 @@ final class HubUploader {
             space.saveBackToWithLimit(localWorkflow, targetURI, excludeDataInWorkflows, syncThreshold.bytes(),
                 msg -> new SyncThresholdException(msg));
 
-            LOGGER.info("Upload to Hub for project ID " + projectId + " completed successfully.");
+            LOGGER.info("Upload to Hub completed successfully.");
         } catch (LoggedOutException | MutableServiceCallException | NetworkException e) {
-            throw new IOException("Failed to upload workflow for project ID <%s>".formatted(projectId), e);
+            throw new IOException("Failed to upload workflow", e);
         }
     }
 

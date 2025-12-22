@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.syncing;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Optional;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowListener;
@@ -80,10 +81,6 @@ public interface WorkflowSyncer {
     /** Defines the auto-save threshold for syncing workflows in megabytes */
     String SYNC_AUTO_SAVE_THRESHOLD_PROP = "com.knime.gateway.executor.sync.autoSaveThreshold";
 
-    Duration SYNC_AUTO_SAVE_INTERVAL_DEFAULT = Duration.ofSeconds(15);
-
-    DataSize SYNC_AUTO_SAVE_THRESHOLD_DEFAULT = DataSize.ofMebibytes(10);
-
     String SYNC_AUTO_SAVE_DISABLED = "com.knime.gateway.executor.sync.disabled";
 
     /**
@@ -100,17 +97,10 @@ public interface WorkflowSyncer {
      * To manually synchronize the project
      *
      * @throws ServiceCallException -
-     * @throws LoggedOutException   -
-     * @throws NetworkException     -
+     * @throws LoggedOutException -
+     * @throws NetworkException -
      */
     void syncProjectNow() throws ServiceCallException, LoggedOutException, NetworkException;
-
-    /**
-     * To register listeners on the workflow when it is loaded.
-     *
-     * @param wfm -
-     */
-    void attach(final WorkflowManager wfm);
 
     /**
      * To unregister listeners on the workflow when it is disposed.
@@ -136,14 +126,22 @@ public interface WorkflowSyncer {
 
         private WorkflowManager m_wfm;
 
-        public DefaultWorkflowSyncer(final AppStateUpdater appStateUpdater, final SpaceProvider spaceProvider,
-            final Duration syncDelay, final DataSize syncThreshold, final String projectId) {
-            m_syncStateStore = new SyncStateStore(appStateUpdater::updateAppState);
+        public static record Dependencies(AppStateUpdater appStateUpdater, SpaceProvider provider) {
+
+        }
+
+        public DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config, Dependencies dependencies) {
+            m_syncStateStore = new SyncStateStore(() -> dependencies.appStateUpdater().updateAppState());
             m_workflowListener = new SyncingListener(this::notifyWorkflowChanged);
             m_localSaver = new LocalSaver();
-            m_hubUploader = new HubUploader(spaceProvider);
-            m_debouncedProjectSync = new Debouncer(syncDelay, //
-                () -> syncProjectAutomatically(projectId, syncThreshold));
+            m_hubUploader = new HubUploader(dependencies.provider());
+            m_debouncedProjectSync = new Debouncer( //
+                config.debounceInterval(), //
+                () -> syncProjectAutomatically(config.sizeThreshold()) //
+            );
+            LOGGER.info("'attach' called for workflow <%s>".formatted(targetWfm.getName()));
+            m_wfm = targetWfm;
+            targetWfm.addListener(m_workflowListener);
         }
 
         @Override
@@ -164,7 +162,7 @@ public interface WorkflowSyncer {
         /**
          * Synchronizes the project via the auto-sync mechanism
          */
-        private void syncProjectAutomatically(final String projectId, final DataSize syncThreshold) {
+        private void syncProjectAutomatically(final DataSize syncThreshold) {
             if (!m_syncStateStore.isAutoSyncEnabled()) {
                 return;
             }
@@ -183,7 +181,7 @@ public interface WorkflowSyncer {
             m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
             m_syncStateStore.deferStateChanges(); // We deferStateChanges the sync state store to defer the latest deferrable update
             try {
-                m_hubUploader.uploadProjectWithThreshold(projectId, syncThreshold);
+                m_hubUploader.uploadProjectWithThreshold(m_wfm, syncThreshold);
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
             } catch (IOException e) {
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
@@ -195,8 +193,7 @@ public interface WorkflowSyncer {
         }
 
         @Override
-        public void syncProjectNow()
-            throws ServiceCallException, LoggedOutException, NetworkException {
+        public void syncProjectNow() throws ServiceCallException, LoggedOutException, NetworkException {
             assertIsNotSyncing(m_syncStateStore.state());
 
             m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.WRITING);
@@ -258,13 +255,6 @@ public interface WorkflowSyncer {
         }
 
         @Override
-        public void attach(final WorkflowManager wfm) {
-            LOGGER.info("'attach' called for workflow <%s>".formatted(wfm.getName()));
-            wfm.addListener(m_workflowListener);
-            m_wfm = wfm;
-        }
-
-        @Override
         public void dispose() {
             LOGGER.info("'dispose' called for workflow <%s>".formatted(m_wfm.getName()));
             m_wfm.removeListener(m_workflowListener);
@@ -287,6 +277,26 @@ public interface WorkflowSyncer {
         @Override
         public void dispose() {
             m_syncer.dispose();
+        }
+    }
+
+    record SyncerConfig(Duration debounceInterval, DataSize sizeThreshold) {
+        private static final Duration SYNC_AUTO_SAVE_INTERVAL_DEFAULT = Duration.ofSeconds(15);
+
+        private static final DataSize SYNC_AUTO_SAVE_THRESHOLD_DEFAULT = DataSize.ofMebibytes(10);
+
+        public static SyncerConfig of(String debounceIntervalString, String sizeThresholdString) {
+            final var debounceInterval = Optional.ofNullable(debounceIntervalString) //
+                .map(s -> Integer.parseInt(s)) //
+                .map(i -> Duration.ofSeconds(i)) //
+                .orElse(SYNC_AUTO_SAVE_INTERVAL_DEFAULT);
+
+            final var sizeThreshold = Optional.ofNullable(sizeThresholdString) //
+                .map(s -> Integer.parseInt(s)) //
+                .map(i -> DataSize.ofMebibytes(i)) //
+                .orElse(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT);
+
+            return new SyncerConfig(debounceInterval, sizeThreshold);
         }
     }
 }
