@@ -92,14 +92,6 @@ class ProjectWfmCache {
             (removedVersion, removedWfm) -> disposeWorkflowManager(removedWfm));
     }
 
-    void setOnWfmLoad(final Consumer<WorkflowManager> onWfmLoad) {
-        this.m_onWfmLoad = onWfmLoad;
-    }
-
-    void setOnWfmDispose(final Consumer<WorkflowManager> onWfmDispose) {
-        this.m_onWfmDispose = onWfmDispose;
-    }
-
     Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
         if (version instanceof VersionId.Fixed fixedVersion) {
             return Optional.ofNullable(m_fixedVersions.get(fixedVersion));

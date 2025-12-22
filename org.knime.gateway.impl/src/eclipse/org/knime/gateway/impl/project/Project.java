@@ -48,7 +48,6 @@ package org.knime.gateway.impl.project;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -268,28 +267,6 @@ public final class Project {
         } else {
             m_projectWfmCache = new ProjectWfmCache(loader);
         }
-        return this;
-    }
-
-    /**
-     * -
-     *
-     * @param onLoad -
-     * @return -
-     */
-    public Project setOnWfmLoad(final Consumer<WorkflowManager> onLoad) {
-        m_projectWfmCache.setOnWfmLoad(onLoad);
-        return this;
-    }
-
-    /**
-     * -
-     *
-     * @param onDispose -
-     * @return -
-     */
-    public Project setOnWfmDispose(final Consumer<WorkflowManager> onDispose) {
-        m_projectWfmCache.setOnWfmDispose(onDispose);
         return this;
     }
 
