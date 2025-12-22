@@ -80,8 +80,7 @@ public final class WorkflowSyncerManager {
      * Get the {@link WorkflowSyncer} for the given key.
      *
      * @param key
-     * @return non-null, the {@link WorkflowSyncer} associated with the {@link Key}
-     * @throws NoSuchElementException if there is no value for the queried key
+     * @return -
      */
     public Optional<WorkflowSyncer> getWorkflowSyncer(final Key key) {
         return Optional.ofNullable(m_workflowSyncers.get(key));
