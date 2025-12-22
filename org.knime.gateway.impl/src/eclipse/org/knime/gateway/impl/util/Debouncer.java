@@ -52,6 +52,7 @@ import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -62,13 +63,28 @@ import java.util.concurrent.TimeUnit;
  */
 public final class Debouncer {
 
-    private final ScheduledExecutorService m_scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService m_scheduler =
+        Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
 
     private final Duration m_delay;
 
     private ScheduledFuture<?> m_pendingTask;
 
     private final Runnable m_task;
+
+    /**
+     * Daemon threads do not block JVM shutdown even if call to {@link this#shutdown()} is missed.
+     */
+    private static final class DaemonThreadFactory implements ThreadFactory {
+
+        @Override
+        public Thread newThread(final Runnable r) {
+            final var t = new Thread(r);
+            t.setDaemon(true);
+            t.setName("debouncer-" + t.getId());
+            return t;
+        }
+    }
 
     /**
      * Creates a new Debouncer.
