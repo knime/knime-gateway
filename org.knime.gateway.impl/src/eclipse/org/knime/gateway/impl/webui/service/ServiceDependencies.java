@@ -69,24 +69,18 @@ import org.knime.gateway.impl.webui.service.events.EventConsumer;
 import org.knime.gateway.impl.webui.service.events.SelectionEventBus;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncerManager;
 
 /**
- * Provides and manages specific object instances that are considered to be
- * dependencies for the implementation of
+ * Provides and manages specific object instances that are considered to be dependencies for the implementation of
  * {@link GatewayService}s.
  * <p>
- * An instance should be managed through this mechanism if it is shared between
- * services or requires context-specific
+ * An instance should be managed through this mechanism if it is shared between services or requires context-specific
  * initialization.
  * <p>
- * Service dependencies should be obtained via
- * {@link #getServiceDependency(Class, boolean)}. This should be called in
- * the main class of the service (and not in any other helper classes) such that
- * dependencies are easily visible.
+ * Service dependencies should be obtained via {@link #getServiceDependency(Class, boolean)}. This should be called in
+ * the main class of the service (and not in any other helper classes) such that dependencies are easily visible.
  * <p>
- * Unless actually required, {@link #getServiceDependency(Class, boolean)}
- * should be called with
+ * Unless actually required, {@link #getServiceDependency(Class, boolean)} should be called with
  * {@code isRequired=false} and absence handled by the caller.
  *
  * @author Kai Franze, KNIME GmbH
@@ -106,34 +100,32 @@ public final class ServiceDependencies {
      * Return a dependency instance based on its class
      *
      * @param <T>
-     * @param key        the service dependency-class requested
+     * @param key the service dependency-class requested
      * @param isRequired whether the dependency is required
-     * @return an instance of the given class or {@code null} if it's not present
-     *         and not required
+     * @return an instance of the given class or {@code null} if it's not present and not required
      * @throws IllegalStateException if there is no implementation registered
      */
     @SuppressWarnings("unchecked")
     static <T> T getServiceDependency(final Class<T> key, final boolean isRequired) {
         if (isRequired && !DEPENDENCIES.containsKey(key)) {
             throw new IllegalStateException(
-                    "No instance for class " + key.getName() + " given but required as a service dependency");
+                "No instance for class " + key.getName() + " given but required as a service dependency");
         }
-        return (T) DEPENDENCIES.get(key);
+        return (T)DEPENDENCIES.get(key);
     }
 
     /**
      * Make a dependency available
      *
      * @param clazz The class characterizing the dependency
-     * @param impl  The implementation of `clazz` to be served as the dependency
-     * @param <T>   The concrete type of the dependency instance
-     * @throws IllegalStateException if the dependency is already set or if the
-     *                               services are already initialized
+     * @param impl The implementation of `clazz` to be served as the dependency
+     * @param <T> The concrete type of the dependency instance
+     * @throws IllegalStateException if the dependency is already set or if the services are already initialized
      */
     public static <T> void setServiceDependency(final Class<T> clazz, final T impl) {
         if (ServiceInstances.areServicesInitialized()) {
             throw new IllegalStateException(
-                    "Some services are already initialized. Service dependencies can't be set anymore.");
+                "Some services are already initialized. Service dependencies can't be set anymore.");
         }
         if (!allowDependencyOverwrite && DEPENDENCIES.get(clazz) != null) {
             throw new IllegalStateException("Only one dependency can be registered at a time");
@@ -150,44 +142,41 @@ public final class ServiceDependencies {
     }
 
     /**
-     * Helper to set all dependencies required by the default service
-     * implementations.
+     * Helper to set all dependencies required by the default service implementations.
      *
      * @param projectManager
      * @param workflowMiddleware
-     * @param appStateUpdater        The application state updater
-     * @param eventConsumer          The event consumer
-     * @param spaceProvidersManager  The space providers
-     * @param updateStateProvider    The update state provider
+     * @param appStateUpdater The application state updater
+     * @param eventConsumer The event consumer
+     * @param spaceProvidersManager The space providers
+     * @param updateStateProvider The update state provider
      * @param nodeRepo
      * @param preferencesProvider
      * @param nodeFactoryProvider
-     * @param kaiHandler             handle K-AI related requests
-     * @param codeKaiHandler         handle K-AI requests of scripting editors
+     * @param kaiHandler handle K-AI related requests
+     * @param codeKaiHandler handle K-AI requests of scripting editors
      * @param nodeCollections
      * @param nodeCategoryExtensions
      * @param selectionEventBus
      * @param linkVariants
-     * @param workflowSyncerManager
      * @since 5.10
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
-            final ProjectManager projectManager, //
-            final WorkflowMiddleware workflowMiddleware, //
-            final AppStateUpdater appStateUpdater, //
-            final EventConsumer eventConsumer, //
-            final SpaceProvidersManager spaceProvidersManager, //
-            final UpdateStateProvider updateStateProvider, //
-            final NodeRepository nodeRepo, //
-            final PreferencesProvider preferencesProvider, //
-            final NodeFactoryProvider nodeFactoryProvider, //
-            final KaiHandler kaiHandler, //
-            final CodeKaiHandler codeKaiHandler, //
-            final NodeCollections nodeCollections, //
-            final NodeCategoryExtensions nodeCategoryExtensions, //
-            final SelectionEventBus selectionEventBus,
-            final LinkVariants linkVariants, //
-            final WorkflowSyncerManager workflowSyncerManager) {
+        final ProjectManager projectManager, //
+        final WorkflowMiddleware workflowMiddleware, //
+        final AppStateUpdater appStateUpdater, //
+        final EventConsumer eventConsumer, //
+        final SpaceProvidersManager spaceProvidersManager, //
+        final UpdateStateProvider updateStateProvider, //
+        final NodeRepository nodeRepo, //
+        final PreferencesProvider preferencesProvider, //
+        final NodeFactoryProvider nodeFactoryProvider, //
+        final KaiHandler kaiHandler, //
+        final CodeKaiHandler codeKaiHandler, //
+        final NodeCollections nodeCollections, //
+        final NodeCategoryExtensions nodeCategoryExtensions, //
+        final SelectionEventBus selectionEventBus, final LinkVariants linkVariants //
+    ) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -204,12 +193,11 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, nodeCategoryExtensions);
             ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
             ServiceDependencies.setServiceDependency(LinkVariants.class, linkVariants);
-            ServiceDependencies.setServiceDependency(WorkflowSyncerManager.class, workflowSyncerManager);
         } else {
             throw new IllegalStateException(
-                    "Some services are already initialized. Service dependencies can't be set anymore. "
-                            + "Maybe you already started a Web UI within the AP and have now tried to launch "
-                            + "another instance in a browser, or vice versa?");
+                "Some services are already initialized. Service dependencies can't be set anymore. "
+                    + "Maybe you already started a Web UI within the AP and have now tried to launch "
+                    + "another instance in a browser, or vice versa?");
         }
     }
 

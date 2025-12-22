@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.knime.gateway.api.webui.entity.AppStateEnt;
@@ -63,7 +62,7 @@ import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncerManager;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.
@@ -94,9 +93,6 @@ public final class DefaultApplicationService implements ApplicationService {
 
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
-    private final WorkflowSyncerManager m_workflowSyncerManager =
-        ServiceDependencies.getServiceDependency(WorkflowSyncerManager.class, false);
-
     /**
      * Returns the singleton instance for this service.
      *
@@ -119,11 +115,14 @@ public final class DefaultApplicationService implements ApplicationService {
 
     @Override
     public AppStateEnt getState() {
-        var projectId = DefaultServiceContext.getProjectId();
+        var projectId = DefaultServiceContext.getProjectId(); // ~todo smelly
         var key = projectId.map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
-        var workflowSyncer = Optional.ofNullable(m_workflowSyncerManager) //
-            .flatMap(manager -> manager.getWorkflowSyncer(key)) //
+        // ~todo should not be part of app state imo
+        var workflowSyncer = m_projectManager.getProject(projectId.orElseThrow()).orElseThrow() //
+            .getWorkflowManagerIfLoaded().orElseThrow() //
+            .getWorkflowResourceCache().getFromCache(WorkflowSyncer.WorkflowSyncerResource.class) //
+            .map(res -> res.get()) //
             .orElse(null);
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,

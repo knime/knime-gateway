@@ -72,14 +72,10 @@ final class LocalSaver {
      * @throws IOException if saving the workflow fails
      */
     @SuppressWarnings("static-method") // Even though this method is static, we keep it non-static for consistency.
-    void saveProject(final String projectId)
+    void saveProject(final WorkflowManager wfm)
         throws IOException, SyncWhileWorkflowExecutingException {
-        LOGGER.info("Saving workflow with project ID: " + projectId);
-
-        final var wfm = WorkflowManagerResolver.get(projectId);
         assertIsWorkflowProject(wfm);
         assertWorkflowNotExecuting(wfm);
-
         try {
             wfm.save( //
                 wfm.getContextV2().getExecutorInfo().getLocalWorkflowPath().toFile(), //
@@ -87,10 +83,8 @@ final class LocalSaver {
                 true //
             );
         } catch (final IOException | CanceledExecutionException | LockFailedException e) {
-            throw new IOException("Failed to save workflow for project ID <%s>".formatted(projectId), e);
+            throw new IOException("Failed to save workflow", e);
         }
-
-        LOGGER.info("Workflow saved successfully for project ID: " + projectId);
     }
 
     /**

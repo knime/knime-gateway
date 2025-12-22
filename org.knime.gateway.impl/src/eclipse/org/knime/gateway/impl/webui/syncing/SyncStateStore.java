@@ -58,7 +58,6 @@ import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.entity.SyncStateDetailsEnt;
 import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
 
 /**
  * Stores the current sync state of a project and notifies a callback on updates.
@@ -80,13 +79,6 @@ final class SyncStateStore {
     private boolean m_locked = false;
 
     private Runnable m_onUnlock = () -> {};
-
-    /**
-     * Constructor needed for the {@link NoOpWorkflowSyncer}
-     */
-    SyncStateStore() {
-        m_onStateChange = () -> {};
-    }
 
     /**
      * Constructor needed for the {@link DefaultWorkflowSyncer}
