@@ -48,17 +48,12 @@
  */
 package org.knime.gateway.impl.webui.syncing;
 
-import java.time.Duration;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.knime.gateway.api.util.DataSize;
-import org.knime.gateway.impl.webui.AppStateUpdater;
-import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
 
 /**
  * Provides the project-specific {@link WorkflowSyncer}.
@@ -88,12 +83,8 @@ public final class WorkflowSyncerManager {
      * @return non-null, the {@link WorkflowSyncer} associated with the {@link Key}
      * @throws NoSuchElementException if there is no value for the queried key
      */
-    public WorkflowSyncer getWorkflowSyncer(final Key key) {
-        var res = m_workflowSyncers.get(key);
-        if (res == null) {
-            throw new NoSuchElementException("No instance set for key " + key);
-        }
-        return res;
+    public Optional<WorkflowSyncer> getWorkflowSyncer(final Key key) {
+        return Optional.ofNullable(m_workflowSyncers.get(key));
     }
 
     public void put(final Key key, final WorkflowSyncer syncer) {

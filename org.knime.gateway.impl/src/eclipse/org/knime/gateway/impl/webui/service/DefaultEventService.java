@@ -157,7 +157,7 @@ public final class DefaultEventService implements EventService {
                         .orElse(SpaceProvidersManager.Key.defaultKey());
                     var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
                     var workflowSyncer = Optional.ofNullable(m_workflowSyncerManager) //
-                        .map(provider -> provider.getWorkflowSyncer(key)) //
+                        .flatMap(provider -> provider.getWorkflowSyncer(key)) //
                         .orElse(null);
                     var dependencies = new AppStateEntityFactory.ServiceDependencies( //
                         m_projectManager, //
