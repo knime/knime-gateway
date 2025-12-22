@@ -54,6 +54,7 @@ import java.time.Duration;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowResourceCache;
 import org.knime.gateway.api.util.DataSize;
 import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
@@ -98,26 +99,23 @@ public interface WorkflowSyncer {
     /**
      * To manually synchronize the project
      *
-     * @param projectId -
      * @throws ServiceCallException -
-     * @throws LoggedOutException -
-     * @throws NetworkException -
+     * @throws LoggedOutException   -
+     * @throws NetworkException     -
      */
-    void syncProjectNow(final String projectId) throws ServiceCallException, LoggedOutException, NetworkException;
+    void syncProjectNow() throws ServiceCallException, LoggedOutException, NetworkException;
 
     /**
      * To register listeners on the workflow when it is loaded.
      *
      * @param wfm -
      */
-    void onWfmLoad(final WorkflowManager wfm);
+    void attach(final WorkflowManager wfm);
 
     /**
      * To unregister listeners on the workflow when it is disposed.
-     *
-     * @param wfm -
      */
-    void onWfmDispose(final WorkflowManager wfm);
+    void dispose();
 
     /**
      * Default implementation of {@link WorkflowSyncer}.
@@ -135,6 +133,8 @@ public interface WorkflowSyncer {
         private final HubUploader m_hubUploader;
 
         private final Debouncer m_debouncedProjectSync;
+
+        private WorkflowManager m_wfm;
 
         public DefaultWorkflowSyncer(final AppStateUpdater appStateUpdater, final SpaceProvider spaceProvider,
             final Duration syncDelay, final DataSize syncThreshold, final String projectId) {
@@ -171,7 +171,7 @@ public interface WorkflowSyncer {
 
             m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.WRITING);
             try {
-                m_localSaver.saveProject(projectId);
+                m_localSaver.saveProject(m_wfm);
             } catch (IOException e) {
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
                 return;
@@ -195,13 +195,13 @@ public interface WorkflowSyncer {
         }
 
         @Override
-        public void syncProjectNow(final String projectId)
+        public void syncProjectNow()
             throws ServiceCallException, LoggedOutException, NetworkException {
             assertIsNotSyncing(m_syncStateStore.state());
 
             m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.WRITING);
             try {
-                m_localSaver.saveProject(projectId);
+                m_localSaver.saveProject(m_wfm);
             } catch (IOException e) {
                 handleSyncIOException(e);
                 return;
@@ -213,7 +213,7 @@ public interface WorkflowSyncer {
             m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
             m_syncStateStore.deferStateChanges(); // We deferStateChanges the sync state store to defer the latest deferrable update
             try {
-                m_hubUploader.uploadProject(projectId);
+                m_hubUploader.uploadProject(m_wfm);
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
             } catch (LoggedOutException | NetworkException | ServiceCallException e) {
                 LOGGER.error("Error during manual project sync: %s".formatted(e.getMessage()), e);
@@ -258,51 +258,35 @@ public interface WorkflowSyncer {
         }
 
         @Override
-        public void onWfmLoad(final WorkflowManager wfm) {
-            LOGGER.info("'onWfmLoad' called for workflow <%s>".formatted(wfm.getName()));
+        public void attach(final WorkflowManager wfm) {
+            LOGGER.info("'attach' called for workflow <%s>".formatted(wfm.getName()));
             wfm.addListener(m_workflowListener);
+            m_wfm = wfm;
         }
 
         @Override
-        public void onWfmDispose(final WorkflowManager wfm) {
-            LOGGER.info("'onWfmDispose' called for workflow <%s>".formatted(wfm.getName()));
-            wfm.removeListener(m_workflowListener);
+        public void dispose() {
+            LOGGER.info("'dispose' called for workflow <%s>".formatted(m_wfm.getName()));
+            m_wfm.removeListener(m_workflowListener);
             m_debouncedProjectSync.shutdown();
         }
     }
 
-    /**
-     * No-op implementation of {@link WorkflowSyncer}.
-     */
-    static final class NoOpWorkflowSyncer implements WorkflowSyncer {
+    class WorkflowSyncerResource implements WorkflowResourceCache.WorkflowResource {
 
-        static final WorkflowSyncer INSTANCE = new NoOpWorkflowSyncer();
+        private final WorkflowSyncer m_syncer;
 
-        private static final ProjectSyncStateEnt SYNCED_STATE = new SyncStateStore().buildSyncStateEnt();
+        public WorkflowSyncerResource(final WorkflowSyncer syncer) {
+            m_syncer = syncer;
+        }
 
-        @Override
-        public ProjectSyncStateEnt getProjectSyncState() {
-            return SYNCED_STATE;
+        public WorkflowSyncer get() {
+            return m_syncer;
         }
 
         @Override
-        public void resetProjectSyncState() {
-            // No-op
-        }
-
-        @Override
-        public void syncProjectNow(final String projectId) throws ServiceCallException {
-            // No-op
-        }
-
-        @Override
-        public void onWfmLoad(final WorkflowManager wfm) {
-            // No-op
-        }
-
-        @Override
-        public void onWfmDispose(final WorkflowManager wfm) {
-            // No-op
+        public void dispose() {
+            m_syncer.dispose();
         }
     }
 }

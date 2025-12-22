@@ -48,6 +48,8 @@ package org.knime.gateway.impl.project;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -223,6 +225,10 @@ public final class Project {
      */
     public void disposeCachedWfm(final VersionId version) {
         this.m_projectWfmCache.dispose(version);
+    }
+
+    public void onWfmLoad(BiConsumer<WorkflowManager, VersionId> callback) {
+        this.m_projectWfmCache.onWfmLoad(callback);
     }
 
     /**

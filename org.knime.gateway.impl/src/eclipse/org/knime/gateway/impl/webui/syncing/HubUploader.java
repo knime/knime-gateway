@@ -52,6 +52,7 @@ import java.io.IOException;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
@@ -109,16 +110,15 @@ final class HubUploader {
         }
     }
 
-    void uploadProject(final String projectId) throws LoggedOutException, NetworkException, ServiceCallException {
-        var context = WorkflowManagerResolver.get(projectId).getContextV2();
+    void uploadProject(final WorkflowManager wfm) throws LoggedOutException, NetworkException, ServiceCallException {
+        var context = wfm.getContextV2();
         if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
             // This should not happen
             throw new UnsupportedOperationException("Uploading is only supported for workflows stored in Hub spaces.");
         }
 
         try {
-            LOGGER.info("Uploading workflow to Hub for project ID: " + projectId);
-
+            LOGGER.info("Uploading workflow to Hub for " + wfm);
             final var space = m_spaceProvider.getSpace(hubInfo.getSpaceItemId());
             final var localWorkflow = context.getExecutorInfo().getLocalWorkflowPath();
             final var targetURI = space.toPathBasedKnimeUrl(hubInfo.getWorkflowItemId());
@@ -128,9 +128,9 @@ final class HubUploader {
                 .orElse(false);
             space.saveBackTo(localWorkflow, targetURI, excludeDataInWorkflows, new NullProgressMonitor());
 
-            LOGGER.info("Upload to Hub for project ID " + projectId + " completed successfully.");
+            LOGGER.info("Upload to Hub for " + wfm + " completed successfully.");
         } catch (MutableServiceCallException e) {
-            throw e.toGatewayException(projectId);
+            throw e.toGatewayException(wfm.getName());
         } catch (UnsupportedOperationException e) {
             // This should not happen
             throw new IllegalStateException("Uploading is only supported for workflows stored in Hub spaces.", e);

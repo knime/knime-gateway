@@ -51,7 +51,6 @@ package org.knime.gateway.impl.webui.service;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.gateway.api.webui.entity.AppStateChangedEventTypeEnt;
@@ -83,7 +82,7 @@ import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncerManager;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer;
 
 /**
  * Default implementation of the {@link EventService}-interface.
@@ -124,9 +123,6 @@ public final class DefaultEventService implements EventService {
 
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
-    private final WorkflowSyncerManager m_workflowSyncerManager =
-        ServiceDependencies.getServiceDependency(WorkflowSyncerManager.class, false);
-
     /**
      * Returns the singleton instance for this service.
      *
@@ -153,12 +149,15 @@ public final class DefaultEventService implements EventService {
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             if (m_appStateUpdater != null) {
                 eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(), t -> {
-                    var key = DefaultServiceContext.getProjectId().map(SpaceProvidersManager.Key::of) //
+                    var projectId = DefaultServiceContext.getProjectId();
+                    var key = projectId.map(SpaceProvidersManager.Key::of) //
                         .orElse(SpaceProvidersManager.Key.defaultKey());
                     var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
-                    var workflowSyncer = Optional.ofNullable(m_workflowSyncerManager) //
-                        .flatMap(provider -> provider.getWorkflowSyncer(key)) //
-                        .orElse(null);
+                    var workflowSyncer = m_projectManager.getProject(projectId.orElseThrow()).orElseThrow() //
+                            .getWorkflowManagerIfLoaded().orElseThrow() //
+                            .getWorkflowResourceCache().getFromCache(WorkflowSyncer.WorkflowSyncerResource.class) //
+                            .map(res -> res.get()) //
+                            .orElse(null);
                     var dependencies = new AppStateEntityFactory.ServiceDependencies( //
                         m_projectManager, //
                         m_preferencesProvider, //

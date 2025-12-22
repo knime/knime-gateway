@@ -53,7 +53,6 @@ import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProv
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.NodeLogger;
@@ -87,7 +86,7 @@ import org.knime.gateway.impl.webui.WorkflowUtil;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncerManager;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer;
 
 /**
  * The default workflow service implementation for the web-ui.
@@ -111,9 +110,6 @@ public final class DefaultWorkflowService implements WorkflowService {
         ServiceDependencies.getServiceDependency(ProjectManager.class, true);
 
     private final LinkVariants m_linkVariants = ServiceDependencies.getServiceDependency(LinkVariants.class, false);
-
-    private final WorkflowSyncerManager m_workflowSyncerManager =
-        ServiceDependencies.getServiceDependency(WorkflowSyncerManager.class, false);
 
     /**
      * Returns the singleton instance for this service.
@@ -198,11 +194,12 @@ public final class DefaultWorkflowService implements WorkflowService {
             LOGGER.warn("Called 'saveProject' without project id, indicating usage from Desktop environment.");
             return;
         }
-        var syncer = Optional.ofNullable(m_workflowSyncerManager)
-                .flatMap(manager -> manager.getWorkflowSyncer(Key.of(projectId)));
-        if (syncer.isPresent()) {
-            DefaultServiceContext.assertWorkflowProjectId(projectId);
-            syncer.get().syncProjectNow(projectId);
+        final var project = m_projectManager.getProject(projectId).orElseThrow(); // No specific version needed here
+        var syncerResource = project.getWorkflowManagerIfLoaded().orElseThrow() //
+                .getWorkflowResourceCache() //
+                .getFromCache(WorkflowSyncer.WorkflowSyncerResource.class);
+        if (syncerResource.isPresent()) {
+            syncerResource.get().get().syncProjectNow();
         }
     }
 
