@@ -199,8 +199,10 @@ public final class DefaultWorkflowService implements WorkflowService {
         }
         if (m_workflowSyncerManager != null) {
             DefaultServiceContext.assertWorkflowProjectId(projectId);
-            m_workflowSyncerManager.getWorkflowSyncer(Key.of(projectId)) //
-                    .syncProjectNow(projectId);
+            var syncer = m_workflowSyncerManager.getWorkflowSyncer(Key.of(projectId));
+            if (syncer.isPresent()) {
+                syncer.get().syncProjectNow(projectId);
+            }
         }
 
     }

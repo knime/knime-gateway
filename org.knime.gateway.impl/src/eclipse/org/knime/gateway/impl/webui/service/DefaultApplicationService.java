@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -123,7 +124,7 @@ public final class DefaultApplicationService implements ApplicationService {
         var key = projectId.map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
         var workflowSyncer = Optional.ofNullable(m_workflowSyncerManager) //
-            .map(provider -> provider.getWorkflowSyncer(key)) //
+            .flatMap(manager -> manager.getWorkflowSyncer(key)) //
             .orElse(null);
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
