@@ -53,6 +53,7 @@ import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProv
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.knime.core.node.NodeLogger;
@@ -197,14 +198,12 @@ public final class DefaultWorkflowService implements WorkflowService {
             LOGGER.warn("Called 'saveProject' without project id, indicating usage from Desktop environment.");
             return;
         }
-        if (m_workflowSyncerManager != null) {
+        var syncer = Optional.ofNullable(m_workflowSyncerManager)
+                .flatMap(manager -> manager.getWorkflowSyncer(Key.of(projectId)));
+        if (syncer.isPresent()) {
             DefaultServiceContext.assertWorkflowProjectId(projectId);
-            var syncer = m_workflowSyncerManager.getWorkflowSyncer(Key.of(projectId));
-            if (syncer.isPresent()) {
-                syncer.get().syncProjectNow(projectId);
-            }
+            syncer.get().syncProjectNow(projectId);
         }
-
     }
 
     @Override

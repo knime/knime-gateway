@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Predicate;
 
