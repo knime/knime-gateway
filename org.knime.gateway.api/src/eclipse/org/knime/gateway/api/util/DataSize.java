@@ -2,10 +2,9 @@ package org.knime.gateway.api.util;
 
 import org.apache.commons.io.FileUtils;
 
-import javax.xml.datatype.Duration;
-
 /**
  * Type- and unit-safe description of data size/volume.
+ * 
  * @param bytes -
  */
 public record DataSize(long bytes) {
@@ -17,6 +16,7 @@ public record DataSize(long bytes) {
 
     /**
      * {@code 1024 * 1024} bytes, sometimes also incorrectly referred to as "megabyte".
+     * 
      * @param mebibytes
      * @return
      */
