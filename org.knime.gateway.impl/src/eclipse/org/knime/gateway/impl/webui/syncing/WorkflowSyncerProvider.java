@@ -52,6 +52,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.knime.gateway.api.util.DataSize;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
@@ -67,7 +68,7 @@ import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.NoOpWorkflowSyncer;
  */
 public final class WorkflowSyncerProvider {
 
-    private static final WorkflowSyncerProvider NO_OP = new WorkflowSyncerProvider(null, null, Duration.ZERO, 0);
+    private static final WorkflowSyncerProvider NO_OP = new WorkflowSyncerProvider(null, null, Duration.ZERO, DataSize.ZERO);
 
     private final Map<Key, WorkflowSyncer> m_workflowSyncers = new ConcurrentHashMap<>();
 
@@ -75,9 +76,9 @@ public final class WorkflowSyncerProvider {
 
     private final SpaceProvidersManager m_spaceProvidersManager;
 
-    private final Duration m_syncDelay;
+    private final Duration m_debounceInterval;
 
-    private final int m_syncThresholdMB;
+    private final DataSize m_syncThreshold;
 
     /**
      * Creates a new {link WorkflowSyncProvider}.
@@ -88,11 +89,11 @@ public final class WorkflowSyncerProvider {
      * @param syncThresholdMB -
      */
     public WorkflowSyncerProvider(final AppStateUpdater appStateUpdater,
-        final SpaceProvidersManager spaceProvidersManager, final Duration syncDelay, final int syncThresholdMB) {
+        final SpaceProvidersManager spaceProvidersManager, final Duration syncDelay, final DataSize syncThresholdMB) {
         m_appStateUpdater = appStateUpdater;
         m_spaceProvidersManager = spaceProvidersManager;
-        m_syncDelay = syncDelay;
-        m_syncThresholdMB = syncThresholdMB;
+        m_debounceInterval = syncDelay;
+        m_syncThreshold = syncThresholdMB;
     }
 
     /**
@@ -105,8 +106,8 @@ public final class WorkflowSyncerProvider {
     }
 
     private boolean isEnabled() {
-        return m_syncDelay.isPositive() //
-            && m_syncThresholdMB >= 0 //
+        return m_debounceInterval.isPositive() //
+            && m_syncThreshold.bytes() >= 0 //
             && m_appStateUpdater != null //
             && m_spaceProvidersManager != null;
     }
@@ -137,7 +138,7 @@ public final class WorkflowSyncerProvider {
 
             final var spaceProvider = getSpaceProvider(m_spaceProvidersManager, k);
             final var projectId = key.toString();
-            return new DefaultWorkflowSyncer(m_appStateUpdater, spaceProvider, m_syncDelay, m_syncThresholdMB,
+            return new DefaultWorkflowSyncer(m_appStateUpdater, spaceProvider, m_debounceInterval, m_syncThreshold,
                 projectId);
         });
     }
