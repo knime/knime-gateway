@@ -81,8 +81,6 @@ final class SyncStateStore {
     private Runnable m_onUnlock = () -> {
     };
 
-    private final Object m_lock = new Object();
-
     /**
      * Constructor needed for the {@link DefaultWorkflowSyncer}
      */
@@ -90,42 +88,32 @@ final class SyncStateStore {
         m_onStateChange = onStateChange;
     }
 
-    ProjectSyncStateEnt.StateEnum state() {
-        synchronized (m_lock) {
-            return m_state;
-        }
+    synchronized ProjectSyncStateEnt.StateEnum state() {
+        return m_state;
     }
 
-    boolean isAutoSyncEnabled() {
-        synchronized (m_lock) {
-            return m_autoSyncEnabled;
-        }
+    synchronized boolean isAutoSyncEnabled() {
+        return m_autoSyncEnabled;
     }
 
-    void deferStateChanges() {
+    synchronized void deferStateChanges() {
         LOGGER.info("Locking SyncStateStore");
-        synchronized (m_lock) {
-            m_locked = true;
-        }
+        m_locked = true;
     }
 
-    void allowStateChanges() {
+    synchronized void allowStateChanges() {
         LOGGER.info("Unlocking SyncStateStore");
-        Runnable onUnlock;
-        synchronized (m_lock) {
-            m_locked = false;
-            onUnlock = m_onUnlock;
-            m_onUnlock = () -> {
-            };
-        }
-        onUnlock.run();
+        m_locked = false;
+        m_onUnlock.run();
+        m_onUnlock = () -> {
+        };
     }
 
     ProjectSyncStateEnt buildSyncStateEnt() {
         Optional<Details> details;
         ProjectSyncStateEnt.StateEnum state;
         boolean autoSyncEnabled;
-        synchronized (m_lock) {
+        synchronized (this) {
             details = m_details;
             state = m_state;
             autoSyncEnabled = m_autoSyncEnabled;
@@ -155,41 +143,34 @@ final class SyncStateStore {
      * {@link WorkflowSyncer#notifyWorkflowChanged()} is called during an ongoing workflow upload.
      *
      */
-    void changeStateDeferrable(final ProjectSyncStateEnt.StateEnum newState) {
-        synchronized (m_lock) {
-            if (m_locked) {
-                // We defer the update until allowStateChanges
-                m_onUnlock = () -> changeState(newState);
-                return;
-            }
+    synchronized void changeStateDeferrable(final ProjectSyncStateEnt.StateEnum newState) {
+        if (m_locked) {
+            // We defer the update until allowStateChanges
+            m_onUnlock = () -> changeState(newState);
+            return;
         }
         changeState(newState);
     }
 
-    void changeState(final ProjectSyncStateEnt.StateEnum state) {
+    synchronized void changeState(final ProjectSyncStateEnt.StateEnum state) {
         changeState(state, null);
     }
 
-    void changeState(final ProjectSyncStateEnt.StateEnum state, final Details details) {
+    synchronized void changeState(final ProjectSyncStateEnt.StateEnum state, final Details details) {
         changeState(state, details, m_autoSyncEnabled);
     }
 
-    void changeState(final ProjectSyncStateEnt.StateEnum state, final Details details, final boolean autoSyncEnabled) {
-        Runnable callback;
-        synchronized (m_lock) {
-            m_state = state;
-            m_details = Optional.ofNullable(details);
-            m_autoSyncEnabled = autoSyncEnabled;
-            callback = m_onStateChange;
-        }
-        callback.run();
+    synchronized void changeState(final ProjectSyncStateEnt.StateEnum state, final Details details,
+        final boolean autoSyncEnabled) {
+        m_state = state;
+        m_details = Optional.ofNullable(details);
+        m_autoSyncEnabled = autoSyncEnabled;
+        m_onStateChange.run();
     }
 
-    void reset() {
-        synchronized (m_lock) {
-            m_autoSyncEnabled = true;
-            m_details = Optional.empty();
-        }
+    synchronized void reset() {
+        m_autoSyncEnabled = true;
+        m_details = Optional.empty();
     }
 
     record Details(String code, String title, String stackTrace) {
