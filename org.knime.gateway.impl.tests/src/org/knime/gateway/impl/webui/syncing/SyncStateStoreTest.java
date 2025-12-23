@@ -44,18 +44,52 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 5, 2025 (motacilla): created
+ *   Dec 23, 2025 (assistant): added
  */
 package org.knime.gateway.impl.webui.syncing;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.Test;
+import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
+
 /**
- * Test for the {@link SyncStateStore}.
- *
- * @author Kai Franze, KNIME GmbH, Germany
+ * Unit tests for {@link SyncStateStore} focusing on deferring state changes.
  */
-@SuppressWarnings("javadoc")
 public class SyncStateStoreTest {
 
- // TODO: Add tests
+    @Test
+    public void defersStateChangeWhileLockedAndAppliesOnUnlock() {
+        var stateChangeCalls = new AtomicInteger();
+        var store = new SyncStateStore(stateChangeCalls::incrementAndGet);
 
+        store.deferStateChanges();
+        store.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.ERROR);
+
+        assertThat(store.state()).isEqualTo(ProjectSyncStateEnt.StateEnum.SYNCED);
+        assertThat(stateChangeCalls.get()).isZero();
+
+        store.allowStateChanges();
+
+        assertThat(store.state()).isEqualTo(ProjectSyncStateEnt.StateEnum.ERROR);
+        assertThat(stateChangeCalls.get()).isEqualTo(1);
+    }
+
+    @Test
+    public void lastDeferredStateWinsWhenMultipleQueued() {
+        var stateChangeCalls = new AtomicInteger();
+        var store = new SyncStateStore(stateChangeCalls::incrementAndGet);
+
+        store.deferStateChanges();
+        store.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.DIRTY);
+        store.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.ERROR);
+
+        store.allowStateChanges();
+        store.allowStateChanges(); // a second unlock should have no effect
+
+        assertThat(store.state()).isEqualTo(ProjectSyncStateEnt.StateEnum.ERROR);
+        assertThat(stateChangeCalls.get()).isEqualTo(1);
+    }
 }
