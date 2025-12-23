@@ -44,19 +44,128 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 5, 2025 (motacilla): created
+ *   Dec 23, 2025 (assistant): add unit tests
  */
 package org.knime.gateway.impl.webui.syncing;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.knime.core.node.workflow.WorkflowListener;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.util.DataSize;
+import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
 
 /**
- * Test for the {@link DefaultWorkflowSyncer}.
- *
- * @author Kai Franze, KNIME GmbH, Germany
+ * Unit tests for {@link DefaultWorkflowSyncer}.
  */
+@SuppressWarnings({"resource", "java:S5960"}) // dispose is invoked manually; assertions in production code are ok
 public class WorkflowSyncerTest {
 
-    // TODO: Add tests
+    private WorkflowManager m_wfm;
+
+    private AppStateUpdater m_appStateUpdater;
+
+    private AtomicInteger m_appUpdates;
+
+    private DefaultWorkflowSyncer m_syncer;
+
+    private LocalSaver m_localSaver;
+
+    private HubUploader m_hubUploader;
+
+    private SyncStateStore m_syncStateStore;
+
+    private static final DataSize SOME_SIZE = new DataSize(0);
+
+    @Before
+    public void setUp() throws Exception {
+        m_wfm = mock(WorkflowManager.class);
+        when(m_wfm.getName()).thenReturn("test-wf");
+
+        // collect app-state update invocations
+        m_appUpdates = new AtomicInteger();
+        m_appStateUpdater = new AppStateUpdater();
+        m_appStateUpdater.addAppStateChangedListener(m_appUpdates::incrementAndGet);
+
+        var config = new WorkflowSyncer.SyncerConfig(Duration.ZERO, SOME_SIZE);
+        var dependencies = new DefaultWorkflowSyncer.Dependencies(m_appStateUpdater, mock(SpaceProvider.class));
+
+        m_syncStateStore = new SyncStateStore(m_appStateUpdater::updateAppState);
+        m_localSaver = mock(LocalSaver.class);
+        m_hubUploader = mock(HubUploader.class);
+        var workflowListener = mock(WorkflowListener.class);
+        var debouncer = mock(org.knime.gateway.impl.util.Debouncer.class);
+
+        m_syncer = new DefaultWorkflowSyncer(m_wfm, config, dependencies, m_syncStateStore, cb -> workflowListener,
+            m_localSaver, m_hubUploader, task -> debouncer);
+
+        // ensure listener registration happened
+        verify(m_wfm).addListener(any(WorkflowListener.class));
+    }
+
+    @After
+    public void tearDown() {
+        m_syncer.dispose();
+    }
+
+    @Test
+    public void syncProjectNowUpdatesStateAndUploads() throws Exception {
+        m_syncer.syncProjectNow();
+
+        verify(m_localSaver).saveProject(m_wfm);
+        verify(m_hubUploader).uploadProject(m_wfm);
+
+        assertThat(m_syncer.getProjectSyncState().getState()).isEqualTo(ProjectSyncStateEnt.StateEnum.SYNCED);
+        // WRITING -> UPLOAD -> SYNCED
+        assertThat(m_appUpdates.get()).isEqualTo(3);
+    }
+
+    @Test
+    public void syncProjectNowSetsErrorOnSaveFailure() throws Exception {
+        doThrow(new IOException("boom")).when(m_localSaver).saveProject(m_wfm);
+
+        assertThatThrownBy(() -> m_syncer.syncProjectNow()).isInstanceOf(ServiceCallException.class);
+
+        assertThat(m_syncer.getProjectSyncState().getState()).isEqualTo(ProjectSyncStateEnt.StateEnum.ERROR);
+        // WRITING -> ERROR
+        assertThat(m_appUpdates.get()).isEqualTo(2);
+    }
+
+    @Test
+    public void autoSyncAppliesDeferredDirtyUpdateAfterUpload() throws Exception {
+        // Simulate workflow change happening during upload -> deferred DIRTY should win
+        doAnswer(inv -> {
+            m_syncStateStore.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.DIRTY);
+            return null;
+        }).when(m_hubUploader).uploadProjectWithThreshold(eq(m_wfm), any(DataSize.class));
+
+        m_syncer.syncProjectAutomatically(SOME_SIZE);
+
+        verify(m_localSaver).saveProject(m_wfm);
+        verify(m_hubUploader).uploadProjectWithThreshold(eq(m_wfm), any(DataSize.class));
+
+        assertThat(m_syncer.getProjectSyncState().getState()).isEqualTo(ProjectSyncStateEnt.StateEnum.DIRTY);
+        // WRITING -> UPLOAD -> SYNCED -> DIRTY (deferred)
+        assertThat(m_appUpdates.get()).isEqualTo(4);
+    }
 
 }
