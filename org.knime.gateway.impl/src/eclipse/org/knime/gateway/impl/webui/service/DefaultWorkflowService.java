@@ -189,12 +189,14 @@ public final class DefaultWorkflowService implements WorkflowService {
 
     @Override
     public void saveProject(final String projectId) throws ServiceCallException, LoggedOutException, NetworkException {
+        // Note that the current implementation can only work in the browser context.
         if (DefaultServiceContext.getProjectId().isEmpty()) {
             // only to be called from browser environment and this value is only set in browser environment
             LOGGER.warn("Called 'saveProject' without project id, indicating usage from Desktop environment.");
             return;
         }
         final var project = m_projectManager.getProject(projectId).orElseThrow(); // No specific version needed here
+        // Only set in browser context.
         var syncerResource = project.getWorkflowManagerIfLoaded().orElseThrow() //
                 .getWorkflowResourceCache() //
                 .getFromCache(WorkflowSyncer.WorkflowSyncerResource.class);
