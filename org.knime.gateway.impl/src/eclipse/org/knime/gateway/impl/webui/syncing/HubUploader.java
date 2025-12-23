@@ -79,8 +79,7 @@ final class HubUploader {
     }
 
     /**
-     * TODO:
-     *  - How to handle "exclude data" a.k.a. reset before upload?
+     * -
      * @throws SyncThresholdException if the workflow exceeds the sync threshold
      */
     void uploadProjectWithThreshold(final WorkflowManager wfm, final DataSize syncThreshold)
