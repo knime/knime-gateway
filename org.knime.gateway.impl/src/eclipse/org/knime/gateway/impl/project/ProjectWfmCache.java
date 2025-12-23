@@ -180,7 +180,7 @@ class ProjectWfmCache {
         }
     }
 
-    private void disposeWorkflowManager(final WorkflowManager wfm) {
+    private static void disposeWorkflowManager(final WorkflowManager wfm) {
         if (wfm == null) {
             return;
         }
