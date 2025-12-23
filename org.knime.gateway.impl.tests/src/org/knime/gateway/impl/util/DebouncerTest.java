@@ -44,18 +44,82 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 5, 2025 (motacilla): created
+ *   Dec 23, 2025 (ChatGPT): created
  */
-package org.knime.gateway.impl.webui.syncing;
+package org.knime.gateway.impl.util;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import java.time.Duration;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.Test;
 
 /**
- * Test for the {@link HubUploader}.
- *
- * @author Kai Franze, KNIME GmbH, Germany
+ * Tests for {@link Debouncer}.
  */
-@SuppressWarnings("javadoc")
-public class HubUploaderTest {
+public class DebouncerTest {
 
-    // TODO: Add tests
+    /**
+     * Ensures a single call is executed only after the configured delay.
+     *
+     * @throws Exception - unexpected
+     */
+    @Test
+    public void testCallExecutesAfterDelay() throws Exception {
+        var executed = new AtomicBoolean(false);
+        var latch = new CountDownLatch(1);
+        var debouncer = new Debouncer(Duration.ofSeconds(1), () -> {
+            executed.set(true);
+            latch.countDown();
+        });
 
+        try {
+            debouncer.call();
+
+            assertThat("Task must not run before delay expires", latch.await(500, TimeUnit.MILLISECONDS), is(false));
+            assertThat("Task should run after delay", latch.await(2, TimeUnit.SECONDS), is(true));
+            assertThat(executed.get(), is(true));
+        } finally {
+            debouncer.shutdown();
+        }
+    }
+
+    /**
+     * Ensures subsequent calls reset the pending execution so only the final invocation runs.
+     *
+     * @throws Exception - unexpected
+     */
+    @Test
+    public void testCallResetsDelay() throws Exception {
+        var executions = new AtomicInteger();
+        var latch = new CountDownLatch(1);
+        var debouncer = new Debouncer(Duration.ofSeconds(1), () -> {
+            executions.incrementAndGet();
+            latch.countDown();
+        });
+
+        try {
+            debouncer.call();
+            Thread.sleep(300);
+            debouncer.call();
+            Thread.sleep(300);
+            debouncer.call();
+
+            assertThat("No execution should happen before the final delay elapses",
+                latch.await(700, TimeUnit.MILLISECONDS), is(false));
+
+            assertThat("Only one execution expected after debouncing", latch.await(2, TimeUnit.SECONDS), is(true));
+            assertThat(executions.get(), is(1));
+
+            Thread.sleep(600);
+            assertThat("Cancelled executions must not leak through", executions.get(), is(1));
+        } finally {
+            debouncer.shutdown();
+        }
+    }
 }
