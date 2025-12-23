@@ -128,7 +128,7 @@ public class WorkflowSyncerTest {
     }
 
     @Test
-    public void syncProjectNowUpdatesStateAndUploads() throws Exception {
+    public void testSyncProjectNowUpdatesStateAndUploads() throws Exception {
         m_syncer.syncProjectNow();
 
         verify(m_localSaver).saveProject(m_wfm);
@@ -140,7 +140,7 @@ public class WorkflowSyncerTest {
     }
 
     @Test
-    public void syncProjectNowSetsErrorOnSaveFailure() throws Exception {
+    public void testSyncProjectNowSetsErrorOnSaveFailure() throws Exception {
         doThrow(new IOException("boom")).when(m_localSaver).saveProject(m_wfm);
 
         assertThatThrownBy(() -> m_syncer.syncProjectNow()).isInstanceOf(ServiceCallException.class);
@@ -151,7 +151,7 @@ public class WorkflowSyncerTest {
     }
 
     @Test
-    public void autoSyncAppliesDeferredDirtyUpdateAfterUpload() throws Exception {
+    public void testAutoSyncAppliesDeferredDirtyUpdateAfterUpload() throws Exception {
         // Simulate workflow change happening during upload -> deferred DIRTY should win
         doAnswer(inv -> {
             m_syncStateStore.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.DIRTY);

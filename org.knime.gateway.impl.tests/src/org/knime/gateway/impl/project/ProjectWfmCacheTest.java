@@ -59,7 +59,7 @@ import org.knime.gateway.api.util.VersionId;
 class ProjectWfmCacheTest {
 
     @Test
-    void loadsCurrentStateOnlyOnceAndCaches() throws Exception {
+    void testLoadsCurrentStateOnlyOnceAndCaches() throws Exception {
         var loader = countingLoader();
         var cache = new ProjectWfmCache(loader);
 
@@ -71,7 +71,7 @@ class ProjectWfmCacheTest {
     }
 
     @Test
-    void loadsFixedVersionOnceCachesAndReportsContains() {
+    void testLoadsFixedVersionOnceCachesAndReportsContains() {
         var loader = countingLoader();
         var cache = new ProjectWfmCache(loader);
         var v1 = VersionId.parse("1");
@@ -85,7 +85,7 @@ class ProjectWfmCacheTest {
     }
 
     @Test
-    void getWorkflowManagerIfLoadedReflectsLoadingState() {
+    void testGetWorkflowManagerIfLoadedReflectsLoadingState() {
         var loader = countingLoader();
         var cache = new ProjectWfmCache(loader);
         var fixed = VersionId.parse("2");
@@ -96,7 +96,7 @@ class ProjectWfmCacheTest {
     }
 
     @Test
-    void disposeClearsEntriesAndAllowsReload() {
+    void testDisposeClearsEntriesAndAllowsReload() {
         var loader = countingLoader();
         var cache = new ProjectWfmCache(loader);
         var fixed = VersionId.parse("3");
@@ -117,7 +117,7 @@ class ProjectWfmCacheTest {
     }
 
     @Test
-    void disposeAllClearsFixedVersionsAndCurrent() {
+    void testDisposeAllClearsFixedVersionsAndCurrent() {
         var loader = countingLoader();
         var cache = new ProjectWfmCache(loader);
         var fixed = VersionId.parse("4");
@@ -131,7 +131,7 @@ class ProjectWfmCacheTest {
     }
 
     @Test
-    void onWfmLoadNotifiesForCurrentAndFixed() {
+    void testOnWfmLoadNotifiesForCurrentAndFixed() {
         var loader = countingLoader();
         var cache = new ProjectWfmCache(loader);
         var fixed = VersionId.parse("5");
@@ -146,7 +146,7 @@ class ProjectWfmCacheTest {
     }
 
     @Test
-    void lruEvictsOldestFixedVersion() {
+    void testLruEvictsOldestFixedVersion() {
         var loader = countingLoader();
         var cache = new ProjectWfmCache(loader);
 
