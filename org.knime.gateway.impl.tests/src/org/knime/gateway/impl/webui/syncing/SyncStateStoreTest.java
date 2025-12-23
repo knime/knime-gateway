@@ -61,7 +61,7 @@ import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 public class SyncStateStoreTest {
 
     @Test
-    public void defersStateChangeWhileLockedAndAppliesOnUnlock() {
+    public void testDefersStateChangeWhileLockedAndAppliesOnUnlock() {
         var stateChangeCalls = new AtomicInteger();
         var store = new SyncStateStore(stateChangeCalls::incrementAndGet);
 
@@ -78,7 +78,7 @@ public class SyncStateStoreTest {
     }
 
     @Test
-    public void lastDeferredStateWinsWhenMultipleQueued() {
+    public void testLastDeferredStateWinsWhenMultipleQueued() {
         var stateChangeCalls = new AtomicInteger();
         var store = new SyncStateStore(stateChangeCalls::incrementAndGet);
 
