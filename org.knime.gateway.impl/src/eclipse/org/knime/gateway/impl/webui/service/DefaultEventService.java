@@ -82,6 +82,7 @@ import org.knime.gateway.impl.webui.service.events.UpdateAvailableEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowChangedEventSource;
 import org.knime.gateway.impl.webui.service.events.WorkflowMonitorStateChangedEventSource;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer;
 
 /**
  * Default implementation of the {@link EventService}-interface.
@@ -148,13 +149,24 @@ public final class DefaultEventService implements EventService {
         } else if (eventTypeEnt instanceof AppStateChangedEventTypeEnt) {
             if (m_appStateUpdater != null) {
                 eventSource = m_eventSources.computeIfAbsent(eventTypeEnt.getClass(), t -> {
-                    var spaceProviders = m_spaceProvidersManager.getSpaceProviders( //
-                        DefaultServiceContext.getProjectId().map(SpaceProvidersManager.Key::of) //
-                            .orElse(SpaceProvidersManager.Key.defaultKey()) //
+                    var projectId = DefaultServiceContext.getProjectId();
+                    var key = projectId.map(SpaceProvidersManager.Key::of) //
+                        .orElse(SpaceProvidersManager.Key.defaultKey());
+                    var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
+                    var workflowSyncer = m_projectManager.getProject(projectId.orElseThrow()).orElseThrow() //
+                            .getWorkflowManagerIfLoaded().orElseThrow() //
+                            .getWorkflowResourceCache().getFromCache(WorkflowSyncer.WorkflowSyncerResource.class) //
+                            .map(res -> res.get()) //
+                            .orElse(null);
+                    var dependencies = new AppStateEntityFactory.ServiceDependencies( //
+                        m_projectManager, //
+                        m_preferencesProvider, //
+                        spaceProviders, //
+                        m_nodeFactoryProvider, //
+                        m_nodeCollections, //
+                        m_kaiHandler, //
+                        workflowSyncer //
                     );
-                    var dependencies =
-                        new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
-                            spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
                     return new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, dependencies);
                 });
             } else {

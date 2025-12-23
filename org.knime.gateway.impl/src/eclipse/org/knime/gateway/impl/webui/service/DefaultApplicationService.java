@@ -62,6 +62,7 @@ import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer;
 
 /**
  * The default implementation of the {@link ApplicationService}-interface.
@@ -114,12 +115,18 @@ public final class DefaultApplicationService implements ApplicationService {
 
     @Override
     public AppStateEnt getState() {
-        var projectId = DefaultServiceContext.getProjectId();
+        var projectId = DefaultServiceContext.getProjectId(); // ~todo smelly
         var key = projectId.map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
+        // ~todo should not be part of app state imo
+        var workflowSyncer = m_projectManager.getProject(projectId.orElseThrow()).orElseThrow() //
+            .getWorkflowManagerIfLoaded().orElseThrow() //
+            .getWorkflowResourceCache().getFromCache(WorkflowSyncer.WorkflowSyncerResource.class) //
+            .map(res -> res.get()) //
+            .orElse(null);
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
         var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
-            spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler);
+            spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler, workflowSyncer);
         var appState = AppStateEntityFactory.buildAppStateEnt(
             projectId.map(ProjectFilter::single).orElse(ProjectFilter.all()), isActiveProject, dependencies);
         if (m_appStateUpdater != null) {

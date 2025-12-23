@@ -48,6 +48,8 @@ package org.knime.gateway.impl.project;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -57,8 +59,6 @@ import org.knime.gateway.api.util.VersionId;
 
 /**
  * A workflow or component project.
- *
- *
  *
  * @see ProjectManager
  * @author Martin Horn, University of Konstanz
@@ -169,7 +169,7 @@ public final class Project {
      * @return The workflow manager of the project of the current state
      */
     public Optional<WorkflowManager> getFromCacheOrLoadWorkflowManager() {
-        return Optional.ofNullable(m_projectWfmCache.getWorkflowManager(VersionId.currentState()));
+        return getFromCacheOrLoadWorkflowManager(VersionId.currentState());
     }
 
     /**
@@ -227,6 +227,10 @@ public final class Project {
         this.m_projectWfmCache.dispose(version);
     }
 
+    public void onWfmLoad(BiConsumer<WorkflowManager, VersionId> callback) {
+        this.m_projectWfmCache.onWfmLoad(callback);
+    }
+
     /**
      * Clears the report directory of the workflow project.
      */
@@ -254,20 +258,22 @@ public final class Project {
      * TODO NXT-3607 Projects can be immutable (NOSONAR)
      *
      * @param loader -
+     * @return -
      */
-    public void setWfmLoader(final WorkflowManagerLoader loader) {
+    public Project setWfmLoader(final WorkflowManagerLoader loader) {
         var previousCache = m_projectWfmCache;
         if (previousCache.contains(VersionId.currentState())) {
             // for full generality one would have to carry over other cached instances too.
             // However, this case (only current-version available) is the only circumstance in which this method is called.
             // This is acceptable since this method will be removed with NXT-3607.
-            m_projectWfmCache = new ProjectWfmCache( //
+            m_projectWfmCache = new ProjectWfmCache(//
                 previousCache.getWorkflowManager(VersionId.currentState()), //
                 loader //
             );
         } else {
             m_projectWfmCache = new ProjectWfmCache(loader);
         }
+        return this;
     }
 
     @Override

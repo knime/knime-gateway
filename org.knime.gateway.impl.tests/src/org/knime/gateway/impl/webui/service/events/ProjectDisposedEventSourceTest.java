@@ -108,7 +108,7 @@ public class ProjectDisposedEventSourceTest {
             nodeCollections, //
             null, //
             null, //
-            null //
+            null
         );
 
         // register event listener
