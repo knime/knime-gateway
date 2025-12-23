@@ -66,6 +66,7 @@ import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.syncing.HubUploader.SyncThresholdException;
 import org.knime.gateway.impl.webui.syncing.LocalSaver.SyncWhileWorkflowExecutingException;
+import java.util.function.Function;
 
 /**
  * Automatically sync the currently open project
@@ -125,15 +126,25 @@ public interface WorkflowSyncer {
 
         }
 
-        public DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config, Dependencies dependencies) {
-            m_syncStateStore = new SyncStateStore(() -> dependencies.appStateUpdater().updateAppState());
-            m_workflowListener = new SyncingListener(this::notifyWorkflowChanged);
-            m_localSaver = new LocalSaver();
-            m_hubUploader = new HubUploader(dependencies.provider());
-            m_debouncedProjectSync = new Debouncer( //
-                config.debounceInterval(), //
-                () -> syncProjectAutomatically(config.sizeThreshold()) //
-            );
+        public DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config,
+            final Dependencies dependencies) {
+            this(targetWfm, config, dependencies,
+                new SyncStateStore(() -> dependencies.appStateUpdater().updateAppState()),
+                SyncingListener::new,
+                new LocalSaver(),
+                new HubUploader(dependencies.provider()),
+                task -> new Debouncer(config.debounceInterval(), task));
+        }
+
+        DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config, final Dependencies dependencies,
+            final SyncStateStore syncStateStore, final Function<Runnable, WorkflowListener> listenerFactory,
+            final LocalSaver localSaver, final HubUploader hubUploader,
+            final Function<Runnable, Debouncer> debouncerFactory) {
+            m_syncStateStore = syncStateStore;
+            m_workflowListener = listenerFactory.apply(this::notifyWorkflowChanged);
+            m_localSaver = localSaver;
+            m_hubUploader = hubUploader;
+            m_debouncedProjectSync = debouncerFactory.apply(() -> syncProjectAutomatically(config.sizeThreshold()));
             LOGGER.info("'attach' called for workflow <%s>".formatted(targetWfm.getName()));
             m_wfm = targetWfm;
             targetWfm.addListener(m_workflowListener);
@@ -152,7 +163,7 @@ public interface WorkflowSyncer {
         /**
          * Synchronizes the project via the auto-sync mechanism
          */
-        private void syncProjectAutomatically(final DataSize syncThreshold) {
+        void syncProjectAutomatically(final DataSize syncThreshold) {
             if (!m_syncStateStore.isAutoSyncEnabled()) {
                 return;
             }
