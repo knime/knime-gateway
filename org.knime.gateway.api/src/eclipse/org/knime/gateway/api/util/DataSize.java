@@ -15,13 +15,12 @@ public record DataSize(long bytes) {
     public static final DataSize ZERO = new DataSize(0);
 
     /**
-     * {@code 1024 * 1024} bytes, sometimes also incorrectly referred to as "megabyte".
-     * 
-     * @param mebibytes
-     * @return
+     * {@code 1024} bytes, sometimes referred to incorrectly as "kilobyte"
+     * @param kibibytes -
+     * @return -
      */
-    public static DataSize ofMebibytes(final long mebibytes) {
-        return new DataSize(mebibytes * FileUtils.ONE_MB);
+    public static DataSize ofKibiBytes(final long kibibytes) {
+        return new DataSize(kibibytes * FileUtils.ONE_KB);
     }
 
     @Override
