@@ -71,7 +71,7 @@ final class LocalSaver {
      * @throws SyncWhileWorkflowExecutingException if the workflow is currently executing
      * @throws IOException if saving the workflow fails
      */
-    @SuppressWarnings("static-method") // Even though this method is static, we keep it non-static for consistency.
+    @SuppressWarnings("static-method") // used as parameter/dependency, clearer and easier if not static
     void saveProject(final WorkflowManager wfm)
         throws IOException, SyncWhileWorkflowExecutingException {
         assertIsWorkflowProject(wfm);
