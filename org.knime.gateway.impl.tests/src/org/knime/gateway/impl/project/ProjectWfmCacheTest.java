@@ -81,12 +81,13 @@ class ProjectWfmCacheTest {
 
         assertThat(first).isSameAs(second);
         assertThat(cache.contains(v1)).isTrue();
-        assertThat(loader.calls.get()).isEqualTo(2); // once for current, once for v1
+        assertThat(loader.calls.get()).isEqualTo(1); // only fixed version was loaded
     }
 
     @Test
     void getWorkflowManagerIfLoadedReflectsLoadingState() {
-        var cache = new ProjectWfmCache(ignored -> null);
+        var loader = countingLoader();
+        var cache = new ProjectWfmCache(loader);
         var fixed = VersionId.parse("2");
 
         assertThat(cache.getWorkflowManagerIfLoaded(fixed)).isEmpty();
