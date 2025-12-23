@@ -127,10 +127,16 @@ public interface WorkflowSyncer {
 
         public DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config,
             final Dependencies dependencies) {
-            this(targetWfm, config, dependencies,
-                new SyncStateStore(() -> dependencies.appStateUpdater().updateAppState()), SyncingListener::new,
-                new LocalSaver(), new HubUploader(dependencies.provider()),
-                task -> new Debouncer(config.debounceInterval(), task));
+            this( //
+                targetWfm, //
+                config, //
+                dependencies, //
+                new SyncStateStore(() -> dependencies.appStateUpdater().updateAppState()), //
+                SyncingListener::new, //
+                new LocalSaver(), //
+                new HubUploader(dependencies.provider()), //
+                task -> new Debouncer(config.debounceInterval(), task) //
+            );
         }
 
         DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config,
@@ -281,20 +287,20 @@ public interface WorkflowSyncer {
     record SyncerConfig(Duration debounceInterval, DataSize sizeThreshold) {
         private static final Duration SYNC_AUTO_SAVE_INTERVAL_DEFAULT = Duration.ofSeconds(15);
 
-        private static final DataSize SYNC_AUTO_SAVE_THRESHOLD_DEFAULT = DataSize.ofMebibytes(10);
+        private static final DataSize SYNC_AUTO_SAVE_THRESHOLD_DEFAULT = DataSize.ofKibiBytes(10 * 1024);
 
         public static SyncerConfig of(String debounceIntervalString, String sizeThresholdString) {
             final var debounceIntervalSeconds = parseNonNegativeInt( //
                 debounceIntervalString, //
                 (int)SYNC_AUTO_SAVE_INTERVAL_DEFAULT.getSeconds() //
             );
-            final var sizeThresholdMebibytes = parseNonNegativeInt( //
+            final var sizeThresholdKibibytes = parseNonNegativeInt( //
                 sizeThresholdString, //
-                (int)(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT.bytes() / (1024 * 1024)) //
+                (int)(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT.bytes() / 1024) //
             );
 
             final var debounceInterval = Duration.ofSeconds(debounceIntervalSeconds);
-            final var sizeThreshold = DataSize.ofMebibytes(sizeThresholdMebibytes);
+            final var sizeThreshold = DataSize.ofKibiBytes(sizeThresholdKibibytes);
 
             return new SyncerConfig(debounceInterval, sizeThreshold);
         }

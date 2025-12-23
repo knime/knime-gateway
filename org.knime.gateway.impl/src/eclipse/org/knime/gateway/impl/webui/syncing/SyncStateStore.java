@@ -78,7 +78,8 @@ final class SyncStateStore {
 
     private boolean m_locked = false;
 
-    private Runnable m_onUnlock = () -> {};
+    private Runnable m_onUnlock = () -> {
+    };
 
     /**
      * Constructor needed for the {@link DefaultWorkflowSyncer}
@@ -114,7 +115,8 @@ final class SyncStateStore {
             .orElse(null);
         return builder(ProjectSyncStateEnt.ProjectSyncStateEntBuilder.class) //
             .setState(m_state) //
-            .setIsAutoSyncEnabled(m_autoSyncEnabled).setDetails(details) //
+            .setIsAutoSyncEnabled(m_autoSyncEnabled) //
+            .setDetails(details) //
             .build();
 
     }
