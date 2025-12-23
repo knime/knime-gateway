@@ -46,11 +46,117 @@
 
 package org.knime.gateway.impl.project;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.knime.gateway.api.util.VersionId;
 
 class ProjectWfmCacheTest {
+
+    @Test
+    void loadsCurrentStateOnlyOnceAndCaches() throws Exception {
+        var loader = countingLoader();
+        var cache = new ProjectWfmCache(loader);
+
+        var first = cache.getWorkflowManager(VersionId.currentState());
+        var second = cache.getWorkflowManager(VersionId.currentState());
+
+        assertThat(first).isSameAs(second);
+        assertThat(loader.calls.get()).isEqualTo(1);
+    }
+
+    @Test
+    void loadsFixedVersionOnceCachesAndReportsContains() {
+        var loader = countingLoader();
+        var cache = new ProjectWfmCache(loader);
+        var v1 = VersionId.parse("1");
+
+        var first = cache.getWorkflowManager(v1);
+        var second = cache.getWorkflowManager(v1);
+
+        assertThat(first).isSameAs(second);
+        assertThat(cache.contains(v1)).isTrue();
+        assertThat(loader.calls.get()).isEqualTo(2); // once for current, once for v1
+    }
+
+    @Test
+    void getWorkflowManagerIfLoadedReflectsLoadingState() {
+        var cache = new ProjectWfmCache(ignored -> null);
+        var fixed = VersionId.parse("2");
+
+        assertThat(cache.getWorkflowManagerIfLoaded(fixed)).isEmpty();
+        cache.getWorkflowManager(fixed);
+        assertThat(cache.getWorkflowManagerIfLoaded(fixed)).isPresent();
+    }
+
+    @Test
+    void disposeClearsEntriesAndAllowsReload() {
+        var loader = countingLoader();
+        var cache = new ProjectWfmCache(loader);
+        var fixed = VersionId.parse("3");
+
+        cache.getWorkflowManager(VersionId.currentState());
+        cache.getWorkflowManager(fixed);
+        assertThat(loader.calls.get()).isEqualTo(2);
+
+        cache.dispose(VersionId.currentState());
+        cache.dispose(fixed);
+
+        assertThat(cache.contains(VersionId.currentState())).isFalse();
+        assertThat(cache.contains(fixed)).isFalse();
+
+        cache.getWorkflowManager(VersionId.currentState());
+        cache.getWorkflowManager(fixed);
+        assertThat(loader.calls.get()).isEqualTo(4);
+    }
+
+    @Test
+    void disposeAllClearsFixedVersionsAndCurrent() {
+        var loader = countingLoader();
+        var cache = new ProjectWfmCache(loader);
+        var fixed = VersionId.parse("4");
+
+        cache.getWorkflowManager(VersionId.currentState());
+        cache.getWorkflowManager(fixed);
+        cache.dispose();
+
+        assertThat(cache.contains(VersionId.currentState())).isFalse();
+        assertThat(cache.contains(fixed)).isFalse();
+    }
+
+    @Test
+    void onWfmLoadNotifiesForCurrentAndFixed() {
+        var loader = countingLoader();
+        var cache = new ProjectWfmCache(loader);
+        var fixed = VersionId.parse("5");
+        var notified = new AtomicInteger();
+
+        cache.onWfmLoad((wfm, version) -> notified.incrementAndGet());
+
+        cache.getWorkflowManager(VersionId.currentState());
+        cache.getWorkflowManager(fixed);
+
+        assertThat(notified.get()).isEqualTo(2);
+    }
+
+    @Test
+    void lruEvictsOldestFixedVersion() {
+        var loader = countingLoader();
+        var cache = new ProjectWfmCache(loader);
+
+        // load 6 versions -> capacity is 5
+        for (int i = 0; i < 6; i++) {
+            cache.getWorkflowManager(VersionId.parse(Integer.toString(i)));
+        }
+
+        assertThat(cache.contains(VersionId.parse("0"))).isFalse(); // evicted oldest
+        assertThat(cache.contains(VersionId.parse("5"))).isTrue();
+    }
 
     @Test
     void testContains() throws Exception {
@@ -66,5 +172,21 @@ class ProjectWfmCacheTest {
 
     private static VersionId someVersion() {
         return VersionId.parse("13");
+    }
+
+    private static class CountingLoader implements WorkflowManagerLoader {
+        final AtomicInteger calls = new AtomicInteger();
+        final Map<VersionId, org.knime.core.node.workflow.WorkflowManager> cache = new HashMap<>();
+
+        @Override
+        public org.knime.core.node.workflow.WorkflowManager load(final VersionId version) {
+            calls.incrementAndGet();
+            return cache.computeIfAbsent(version, v -> org.mockito.Mockito.mock(
+                org.knime.core.node.workflow.WorkflowManager.class));
+        }
+    }
+
+    private static CountingLoader countingLoader() {
+        return new CountingLoader();
     }
 }
