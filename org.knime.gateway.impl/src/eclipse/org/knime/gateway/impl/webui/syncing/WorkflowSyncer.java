@@ -50,7 +50,7 @@ package org.knime.gateway.impl.webui.syncing;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Optional;
+import java.util.function.Function;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.WorkflowListener;
@@ -66,7 +66,6 @@ import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.syncing.HubUploader.SyncThresholdException;
 import org.knime.gateway.impl.webui.syncing.LocalSaver.SyncWhileWorkflowExecutingException;
-import java.util.function.Function;
 
 /**
  * Automatically sync the currently open project
@@ -129,17 +128,15 @@ public interface WorkflowSyncer {
         public DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config,
             final Dependencies dependencies) {
             this(targetWfm, config, dependencies,
-                new SyncStateStore(() -> dependencies.appStateUpdater().updateAppState()),
-                SyncingListener::new,
-                new LocalSaver(),
-                new HubUploader(dependencies.provider()),
+                new SyncStateStore(() -> dependencies.appStateUpdater().updateAppState()), SyncingListener::new,
+                new LocalSaver(), new HubUploader(dependencies.provider()),
                 task -> new Debouncer(config.debounceInterval(), task));
         }
 
-        DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config, final Dependencies dependencies,
-            final SyncStateStore syncStateStore, final Function<Runnable, WorkflowListener> listenerFactory,
-            final LocalSaver localSaver, final HubUploader hubUploader,
-            final Function<Runnable, Debouncer> debouncerFactory) {
+        DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config,
+            final Dependencies dependencies, final SyncStateStore syncStateStore,
+            final Function<Runnable, WorkflowListener> listenerFactory, final LocalSaver localSaver,
+            final HubUploader hubUploader, final Function<Runnable, Debouncer> debouncerFactory) {
             m_syncStateStore = syncStateStore;
             m_workflowListener = listenerFactory.apply(this::notifyWorkflowChanged);
             m_localSaver = localSaver;
@@ -287,10 +284,14 @@ public interface WorkflowSyncer {
         private static final DataSize SYNC_AUTO_SAVE_THRESHOLD_DEFAULT = DataSize.ofMebibytes(10);
 
         public static SyncerConfig of(String debounceIntervalString, String sizeThresholdString) {
-            final var debounceIntervalSeconds = parseNonNegativeInt(debounceIntervalString,
-                (int)SYNC_AUTO_SAVE_INTERVAL_DEFAULT.getSeconds());
-            final var sizeThresholdMebibytes = parseNonNegativeInt(sizeThresholdString,
-                (int)(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT.bytes() / (1024 * 1024)));
+            final var debounceIntervalSeconds = parseNonNegativeInt( //
+                debounceIntervalString, //
+                (int)SYNC_AUTO_SAVE_INTERVAL_DEFAULT.getSeconds() //
+            );
+            final var sizeThresholdMebibytes = parseNonNegativeInt( //
+                sizeThresholdString, //
+                (int)(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT.bytes() / (1024 * 1024)) //
+            );
 
             final var debounceInterval = Duration.ofSeconds(debounceIntervalSeconds);
             final var sizeThreshold = DataSize.ofMebibytes(sizeThresholdMebibytes);
