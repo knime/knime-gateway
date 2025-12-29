@@ -44,64 +44,62 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 27, 2023 (Paul Bärnreuther): created
+ *   Dec 19, 2025 (Paul Bärnreuther): created
  */
 package org.knime.gateway.api.entity;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.knime.core.data.property.ColorModel;
-import org.knime.core.data.property.ColorModelNominal;
-import org.knime.core.data.property.ColorModelRange;
 import org.knime.core.data.property.ColorModelRange2;
+import org.knime.core.data.property.ColorModelRange2.SpecialColorType;
 
 /**
- * A representation of a {@link ColorModel} which is used by the frontend to handle colors. For a nominal color column,
- * we provide a map from string values to colors. For numeric columns, we provide a {@link NumericColorModelEnt}.
+ * A POJO representation of a {@link ColorModelRange2} with CIELab color space interpolation, which is serialized and
+ * provided to the frontend for color interpolation with stop values and special colors.
  *
  * @author Paul Bärnreuther
+ * @since 5.10
  */
-public final class ColorModelEnt {
+public final class StopValuesCIELabModelEnt {
 
-    private enum Type {
-            NOMINAL, NUMERIC
+    private final double[] m_stopValues;
+
+    private final double[][] m_stopColorsCIELab;
+
+    private final Map<String, double[]> m_specialColors;
+
+    StopValuesCIELabModelEnt(final ColorModelRange2 colorModel) {
+        m_stopValues = colorModel.getStopValues();
+        m_stopColorsCIELab = colorModel.getStopColorsCIELab();
+        m_specialColors = convertSpecialColors(colorModel.getSpecialColorsCIELab());
     }
 
-    private final Type m_type;
-
-    private final Object m_model;
-
-    ColorModelEnt(final ColorModel colorModel) {
-        if (colorModel instanceof ColorModelNominal) {
-            m_type = Type.NOMINAL;
-            m_model = getNominalValueToColorMap((ColorModelNominal)colorModel);
-        } else {
-            m_type = Type.NUMERIC;
-            if (colorModel instanceof ColorModelRange2 colorModelRange2) {
-                m_model = new StopValuesCIELabModelEnt(colorModelRange2);
-            } else {
-                m_model = new NumericColorModelEnt((ColorModelRange)colorModel);
-            }
-        }
+    private static Map<String, double[]> convertSpecialColors(final Map<SpecialColorType, double[]> specialColors) {
+        return specialColors.entrySet().stream().collect( //
+            Collectors.toMap( //
+                e -> e.getKey().name(), //
+                Map.Entry::getValue));
     }
 
-    private static Map<String, String> getNominalValueToColorMap(final ColorModelNominal colorModel) {
-        final Map<String, String> nominalValueToColorMap = new HashMap<>();
-        for (var entry : colorModel.getColorToValueMap().entrySet()) {
-            final var color = entry.getKey();
-            final var values = entry.getValue();
-            values.forEach(value -> nominalValueToColorMap.put(value, color));
-        }
-        return nominalValueToColorMap;
+    /**
+     * @return the stop values of the color gradient
+     */
+    public double[] getStopValues() {
+        return m_stopValues;
     }
 
-    public Type getType() {
-        return m_type;
+    /**
+     * @return the stop colors in CIELab color space of the color gradient
+     */
+    public double[][] getStopColorsCIELab() {
+        return m_stopColorsCIELab;
     }
 
-    public Object getModel() {
-        return m_model;
+    /**
+     * @return the special colors in CIELab color space of the color gradient
+     */
+    public Map<String, double[]> getSpecialColors() {
+        return m_specialColors;
     }
-
 }
