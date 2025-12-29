@@ -54,6 +54,7 @@ import java.util.Map;
 import org.knime.core.data.property.ColorModel;
 import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ColorModelRange;
+import org.knime.core.data.property.ColorModelRange2;
 
 /**
  * A representation of a {@link ColorModel} which is used by the frontend to handle colors. For a nominal color column,
@@ -77,11 +78,10 @@ public final class ColorModelEnt {
             m_model = getNominalValueToColorMap((ColorModelNominal)colorModel);
         } else {
             m_type = Type.NUMERIC;
-            final var colorModelRange = (ColorModelRange)colorModel;
-            if (colorModelRange.usesCIELabInterpolation()) {
-                m_model = new StopValuesCIELabModelEnt(colorModelRange);
+            if (colorModel instanceof ColorModelRange2 colorModelRange2) {
+                m_model = new StopValuesCIELabModelEnt(colorModelRange2);
             } else {
-                m_model = new NumericColorModelEnt(colorModelRange);
+                m_model = new NumericColorModelEnt((ColorModelRange)colorModel);
             }
         }
     }
