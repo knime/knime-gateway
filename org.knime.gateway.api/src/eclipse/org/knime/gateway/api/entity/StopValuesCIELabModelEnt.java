@@ -48,13 +48,14 @@
  */
 package org.knime.gateway.api.entity;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.knime.core.data.property.ColorModelRange;
+import org.knime.core.data.property.ColorModelRange2;
+import org.knime.core.data.property.ColorModelRange2.SpecialColorType;
 
 /**
- * A POJO representation of a {@link ColorModelRange} with CIELab color space interpolation, which is serialized and
+ * A POJO representation of a {@link ColorModelRange2} with CIELab color space interpolation, which is serialized and
  * provided to the frontend for color interpolation with stop values and special colors.
  *
  * @author Paul Bärnreuther
@@ -68,28 +69,36 @@ public final class StopValuesCIELabModelEnt {
 
     private final Map<String, double[]> m_specialColors;
 
-    StopValuesCIELabModelEnt(final ColorModelRange colorModel) {
-        this.m_stopValues = colorModel.getStopValues();
-        this.m_stopColorsCIELab = colorModel.getStopColorsCIELab();
-        this.m_specialColors = convertSpecialColorsToCIELab(colorModel);
+    StopValuesCIELabModelEnt(final ColorModelRange2 colorModel) {
+        m_stopValues = colorModel.getStopValues();
+        m_stopColorsCIELab = colorModel.getStopColorsCIELab();
+        m_specialColors = convertSpecialColors(colorModel.getSpecialColorsCIELab());
     }
 
-    private static Map<String, double[]> convertSpecialColorsToCIELab(final ColorModelRange colorModel) {
-        final Map<String, double[]> specialColorsCIELab = new HashMap<>();
-        for (final var entry : colorModel.getSpecialColorsCIELab().entrySet()) {
-            specialColorsCIELab.put(entry.getKey().name(), entry.getValue());
-        }
-        return specialColorsCIELab;
+    private static Map<String, double[]> convertSpecialColors(final Map<SpecialColorType, double[]> specialColors) {
+        return specialColors.entrySet().stream().collect( //
+            Collectors.toMap( //
+                e -> e.getKey().name(), //
+                Map.Entry::getValue));
     }
 
+    /**
+     * @return the stop values of the color gradient
+     */
     public double[] getStopValues() {
         return m_stopValues;
     }
 
+    /**
+     * @return the stop colors in CIELab color space of the color gradient
+     */
     public double[][] getStopColorsCIELab() {
         return m_stopColorsCIELab;
     }
 
+    /**
+     * @return the special colors in CIELab color space of the color gradient
+     */
     public Map<String, double[]> getSpecialColors() {
         return m_specialColors;
     }
