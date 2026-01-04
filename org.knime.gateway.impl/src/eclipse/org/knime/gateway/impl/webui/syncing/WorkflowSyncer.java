@@ -130,7 +130,6 @@ public interface WorkflowSyncer {
             this( //
                 targetWfm, //
                 config, //
-                dependencies, //
                 new SyncStateStore(() -> dependencies.appStateUpdater().updateAppState()), //
                 SyncingListener::new, //
                 new LocalSaver(), //
@@ -139,10 +138,14 @@ public interface WorkflowSyncer {
             );
         }
 
-        DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config,
-            final Dependencies dependencies, final SyncStateStore syncStateStore,
-            final Function<Runnable, WorkflowListener> listenerFactory, final LocalSaver localSaver,
-            final HubUploader hubUploader, final Function<Runnable, Debouncer> debouncerFactory) {
+        DefaultWorkflowSyncer(final WorkflowManager targetWfm, //
+            final SyncerConfig config, //
+            final SyncStateStore syncStateStore, //
+            final Function<Runnable, WorkflowListener> listenerFactory, //
+            final LocalSaver localSaver, //
+            final HubUploader hubUploader, //
+            final Function<Runnable, Debouncer> debouncerFactory //
+        ) {
             m_syncStateStore = syncStateStore;
             m_workflowListener = listenerFactory.apply(this::notifyWorkflowChanged);
             m_localSaver = localSaver;

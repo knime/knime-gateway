@@ -71,7 +71,6 @@ import org.knime.gateway.api.util.DataSize;
 import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.AppStateUpdater;
-import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
 
 /**
@@ -107,7 +106,6 @@ public class WorkflowSyncerTest {
         m_appStateUpdater.addAppStateChangedListener(m_appUpdates::incrementAndGet);
 
         var config = new WorkflowSyncer.SyncerConfig(Duration.ZERO, SOME_SIZE);
-        var dependencies = new DefaultWorkflowSyncer.Dependencies(m_appStateUpdater, mock(SpaceProvider.class));
 
         m_syncStateStore = new SyncStateStore(m_appStateUpdater::updateAppState);
         m_localSaver = mock(LocalSaver.class);
@@ -115,8 +113,15 @@ public class WorkflowSyncerTest {
         var workflowListener = mock(WorkflowListener.class);
         var debouncer = mock(org.knime.gateway.impl.util.Debouncer.class);
 
-        m_syncer = new DefaultWorkflowSyncer(m_wfm, config, dependencies, m_syncStateStore, cb -> workflowListener,
-            m_localSaver, m_hubUploader, task -> debouncer);
+        m_syncer = new DefaultWorkflowSyncer( //
+            m_wfm, //
+            config, //
+            m_syncStateStore, //
+            cb -> workflowListener, //
+            m_localSaver, //
+            m_hubUploader, //
+            task -> debouncer //
+        );
 
         // ensure listener registration happened
         verify(m_wfm).addListener(any(WorkflowListener.class));
@@ -141,7 +146,7 @@ public class WorkflowSyncerTest {
 
     @Test
     public void testSyncProjectNowSetsErrorOnSaveFailure() throws Exception {
-        doThrow(new IOException("boom")).when(m_localSaver).saveProject(m_wfm);
+        doThrow(new IOException("exception message")).when(m_localSaver).saveProject(m_wfm);
 
         assertThatThrownBy(() -> m_syncer.syncProjectNow()).isInstanceOf(ServiceCallException.class);
 
