@@ -79,7 +79,7 @@ public interface WorkflowSyncer {
     /** Defines the auto-save interval for syncing workflows in seconds */
     String SYNC_AUTO_SAVE_INTERVAL_PROP = "com.knime.gateway.executor.sync.autoSaveInterval";
 
-    /** Defines the auto-save threshold for syncing workflows in megabytes */
+    /** Defines the auto-save threshold for syncing workflows in Kibibytes */
     String SYNC_AUTO_SAVE_THRESHOLD_PROP = "com.knime.gateway.executor.sync.autoSaveThreshold";
 
     /**
