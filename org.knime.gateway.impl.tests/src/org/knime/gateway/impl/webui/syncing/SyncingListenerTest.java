@@ -49,7 +49,7 @@
 package org.knime.gateway.impl.webui.syncing;
 
 /**
- * Test for the {@link SyncingListener}.
+ * Test for the {@link WorkflowSyncer.SyncingListener}.
  *
  * @author Kai Franze, KNIME GmbH, Germany
  */

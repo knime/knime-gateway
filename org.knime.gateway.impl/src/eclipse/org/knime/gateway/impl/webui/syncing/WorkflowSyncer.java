@@ -54,6 +54,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowResourceCache;
@@ -332,6 +333,31 @@ public interface WorkflowSyncer {
                 throw new NumberFormatException("Provided value must be greater than 0, is %s".formatted(parsed));
             }
             return parsed;
+        }
+    }
+
+    /**
+     * ...
+     *
+     * @author Kai Franze, KNIME GmbH, Germany
+     * @since 5.10
+     */
+    final class SyncingListener implements WorkflowListener {
+
+        private static final NodeLogger LOGGER = NodeLogger.getLogger(SyncingListener.class);
+
+        private final Runnable m_onChange;
+
+        SyncingListener(final Runnable callback) {
+            m_onChange = callback;
+        }
+
+        @Override
+        public void workflowChanged(final WorkflowEvent event) {
+            if (event.getType() == WorkflowEvent.Type.WORKFLOW_CHANGED) {
+                LOGGER.info("<%s> event received, notifying syncer.".formatted(event.getType()));
+                m_onChange.run();
+            }
         }
     }
 }
