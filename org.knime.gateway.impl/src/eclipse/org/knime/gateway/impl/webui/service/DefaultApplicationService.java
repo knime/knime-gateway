@@ -115,10 +115,9 @@ public final class DefaultApplicationService implements ApplicationService {
 
     @Override
     public AppStateEnt getState() {
-        var projectId = DefaultServiceContext.getProjectId(); // ~todo smelly
+        var projectId = DefaultServiceContext.getProjectId();
         var key = projectId.map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
-        // ~todo should not be part of app state imo
         var workflowSyncer = m_projectManager.getProject(projectId.orElseThrow()).orElseThrow() //
             .getWorkflowManagerIfLoaded().orElseThrow() //
             .getWorkflowResourceCache().getFromCache(WorkflowSyncer.WorkflowSyncerResource.class) //
