@@ -223,6 +223,11 @@ public final class Project {
      *
      * @param version -
      */
+    /**
+     * Dispose any cached workflow manager for the provided version.
+     *
+     * @param version version whose cached workflow manager should be disposed
+     */
     public void disposeCachedWfm(final VersionId version) {
         this.m_projectWfmCache.dispose(version);
     }
@@ -264,8 +269,9 @@ public final class Project {
         var previousCache = m_projectWfmCache;
         if (previousCache.contains(VersionId.currentState())) {
             // for full generality one would have to carry over other cached instances too.
-            // However, this case (only current-version available) is the only circumstance in which this method is called.
-            // This is acceptable since this method will be removed with NXT-3607.
+            // However, this case (only current-version available) is the only circumstance
+            // in which this method is called. This is acceptable since this method will
+            // be removed with NXT-3607.
             m_projectWfmCache = new ProjectWfmCache(//
                 previousCache.getWorkflowManager(VersionId.currentState()), //
                 loader //

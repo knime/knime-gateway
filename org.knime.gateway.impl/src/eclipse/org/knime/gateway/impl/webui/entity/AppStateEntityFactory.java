@@ -198,8 +198,9 @@ public final class AppStateEntityFactory {
             .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
             .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled()) //
             // TODO HUB-9598 only include when not read-only connection?
-            .setSpaceProviders(
-                appMode == AppModeEnum.DEFAULT ? buildSpaceProviderEnts(dependencies.spaceProviders(), false) : null) //
+            .setSpaceProviders(appMode == AppModeEnum.DEFAULT
+                ? buildSpaceProviderEnts(dependencies.spaceProviders(), false)
+                : null) //
             .setProjectSyncState(projectSyncState) //
             .build();
     }

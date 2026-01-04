@@ -137,7 +137,7 @@ public final class DefaultEventService implements EventService {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "java:S5612" })
     public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;

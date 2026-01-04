@@ -90,7 +90,7 @@ public final class ServiceDependencies {
     private static final Map<Class<?>, Object> DEPENDENCIES = synchronizedMap(new HashMap<>());
 
     // Hack - to be removed with NXT-3420
-    public static boolean allowDependencyOverwrite = false;
+    public static boolean allowDependencyOverwrite;
 
     private ServiceDependencies() {
         // Utility class

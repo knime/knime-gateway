@@ -69,22 +69,19 @@ final class SyncingListener implements WorkflowListener {
         m_onChange = callback;
     }
 
-    /**
-     * TODO:
-     * - Is there a way to filter for execution state changes?
-     * - For this we would need access to the individual nodes and there events
-     */
     @Override
     public void workflowChanged(final WorkflowEvent event) {
         final var eventType = event.getType();
         switch (eventType) {
             case NODE_ADDED -> {
                 final var nc = (NodeContainer)event.getNewValue();
-                LOGGER.info("<%s> event received, we should add a listener to <%s>".formatted(eventType, nc.getID()));
+                LOGGER.info(
+                    "<%s> event received, we should add a listener to <%s>".formatted(eventType, nc.getID()));
             }
             case NODE_REMOVED -> {
                 final var nc = (NodeContainer)event.getOldValue();
-                LOGGER.info("<%s> event received, we should remove a listener from <%s>".formatted(eventType, nc.getID()));
+                LOGGER.info(
+                    "<%s> event received, we should remove a listener from <%s>".formatted(eventType, nc.getID()));
             }
             case WORKFLOW_CHANGED -> {
                 LOGGER.info("<%s> event received, notifying syncer.".formatted(eventType));

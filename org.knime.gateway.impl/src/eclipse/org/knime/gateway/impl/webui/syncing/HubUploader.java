@@ -109,6 +109,7 @@ final class HubUploader {
         }
     }
 
+    @SuppressWarnings("java:S1166") // Exceptions are converted to domain-specific ones or rethrown
     void uploadProject(final WorkflowManager wfm) throws LoggedOutException, NetworkException, ServiceCallException {
         var context = wfm.getContextV2();
         if (!(context.getLocationInfo() instanceof HubSpaceLocationInfo hubInfo)) {
@@ -131,7 +132,7 @@ final class HubUploader {
         } catch (MutableServiceCallException e) {
             throw e.toGatewayException(wfm.getName());
         } catch (UnsupportedOperationException e) {
-            // This should not happen
+            LOGGER.error("Unexpected upload location for workflow {}, Hub space required.", e);
             throw new IllegalStateException("Uploading is only supported for workflows stored in Hub spaces.", e);
         }
     }

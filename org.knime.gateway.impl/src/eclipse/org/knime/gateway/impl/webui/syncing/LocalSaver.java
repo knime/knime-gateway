@@ -64,8 +64,6 @@ import org.knime.gateway.impl.service.util.WorkflowManagerResolver;
  */
 final class LocalSaver {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(LocalSaver.class);
-
     /**
      * @throws UnsupportedOperationException if the workflow is a component project
      * @throws SyncWhileWorkflowExecutingException if the workflow is currently executing

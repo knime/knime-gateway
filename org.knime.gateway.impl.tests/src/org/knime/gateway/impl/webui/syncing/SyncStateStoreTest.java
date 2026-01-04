@@ -60,6 +60,9 @@ import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
  */
 public class SyncStateStoreTest {
 
+    /**
+     * Verifies deferred state changes are applied when unlocking.
+     */
     @Test
     public void testDefersStateChangeWhileLockedAndAppliesOnUnlock() {
         var stateChangeCalls = new AtomicInteger();
@@ -77,6 +80,9 @@ public class SyncStateStoreTest {
         assertThat(stateChangeCalls.get()).isEqualTo(1);
     }
 
+    /**
+     * Verifies the last queued deferred state wins when multiple are present.
+     */
     @Test
     public void testLastDeferredStateWinsWhenMultipleQueued() {
         var stateChangeCalls = new AtomicInteger();

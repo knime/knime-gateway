@@ -105,7 +105,7 @@ public interface WorkflowSyncer {
     /**
      * Default implementation of {@link WorkflowSyncer}.
      */
-    public static final class DefaultWorkflowSyncer implements WorkflowSyncer {
+    final class DefaultWorkflowSyncer implements WorkflowSyncer {
 
         private static final NodeLogger LOGGER = NodeLogger.getLogger(WorkflowSyncer.class);
 
@@ -121,10 +121,16 @@ public interface WorkflowSyncer {
 
         private WorkflowManager m_wfm;
 
-        public static record Dependencies(AppStateUpdater appStateUpdater, SpaceProvider provider) {
+        /**
+         * Bundles collaborators needed by the default syncer.
+         */
+        public record Dependencies(AppStateUpdater appStateUpdater, SpaceProvider provider) {
 
         }
 
+        /**
+         * Creates a workflow syncer wired with default services.
+         */
         public DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config,
             final Dependencies dependencies) {
             this( //
@@ -186,16 +192,21 @@ public interface WorkflowSyncer {
             }
 
             m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
-            m_syncStateStore.deferStateChanges(); // We deferStateChanges the sync state store to defer the latest deferrable update
+            m_syncStateStore.deferStateChanges(); // defer latest deferrable update
             try {
                 m_hubUploader.uploadProjectWithThreshold(m_wfm, syncThreshold);
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
             } catch (IOException e) {
-                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Details(e));
+                m_syncStateStore.changeState( //
+                    ProjectSyncStateEnt.StateEnum.ERROR, //
+                    new SyncStateStore.Details(e));
             } catch (SyncThresholdException e) {
-                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.DIRTY, new SyncStateStore.Details(e), false);
+                m_syncStateStore.changeState( //
+                    ProjectSyncStateEnt.StateEnum.DIRTY, //
+                    new SyncStateStore.Details(e), //
+                    false);
             } finally {
-                m_syncStateStore.allowStateChanges(); // We allowStateChanges the sync state store and apply the latest deferrable state change
+                m_syncStateStore.allowStateChanges(); // apply deferred state change
             }
         }
 
@@ -215,7 +226,7 @@ public interface WorkflowSyncer {
             }
 
             m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
-            m_syncStateStore.deferStateChanges(); // We deferStateChanges the sync state store to defer the latest deferrable update
+            m_syncStateStore.deferStateChanges(); // defer latest deferrable update
             try {
                 m_hubUploader.uploadProject(m_wfm);
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
@@ -224,7 +235,7 @@ public interface WorkflowSyncer {
                 m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR);
                 throw e;
             } finally {
-                m_syncStateStore.allowStateChanges(); // We allowStateChanges the sync state store and apply the latest deferrable state change
+                m_syncStateStore.allowStateChanges(); // apply deferred state change
             }
         }
 
@@ -269,6 +280,9 @@ public interface WorkflowSyncer {
         }
     }
 
+    /**
+     * WorkflowResource wrapper that disposes the underlying syncer with cache eviction.
+     */
     class WorkflowSyncerResource implements WorkflowResourceCache.WorkflowResource {
 
         private final WorkflowSyncer m_syncer;
@@ -287,11 +301,21 @@ public interface WorkflowSyncer {
         }
     }
 
+    /**
+     * Sync configuration values controlling debounce timing and upload thresholds.
+     */
     record SyncerConfig(Duration debounceInterval, DataSize sizeThreshold) {
         private static final Duration SYNC_AUTO_SAVE_INTERVAL_DEFAULT = Duration.ofSeconds(15);
 
         private static final DataSize SYNC_AUTO_SAVE_THRESHOLD_DEFAULT = DataSize.ofKibiBytes(10 * 1024);
 
+        /**
+         * Parse debounce interval (seconds) and size threshold (KiB) into a config with defaults.
+         *
+         * @param debounceIntervalString seconds between automatic sync attempts (blank -> default 15s)
+         * @param sizeThresholdString size threshold in KiB for auto-save (blank -> default 10 MiB)
+         * @return parsed {@link SyncerConfig} with non-negative values and sensible defaults
+         */
         public static SyncerConfig of(String debounceIntervalString, String sizeThresholdString) {
             final var debounceIntervalSeconds = parseNonNegativeInt( //
                 debounceIntervalString, //

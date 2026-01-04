@@ -67,7 +67,7 @@ class ProjectWfmCacheTest {
         var second = cache.getWorkflowManager(VersionId.currentState());
 
         assertThat(first).isSameAs(second);
-        assertThat(loader.calls.get()).isEqualTo(1);
+        assertThat(loader.m_calls.get()).isEqualTo(1);
     }
 
     @Test
@@ -81,7 +81,7 @@ class ProjectWfmCacheTest {
 
         assertThat(first).isSameAs(second);
         assertThat(cache.contains(v1)).isTrue();
-        assertThat(loader.calls.get()).isEqualTo(1); // only fixed version was loaded
+        assertThat(loader.m_calls.get()).isEqualTo(1); // only fixed version was loaded
     }
 
     @Test
@@ -103,7 +103,7 @@ class ProjectWfmCacheTest {
 
         cache.getWorkflowManager(VersionId.currentState());
         cache.getWorkflowManager(fixed);
-        assertThat(loader.calls.get()).isEqualTo(2);
+        assertThat(loader.m_calls.get()).isEqualTo(2);
 
         cache.dispose(VersionId.currentState());
         cache.dispose(fixed);
@@ -113,7 +113,7 @@ class ProjectWfmCacheTest {
 
         cache.getWorkflowManager(VersionId.currentState());
         cache.getWorkflowManager(fixed);
-        assertThat(loader.calls.get()).isEqualTo(4);
+        assertThat(loader.m_calls.get()).isEqualTo(4);
     }
 
     @Test
@@ -151,7 +151,7 @@ class ProjectWfmCacheTest {
         var cache = new ProjectWfmCache(loader);
 
         // load 6 versions -> capacity is 5
-        for (int i = 0; i < 6; i++) {
+        for (var i = 0; i < 6; i++) {
             cache.getWorkflowManager(VersionId.parse(Integer.toString(i)));
         }
 
@@ -176,13 +176,13 @@ class ProjectWfmCacheTest {
     }
 
     private static class CountingLoader implements WorkflowManagerLoader {
-        final AtomicInteger calls = new AtomicInteger();
-        final Map<VersionId, org.knime.core.node.workflow.WorkflowManager> cache = new HashMap<>();
+        final AtomicInteger m_calls = new AtomicInteger();
+        final Map<VersionId, org.knime.core.node.workflow.WorkflowManager> m_cache = new HashMap<>();
 
         @Override
         public org.knime.core.node.workflow.WorkflowManager load(final VersionId version) {
-            calls.incrementAndGet();
-            return cache.computeIfAbsent(version, v -> org.mockito.Mockito.mock(
+            m_calls.incrementAndGet();
+            return m_cache.computeIfAbsent(version, v -> org.mockito.Mockito.mock(
                 org.knime.core.node.workflow.WorkflowManager.class));
         }
     }

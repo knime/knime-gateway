@@ -137,7 +137,7 @@ class ProjectWfmCache {
                 return loaded;
             } catch (GatewayException e) {
                 // TODO NXT-3938
-                throw new RuntimeException(e);
+                throw new IllegalStateException("Failed to load current-state workflow", e);
             }
         }
     }
@@ -150,13 +150,11 @@ class ProjectWfmCache {
     /**
      * Dispose the workflow manager instance corresponding to the given version, if present.
      *
-     * @param version -
+     * @param version version identifier to dispose
      */
     void dispose(final VersionId version) {
         if (version.isCurrentState()) {
-            m_currentState.ifPresent(wfm -> {
-                disposeWorkflowManager(wfm);
-            });
+            m_currentState.ifPresent(ProjectWfmCache::disposeWorkflowManager);
             m_currentState.clear();
         } else {
             Optional.ofNullable(m_fixedVersions.remove(version)) //
@@ -165,9 +163,9 @@ class ProjectWfmCache {
     }
 
     /**
-     * -
+     * Checks whether a workflow manager is already loaded for the given version.
      *
-     * @param version -
+     * @param version version identifier
      * @return Whether a workflow manager instance corresponding to the given version is already loaded
      */
     boolean contains(final VersionId version) {
@@ -191,6 +189,11 @@ class ProjectWfmCache {
         }
     }
 
+    /**
+     * Register a callback that fires whenever a workflow manager is loaded.
+     *
+     * @param callback consumer invoked with the loaded workflow and its version
+     */
     public void onWfmLoad(BiConsumer<WorkflowManager, VersionId> callback) {
         m_onWfmLoad.add(callback);
     }

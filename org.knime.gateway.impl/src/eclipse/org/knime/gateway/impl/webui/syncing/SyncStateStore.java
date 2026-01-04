@@ -76,7 +76,7 @@ final class SyncStateStore {
 
     private boolean m_autoSyncEnabled = true;
 
-    private boolean m_locked = false;
+    private boolean m_locked;
 
     private Runnable m_onUnlock = () -> {
     };

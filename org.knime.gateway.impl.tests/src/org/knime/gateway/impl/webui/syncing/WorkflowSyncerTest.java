@@ -81,8 +81,6 @@ public class WorkflowSyncerTest {
 
     private WorkflowManager m_wfm;
 
-    private AppStateUpdater m_appStateUpdater;
-
     private AtomicInteger m_appUpdates;
 
     private DefaultWorkflowSyncer m_syncer;
@@ -91,10 +89,16 @@ public class WorkflowSyncerTest {
 
     private HubUploader m_hubUploader;
 
+    @SuppressWarnings("java:S1450")
     private SyncStateStore m_syncStateStore;
 
     private static final DataSize SOME_SIZE = new DataSize(0);
 
+    /**
+     * Prepare a fresh syncer with mocked dependencies for each test.
+     *
+     * @throws Exception if test setup fails
+     */
     @Before
     public void setUp() throws Exception {
         m_wfm = mock(WorkflowManager.class);
@@ -102,12 +106,12 @@ public class WorkflowSyncerTest {
 
         // collect app-state update invocations
         m_appUpdates = new AtomicInteger();
-        m_appStateUpdater = new AppStateUpdater();
-        m_appStateUpdater.addAppStateChangedListener(m_appUpdates::incrementAndGet);
+        var appStateUpdater = new AppStateUpdater();
+        appStateUpdater.addAppStateChangedListener(m_appUpdates::incrementAndGet);
 
         var config = new WorkflowSyncer.SyncerConfig(Duration.ZERO, SOME_SIZE);
 
-        m_syncStateStore = new SyncStateStore(m_appStateUpdater::updateAppState);
+        m_syncStateStore = new SyncStateStore(appStateUpdater::updateAppState);
         m_localSaver = mock(LocalSaver.class);
         m_hubUploader = mock(HubUploader.class);
         var workflowListener = mock(WorkflowListener.class);
@@ -127,11 +131,17 @@ public class WorkflowSyncerTest {
         verify(m_wfm).addListener(any(WorkflowListener.class));
     }
 
+    /** Dispose syncer after each test run. */
     @After
     public void tearDown() {
         m_syncer.dispose();
     }
 
+    /**
+     * Sync now should save, upload, and reach SYNCED state.
+     *
+     * @throws Exception when sync fails unexpectedly
+     */
     @Test
     public void testSyncProjectNowUpdatesStateAndUploads() throws Exception {
         m_syncer.syncProjectNow();
@@ -144,6 +154,11 @@ public class WorkflowSyncerTest {
         assertThat(m_appUpdates.get()).isEqualTo(3);
     }
 
+    /**
+     * Sync now should surface errors from save failures.
+     *
+     * @throws Exception when sync invocation fails unexpectedly
+     */
     @Test
     public void testSyncProjectNowSetsErrorOnSaveFailure() throws Exception {
         doThrow(new IOException("exception message")).when(m_localSaver).saveProject(m_wfm);
@@ -155,6 +170,11 @@ public class WorkflowSyncerTest {
         assertThat(m_appUpdates.get()).isEqualTo(2);
     }
 
+    /**
+     * Auto-sync should apply deferred DIRTY state after upload completes.
+     *
+     * @throws Exception when sync invocation fails unexpectedly
+     */
     @Test
     public void testAutoSyncAppliesDeferredDirtyUpdateAfterUpload() throws Exception {
         // Simulate workflow change happening during upload -> deferred DIRTY should win

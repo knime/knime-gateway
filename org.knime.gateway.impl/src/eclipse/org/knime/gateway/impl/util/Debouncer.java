@@ -49,11 +49,13 @@
 package org.knime.gateway.impl.util;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Can be used to wrap actions that should not be executed too frequently.
@@ -77,11 +79,14 @@ public final class Debouncer {
      */
     private static final class DaemonThreadFactory implements ThreadFactory {
 
+        private static final AtomicInteger THREAD_COUNTER = new AtomicInteger();
+
         @Override
         public Thread newThread(final Runnable r) {
             final var t = new Thread(r);
             t.setDaemon(true);
-            t.setName("debouncer-" + t.getId());
+            Optional.ofNullable(Debouncer.class.getCanonicalName()) //
+                .ifPresent(name -> t.setName(name));
             return t;
         }
     }
