@@ -118,16 +118,28 @@ public final class DefaultApplicationService implements ApplicationService {
         var projectId = DefaultServiceContext.getProjectId();
         var key = projectId.map(Key::of).orElse(Key.defaultKey());
         var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
-        var workflowSyncer = m_projectManager.getProject(projectId.orElseThrow()).orElseThrow() //
-            .getWorkflowManagerIfLoaded().orElseThrow() //
-            .getWorkflowResourceCache().getFromCache(WorkflowSyncer.WorkflowSyncerResource.class) //
-            .map(res -> res.get()) //
+        var workflowSyncer = projectId.flatMap(id -> m_projectManager.getProject(id)) //
+            .flatMap(proj -> proj.getWorkflowManagerIfLoaded()) //
+            .map(wfm -> wfm.getWorkflowResourceCache()) //
+            .filter(c -> c != null) //
+            .flatMap(c -> c.getFromCache(WorkflowSyncer.WorkflowSyncerResource.class)) //
+            .map(syncerRes -> syncerRes.get()) //
             .orElse(null);
         Predicate<String> isActiveProject = projectId.isEmpty() ? null : id -> true;
-        var dependencies = new AppStateEntityFactory.ServiceDependencies(m_projectManager, m_preferencesProvider,
-            spaceProviders, m_nodeFactoryProvider, m_nodeCollections, m_kaiHandler, workflowSyncer);
-        var appState = AppStateEntityFactory.buildAppStateEnt(
-            projectId.map(ProjectFilter::single).orElse(ProjectFilter.all()), isActiveProject, dependencies);
+        var dependencies = new AppStateEntityFactory.ServiceDependencies( //
+            m_projectManager, //
+            m_preferencesProvider, //
+            spaceProviders, //
+            m_nodeFactoryProvider, //
+            m_nodeCollections, //
+            m_kaiHandler, //
+            workflowSyncer //
+        );
+        var appState = AppStateEntityFactory.buildAppStateEnt( //
+            projectId.map(ProjectFilter::single).orElse(ProjectFilter.all()), //
+            isActiveProject, //
+            dependencies //
+        );
         if (m_appStateUpdater != null) {
             m_appStateUpdater.setLastAppState(appState);
         }
