@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.syncing;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.knime.core.node.NodeLogger;
@@ -79,10 +80,8 @@ public interface WorkflowSyncer {
     /** Defines the auto-save interval for syncing workflows in seconds */
     String SYNC_AUTO_SAVE_INTERVAL_PROP = "com.knime.gateway.executor.sync.autoSaveInterval";
 
-    /** Defines the auto-save threshold for syncing workflows in Kibibytes */
+    /** Defines the auto-save threshold for syncing workflows in Kibibytes. If negative, disables auto-save. */
     String SYNC_AUTO_SAVE_THRESHOLD_PROP = "com.knime.gateway.executor.sync.autoSaveThreshold";
-
-    String SYNC_AUTO_SAVE_DISABLED = "com.knime.gateway.executor.sync.disabled";
 
     /**
      * @return the current project sync state
@@ -313,35 +312,32 @@ public interface WorkflowSyncer {
         /**
          * Parse debounce interval (seconds) and size threshold (KiB) into a config with defaults.
          *
-         * @param debounceIntervalString seconds between automatic sync attempts (blank -> default 15s)
-         * @param sizeThresholdString size threshold in KiB for auto-save (blank -> default 10 MiB)
+         * @param debounceIntervalString seconds between automatic sync attempts
+         * @param sizeThresholdString size threshold in KiB for auto-save
          * @return parsed {@link SyncerConfig} with non-negative values and sensible defaults
          */
-        public static SyncerConfig of(String debounceIntervalString, String sizeThresholdString) {
-            final var debounceIntervalSeconds = parseNonNegativeInt( //
-                debounceIntervalString, //
-                (int)SYNC_AUTO_SAVE_INTERVAL_DEFAULT.getSeconds() //
-            );
-            final var sizeThresholdKibibytes = parseNonNegativeInt( //
-                sizeThresholdString, //
-                (int)(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT.bytes() / 1024) //
-            );
-
-            final var debounceInterval = Duration.ofSeconds(debounceIntervalSeconds);
-            final var sizeThreshold = DataSize.ofKibiBytes(sizeThresholdKibibytes);
-
-            return new SyncerConfig(debounceInterval, sizeThreshold);
+        public static Optional<SyncerConfig> of(String debounceIntervalString, String sizeThresholdString) {
+            var givenSizeThreshold = parseInteger(sizeThresholdString);
+            if (givenSizeThreshold.isPresent() && givenSizeThreshold.get() < 0) {
+                return Optional.empty();
+            }
+            final var debounceInterval = parseInteger(debounceIntervalString) //
+                    .map(s -> Duration.ofSeconds(s)) //
+                    .orElse(SYNC_AUTO_SAVE_INTERVAL_DEFAULT);
+            final var sizeThreshold = givenSizeThreshold //
+                    .map(s -> DataSize.ofKibiBytes(s)) //
+                    .orElse(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT);
+            return Optional.of(new SyncerConfig(debounceInterval, sizeThreshold));
         }
 
-        private static int parseNonNegativeInt(final String value, final int defaultValue) {
+        private static Optional<Integer> parseInteger(final String value) {
             if (value == null || value.isBlank()) {
-                return defaultValue;
+                return Optional.empty();
             }
             try {
-                final var parsed = Integer.parseInt(value.trim());
-                return parsed >= 0 ? parsed : defaultValue;
+                return Optional.of(Integer.parseInt(value.trim()));
             } catch (NumberFormatException e) {
-                return defaultValue;
+                return Optional.empty();
             }
         }
     }
