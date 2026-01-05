@@ -39,8 +39,10 @@ import org.apache.commons.io.FileUtils;
 
 /**
  * Type- and unit-safe description of data size/volume.
- * 
+ *
  * @param bytes -
+ *
+ * @since 5.10
  */
 public record DataSize(long bytes) {
 
