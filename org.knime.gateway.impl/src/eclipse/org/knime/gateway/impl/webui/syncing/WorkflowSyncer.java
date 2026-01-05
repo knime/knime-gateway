@@ -50,7 +50,6 @@ package org.knime.gateway.impl.webui.syncing;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.knime.core.node.NodeLogger;
@@ -82,6 +81,8 @@ public interface WorkflowSyncer {
 
     /** Defines the auto-save threshold for syncing workflows in Kibibytes */
     String SYNC_AUTO_SAVE_THRESHOLD_PROP = "com.knime.gateway.executor.sync.autoSaveThreshold";
+
+    String SYNC_AUTO_SAVE_DISABLED = "com.knime.gateway.executor.sync.disabled";
 
     /**
      * @return the current project sync state
@@ -305,34 +306,43 @@ public interface WorkflowSyncer {
      * Sync configuration values controlling debounce timing and upload thresholds.
      */
     record SyncerConfig(Duration debounceInterval, DataSize sizeThreshold) {
+        private static final Duration SYNC_AUTO_SAVE_INTERVAL_DEFAULT = Duration.ofSeconds(15);
+
+        private static final DataSize SYNC_AUTO_SAVE_THRESHOLD_DEFAULT = DataSize.ofKibiBytes(10 * 1024);
 
         /**
-         * Parse debounce interval (seconds) and size threshold (KiB) into a config
+         * Parse debounce interval (seconds) and size threshold (KiB) into a config with defaults.
          *
-         * @param debounceInterval seconds between automatic sync attempts
-         * @param sizeThreshold size threshold in KiB for auto-save
-         * @return parsed {@link SyncerConfig} with non-negative values
+         * @param debounceIntervalString seconds between automatic sync attempts (blank -> default 15s)
+         * @param sizeThresholdString size threshold in KiB for auto-save (blank -> default 10 MiB)
+         * @return parsed {@link SyncerConfig} with non-negative values and sensible defaults
          */
-        public static Optional<SyncerConfig> of(String debounceInterval, String sizeThreshold) {
-            if (debounceInterval == null || sizeThreshold == null) {
-                return Optional.empty();
-            }
-            return Optional.of(new SyncerConfig( //
-                    Duration.ofSeconds(parseNonNegativeInt(debounceInterval)), //
-                    DataSize.ofKibiBytes(parseNonNegativeInt(sizeThreshold)) //
-            ));
+        public static SyncerConfig of(String debounceIntervalString, String sizeThresholdString) {
+            final var debounceIntervalSeconds = parseNonNegativeInt( //
+                debounceIntervalString, //
+                (int)SYNC_AUTO_SAVE_INTERVAL_DEFAULT.getSeconds() //
+            );
+            final var sizeThresholdKibibytes = parseNonNegativeInt( //
+                sizeThresholdString, //
+                (int)(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT.bytes() / 1024) //
+            );
+
+            final var debounceInterval = Duration.ofSeconds(debounceIntervalSeconds);
+            final var sizeThreshold = DataSize.ofKibiBytes(sizeThresholdKibibytes);
+
+            return new SyncerConfig(debounceInterval, sizeThreshold);
         }
 
-        private static int parseNonNegativeInt(final String value)
-            throws NumberFormatException, IllegalArgumentException {
+        private static int parseNonNegativeInt(final String value, final int defaultValue) {
             if (value == null || value.isBlank()) {
-                throw new IllegalArgumentException("Provided value must not be null or blank");
+                return defaultValue;
             }
-            final var parsed = Integer.parseInt(value.trim());
-            if (parsed < 0) {
-                throw new NumberFormatException("Provided value must be greater than 0, is %s".formatted(parsed));
+            try {
+                final var parsed = Integer.parseInt(value.trim());
+                return parsed >= 0 ? parsed : defaultValue;
+            } catch (NumberFormatException e) {
+                return defaultValue;
             }
-            return parsed;
         }
     }
 
