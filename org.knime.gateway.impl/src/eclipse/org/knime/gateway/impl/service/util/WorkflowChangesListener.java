@@ -180,6 +180,13 @@ public class WorkflowChangesListener implements Closeable {
         }, "KNIME-Workflow-Changes-Listener (" + m_wfm.getName() + ")", true);
 
         m_workflowListener = e -> {
+            if (e.getType() == Type.WORKFLOW_CHANGED) {
+                // This is a general "secondary" event in the sense that it is sent on any workflow modification
+                // that might set the dirty state, modifications (e.g. adding a node) may trigger specific "primary"
+                // events (e.g. NODE_ADDED). For the use-case of WorkflowChangesListener, we are not interested in such
+                // secondary events.
+                return;
+            }
             addOrRemoveListenersFromNodeOrWorkflowAnnotation(e);
             trackChange(e);
             var type = e.getType();
