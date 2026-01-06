@@ -90,6 +90,8 @@ import org.knime.gateway.testing.helper.WorkflowLoader;
 /**
  * Test for the endpoints of the node service.
  *
+ * TODO NXT-4388 re-introduce and fix `testCancelAndRetryComponentLoadJob`.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH, Germany
  * @author Tobias Kampmann, TNG
