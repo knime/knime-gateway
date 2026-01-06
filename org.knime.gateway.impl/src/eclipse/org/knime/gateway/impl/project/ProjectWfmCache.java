@@ -137,7 +137,13 @@ class ProjectWfmCache {
                 return loaded;
             } catch (GatewayException e) {
                 // TODO NXT-3938
-                throw new IllegalStateException("Failed to load current-state workflow", e);
+                final String baseMessage =
+                    "Failed to load current-state workflow. Try re-opening the project or checking the workflow configuration.";
+                final String detail = e.getMessage();
+                final String message = (detail == null || detail.isBlank())
+                    ? baseMessage
+                    : baseMessage + " Cause: " + detail;
+                throw new IllegalStateException(message, e);
             }
         }
     }
