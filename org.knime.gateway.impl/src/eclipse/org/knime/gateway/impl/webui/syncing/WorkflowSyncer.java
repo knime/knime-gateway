@@ -343,7 +343,8 @@ public interface WorkflowSyncer {
     }
 
     /**
-     * ...
+     * {@link WorkflowListener} implementation that reacts to workflow change events and
+     * notifies the associated syncer via a callback so that project state can be updated.
      *
      * @author Kai Franze, KNIME GmbH, Germany
      * @since 5.10
