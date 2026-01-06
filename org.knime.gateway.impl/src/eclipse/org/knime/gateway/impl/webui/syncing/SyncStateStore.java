@@ -139,8 +139,8 @@ final class SyncStateStore {
     }
 
     /**
-     * When the store is locked, the update will be deferred until it is unlocked. This can happen when
-     * {@link WorkflowSyncer#notifyWorkflowChanged()} is called during an ongoing workflow upload.
+     * When the store is locked, the update will be deferred until it is unlocked. This can happen when a
+     * workflow change is notified from {@link DefaultWorkflowSyncer} during an ongoing workflow upload.
      *
      */
     synchronized void changeStateDeferrable(final ProjectSyncStateEnt.StateEnum newState) {
