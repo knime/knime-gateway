@@ -54,7 +54,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -132,10 +131,8 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
     @Test
     public void testWorkflowChangedEvents() throws Exception {
         Pair<UUID, WorkflowManager> idAndWfm = loadWorkflow(m_transformations.getTestWorkflowProject());
-        WorkflowChangedEventTypeEnt eventType = DefaultEventServiceTest.registerWorkflowChangedEventListener( //
-            idAndWfm.getFirst().toString(), //
-            m_transformations.getWorkflowId() //
-        );
+        WorkflowChangedEventTypeEnt eventType =
+            DefaultEventServiceTest.registerWorkflowChangedEventListener(idAndWfm.getFirst().toString(), m_transformations.getWorkflowId());
 
         // set callback for testing
         DefaultEventService es = DefaultEventService.getInstance();
@@ -152,17 +149,14 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
         WorkflowManager wfm = idAndWfm.getSecond();
         checkWorkflowChangeEvents(wfm, m_testEventConsumer, m_transformations.getTransformations());
 
-        // remove event listener and assert that another transformation notifies WorkflowListeners but
-        // not the event consumer
+        // remove event listener and check successful removal
         m_testEventConsumer.getEvents().clear();
         es.removeEventListener(eventType);
-
         WorkflowListener wfListenerMock = mock(WorkflowListener.class);
         wfm.addListener(wfListenerMock); // listener in order to wait for the wf-events to be broadcasted
         wfm.addWorkflowAnnotation(new AnnotationData(), -1);
-        await().atMost(2, TimeUnit.SECONDS) //
-            .pollInterval(200, TimeUnit.MILLISECONDS) //
-            .untilAsserted(() -> verify(wfListenerMock, atLeastOnce()).workflowChanged(any()));
+        await().atMost(2, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS)
+            .untilAsserted(() -> verify(wfListenerMock, times(1)).workflowChanged(any()));
         assertThat(m_testEventConsumer.getEvents(), is(empty()));
     }
 
@@ -172,6 +166,7 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             workflowTransformation.apply(wfm);
             workflowTransformation.waitForStableState(wfm);
 
+
             // The number of events that arrive at the event consumer are not always deterministic.
             // Thus, the TestEventConsumer blocks after it received the first event. And now that the workflow reached
             // a stable state (i.e. no more changes expected) we can unblock the event consumer and (possibly) receive
@@ -179,13 +174,11 @@ public class WorkflowChangedEventsTest extends GatewayServiceTest {
             testEventConsumer.unblock();
 
             // wait for the workflow events to arrive
-            await().atMost(5, TimeUnit.SECONDS) //
-                .pollInterval(200, TimeUnit.MILLISECONDS) //
-                .untilAsserted(() -> {
-                    WorkflowChangedEventSource es = (WorkflowChangedEventSource)DefaultEventService.getInstance()
-                        .getEventSource(DefaultWorkflowChangedEventTypeEnt.class);
-                    assertTrue(es.checkWorkflowChangesListenerCallbackState(CallState.IDLE));
-                });
+            await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+                WorkflowChangedEventSource es = (WorkflowChangedEventSource)DefaultEventService.getInstance()
+                    .getEventSource(DefaultWorkflowChangedEventTypeEnt.class);
+                assertTrue(es.checkWorkflowChangesListenerCallbackState(CallState.IDLE));
+            });
 
             // check the expected patches
             int numEvents = testEventConsumer.getEvents().size();
