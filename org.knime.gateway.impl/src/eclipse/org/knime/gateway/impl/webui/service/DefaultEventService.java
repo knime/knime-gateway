@@ -153,10 +153,12 @@ public final class DefaultEventService implements EventService {
                     var key = projectId.map(SpaceProvidersManager.Key::of) //
                         .orElse(SpaceProvidersManager.Key.defaultKey());
                     var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
-                    var workflowSyncer = m_projectManager.getProject(projectId.orElseThrow()).orElseThrow() //
-                            .getWorkflowManagerIfLoaded().orElseThrow() //
-                            .getWorkflowResourceCache().getFromCache(WorkflowSyncer.WorkflowSyncerResource.class) //
-                            .map(res -> res.get()) //
+                    var workflowSyncer = projectId.flatMap(id -> m_projectManager.getProject(id)) //
+                            .flatMap(proj -> proj.getWorkflowManagerIfLoaded()) //
+                            .map(wfm -> wfm.getWorkflowResourceCache()) //
+                            .filter(c -> c != null) //
+                            .flatMap(c -> c.getFromCache(WorkflowSyncer.WorkflowSyncerResource.class)) //
+                            .map(syncerRes -> syncerRes.get()) //
                             .orElse(null);
                     var dependencies = new AppStateEntityFactory.ServiceDependencies( //
                         m_projectManager, //
