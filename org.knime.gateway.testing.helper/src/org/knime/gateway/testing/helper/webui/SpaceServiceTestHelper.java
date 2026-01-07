@@ -115,6 +115,7 @@ import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.project.WorkflowManagerLoader;
+import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
@@ -152,15 +153,25 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     public void testSearchComponents() throws Exception {
-        var space = mockSpace();
-        // ~TODO need to mock / inject / configure "primary" provider
-        var spaceProvider = spy(createSpaceProvider(space));
-        ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
-            createSpaceProvidersManager(spaceProvider));
+        var spaceProvider = spy(createSpaceProvider(mockSpace()));
+        ServiceDependencies.setServiceDependency( //
+            SpaceProvidersManager.class, //
+            createSpaceProvidersManager(spaceProvider) //
+        );
+
+        var preferencesProvider = mock(PreferencesProvider.class);
+        // assignment to local is necessary because we cannot call a mock when mocking another method.
+        var primaryHubId = spaceProvider.getId();
+        when(preferencesProvider.primaryHub()).thenReturn(primaryHubId);
+        ServiceDependencies.setServiceDependency( //
+            PreferencesProvider.class, //
+            preferencesProvider //
+        );
 
         var queriedComponentType = NativeNodeInvariantsEnt.TypeEnum.LEARNER;
 
         var expectedEntities = List.of(builder(ComponentSearchItemEnt.ComponentSearchItemEntBuilder.class) //
+            .setId("some-id") //
             .setName("some name") //
             .setType(ComponentSearchItemEnt.TypeEnum.LEARNER) //
             .setDescription("some description") //
