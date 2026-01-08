@@ -190,6 +190,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentSearchItemEnt.java" type="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentSearchItemPortEnt.java" type="org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/GatewayProblemDescriptionEnt.java" type="org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt">
         <filter id="403804204">
             <message_arguments>
