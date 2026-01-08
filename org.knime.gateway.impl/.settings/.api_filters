@@ -253,6 +253,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentSearchItemEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentSearchItemPortEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemPortEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemPortEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultDeleteComponentPlaceholderCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultDeleteComponentPlaceholderCommandEnt">
         <filter comment="AP-4024" id="337682486">
             <message_arguments>
