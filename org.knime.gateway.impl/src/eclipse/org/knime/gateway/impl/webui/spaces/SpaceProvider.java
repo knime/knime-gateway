@@ -137,6 +137,7 @@ public interface SpaceProvider {
      * @param query searchComponents text
      * @param limit optional result limit
      * @param offset optional offset
+     * @since 5.10
      * @return searchComponents results
      * @throws NetworkException
      * @throws LoggedOutException
