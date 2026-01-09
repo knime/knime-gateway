@@ -77,16 +77,17 @@ public final class NodeIDEnt {
      * @param nodeID the node id to create the entity from
      */
     public NodeIDEnt(final NodeID nodeID) {
-        this(extractNodeIDs(nodeID, false));
+        this(extractNodeIDs(nodeID, 0));
     }
 
     /**
      * @param nodeID the node id to create the entity from
-     * @param hasComponentProjectParent if the node with the given id is part of a component project; if so, an
-     *            unnecessary '0' is removed; e.g. instead of 'root:0:4:5', 'root:4:5' is used
+     * @param hasSuperfluousParent if the node with the given id is, e.g., part of a component project (if so, an
+     *            unnecessary '0' is removed; e.g. instead of 'root:0:4:5', 'root:4:5' is used), or the project workflow
+     *            is not directly registered under WorkflowManager.ROOT but one level underneath
      */
-    public NodeIDEnt(final NodeID nodeID, final boolean hasComponentProjectParent) {
-        this(extractNodeIDs(nodeID, hasComponentProjectParent));
+    public NodeIDEnt(final NodeID nodeID, final boolean hasSuperfluousParent) {
+        this(extractNodeIDs(nodeID, hasSuperfluousParent ? 1 : 0));
     }
 
     /**
@@ -95,22 +96,21 @@ public final class NodeIDEnt {
      * @param s string representation as returned by {@link #toString()}
      */
     public NodeIDEnt(final String s) {
-        this(extractNodeIDs(s, false));
+        this(extractNodeIDs(s, 0));
     }
 
-    private static int[] extractNodeIDs(final NodeID nodeID, final boolean hasComponentProjectParent) {
+    private static int[] extractNodeIDs(final NodeID nodeID, final int startIndex) {
         final var s = nodeID.toString();
-        return extractNodeIDs(s, hasComponentProjectParent);
+        return extractNodeIDs(s, startIndex);
     }
 
-    private static int[] extractNodeIDs(final String s, final boolean hasComponentProjectParent) {
+    private static int[] extractNodeIDs(final String s, final int startIndex) {
         final int index = s.indexOf(':');
-        final int start = hasComponentProjectParent ? 1 : 0;
-        if (index >= start) {
+        if (index >= startIndex) {
             final var split = s.substring(index + 1).split(":");
-            final var ids = new int[split.length - start];
-            for (int i = start; i < split.length; i++) {
-                ids[i - start] = Integer.parseInt(split[i]);
+            final var ids = new int[split.length - startIndex];
+            for (int i = startIndex; i < split.length; i++) {
+                ids[i - startIndex] = Integer.parseInt(split[i]);
             }
             return ids;
         } else {

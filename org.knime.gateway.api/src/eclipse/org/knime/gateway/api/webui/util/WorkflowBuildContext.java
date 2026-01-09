@@ -91,7 +91,7 @@ public final class WorkflowBuildContext {
 
     private final boolean m_isInStreamingMode;
 
-    private final boolean m_hasComponentProjectParent;
+    private final boolean m_hasSuperfluousParent;
 
     private final boolean m_canUndo;
 
@@ -110,13 +110,13 @@ public final class WorkflowBuildContext {
     private final Collection<ComponentPlaceholderEnt> m_componentPlaceholders;
 
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
-        final boolean isInStreamingMode, final boolean hasComponentProjectParent,
-        final DependentNodeProperties depNodeProps, final Collection<ComponentPlaceholderEnt> componentPlaceholders) {
+        final boolean isInStreamingMode, final boolean hasSuperfluousParent, final DependentNodeProperties depNodeProps,
+        final Collection<ComponentPlaceholderEnt> componentPlaceholders) {
         m_wfm = wfm;
         m_componentPlaceholders = componentPlaceholders;
         m_includeInteractionInfo = builder.m_includeInteractionInfo;
         m_isInStreamingMode = isInStreamingMode;
-        m_hasComponentProjectParent = hasComponentProjectParent;
+        m_hasSuperfluousParent = hasSuperfluousParent;
         m_depNodeProps = depNodeProps;
         m_canUndo = builder.m_canUndo;
         m_canRedo = builder.m_canRedo;
@@ -125,11 +125,11 @@ public final class WorkflowBuildContext {
     }
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
-        return new NodeIDEnt(nodeID, m_hasComponentProjectParent);
+        return new NodeIDEnt(nodeID, m_hasSuperfluousParent);
     }
 
     AnnotationIDEnt buildAnnotationIDEnt(final WorkflowAnnotationID annoID) {
-        return new AnnotationIDEnt(new NodeIDEnt(annoID.getNodeID(), m_hasComponentProjectParent), annoID.getIndex());
+        return new AnnotationIDEnt(new NodeIDEnt(annoID.getNodeID(), m_hasSuperfluousParent), annoID.getIndex());
     }
 
     boolean isInStreamingMode() {
@@ -354,9 +354,17 @@ public final class WorkflowBuildContext {
                 dnp = m_depNodeProps == null ? DependentNodeProperties.determineDependentNodeProperties(wfm)
                     : m_depNodeProps.get();
             }
-            return new WorkflowBuildContext(wfm, this, CoreUtil.isInStreamingMode(wfm),
-                wfm.getProjectComponent().isPresent(), dnp,
+            return new WorkflowBuildContext(wfm, this, CoreUtil.isInStreamingMode(wfm), hasSuperfluousParent(wfm), dnp,
                 m_componentPlaceholders == null ? List.of() : m_componentPlaceholders);
+        }
+
+        private static boolean hasSuperfluousParent(final WorkflowManager wfm) {
+            // it's either a component project (the superfluous parent is the component node)
+            return wfm.getProjectComponent().isPresent() ||
+            // or the project wfm itself has more than one parent,
+            // i.e. it's not directly registered under WorkflowManager.ROOT but one more level underneath
+            // (necessary since AP-25307 which introduced an extra parent for all job-workflows on an executor)
+                !wfm.getProjectWFM().getID().getPrefix().isRoot();
         }
 
     }
