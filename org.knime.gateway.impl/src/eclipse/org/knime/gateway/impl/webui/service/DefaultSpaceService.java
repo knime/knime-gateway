@@ -54,7 +54,6 @@ import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProv
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
@@ -85,7 +84,6 @@ import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
-import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
@@ -359,26 +357,12 @@ public class DefaultSpaceService implements SpaceService {
                     .withDetails("No KNIME Hub is configured") //
                     .canCopy(false).build();
             }
-            SpaceProvider spaceProvider;
-            try {
-                 spaceProvider = m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
-                        .getSpaceProvider(primaryHub);
-            } catch (NoSuchElementException e) {
-                throw new MutableServiceCallException("No primary KNIME Hub is configured, or configured Hub is not available", false);
-            }
-            return spaceProvider //
+            return m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
+                .getSpaceProvider(primaryHub) //
                 .searchComponents(query, limit, offset).stream() //
                 .toList();
         } catch (MutableServiceCallException e) {
             throw e.toGatewayException("Component search failed");
-        }
-    }
-
-    private Optional<SpaceProvider> getSpaceProvider(final SpaceProviders providers, final String spaceProviderId) {
-        try {
-            return Optional.of(providers.getSpaceProvider(spaceProviderId));
-        } catch (NoSuchElementException e) {
-            return Optional.empty();
         }
     }
 

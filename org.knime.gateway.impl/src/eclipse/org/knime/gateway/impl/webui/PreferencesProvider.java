@@ -93,8 +93,7 @@ public interface PreferencesProvider {
 
     /**
      * The ID of a Hub SpaceProvider. This Hub will be used as default for some Modern UI features. {@code null} if none
-     * is configured. Implementations may default to a (community) Hub if no Hub is configured in preferences.
-     * @since 5.10
+     * is configured.
      * @return The ID of the primary Hub SpaceProvider or {@code null}
      */
     default String primaryHub() {
