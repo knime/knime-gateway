@@ -48,11 +48,11 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.SequencedMap;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
@@ -67,13 +67,13 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkExcepti
  */
 public final class SpaceProviders {
 
-    private final SequencedMap<String, SpaceProvider> m_spaceProviders;
+    private final LinkedHashMap<String, SpaceProvider> m_spaceProviders;
 
     /**
      * @param spaceProviders the spaceProvidersMap
      * @param localSpaceProvider the local space provider or {@code null} if none
      */
-    SpaceProviders(final SequencedMap<String, SpaceProvider> spaceProviders) {
+    SpaceProviders(final LinkedHashMap<String, SpaceProvider> spaceProviders) {
         m_spaceProviders = spaceProviders;
     }
 
@@ -112,7 +112,7 @@ public final class SpaceProviders {
      * @return all space providers, ordered.
      */
     public List<SpaceProvider> getAllSpaceProviders() {
-        return m_spaceProviders.sequencedValues().stream().toList();
+        return new ArrayList<>(m_spaceProviders.values());
     }
 
     /**
@@ -120,7 +120,7 @@ public final class SpaceProviders {
      *
      * @return types of available {@link SpaceProvider}s, ordered.
      */
-    public synchronized SequencedMap<String, SpaceProviderEnt.TypeEnum> getProviderTypes() {
+    public synchronized LinkedHashMap<String, SpaceProviderEnt.TypeEnum> getProviderTypes() {
         return m_spaceProviders.entrySet().stream() //
             .collect(Collectors.toMap( //
                 Entry::getKey, //
@@ -138,10 +138,11 @@ public final class SpaceProviders {
     }
 
     /**
-     * Adds a provider, putting it at the end of the ordered collection.
+     * Adds a provider, putting it at the end of the ordered collection. If the key is already present, it will be
+     * updated at its current position in the order.
      */
     void putLast(final SpaceProvider spaceProvider) {
-        m_spaceProviders.putLast(spaceProvider.getId(), spaceProvider);
+        m_spaceProviders.put(spaceProvider.getId(), spaceProvider);
     }
 
 }
