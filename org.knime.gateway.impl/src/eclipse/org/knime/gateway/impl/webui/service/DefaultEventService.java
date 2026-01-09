@@ -124,7 +124,7 @@ public final class DefaultEventService implements EventService {
 
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
-    private final FeatureFlags m_featureFlags = ServiceDependencies.getServiceDependency(FeatureFlags.class, true);
+    private final FeatureFlags m_featureFlags = ServiceDependencies.getServiceDependency(FeatureFlags.class, false);
 
     /**
      * Returns the singleton instance for this service.
