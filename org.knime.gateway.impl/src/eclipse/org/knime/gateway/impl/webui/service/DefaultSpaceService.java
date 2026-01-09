@@ -79,6 +79,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
+import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
@@ -343,6 +344,13 @@ public class DefaultSpaceService implements SpaceService {
 
     public List<ComponentSearchItemEnt> searchComponents(String query, Integer limit, Integer offset)
         throws ServiceCallException, LoggedOutException, NetworkException {
+        if (!FeatureFlags.isComponentSearchEnabled()) {
+            throw ServiceCallException.builder() //
+                .withTitle("Component search not available") //
+                .withDetails("Component search is not enabled.") //
+                .canCopy(false) //
+                .build();
+        }
         try {
             return m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
                 .getAllSpaceProviders().stream() //
