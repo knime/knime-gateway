@@ -61,6 +61,7 @@ import org.knime.gateway.impl.webui.NodeFactoryProvider;
 import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCategoryExtensions;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
@@ -159,6 +160,7 @@ public final class ServiceDependencies {
      * @param nodeCategoryExtensions
      * @param selectionEventBus
      * @param linkVariants
+     * @param featureFlags
      * @since 5.10
      */
     public static void setDefaultServiceDependencies( // NOSONAR: Many parameters is acceptable here
@@ -175,8 +177,8 @@ public final class ServiceDependencies {
         final CodeKaiHandler codeKaiHandler, //
         final NodeCollections nodeCollections, //
         final NodeCategoryExtensions nodeCategoryExtensions, //
-        final SelectionEventBus selectionEventBus, final LinkVariants linkVariants //
-    ) {
+        final SelectionEventBus selectionEventBus, final LinkVariants linkVariants, //
+        FeatureFlags.FromSystemProperties featureFlags) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);
@@ -193,6 +195,7 @@ public final class ServiceDependencies {
             ServiceDependencies.setServiceDependency(NodeCategoryExtensions.class, nodeCategoryExtensions);
             ServiceDependencies.setServiceDependency(SelectionEventBus.class, selectionEventBus);
             ServiceDependencies.setServiceDependency(LinkVariants.class, linkVariants);
+            ServiceDependencies.setServiceDependency(FeatureFlags.class, featureFlags);
         } else {
             throw new IllegalStateException(
                 "Some services are already initialized. Service dependencies can't be set anymore. "

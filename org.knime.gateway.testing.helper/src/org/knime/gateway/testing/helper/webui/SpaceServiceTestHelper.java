@@ -85,6 +85,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
@@ -116,6 +117,7 @@ import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.project.WorkflowManagerLoader;
+import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.service.ServiceDependencies;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
@@ -157,6 +159,17 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         var spaceProvider = spy(createSpaceProvider(SpaceProviderEnt.TypeEnum.HUB, space));
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
             createSpaceProvidersManager(spaceProvider));
+        ServiceDependencies.setServiceDependency(FeatureFlags.class, new FeatureFlags() {
+            @Override
+            public Map<String, Object> getFeatureFlags() {
+                return Map.of();
+            }
+
+            @Override
+            public boolean isComponentSearchEnabled() {
+                return true;
+            }
+        });
 
         var queriedComponentType = NativeNodeInvariantsEnt.TypeEnum.LEARNER;
 

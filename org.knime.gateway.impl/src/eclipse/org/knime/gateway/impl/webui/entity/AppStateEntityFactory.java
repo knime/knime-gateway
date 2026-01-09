@@ -140,8 +140,8 @@ public final class AppStateEntityFactory {
             NodeFactoryProvider nodeFactoryProvider, //
             NodeCollections nodeCollections, //
             KaiHandler kaiHandler, //
-            WorkflowSyncer workflowSyncer //
-    ) {
+            WorkflowSyncer workflowSyncer, //
+            FeatureFlags featureFlags) {
     }
 
     /**
@@ -169,6 +169,9 @@ public final class AppStateEntityFactory {
         var projectSyncState = Optional.ofNullable(dependencies.workflowSyncer()) //
             .map(WorkflowSyncer::getProjectSyncState) //
             .orElse(null);
+        var featureFlags = Optional.ofNullable(dependencies.featureFlags()) //
+            .map(FeatureFlags::getFeatureFlags) //
+            .orElse(Map.of());
         return builder(AppStateEntBuilder.class) //
             .setAppMode(appMode) //
             .setOpenProjects(projects) //
@@ -184,7 +187,7 @@ public final class AppStateEntityFactory {
             ) //
             .setConfirmNodeConfigChanges(dependencies.preferencesProvider().confirmNodeConfigChanges()) //
             .setHasNodeRecommendationsEnabled(dependencies.preferencesProvider().hasNodeRecommendationsEnabled()) //
-            .setFeatureFlags(FeatureFlags.getFeatureFlags()) //
+            .setFeatureFlags(featureFlags) //
             .setDevMode(WebUIUtil.isInDevMode()) //
             .setUseEmbeddedDialogs(dependencies.preferencesProvider().useEmbeddedDialogs()) //
             .setCanvasRenderer(dependencies.preferencesProvider().canvasRenderer()) //
@@ -198,9 +201,10 @@ public final class AppStateEntityFactory {
             .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
             .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled()) //
             // TODO HUB-9598 only include when not read-only connection?
-            .setSpaceProviders(appMode == AppModeEnum.DEFAULT
-                ? buildSpaceProviderEnts(dependencies.spaceProviders(), false)
-                : null) //
+            .setSpaceProviders(appMode == AppModeEnum.DEFAULT //
+                ? buildSpaceProviderEnts(dependencies.spaceProviders(), false) //
+                : null //
+            ) //
             .setProjectSyncState(projectSyncState) //
             .build();
     }
@@ -433,9 +437,9 @@ public final class AppStateEntityFactory {
         final var connectionMode = ConnectionModeEnum.valueOf(isLocalSpaceProvider ? "AUTOMATIC" : "AUTHENTICATED");
         final var optConnection = spaceProvider.getConnection(doConnect); // connect if necessary
         final var username = optConnection //
-                .map(SpaceProviderConnection::getUsername) //
-                .filter(Predicate.not(String::isEmpty)) //
-                .orElse(null);
+            .map(SpaceProviderConnection::getUsername) //
+            .filter(Predicate.not(String::isEmpty)) //
+            .orElse(null);
         return EntityFactory.Space.buildSpaceProviderEnt(spaceProvider.getId(), spaceProvider.getName(), type,
             isLocalSpaceProvider || optConnection.isPresent(), connectionMode,
             isLocalSpaceProvider ? null : spaceProvider.getServerAddress().orElse(null),

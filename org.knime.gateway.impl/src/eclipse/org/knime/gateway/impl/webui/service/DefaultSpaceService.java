@@ -54,6 +54,7 @@ import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProv
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
@@ -109,6 +110,8 @@ public class DefaultSpaceService implements SpaceService {
 
     private final ProjectManager m_projectManager =
         ServiceDependencies.getServiceDependency(ProjectManager.class, true);
+
+    private final FeatureFlags m_featureFlags = ServiceDependencies.getServiceDependency(FeatureFlags.class, false);
 
     DefaultSpaceService() {
         //
@@ -344,7 +347,10 @@ public class DefaultSpaceService implements SpaceService {
 
     public List<ComponentSearchItemEnt> searchComponents(String query, Integer limit, Integer offset)
         throws ServiceCallException, LoggedOutException, NetworkException {
-        if (!FeatureFlags.isComponentSearchEnabled()) {
+        var isComponentSearchEnabled = Optional.ofNullable(m_featureFlags) //
+                .map(flags -> flags.isComponentSearchEnabled()) //
+                .orElse(false);
+        if (!isComponentSearchEnabled) {
             throw ServiceCallException.builder() //
                 .withTitle("Component search not available") //
                 .withDetails("Component search is not enabled.") //

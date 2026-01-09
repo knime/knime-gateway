@@ -71,6 +71,7 @@ import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.UpdateStateProvider;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.entity.AppStateEntityFactory;
+import org.knime.gateway.impl.webui.featureflags.FeatureFlags;
 import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.service.events.AppStateChangedEventSource;
@@ -123,6 +124,8 @@ public final class DefaultEventService implements EventService {
 
     private final KaiHandler m_kaiHandler = ServiceDependencies.getServiceDependency(KaiHandler.class, false);
 
+    private final FeatureFlags m_featureFlags = ServiceDependencies.getServiceDependency(FeatureFlags.class, true);
+
     /**
      * Returns the singleton instance for this service.
      *
@@ -137,7 +140,7 @@ public final class DefaultEventService implements EventService {
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "java:S5612" })
+    @SuppressWarnings({"unchecked", "java:S5612"})
     public void addEventListener(final EventTypeEnt eventTypeEnt) throws InvalidRequestException {
         @SuppressWarnings("rawtypes")
         EventSource eventSource;
@@ -154,9 +157,9 @@ public final class DefaultEventService implements EventService {
                         .orElse(SpaceProvidersManager.Key.defaultKey());
                     var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
                     var workflowSyncer = projectId.flatMap(m_projectManager::getProject) //
-                            .flatMap(Project::getWorkflowManagerIfLoaded) //
-                            .flatMap(ServiceUtilities::getWorkflowSyncerFor) //
-                            .orElse(null);
+                        .flatMap(Project::getWorkflowManagerIfLoaded) //
+                        .flatMap(ServiceUtilities::getWorkflowSyncerFor) //
+                        .orElse(null);
                     var dependencies = new AppStateEntityFactory.ServiceDependencies( //
                         m_projectManager, //
                         m_preferencesProvider, //
@@ -164,7 +167,8 @@ public final class DefaultEventService implements EventService {
                         m_nodeFactoryProvider, //
                         m_nodeCollections, //
                         m_kaiHandler, //
-                        workflowSyncer //
+                        workflowSyncer, //
+                        m_featureFlags //
                     );
                     return new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, dependencies);
                 });
