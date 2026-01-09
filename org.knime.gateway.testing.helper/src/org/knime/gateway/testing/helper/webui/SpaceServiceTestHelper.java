@@ -100,6 +100,7 @@ import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.WorkflowGroupContentEnt;
 import org.knime.gateway.api.webui.service.SpaceService;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
@@ -153,14 +154,14 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
 
     public void testSearchComponents() throws Exception {
         var space = mockSpace();
-        // ~TODO need to mock / inject / configure "primary" provider
-        var spaceProvider = spy(createSpaceProvider(space));
+        var spaceProvider = spy(createSpaceProvider(SpaceProviderEnt.TypeEnum.HUB, space));
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
             createSpaceProvidersManager(spaceProvider));
 
         var queriedComponentType = NativeNodeInvariantsEnt.TypeEnum.LEARNER;
 
         var expectedEntities = List.of(builder(ComponentSearchItemEnt.ComponentSearchItemEntBuilder.class) //
+            .setId("some_id") //
             .setName("some name") //
             .setType(ComponentSearchItemEnt.TypeEnum.LEARNER) //
             .setDescription("some description") //
@@ -518,16 +519,16 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
         return createSpaceProvider("provider-id", "provider-name", spaces);
     }
 
-    /**
-     * Create a trivial space provider implementation that can be used to set up tests.
-     *
-     * @param id
-     * @param spaceProviderName
-     * @param spaces
-     * @param isReachable
-     * @return
-     */
-    static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName, final Space... spaces) {
+    private static SpaceProvider createSpaceProvider(final SpaceProviderEnt.TypeEnum type, final Space... spaces) {
+        return createSpaceProvider("provider-id", "provider-name", type, spaces);
+    }
+
+    private static SpaceProvider createSpaceProvider( //
+        final String id, //
+        final String spaceProviderName, //
+        final SpaceProviderEnt.TypeEnum type, //
+        final Space... spaces //
+    ) {
         return new SpaceProvider() {
 
             @Override
@@ -563,10 +564,28 @@ public class SpaceServiceTestHelper extends WebUIGatewayServiceTestHelper {
             }
 
             @Override
+            public SpaceProviderEnt.TypeEnum getType() {
+                return type;
+            }
+
+            @Override
             public SpaceGroup<?> getSpaceGroup(final String spaceGroupName) {
                 return getLocalSpaceGroupForTesting(spaces);
             }
         };
+    }
+
+    /**
+     * Create a trivial space provider implementation that can be used to set up tests.
+     *
+     * @param id
+     * @param spaceProviderName
+     * @param spaces
+     * @param isReachable
+     * @return
+     */
+    static SpaceProvider createSpaceProvider(final String id, final String spaceProviderName, final Space... spaces) {
+        return createSpaceProvider(id, spaceProviderName, SpaceProviderEnt.TypeEnum.LOCAL, spaces);
     }
 
     private static Space mockSpace(final String id, final String name, final String owner, final String description,
