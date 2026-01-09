@@ -54,7 +54,6 @@ import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProv
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
@@ -345,14 +344,13 @@ public class DefaultSpaceService implements SpaceService {
     public List<ComponentSearchItemEnt> searchComponents(String query, Integer limit, Integer offset)
         throws ServiceCallException, LoggedOutException, NetworkException {
         try {
-            var first = m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
-                    .getAllSpaceProviders().stream() //
-                    .filter(prov -> prov.getType() == TypeEnum.HUB) //
-                    .findFirst();
-            return first //
-                 // Note that the provider does not have to be connected (#getConnection(false) is empty)
-                 //   because searchComponents only hits public API and does not require login.
-                 // TODO NXT-4362 Do not offer component search in frontend if no provider is connected/configured.
+            return m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
+                .getAllSpaceProviders().stream() //
+                .filter(prov -> prov.getType() == TypeEnum.HUB) //
+                .findFirst() //
+                // Note that the provider does not have to be connected (#getConnection(false) is empty)
+                //   because searchComponents only hits public API and does not require login.
+                // TODO NXT-4362 Do not offer component search in frontend if no provider is connected/configured.
                 .orElseThrow() //
                 .searchComponents(query, limit, offset).stream() //
                 .toList();
