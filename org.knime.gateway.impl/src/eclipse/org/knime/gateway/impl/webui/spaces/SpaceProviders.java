@@ -48,10 +48,11 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.SequencedMap;
 import java.util.stream.Collectors;
 
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
@@ -60,19 +61,19 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutExcep
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 
 /**
- * Summarizes all available space providers.
+ * Summarizes all available space providers. This is an <i>ordered</i> collection.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class SpaceProviders {
 
-    private final Map<String, SpaceProvider> m_spaceProviders;
+    private final SequencedMap<String, SpaceProvider> m_spaceProviders;
 
     /**
      * @param spaceProviders the spaceProvidersMap
      * @param localSpaceProvider the local space provider or {@code null} if none
      */
-    SpaceProviders(final Map<String, SpaceProvider> spaceProviders) {
+    SpaceProviders(final SequencedMap<String, SpaceProvider> spaceProviders) {
         m_spaceProviders = spaceProviders;
     }
 
@@ -108,20 +109,25 @@ public final class SpaceProviders {
     }
 
     /**
-     * @return all space providers
+     * @return all space providers, ordered.
      */
-    public Collection<SpaceProvider> getAllSpaceProviders() {
-        return m_spaceProviders.values();
+    public List<SpaceProvider> getAllSpaceProviders() {
+        return m_spaceProviders.sequencedValues().stream().toList();
     }
 
     /**
      * Types of available {@link SpaceProvider}s, may be overridden for performance.
      *
-     * @return types of available {@link SpaceProvider}s
+     * @return types of available {@link SpaceProvider}s, ordered.
      */
-    public synchronized Map<String, SpaceProviderEnt.TypeEnum> getProviderTypes() {
+    public synchronized SequencedMap<String, SpaceProviderEnt.TypeEnum> getProviderTypes() {
         return m_spaceProviders.entrySet().stream() //
-            .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getType()));
+            .collect(Collectors.toMap( //
+                Entry::getKey, //
+                e -> e.getValue().getType(), //
+                (a, b) -> a, //
+                LinkedHashMap::new //
+            ));
     }
 
     /**
@@ -132,10 +138,10 @@ public final class SpaceProviders {
     }
 
     /**
-     * Adds a provider.
+     * Adds a provider, putting it at the end of the ordered collection.
      */
-    void add(final SpaceProvider spaceProvider) {
-        m_spaceProviders.put(spaceProvider.getId(), spaceProvider);
+    void putLast(final SpaceProvider spaceProvider) {
+        m_spaceProviders.putLast(spaceProvider.getId(), spaceProvider);
     }
 
 }

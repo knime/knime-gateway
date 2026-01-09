@@ -52,9 +52,9 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProvidersKey;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.knime.core.node.workflow.NodeTimer;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
@@ -309,7 +309,6 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-
     @Override
     public AncestorInfoEnt getAncestorInfo(final String providerId, final String spaceId, final String itemId)
         throws ServiceCallException, LoggedOutException, NetworkException {
@@ -343,16 +342,18 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    public List<ComponentSearchItemEnt> searchComponents(String query, Integer limit,
-                                                         Integer offset) throws ServiceCallException, LoggedOutException, NetworkException {
+    public List<ComponentSearchItemEnt> searchComponents(String query, Integer limit, Integer offset)
+        throws ServiceCallException, LoggedOutException, NetworkException {
         try {
-            // ~TODO pick based on new eclipse preference
-            var allSpaceProviders = m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()).getAllSpaceProviders();
-            var provider = allSpaceProviders
-                    .stream().filter(prov -> {
-                        return prov.getServerAddress().filter(a -> a.contains("hub.knime.com")).isPresent();
-                    }).findFirst().orElseThrow();
-            return provider //
+            var first = m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
+                    .getAllSpaceProviders().stream() //
+                    .filter(prov -> prov.getType() == TypeEnum.HUB) //
+                    .findFirst();
+            return first //
+                 // Note that the provider does not have to be connected (#getConnection(false) is empty)
+                 //   because searchComponents only hits public API and does not require login.
+                 // TODO NXT-4362 Do not offer component search in frontend if no provider is connected/configured.
+                .orElseThrow() //
                 .searchComponents(query, limit, offset).stream() //
                 .toList();
         } catch (MutableServiceCallException e) {
