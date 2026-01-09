@@ -91,13 +91,4 @@ public interface PreferencesProvider {
      */
     AppStateEnt.CanvasRendererEnum canvasRenderer();
 
-    /**
-     * The ID of a Hub SpaceProvider. This Hub will be used as default for some Modern UI features. {@code null} if none
-     * is configured.
-     * @return The ID of the primary Hub SpaceProvider or {@code null}
-     */
-    default String primaryHub() {
-        return null;
-    }
-
 }

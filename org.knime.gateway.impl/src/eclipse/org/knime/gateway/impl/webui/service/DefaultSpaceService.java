@@ -52,6 +52,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProvidersKey;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -79,7 +80,6 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallExc
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
-import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.Space;
 import org.knime.gateway.impl.webui.spaces.Space.NameCollisionHandling;
@@ -109,9 +109,6 @@ public class DefaultSpaceService implements SpaceService {
 
     private final ProjectManager m_projectManager =
         ServiceDependencies.getServiceDependency(ProjectManager.class, true);
-
-    private final PreferencesProvider m_preferencesProvider =
-        ServiceDependencies.getServiceDependency(PreferencesProvider.class, true);
 
     DefaultSpaceService() {
         //
@@ -346,23 +343,20 @@ public class DefaultSpaceService implements SpaceService {
         }
     }
 
-    @Override
-    public List<ComponentSearchItemEnt> searchComponents(String query, Integer limit, Integer offset)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    public List<ComponentSearchItemEnt> searchComponents(String query, Integer limit,
+                                                         Integer offset) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
-            var primaryHub = m_preferencesProvider.primaryHub();
-            if (primaryHub == null) {
-                throw ServiceCallException.builder() //
-                    .withTitle("Component search failed") //
-                    .withDetails("No KNIME Hub is configured") //
-                    .canCopy(false).build();
-            }
-            return m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
-                .getSpaceProvider(primaryHub) //
+            // ~TODO pick based on new eclipse preference
+            var allSpaceProviders = m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()).getAllSpaceProviders();
+            var provider = allSpaceProviders
+                    .stream().filter(prov -> {
+                        return prov.getServerAddress().filter(a -> a.contains("hub.knime.com")).isPresent();
+                    }).findFirst().orElseThrow();
+            return provider //
                 .searchComponents(query, limit, offset).stream() //
                 .toList();
         } catch (MutableServiceCallException e) {
-            throw e.toGatewayException("Component search failed");
+            throw e.toGatewayException("Component search not available");
         }
     }
 
