@@ -123,6 +123,11 @@ public interface WorkflowSyncer extends WorkflowResource {
         private WorkflowManager m_wfm;
 
         /**
+         * Protects against reentrant calls (remaining in-flight wf change callbacks or multiple dispose calls).
+         */
+        private boolean m_disposed;
+
+        /**
          * Bundles collaborators needed by the default syncer.
          */
         public record Dependencies(AppStateUpdater appStateUpdater, SpaceProvider provider) {
@@ -169,6 +174,9 @@ public interface WorkflowSyncer extends WorkflowResource {
         }
 
         private void notifyWorkflowChanged() {
+            if (m_disposed) {
+                return;
+            }
             m_syncStateStore.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.DIRTY);
             m_debouncedProjectSync.call();
         }
@@ -206,7 +214,7 @@ public interface WorkflowSyncer extends WorkflowResource {
                     ProjectSyncStateEnt.StateEnum.DIRTY, //
                     new SyncStateStore.Error(e), //
                     false);
-                m_debouncedProjectSync.shutdown();
+                dispose(); // fully disable once we enter this state
             } finally {
                 m_syncStateStore.allowStateChanges(); // apply deferred state change
             }
@@ -276,6 +284,10 @@ public interface WorkflowSyncer extends WorkflowResource {
 
         @Override
         public void dispose() {
+            if (m_disposed) {
+                return;
+            }
+            m_disposed = true;
             LOGGER.info("'dispose' called for workflow <%s>".formatted(m_wfm.getName()));
             m_wfm.removeListener(m_workflowListener);
             m_debouncedProjectSync.shutdown();
