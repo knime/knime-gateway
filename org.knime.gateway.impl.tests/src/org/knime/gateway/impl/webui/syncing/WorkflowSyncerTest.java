@@ -68,6 +68,7 @@ import org.knime.gateway.api.util.DataSize;
 import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.syncing.HubUploader.SyncThresholdException;
 import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
 
 /**
@@ -88,6 +89,8 @@ public class WorkflowSyncerTest {
 
     @SuppressWarnings("java:S1450")
     private SyncStateStore m_syncStateStore;
+
+    private WorkflowListener m_workflowListener;
 
     private static final DataSize SOME_SIZE = new DataSize(0);
 
@@ -111,14 +114,14 @@ public class WorkflowSyncerTest {
         m_syncStateStore = new SyncStateStore(appStateUpdater::updateAppState);
         m_localSaver = mock(LocalSaver.class);
         m_hubUploader = mock(HubUploader.class);
-        var workflowListener = mock(WorkflowListener.class);
+        m_workflowListener = mock(WorkflowListener.class);
         var debouncer = mock(org.knime.gateway.impl.util.Debouncer.class);
 
         m_syncer = new DefaultWorkflowSyncer( //
             m_wfm, //
             config, //
             m_syncStateStore, //
-            cb -> workflowListener, //
+            cb -> m_workflowListener, //
             m_localSaver, //
             m_hubUploader, //
             task -> debouncer //
@@ -188,6 +191,24 @@ public class WorkflowSyncerTest {
         assertThat(m_syncer.getProjectSyncState().getState()).isEqualTo(ProjectSyncStateEnt.StateEnum.DIRTY);
         // WRITING -> UPLOAD -> SYNCED -> DIRTY (deferred)
         assertThat(m_appUpdates.get()).isEqualTo(4);
+    }
+
+    /**
+     * Tests that the WorkflowSyncer disposes itself when the size limit is exceeded.
+     *
+     * @throws SyncThresholdException
+     * @throws IOException
+     */
+    @Test
+    public void testDisposeSyncerWhenExceedingSizeLimit() throws IOException, SyncThresholdException {
+        doThrow(new SyncThresholdException("blub")).when(m_hubUploader).uploadProjectWithThreshold(any(), any());
+
+        m_syncer.syncProjectAutomatically(SOME_SIZE);
+
+        verify(m_wfm).removeListener(m_workflowListener);
+        var state = m_syncer.getProjectSyncState();
+        assertThat(state.getState()).isEqualTo(ProjectSyncStateEnt.StateEnum.DIRTY);
+        assertThat(state.getError().getCode()).isEqualTo(SyncThresholdException.class.getName());
     }
 
 }
