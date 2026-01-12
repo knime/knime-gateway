@@ -51,7 +51,7 @@ import org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt;
 import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 
 /**
- * ...
+ * A result item of a component search on some Hub instance.
  *
  * @param id
  * @param name
