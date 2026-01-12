@@ -88,8 +88,8 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
 
     @Override
     public boolean executeWithWorkflowContext() {
-        var componentLoader = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey());
-        m_loadJob = componentLoader.startLoadJob(m_commandEnt);
+        m_loadJob = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey()) //
+                .startLoadJob(m_commandEnt);
         return true;
     }
 

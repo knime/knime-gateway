@@ -73,7 +73,7 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
 
   /**
    * Get spaceId
-   * @return spaceId , never <code>null</code>
+   * @return spaceId 
    **/
   public String getSpaceId();
 
@@ -132,7 +132,7 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
         /**
    		 * Set spaceId
          * 
-         * @param spaceId the property value, NOT <code>null</code>! 
+         * @param spaceId the property value,  
          * @return this entity builder for chaining
          */
         AddComponentCommandEntBuilder setSpaceId(String spaceId);

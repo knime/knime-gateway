@@ -64,7 +64,7 @@ public interface AncestorInfoEnt extends GatewayEntity {
 
 
   /**
-   * Optional new name of the item. The known project name may be outdated. Return the new name to check this e.g. on \&quot;Reveal in Space Explorer\&quot;  and display a notification.
+   * Optional new name of the item. The known item name may be outdated. Return the new item name to check this e.g. on \&quot;Reveal in Space Explorer\&quot; and display a notification.
    * @return itemName 
    **/
   public String getItemName();
@@ -90,7 +90,7 @@ public interface AncestorInfoEnt extends GatewayEntity {
     public interface AncestorInfoEntBuilder extends GatewayEntityBuilder<AncestorInfoEnt> {
 
         /**
-         * Optional new name of the item. The known project name may be outdated. Return the new name to check this e.g. on \&quot;Reveal in Space Explorer\&quot;  and display a notification.
+         * Optional new name of the item. The known item name may be outdated. Return the new item name to check this e.g. on \&quot;Reveal in Space Explorer\&quot; and display a notification.
          * 
          * @param itemName the property value,  
          * @return this entity builder for chaining

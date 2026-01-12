@@ -56,8 +56,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
@@ -321,6 +324,41 @@ public interface SpaceProvider {
      * @param itemId ID of the item itself
      */
     record SpaceAndItemId(String spaceId, String itemId) {
+    }
+
+    /**
+     * Resolves the item with the given ID into a local file, potentially downloading it.
+     *
+     * @param monitor to report progress, progress messages and for cancellation
+     * @param itemId ID if the item to resolve
+     * @param version The version of the item
+     * @return the local path of the item and if available, empty if not available or the path resolution (e.g.
+     *         download) has been cancelled
+     * @throws CanceledExecutionException if the operation was cancelled
+     * @throws LoggedOutException -
+     * @throws NetworkException -
+     * @throws MutableServiceCallException -
+     * @since 5.10
+     */
+    default Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId, final VersionId version) throws CanceledExecutionException, MutableServiceCallException, NetworkException, LoggedOutException {
+        throw new UnsupportedOperationException();
+    }
+
+
+    /**
+     * Creates a mountpoint-absolute KNIME URL for the given space item. The URL may be either path- or ID-based.
+     * ID-based KNIME URLs can only be used to reference the item itself and carry no information about the position of
+     * the item in the Space's folder hierarchy.
+     *
+     * @see Space#toKnimeUrl(String)
+     * @see Space#toPathBasedKnimeUrl(String)
+     * @param itemId item ID
+     * @return KNIME URL
+     * @throws IllegalStateException if there were problems determining the URI
+     * @since 5.10
+     */
+    default URI toKnimeUrl(final String itemId) {
+        throw new UnsupportedOperationException();
     }
 
 }

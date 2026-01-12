@@ -44,8 +44,8 @@
  */
 package org.knime.gateway.impl.webui.jsonrpc.service;
 
-import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.AncestorInfoEnt;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.SpaceEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -201,7 +201,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
             data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
     public AncestorInfoEnt getAncestorInfo(@JsonRpcParam(value="spaceProviderId") String spaceProviderId, @JsonRpcParam(value="spaceId") String spaceId, @JsonRpcParam(value="itemId") String itemId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
-        return m_service.get().getAncestorInfo(spaceProviderId, spaceId, itemId);
+        return m_service.get().getAncestorInfo(spaceProviderId, spaceId, itemId);    
     }
 
 	/**
@@ -362,7 +362,7 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
             data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
     public java.util.List<ComponentSearchItemEnt> searchComponents(@JsonRpcParam(value="query") String query, @JsonRpcParam(value="limit") Integer limit, @JsonRpcParam(value="offset") Integer offset)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
-        return m_service.get().searchComponents(query, limit, offset);
+        return m_service.get().searchComponents(query, limit, offset);    
     }
 
 }

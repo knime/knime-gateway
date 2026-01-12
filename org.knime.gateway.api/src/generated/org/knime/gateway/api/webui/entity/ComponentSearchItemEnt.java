@@ -56,7 +56,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * ...
+ * A result item of a component search on some Hub instance.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
