@@ -305,6 +305,8 @@ public interface Space {
     /**
      * Resolves the item with the given ID into a local file, potentially downloading it.
      *
+     * @see SpaceProvider#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
+     *
      * @param monitor to report progress, progress messages and for cancellation
      * @param itemId ID if the item to resolve
      * @param version The version of the item
