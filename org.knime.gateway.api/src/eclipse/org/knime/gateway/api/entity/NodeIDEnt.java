@@ -50,6 +50,7 @@ import java.util.Arrays;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.CoreUtil;
 
 /**
@@ -61,6 +62,25 @@ import org.knime.gateway.api.util.CoreUtil;
 public final class NodeIDEnt {
 
     private static final String ROOT_MARKER = "root";
+
+    /**
+     * Helper to determine whether a workflow has a 'superfluous' parent. E.g. if the workflow is part of a component
+     * project or the project workflow is not directly registered under WorkflowManager.ROOT but one level underneath.
+     *
+     * Usually helpful when {@link NodeIDEnt#NodeIDEnt(NodeID, boolean)} is called.
+     *
+     * @param wfm the workflow manager to check
+     * @return {@code true} if the workflow has a superfluous parent, {@code false} otherwise
+     * @since 5.10
+     */
+    public static boolean hasSuperfluousParent(final WorkflowManager wfm) {
+        // it's either a component project (the superfluous parent is the component node)
+        return wfm.getProjectComponent().isPresent() ||
+        // or the project wfm itself has more than one parent,
+        // i.e. it's not directly registered under WorkflowManager.ROOT but one more level underneath
+        // (necessary since AP-25307 which introduced an extra parent for all job-workflows on an executor)
+            wfm.getProjectWFM().getParent() != WorkflowManager.ROOT;
+    }
 
     private final int[] m_ids;
 

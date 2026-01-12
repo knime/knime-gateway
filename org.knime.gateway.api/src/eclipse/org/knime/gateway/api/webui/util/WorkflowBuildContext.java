@@ -110,13 +110,13 @@ public final class WorkflowBuildContext {
     private final Collection<ComponentPlaceholderEnt> m_componentPlaceholders;
 
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
-        final boolean isInStreamingMode, final boolean hasSuperfluousParent, final DependentNodeProperties depNodeProps,
+        final boolean isInStreamingMode, final DependentNodeProperties depNodeProps,
         final Collection<ComponentPlaceholderEnt> componentPlaceholders) {
         m_wfm = wfm;
         m_componentPlaceholders = componentPlaceholders;
         m_includeInteractionInfo = builder.m_includeInteractionInfo;
         m_isInStreamingMode = isInStreamingMode;
-        m_hasSuperfluousParent = hasSuperfluousParent;
+        m_hasSuperfluousParent = NodeIDEnt.hasSuperfluousParent(m_wfm);
         m_depNodeProps = depNodeProps;
         m_canUndo = builder.m_canUndo;
         m_canRedo = builder.m_canRedo;
@@ -354,17 +354,8 @@ public final class WorkflowBuildContext {
                 dnp = m_depNodeProps == null ? DependentNodeProperties.determineDependentNodeProperties(wfm)
                     : m_depNodeProps.get();
             }
-            return new WorkflowBuildContext(wfm, this, CoreUtil.isInStreamingMode(wfm), hasSuperfluousParent(wfm), dnp,
+            return new WorkflowBuildContext(wfm, this, CoreUtil.isInStreamingMode(wfm), dnp,
                 m_componentPlaceholders == null ? List.of() : m_componentPlaceholders);
-        }
-
-        private static boolean hasSuperfluousParent(final WorkflowManager wfm) {
-            // it's either a component project (the superfluous parent is the component node)
-            return wfm.getProjectComponent().isPresent() ||
-            // or the project wfm itself has more than one parent,
-            // i.e. it's not directly registered under WorkflowManager.ROOT but one more level underneath
-            // (necessary since AP-25307 which introduced an extra parent for all job-workflows on an executor)
-                !wfm.getProjectWFM().getID().getPrefix().isRoot();
         }
 
     }

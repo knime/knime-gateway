@@ -146,7 +146,7 @@ class CollapseToMetanode extends AbstractPartBasedWorkflowCommand implements Wit
         return builder(CollapseResultEnt.CollapseResultEntBuilder.class) //
             .setKind(CommandResultEnt.KindEnum.COLLAPSE_RESULT) //
             .setSnapshotId(snapshotId) //
-            .setNewNodeId(new NodeIDEnt(collapsedNodeId, getWorkflowManager().getProjectComponent().isPresent())) //
+            .setNewNodeId(new NodeIDEnt(collapsedNodeId, NodeIDEnt.hasSuperfluousParent(getWorkflowManager()))) //
             .build();
     }
 

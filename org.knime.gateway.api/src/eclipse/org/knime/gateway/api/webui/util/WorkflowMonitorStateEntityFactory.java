@@ -106,13 +106,13 @@ public final class WorkflowMonitorStateEntityFactory {
 
         var errors = new ArrayList<WorkflowMonitorMessageEnt>();
         var warnings = new ArrayList<WorkflowMonitorMessageEnt>();
-        var hasComponentProjectParent = wfm.getProjectComponent().isPresent();
+        var hasSuperfluousParent = NodeIDEnt.hasSuperfluousParent(wfm);
         nodesWithMessages.forEach(nc -> {
             var message = nc.getNodeMessage();
             if (message.getMessageType() == Type.ERROR) {
-                errors.add(buildWorkflowMonitorMessageEnt(nc, hasComponentProjectParent));
+                errors.add(buildWorkflowMonitorMessageEnt(nc, hasSuperfluousParent));
             } else {
-                warnings.add(buildWorkflowMonitorMessageEnt(nc, hasComponentProjectParent));
+                warnings.add(buildWorkflowMonitorMessageEnt(nc, hasSuperfluousParent));
             }
         });
 
@@ -161,16 +161,16 @@ public final class WorkflowMonitorStateEntityFactory {
     }
 
     private static WorkflowMonitorMessageEnt buildWorkflowMonitorMessageEnt(final NodeContainer nc,
-        final boolean hasComponentProjectParent) {
+        final boolean hasSuperfluousParent) {
         NodeContainer parent = nc.getParent();
         if (parent.getDirectNCParent() instanceof SubNodeContainer snc) {
             parent = snc;
         }
         var builder = builder(WorkflowMonitorMessageEntBuilder.class) //
-            .setNodeId(new NodeIDEnt(nc.getID(), hasComponentProjectParent)) //
+            .setNodeId(new NodeIDEnt(nc.getID(), hasSuperfluousParent)) //
             .setName(nc.getName()) //
             .setMessage(nc.getNodeMessage().getMessage()) //
-            .setWorkflowId(new NodeIDEnt(parent.getID(), hasComponentProjectParent));
+            .setWorkflowId(new NodeIDEnt(parent.getID(), hasSuperfluousParent));
         if (nc instanceof NativeNodeContainer nnc) {
             builder.setTemplateId(nnc.getNode().getFactory().getFactoryId());
         }

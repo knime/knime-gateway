@@ -110,14 +110,14 @@ public class UIExtensionEnt<N extends NodeWrapper> {
             m_projectId = projectWfm.getNameWithID();
 
             NodeContainerParent ncParent = wfm.getDirectNCParent();
-            boolean isComponentProject = projectWfm.isComponentProjectWFM();
+            var hasSuperfluousParent = NodeIDEnt.hasSuperfluousParent(projectWfm);
             if (ncParent instanceof SubNodeContainer snc) {
                 // it's a component's workflow
-                m_workflowId = new NodeIDEnt(snc.getID(), isComponentProject).toString();
+                m_workflowId = new NodeIDEnt(snc.getID(), hasSuperfluousParent).toString();
             } else {
-                m_workflowId = new NodeIDEnt(wfm.getID(), isComponentProject).toString();
+                m_workflowId = new NodeIDEnt(wfm.getID(), hasSuperfluousParent).toString();
             }
-            m_nodeId = new NodeIDEnt(nc.getID(), isComponentProject).toString();
+            m_nodeId = new NodeIDEnt(nc.getID(), hasSuperfluousParent).toString();
 
             if (dataServiceManager != null) {
                 if (dataServiceManager.getDataServiceOfType(nodeWrapper, InitialDataService.class).isPresent()) {
