@@ -82,9 +82,6 @@ public record DefaultAddComponentCommandEnt(
         if(providerId == null) {
             throw new IllegalArgumentException("<providerId> must not be null.");
         }
-        if(spaceId == null) {
-            throw new IllegalArgumentException("<spaceId> must not be null.");
-        }
         if(itemId == null) {
             throw new IllegalArgumentException("<itemId> must not be null.");
         }
@@ -168,9 +165,6 @@ public record DefaultAddComponentCommandEnt(
 
         @Override
         public DefaultAddComponentCommandEntBuilder setSpaceId(String spaceId) {
-             if(spaceId == null) {
-                 throw new IllegalArgumentException("<spaceId> must not be null.");
-             }
              m_spaceId = spaceId;
              return this;
         }

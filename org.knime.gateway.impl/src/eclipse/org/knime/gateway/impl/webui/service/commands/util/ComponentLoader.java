@@ -80,8 +80,10 @@ import org.knime.core.node.workflow.WorkflowPersistor.LoadResultEntry;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.service.GatewayException;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -109,14 +111,21 @@ public final class ComponentLoader {
      */
     public static LoadResult loadComponent(final AddComponentCommandEnt commandEnt, final WorkflowManager wfm,
         final SpaceProviders spaceProviders, final ExecutionMonitor exec) throws CanceledExecutionException {
-
         final URI uri;
         final Path localPath;
+        exec.setMessage("Downloading...");
         try {
-            var space = spaceProviders.getSpace(commandEnt.getProviderId(), commandEnt.getSpaceId());
-            uri = space.toKnimeUrl(commandEnt.getItemId());
-            exec.setMessage("Downloading...");
-            localPath = space.toLocalAbsolutePath(exec, commandEnt.getItemId()).orElseThrow();
+            var provider = spaceProviders.getSpaceProvider(commandEnt.getProviderId());
+            if (commandEnt.getSpaceId() == null || commandEnt.getSpaceId().isBlank()) {
+                uri = provider.toKnimeUrl(commandEnt.getProviderId());
+                localPath = provider //
+                    .toLocalAbsolutePath(exec, commandEnt.getItemId(), VersionId.currentState()) //
+                    .orElseThrow();
+            } else {
+                var space = spaceProviders.getSpace(commandEnt.getProviderId(), commandEnt.getSpaceId());
+                uri = space.toKnimeUrl(commandEnt.getItemId());
+                localPath = space.toLocalAbsolutePath(exec, commandEnt.getItemId()).orElseThrow();
+            }
         } catch (GatewayException ex) {
             throw new CompletionException(compileLoadingFailedErrorMessage(ex), ex);
         } catch (final MutableServiceCallException ex) {
