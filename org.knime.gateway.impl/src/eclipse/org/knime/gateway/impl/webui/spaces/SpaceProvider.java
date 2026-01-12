@@ -338,6 +338,7 @@ public interface SpaceProvider {
      * @throws LoggedOutException -
      * @throws NetworkException -
      * @throws MutableServiceCallException -
+     * @since 5.10
      */
     default Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId, final VersionId version) throws CanceledExecutionException, MutableServiceCallException, NetworkException, LoggedOutException {
         throw new UnsupportedOperationException();
@@ -354,6 +355,7 @@ public interface SpaceProvider {
      * @param itemId item ID
      * @return KNIME URL
      * @throws IllegalStateException if there were problems determining the URI
+     * @since 5.10
      */
     default URI toKnimeUrl(final String itemId) {
         throw new UnsupportedOperationException();
