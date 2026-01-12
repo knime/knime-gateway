@@ -98,7 +98,17 @@ public final class NodeConnector {
     /**
      * Connects an existing downstream node to this node.
      *
-     * @param sourceNodeIdEnt
+     * @param sourceNodeIdEnt node to connect from
+     * @return this connector
+     */
+    public NodeConnector connectFrom(final NodeIDEnt sourceNodeIdEnt) {
+        return connectFrom(sourceNodeIdEnt, null);
+    }
+
+    /**
+     * Connects an existing downstream node to this node.
+     *
+     * @param sourceNodeIdEnt node to connect from
      * @param sourcePortIdx if {@code null} it will be automatically determined
      * @return this connector
      */
@@ -154,6 +164,17 @@ public final class NodeConnector {
     public NodeConnector connectTo(final NodeIDEnt destNodeIdEnt, final Integer destPortIdx) {
         var destNodeId = destNodeIdEnt == null ? null : destNodeIdEnt.toNodeID(m_wfm);
         return connectTo(destNodeId, destPortIdx);
+    }
+
+    /**
+     * Connects an existing upstream node to this node from a set port.
+     *
+     * @param destNodeIdEnt
+     * @return this connector
+     */
+    public NodeConnector connectTo(final NodeIDEnt destNodeIdEnt) {
+        var destNodeId = destNodeIdEnt == null ? null : destNodeIdEnt.toNodeID(m_wfm);
+        return connectTo(destNodeId);
     }
 
     /**

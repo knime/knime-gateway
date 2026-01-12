@@ -55,6 +55,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -62,8 +63,8 @@ import java.util.concurrent.CompletionException;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeProgressListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
@@ -74,7 +75,7 @@ import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.util.ComponentLoader;
-import org.knime.gateway.impl.webui.service.commands.util.ComponentLoader.LoadResult;
+import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -103,7 +104,6 @@ public final class ComponentLoadJobManager {
      * Creates a new component loading job.
      *
      * @param commandEnt the command-entity carrying all the infos required to load the component
-     *
      * @return the job/placeholder id
      */
     public LoadJob startLoadJob(final AddComponentCommandEnt commandEnt) {
@@ -127,34 +127,114 @@ public final class ComponentLoadJobManager {
         return loadJobInternal.loadJob();
     }
 
+    private static Optional<ConnectRequest> parseConnectRequest(final AddComponentCommandEnt commandEnt) {
+        if (commandEnt.getNodeRelation() != null //
+            && commandEnt.getSourceNodeId() != null //
+        ) {
+            return Optional.of(new ConnectRequest( //
+                commandEnt.getNodeRelation(), //
+                commandEnt.getSourceNodeId(), //
+                commandEnt.getSourcePortIdx()) //
+            );
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private record ConnectRequest(AddComponentCommandEnt.NodeRelationEnum nodeRelation, NodeIDEnt givenNode,
+            Integer givenNodePort) {
+        NodeConnector toConnector(final WorkflowManager wfm, final NodeID newNodeId) {
+            var connector = new NodeConnector(wfm, newNodeId);
+            if (this.nodeRelation() == AddComponentCommandEnt.NodeRelationEnum.SUCCESSORS) {
+                // the newly added component becomes a successor of the given node.
+                if (givenNodePort == null) {
+                    connector.connectFrom(this.givenNode());
+                } else {
+                    connector.connectFrom(this.givenNode(), this.givenNodePort());
+                }
+            } else if (this.nodeRelation() == AddComponentCommandEnt.NodeRelationEnum.PREDECESSORS) {
+                // the newly added component becomes a predecessor of the given node
+                if (givenNodePort == null) {
+                    connector.connectTo(this.givenNode());
+                } else {
+                    connector.connectTo(this.givenNode(), this.givenNodePort());
+                }
+            } else {
+                throw new IllegalArgumentException("Unexpected node relation value");
+            }
+            return connector;
+        }
+    }
+
     private LoadJob createLoadJob(final String placeholderId, final ExecutionMonitor exec,
         final AddComponentCommandEnt commandEnt) {
-        Supplier<LoadResult> componentLoader = () -> {
-            NodeProgressListener progressListener =
-                progressEvent -> updatePlaceholderWithMessageAndProgress(placeholderId,
-                    progressEvent.getNodeProgress().getMessage(), progressEvent.getNodeProgress().getProgress());
+        Supplier<NodeID> componentLoader = () -> {
+            NodeProgressListener progressListener = progressEvent -> updatePlaceholderWithMessageAndProgress( //
+                placeholderId, //
+                progressEvent.getNodeProgress().getMessage(), //
+                progressEvent.getNodeProgress().getProgress() //
+            ); //
             exec.getProgressMonitor().addProgressListener(progressListener);
-            try {
-                return ComponentLoader.loadComponent(commandEnt, m_wfm, m_spaceProviders, exec);
-            } catch (CanceledExecutionException ex) { // NOSONAR
-                throw new CancellationException(ex.getMessage());
-            }
+            return ComponentLoader.loadComponent(commandEnt, m_wfm, m_spaceProviders, exec);
         };
+
         var future = CompletableFuture //
             .supplyAsync(componentLoader) //
-            .handle((result, ex) -> {
+            .thenApply(componentId -> {
+                connectComponent(commandEnt, m_wfm, componentId);
+                return componentId;
+            }).handle((componentId, exception) -> {
+                // receives un-wrapped exception
                 exec.getProgressMonitor().removeAllProgressListener();
-                if (ex == null) {
-                    updatePlaceholderWithSuccess(placeholderId, new NodeIDEnt(result.componentId()).toString(),
-                        result.message(), result.details());
-                } else if (ex instanceof CompletionException ce && ce.getCause() instanceof CancellationException) {
-                    updatePlaceholderWithError(placeholderId, "Component loading cancelled", null);
-                } else {
-                    updatePlaceholderWithError(placeholderId, "Component could not be loaded", ex.getMessage());
-                }
-                return result;
+                updatePlaceholder(placeholderId, componentId, exception);
+                return componentId;
             });
         return new LoadJob(placeholderId, future);
+    }
+
+    private static void connectComponent(final AddComponentCommandEnt commandEnt, final WorkflowManager wfm,
+        final NodeID componentId) {
+        var connector = parseConnectRequest(commandEnt).map(cr -> cr.toConnector(wfm, componentId));
+        if (connector.isEmpty()) {
+            return;
+        }
+        if (!connector.get().connect()) {
+            throw new ComponentLoader.ComponentLoadedWithWarningsException( //
+                componentId, //
+                "Component inserted but not connected", //
+                "The component could not automatically be connected." //
+            );
+        }
+    }
+
+    private void updatePlaceholder(String placeholderId, NodeID componentId, Throwable exception) {
+        if (exception == null) {
+            updatePlaceholderWithSuccess( //
+                placeholderId, //
+                new NodeIDEnt(componentId).toString(), //
+                null, //
+                null //
+            );
+            return;
+        }
+        // depending on which CompletableFuture composition is used (supplyAsync, thenApply, handle, ...) exceptions
+        //   come either raw or wrapped in CompletionException. For simplicity, we cover both cases and unwrap
+        //   if possible.
+        var unwrapped = (exception instanceof CompletionException ce && ce.getCause() != null) //
+            ? ce.getCause() //
+            : exception;
+        if (unwrapped instanceof ComponentLoader.ComponentLoadedWithWarningsException e) {
+            updatePlaceholderWithSuccess( //
+                placeholderId, //
+                new NodeIDEnt(e.getComponentId()).toString(), //
+                e.getTitle(), //
+                e.getMessage() //
+            );
+        } else if (unwrapped instanceof CancellationException e) {
+            updatePlaceholderWithError(placeholderId, "Component loading cancelled", null);
+        } else {
+            updatePlaceholderWithError(placeholderId, "Component could not be loaded", unwrapped.getMessage());
+        }
     }
 
     private void updatePlaceholderWithMessageAndProgress(final String id, final String message, final Double progress) {
@@ -260,8 +340,7 @@ public final class ComponentLoadJobManager {
         }
         var exec = new ExecutionMonitor();
         var loadJob = createLoadJob(id, exec, originalJob.commandEnt());
-        m_loadJobs.put(id,
-            new LoadJobInternal(loadJob, originalJob.placeholder(), exec, originalJob.commandEnt()));
+        m_loadJobs.put(id, new LoadJobInternal(loadJob, originalJob.placeholder(), exec, originalJob.commandEnt()));
 
     }
 
@@ -294,7 +373,7 @@ public final class ComponentLoadJobManager {
      * @param future the future that represents the loading operation; returns a {@link LoadResult} if it completes
      *            successfully
      */
-    public record LoadJob(String id, CompletableFuture<LoadResult> future) {
+    public record LoadJob(String id, CompletableFuture<NodeID> future) {
 
     }
 

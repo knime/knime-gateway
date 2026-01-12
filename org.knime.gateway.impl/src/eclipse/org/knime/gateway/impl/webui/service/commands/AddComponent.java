@@ -113,10 +113,7 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
     private NodeID getComponentId() {
         var future = m_loadJob.future();
         try {
-            var loadResult = future.getNow(null);
-            if (loadResult != null) {
-                return loadResult.componentId();
-            }
+            return future.getNow(null);
         } catch (CompletionException | CancellationException e) { // NOSONAR
             //
         }
