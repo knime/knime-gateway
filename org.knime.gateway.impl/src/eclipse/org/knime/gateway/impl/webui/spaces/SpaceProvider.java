@@ -48,9 +48,19 @@
  */
 package org.knime.gateway.impl.webui.spaces;
 
+import java.net.URI;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
@@ -58,13 +68,6 @@ import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
-
-import java.net.URI;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Represents an entity that holds spaces. E.g. a Hub instance.
@@ -130,17 +133,20 @@ public interface SpaceProvider {
     /**
      * Executes a component search against the provider's repository.
      *
+     * @param sort optional sort
+     * @param privateSearchMode include/exclude/auto private items
+     * @param tags optional tags filter
+     * @param owner optional owner filter
      * @param query searchComponents text
-     * @param limit result limit, {@code null} to use the provider default
-     * @param offset result offset, {@code null} to use the provider default
+     * @param limit optional result limit
+     * @param offset optional offset
      * @since 5.10
      * @return searchComponents results
      * @throws NetworkException
      * @throws LoggedOutException
      * @throws UnsupportedOperationException if not supported
      */
-    default List<ComponentSearchItemEnt> searchComponents(final String query, final Integer limit,
-        final Integer offset)
+    default List<ComponentSearchItemEnt> searchComponents(String query, final Integer limit, final Integer offset)
         throws NetworkException, LoggedOutException, MutableServiceCallException {
         throw new UnsupportedOperationException();
     }
@@ -318,6 +324,41 @@ public interface SpaceProvider {
      * @param itemId ID of the item itself
      */
     record SpaceAndItemId(String spaceId, String itemId) {
+    }
+
+    /**
+     * Resolves the item with the given ID into a local file, potentially downloading it.
+     *
+     * @see Space#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
+     * @param monitor to report progress, progress messages and for cancellation
+     * @param itemId ID of the item to resolve
+     * @param version The version of the item
+     * @return the local path of the item and if available, empty if not available or the path resolution (e.g.
+     *         download) has been cancelled
+     * @throws CanceledExecutionException if the operation was cancelled
+     * @throws LoggedOutException -
+     * @throws NetworkException -
+     * @throws MutableServiceCallException -
+     * @since 5.10
+     */
+    default Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId,
+        final VersionId version)
+        throws CanceledExecutionException, MutableServiceCallException, NetworkException, LoggedOutException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Converts an item ID into a KNIME URL referencing the corresponding space item.
+     *
+     * @see Space#toKnimeUrl(String)
+     * @see Space#toPathBasedKnimeUrl(String)
+     * @param itemId item ID
+     * @return KNIME URL
+     * @throws IllegalStateException if there were problems determining the URI
+     * @since 5.10
+     */
+    default URI toKnimeUrl(final String itemId) {
+        throw new UnsupportedOperationException();
     }
 
 }

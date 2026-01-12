@@ -79,10 +79,12 @@ public final class GatewayTestCollection {
      * @return map from the individual test names to a function that allows one to run the test
      */
     public static Map<String, GatewayTestRunner> collectAllGatewayTests() {
+        var methodFilter = parseFilters(System.getProperty("org.knime.gateway.testing.helper.test_method"));
         var classFilter = parseFilters(System.getProperty("org.knime.gateway.testing.helper.test_class"));
         return CONTRIBUTING_CLASSES.stream() //
             .filter(helper -> classFilter.test(helper.getSimpleName())) //
             .flatMap(helper -> Arrays.stream(helper.getDeclaredMethods())) //
+            .filter(method -> methodFilter.test(method.getName())) //
             .filter(method -> !Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers())) //
             .map(method -> {
                 final var declaringClass = method.getDeclaringClass();

@@ -96,6 +96,7 @@ import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.knime.gateway.testing.helper.WorkflowExecutor;
 import org.knime.gateway.testing.helper.WorkflowLoader;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
 /**
  * Tests for execution of the {@link AddComponentCommandEnt}.
@@ -279,11 +280,11 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
         when(spaceMock.toKnimeUrl(componentItemId)).thenReturn(uri);
         var componentPath = CoreUtil
                 .resolveToFile("/files/test_workspace_to_list/component", AddComponentCommandTestHelper.class).toPath();
-        when(spaceMock.toLocalAbsolutePath(any(), any())).thenAnswer(i -> {
+        Answer<Object> mockAnswer = i -> {
             // ensures that 'component loading' takes a bit longer to make the test deterministic
             // (when checking for the placeholder state - which is 'loading' on the first event)
             // and also makes it 'cancellable'
-            var exec = (ExecutionMonitor)i.getArgument(0);
+            var exec = (ExecutionMonitor) i.getArgument(0);
             var start = System.currentTimeMillis();
             while (System.currentTimeMillis() - start < toLocalAbsolutePathDelayInMs) {
                 Thread.sleep(100);
@@ -297,7 +298,11 @@ public class AddComponentCommandTestHelper extends WebUIGatewayServiceTestHelper
                 }
             }
             return Optional.of(componentPath);
-        });
+        };
+        // take care to mock each overload to be more forgiving of implementation details
+        when(spaceMock.toLocalAbsolutePath(any())).thenAnswer(mockAnswer);
+        when(spaceMock.toLocalAbsolutePath(any(), any())).thenAnswer(mockAnswer);
+        when(spaceMock.toLocalAbsolutePath(any(), any(), any())).thenAnswer(mockAnswer);
         return spaceMock;
     }
 

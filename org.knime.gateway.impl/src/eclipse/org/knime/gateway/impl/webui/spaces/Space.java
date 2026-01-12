@@ -305,6 +305,8 @@ public interface Space {
     /**
      * Resolves the item with the given ID into a local file, potentially downloading it.
      *
+     * @see SpaceProvider#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
+     *
      * @param monitor to report progress, progress messages and for cancellation
      * @param itemId ID if the item to resolve
      * @param version The version of the item
@@ -327,7 +329,7 @@ public interface Space {
      * @throws LoggedOutException
      * @throws NetworkException
      * @throws MutableServiceCallException
-     * @see this#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
+     * @see Space#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
      */
     default Optional<Path> toLocalAbsolutePath(final ExecutionMonitor monitor, final String itemId)
         throws CanceledExecutionException, NetworkException, LoggedOutException, MutableServiceCallException {
@@ -341,7 +343,7 @@ public interface Space {
      * @throws LoggedOutException
      * @throws NetworkException
      * @throws MutableServiceCallException
-     * @see this#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
+     * @see Space#toLocalAbsolutePath(ExecutionMonitor, String, VersionId)
      */
     default Optional<Path> toLocalAbsolutePath(final String itemId)
         throws NetworkException, LoggedOutException, MutableServiceCallException {
@@ -394,7 +396,7 @@ public interface Space {
      * ID-based KNIME URLs can only be used to reference the item itself and carry no information about the position of
      * the item in the Space's folder hierarchy.
      *
-     * @see this#toPathBasedKnimeUrl(String)
+     * @see Space#toPathBasedKnimeUrl(String)
      * @param itemId item ID
      * @return KNIME URL
      * @throws IllegalStateException if there were problems determining the URI
