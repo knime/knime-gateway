@@ -123,6 +123,83 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AddComponentCommandEnt.java" type="org.knime.gateway.api.webui.entity.AddComponentCommandEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt"/>
+                <message_argument value="getNodeRelation()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt"/>
+                <message_argument value="getSourceNodeId()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt"/>
+                <message_argument value="getSourcePortIdx()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getNodeRelation()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getSourceNodeId()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getSourcePortIdx()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AddComponentCommandEnt.java" type="org.knime.gateway.api.webui.entity.AddComponentCommandEnt$AddComponentCommandEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder"/>
+                <message_argument value="setNodeRelation(AddComponentCommandEnt.NodeRelationEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder"/>
+                <message_argument value="setSourceNodeId(NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder"/>
+                <message_argument value="setSourcePortIdx(Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setNodeRelation(AddComponentCommandEnt.NodeRelationEnum)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setSourceNodeId(NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setSourcePortIdx(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AddComponentCommandEnt.java" type="org.knime.gateway.api.webui.entity.AddComponentCommandEnt$NodeRelationEnum">
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="NodeRelationEnum"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/AncestorInfoEnt.java" type="org.knime.gateway.api.webui.entity.AncestorInfoEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -444,13 +521,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/ProjectSyncStateEnt.java" type="org.knime.gateway.api.webui.entity.ProjectSyncStateEnt">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.ProjectSyncStateEnt"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/ShareComponentCommandEnt.java" type="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt">
         <filter id="403804204">
             <message_arguments>
@@ -554,13 +624,6 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setCanSoftDelete(Boolean)"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/SyncStateErrorEnt.java" type="org.knime.gateway.api.webui.entity.SyncStateErrorEnt">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.SyncStateErrorEnt"/>
             </message_arguments>
         </filter>
     </resource>

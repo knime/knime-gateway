@@ -60,6 +60,9 @@ import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
  * @param itemId
  * @param position
  * @param name
+ * @param sourceNodeId
+ * @param sourcePortIdx
+ * @param nodeRelation
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -70,7 +73,10 @@ public record DefaultAddComponentCommandEnt(
     String spaceId,
     String itemId,
     XYEnt position,
-    String name) implements AddComponentCommandEnt {
+    String name,
+    org.knime.gateway.api.entity.NodeIDEnt sourceNodeId,
+    Integer sourcePortIdx,
+    NodeRelationEnum nodeRelation) implements AddComponentCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -128,6 +134,21 @@ public record DefaultAddComponentCommandEnt(
         return name;
     }
     
+    @Override
+    public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId() {
+        return sourceNodeId;
+    }
+    
+    @Override
+    public Integer getSourcePortIdx() {
+        return sourcePortIdx;
+    }
+    
+    @Override
+    public NodeRelationEnum getNodeRelation() {
+        return nodeRelation;
+    }
+    
     /**
      * A builder for {@link DefaultAddComponentCommandEnt}.
      */
@@ -144,6 +165,12 @@ public record DefaultAddComponentCommandEnt(
         private XYEnt m_position;
 
         private String m_name;
+
+        private org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
+
+        private Integer m_sourcePortIdx;
+
+        private NodeRelationEnum m_nodeRelation;
 
         @Override
         public DefaultAddComponentCommandEntBuilder setKind(KindEnum kind) {
@@ -197,6 +224,24 @@ public record DefaultAddComponentCommandEnt(
         }
 
         @Override
+        public DefaultAddComponentCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId) {
+             m_sourceNodeId = sourceNodeId;
+             return this;
+        }
+
+        @Override
+        public DefaultAddComponentCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx) {
+             m_sourcePortIdx = sourcePortIdx;
+             return this;
+        }
+
+        @Override
+        public DefaultAddComponentCommandEntBuilder setNodeRelation(NodeRelationEnum nodeRelation) {
+             m_nodeRelation = nodeRelation;
+             return this;
+        }
+
+        @Override
         public DefaultAddComponentCommandEnt build() {
             return new DefaultAddComponentCommandEnt(
                 immutable(m_kind),
@@ -204,7 +249,10 @@ public record DefaultAddComponentCommandEnt(
                 immutable(m_spaceId),
                 immutable(m_itemId),
                 immutable(m_position),
-                immutable(m_name));
+                immutable(m_name),
+                immutable(m_sourceNodeId),
+                immutable(m_sourcePortIdx),
+                immutable(m_nodeRelation));
         }
     
     }
