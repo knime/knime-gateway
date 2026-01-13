@@ -194,7 +194,10 @@ public final class SpaceProvidersManager {
         var spaceProviders = new SpaceProviders( //
             createdProviders.stream().collect(Collectors.toMap( //
                 SpaceProvider::getId, //
-                provider -> provider)) //
+                provider -> provider, //
+                (a, b) -> a, //
+                LinkedHashMap::new //
+            )) //
         );
         m_spaceProviders.put( //
             key, //
@@ -220,17 +223,19 @@ public final class SpaceProvidersManager {
     public synchronized void update() {
         // we keep the very same 'default' space providers instance on update and only change the contained map
         // - otherwise we'd need to update all classes that reference it, too
-        var defaultSpaceProviders =
-            m_spaceProviders.computeIfAbsent(Key.defaultKey(), key -> new SpaceProviders(new LinkedHashMap<>()));
+        var defaultSpaceProviders = m_spaceProviders.computeIfAbsent( //
+            Key.defaultKey(), //
+            key -> new SpaceProviders(new LinkedHashMap<>()) //
+        );
         defaultSpaceProviders.getAllSpaceProviders().forEach(m_onProviderRemoved);
         defaultSpaceProviders.clear();
         if (m_localSpaceProvider != null) {
-            defaultSpaceProviders.add(m_localSpaceProvider);
+            defaultSpaceProviders.putLast(m_localSpaceProvider);
         }
         m_spaceProvidersFactories.forEach(factory -> factory.createSpaceProviders().forEach(provider -> {
             provider.init(m_loginErrorHandler);
             m_onProviderCreated.accept(provider);
-            defaultSpaceProviders.add(provider);
+            defaultSpaceProviders.putLast(provider);
         }));
     }
 

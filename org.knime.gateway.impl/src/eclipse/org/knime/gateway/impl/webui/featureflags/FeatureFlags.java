@@ -55,26 +55,35 @@ import java.util.Map;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class FeatureFlags {
-
-    @SuppressWarnings("unused")
-    private static final String FEATURE_FLAGS_PREFIX = "org.knime.ui.feature.";
-
-    private FeatureFlags() {
-        // utility
-    }
+public interface FeatureFlags {
 
     /**
      * Returns the map of available feature flags.
-     * Currently returns an empty map as no features require flagging.
-     *
-     * To add a new feature flag, e.g.:
-     * var myFlag = FEATURE_FLAGS_PREFIX + "my_feature_name";
-     * return Map.of(myFlag, Boolean.getBoolean(myFlag));
      *
      * @return the available feature flags
      */
-    public static Map<String, Object> getFeatureFlags() {
-        return Map.of();
+    public Map<String, Object> getFeatureFlags();
+
+    public boolean isComponentSearchEnabled();
+
+    public static class FromSystemProperties implements FeatureFlags {
+
+        private final boolean m_isComponentSearchEnabled;
+
+        public FromSystemProperties() {
+            // read configuration once, we do not support changing values during runtime.
+            m_isComponentSearchEnabled = Boolean.getBoolean(FEATURE_FLAGS_PREFIX + "component_search");
+        }
+
+        private static final String FEATURE_FLAGS_PREFIX = "org.knime.ui.feature.";
+
+        public Map<String, Object> getFeatureFlags() {
+            return Map.of(FEATURE_FLAGS_PREFIX + "component_search", m_isComponentSearchEnabled);
+        }
+
+        public boolean isComponentSearchEnabled() {
+            return m_isComponentSearchEnabled;
+        }
     }
+
 }

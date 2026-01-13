@@ -58,6 +58,7 @@ import java.util.function.Consumer;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
+import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
@@ -125,6 +126,27 @@ public interface SpaceProvider {
     @SuppressWarnings("java:S1452") // wildcard is needed so `HubSpaceGroup implements SpaceGroup<HubSpace>` works here
     SpaceGroup<? extends Space> getSpaceGroup(String spaceGroupName)
         throws NetworkException, LoggedOutException, MutableServiceCallException;
+
+    /**
+     * Executes a component search against the provider's repository.
+     *
+     * @param sort optional sort
+     * @param privateSearchMode include/exclude/auto private items
+     * @param tags optional tags filter
+     * @param owner optional owner filter
+     * @param query searchComponents text
+     * @param limit optional result limit
+     * @param offset optional offset
+     * @since 5.10
+     * @return searchComponents results
+     * @throws NetworkException
+     * @throws LoggedOutException
+     * @throws UnsupportedOperationException if not supported
+     */
+    default List<ComponentSearchItemEnt> searchComponents(String query, final int limit, final int offset)
+        throws NetworkException, LoggedOutException, MutableServiceCallException {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the server address of the current space provider
