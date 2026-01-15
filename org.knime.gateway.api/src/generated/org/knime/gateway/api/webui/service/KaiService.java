@@ -48,6 +48,7 @@ import org.knime.gateway.api.service.GatewayService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
+import org.knime.gateway.api.webui.entity.KaiInquiryResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionsAvailableEnt;
@@ -117,6 +118,16 @@ public interface KaiService extends GatewayService {
      * 
      */
     void makeAiRequest(String kaiChainId, KaiRequestEnt kaiRequest) ;
+        
+    /**
+     * Responds to a pending inquiry from K-AI.
+     *
+     * @param kaiChainId Id of a K-AI chain.
+     * @param kaiInquiryResponse 
+     *
+     * 
+     */
+    void respondToInquiry(String kaiChainId, KaiInquiryResponseEnt kaiInquiryResponse) ;
         
     /**
      * Submits feedback for a chain.
