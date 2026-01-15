@@ -238,6 +238,27 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/KaiInquiryEnt.java" type="org.knime.gateway.api.webui.entity.KaiInquiryEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.KaiInquiryEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/KaiInquiryOptionEnt.java" type="org.knime.gateway.api.webui.entity.KaiInquiryOptionEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.KaiInquiryOptionEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/KaiInquiryResponseEnt.java" type="org.knime.gateway.api.webui.entity.KaiInquiryResponseEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.KaiInquiryResponseEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/KaiQuickActionContextEnt.java" type="org.knime.gateway.api.webui.entity.KaiQuickActionContextEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -692,6 +713,12 @@
                 <message_argument value="listQuickActions(String)"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.KaiService"/>
+                <message_argument value="respondToInquiry(String, KaiInquiryResponseEnt)"/>
+            </message_arguments>
+        </filter>
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="executeQuickAction(String, KaiQuickActionRequestEnt)"/>
@@ -700,6 +727,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="listQuickActions(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="respondToInquiry(String, KaiInquiryResponseEnt)"/>
             </message_arguments>
         </filter>
     </resource>
