@@ -156,6 +156,12 @@ import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultJobManagerEnt;
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt.KaiFeedbackEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiFeedbackEnt;
+import org.knime.gateway.api.webui.entity.KaiInquiryEnt.KaiInquiryEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiInquiryEnt;
+import org.knime.gateway.api.webui.entity.KaiInquiryOptionEnt.KaiInquiryOptionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiInquiryOptionEnt;
+import org.knime.gateway.api.webui.entity.KaiInquiryResponseEnt.KaiInquiryResponseEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultKaiInquiryResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.KaiMessageEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionContextEnt.KaiQuickActionContextEntBuilder;
@@ -573,6 +579,15 @@ public class Interface2ImplMap {
         }        
         if(clazz == KaiFeedbackEntBuilder.class) {
             return (B)new DefaultKaiFeedbackEnt.DefaultKaiFeedbackEntBuilder();
+        }        
+        if(clazz == KaiInquiryEntBuilder.class) {
+            return (B)new DefaultKaiInquiryEnt.DefaultKaiInquiryEntBuilder();
+        }        
+        if(clazz == KaiInquiryOptionEntBuilder.class) {
+            return (B)new DefaultKaiInquiryOptionEnt.DefaultKaiInquiryOptionEntBuilder();
+        }        
+        if(clazz == KaiInquiryResponseEntBuilder.class) {
+            return (B)new DefaultKaiInquiryResponseEnt.DefaultKaiInquiryResponseEntBuilder();
         }        
         if(clazz == KaiMessageEntBuilder.class) {
             return (B)new DefaultKaiMessageEnt.DefaultKaiMessageEntBuilder();

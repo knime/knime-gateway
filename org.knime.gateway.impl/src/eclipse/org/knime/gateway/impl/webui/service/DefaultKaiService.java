@@ -53,6 +53,7 @@ import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
+import org.knime.gateway.api.webui.entity.KaiInquiryResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
@@ -215,6 +216,13 @@ public final class DefaultKaiService implements KaiService {
     public KaiQuickActionsAvailableEnt listQuickActions(final String projectId) {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         return getListener().map(l -> l.listQuickActions(projectId)).orElse(null);
+    }
+
+    @Override
+    public void respondToInquiry(final String kaiChainId, final KaiInquiryResponseEnt kaiInquiryResponse) {
+        DefaultServiceContext.assertWorkflowProjectId(kaiInquiryResponse.getProjectId());
+        getListener().ifPresent(l -> l.onInquiryResponse(kaiChainId, kaiInquiryResponse));
+
     }
 
 }

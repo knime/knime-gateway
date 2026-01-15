@@ -42,78 +42,102 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.impl.webui.entity;
+
+import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 
-import java.util.function.BiConsumer;
-
-import org.knime.core.util.Pair;
-
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.KaiInquiryOptionEnt;
 
 /**
- * Information about an ancestor item in a space.
- * 
+ * A single selectable option within a KaiInquiry.
+ *
+ * @param id
+ * @param label
+ * @param style
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AncestorInfoEnt extends GatewayEntity {
-
-
-  /**
-   * Optional new name of the item. The known item name may be outdated. Return the new item name to check this e.g. on \&quot;Reveal in Space Explorer\&quot; and display a notification.
-   * @return itemName 
-   **/
-  public String getItemName();
-
-  /**
-   * The ancestor item IDs.
-   * @return ancestorItemIds , never <code>null</code>
-   **/
-  public java.util.List<String> getAncestorItemIds();
-
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AncestorInfoEnt)other;
-      valueConsumer.accept("itemName", Pair.create(getItemName(), e.getItemName()));
-      valueConsumer.accept("ancestorItemIds", Pair.create(getAncestorItemIds(), e.getAncestorItemIds()));
-  }
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultKaiInquiryOptionEnt(
+    String id,
+    String label,
+    StyleEnum style) implements KaiInquiryOptionEnt {
 
     /**
-     * The builder for the entity.
+     * Validation for required parameters not being {@code null}.
      */
-    public interface AncestorInfoEntBuilder extends GatewayEntityBuilder<AncestorInfoEnt> {
+    public DefaultKaiInquiryOptionEnt {
+        if(id == null) {
+            throw new IllegalArgumentException("<id> must not be null.");
+        }
+        if(label == null) {
+            throw new IllegalArgumentException("<label> must not be null.");
+        }
+    }
 
-        /**
-         * Optional new name of the item. The known item name may be outdated. Return the new item name to check this e.g. on \&quot;Reveal in Space Explorer\&quot; and display a notification.
-         * 
-         * @param itemName the property value,  
-         * @return this entity builder for chaining
-         */
-        AncestorInfoEntBuilder setItemName(String itemName);
-        
-        /**
-         * The ancestor item IDs.
-         * 
-         * @param ancestorItemIds the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        AncestorInfoEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
+    @Override
+    public String getTypeID() {
+        return "KaiInquiryOption";
+    }
+  
+    @Override
+    public String getId() {
+        return id;
+    }
+    
+    @Override
+    public String getLabel() {
+        return label;
+    }
+    
+    @Override
+    public StyleEnum getStyle() {
+        return style;
+    }
+    
+    /**
+     * A builder for {@link DefaultKaiInquiryOptionEnt}.
+     */
+    public static class DefaultKaiInquiryOptionEntBuilder implements KaiInquiryOptionEntBuilder {
+
+        private String m_id;
+
+        private String m_label;
+
+        private StyleEnum m_style;
+
         @Override
-        AncestorInfoEnt build();
+        public DefaultKaiInquiryOptionEntBuilder setId(String id) {
+             if(id == null) {
+                 throw new IllegalArgumentException("<id> must not be null.");
+             }
+             m_id = id;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiInquiryOptionEntBuilder setLabel(String label) {
+             if(label == null) {
+                 throw new IllegalArgumentException("<label> must not be null.");
+             }
+             m_label = label;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiInquiryOptionEntBuilder setStyle(StyleEnum style) {
+             m_style = style;
+             return this;
+        }
+
+        @Override
+        public DefaultKaiInquiryOptionEnt build() {
+            return new DefaultKaiInquiryOptionEnt(
+                immutable(m_id),
+                immutable(m_label),
+                immutable(m_style));
+        }
     
     }
 

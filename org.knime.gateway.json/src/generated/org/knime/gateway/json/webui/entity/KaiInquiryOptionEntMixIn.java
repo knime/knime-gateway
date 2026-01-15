@@ -42,79 +42,72 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.api.webui.entity;
+package org.knime.gateway.json.webui.entity;
 
 
-import java.util.function.BiConsumer;
 
-import org.knime.core.util.Pair;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.entity.GatewayEntityBuilder;
-
-
-import org.knime.gateway.api.entity.GatewayEntity;
+import org.knime.gateway.api.webui.entity.KaiInquiryOptionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiInquiryOptionEnt.DefaultKaiInquiryOptionEntBuilder;
 
 /**
- * Information about an ancestor item in a space.
- * 
+ * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AncestorInfoEnt extends GatewayEntity {
 
+@JsonDeserialize(builder=DefaultKaiInquiryOptionEntBuilder.class)
+@JsonSerialize(as=KaiInquiryOptionEnt.class)
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
+public interface KaiInquiryOptionEntMixIn extends KaiInquiryOptionEnt {
 
-  /**
-   * Optional new name of the item. The known item name may be outdated. Return the new item name to check this e.g. on \&quot;Reveal in Space Explorer\&quot; and display a notification.
-   * @return itemName 
-   **/
-  public String getItemName();
+    @Override
+    @JsonIgnore
+    public String getTypeID();
 
-  /**
-   * The ancestor item IDs.
-   * @return ancestorItemIds , never <code>null</code>
-   **/
-  public java.util.List<String> getAncestorItemIds();
-
-
-  @Override
-  default void forEachPropertyValue(final GatewayEntity other,
-      final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AncestorInfoEnt)other;
-      valueConsumer.accept("itemName", Pair.create(getItemName(), e.getItemName()));
-      valueConsumer.accept("ancestorItemIds", Pair.create(getAncestorItemIds(), e.getAncestorItemIds()));
-  }
+    @Override
+    @JsonProperty("id")
+    public String getId();
+    
+    @Override
+    @JsonProperty("label")
+    public String getLabel();
+    
+    @Override
+    @JsonProperty("style")
+    public StyleEnum getStyle();
+    
 
     /**
-     * The builder for the entity.
+     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
+     *
+     * @author Martin Horn, University of Konstanz
      */
-    public interface AncestorInfoEntBuilder extends GatewayEntityBuilder<AncestorInfoEnt> {
 
-        /**
-         * Optional new name of the item. The known item name may be outdated. Return the new item name to check this e.g. on \&quot;Reveal in Space Explorer\&quot; and display a notification.
-         * 
-         * @param itemName the property value,  
-         * @return this entity builder for chaining
-         */
-        AncestorInfoEntBuilder setItemName(String itemName);
-        
-        /**
-         * The ancestor item IDs.
-         * 
-         * @param ancestorItemIds the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        AncestorInfoEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds);
-        
-        
-        /**
-        * Creates the entity from the builder.
-        * 
-        * @return the entity
-        * @throws IllegalArgumentException most likely in case when a required property hasn't been set
-        */
-        @Override
-        AncestorInfoEnt build();
+    // AUTO-GENERATED CODE; DO NOT MODIFY
+    public static interface KaiInquiryOptionEntMixInBuilder extends KaiInquiryOptionEntBuilder {
     
+        @Override
+        public KaiInquiryOptionEntMixIn build();
+    
+        @Override
+        @JsonProperty("id")
+        public KaiInquiryOptionEntMixInBuilder setId(final String id);
+        
+        @Override
+        @JsonProperty("label")
+        public KaiInquiryOptionEntMixInBuilder setLabel(final String label);
+        
+        @Override
+        @JsonProperty("style")
+        public KaiInquiryOptionEntMixInBuilder setStyle(final StyleEnum style);
+        
     }
 
+
 }
+

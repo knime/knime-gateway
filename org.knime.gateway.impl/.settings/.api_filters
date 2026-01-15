@@ -66,6 +66,12 @@
                 <message_argument value="listQuickActions(String)"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.kai.KaiHandler"/>
+                <message_argument value="onInquiryResponse(String, KaiInquiryResponseEnt)"/>
+            </message_arguments>
+        </filter>
         <filter id="1209008130">
             <message_arguments>
                 <message_argument value="5.8"/>
@@ -283,6 +289,27 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setStatus(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiInquiryEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiInquiryEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiInquiryEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiInquiryOptionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiInquiryOptionEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiInquiryOptionEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultKaiInquiryResponseEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultKaiInquiryResponseEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultKaiInquiryResponseEnt"/>
             </message_arguments>
         </filter>
     </resource>

@@ -55,55 +55,70 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Information about an ancestor item in a space.
+ * The user&#39;s response to a KaiInquiry.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AncestorInfoEnt extends GatewayEntity {
+public interface KaiInquiryResponseEnt extends GatewayEntity {
 
 
   /**
-   * Optional new name of the item. The known item name may be outdated. Return the new item name to check this e.g. on \&quot;Reveal in Space Explorer\&quot; and display a notification.
-   * @return itemName 
+   * Identifies the top-level workflow, needed for authentication.
+   * @return projectId , never <code>null</code>
    **/
-  public String getItemName();
+  public String getProjectId();
 
   /**
-   * The ancestor item IDs.
-   * @return ancestorItemIds , never <code>null</code>
+   * Must match the inquiry being responded to.
+   * @return inquiryId , never <code>null</code>
    **/
-  public java.util.List<String> getAncestorItemIds();
+  public String getInquiryId();
+
+  /**
+   * The id of the chosen option.
+   * @return selectedOptionId , never <code>null</code>
+   **/
+  public String getSelectedOptionId();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AncestorInfoEnt)other;
-      valueConsumer.accept("itemName", Pair.create(getItemName(), e.getItemName()));
-      valueConsumer.accept("ancestorItemIds", Pair.create(getAncestorItemIds(), e.getAncestorItemIds()));
+      var e = (KaiInquiryResponseEnt)other;
+      valueConsumer.accept("projectId", Pair.create(getProjectId(), e.getProjectId()));
+      valueConsumer.accept("inquiryId", Pair.create(getInquiryId(), e.getInquiryId()));
+      valueConsumer.accept("selectedOptionId", Pair.create(getSelectedOptionId(), e.getSelectedOptionId()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface AncestorInfoEntBuilder extends GatewayEntityBuilder<AncestorInfoEnt> {
+    public interface KaiInquiryResponseEntBuilder extends GatewayEntityBuilder<KaiInquiryResponseEnt> {
 
         /**
-         * Optional new name of the item. The known item name may be outdated. Return the new item name to check this e.g. on \&quot;Reveal in Space Explorer\&quot; and display a notification.
+         * Identifies the top-level workflow, needed for authentication.
          * 
-         * @param itemName the property value,  
+         * @param projectId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AncestorInfoEntBuilder setItemName(String itemName);
+        KaiInquiryResponseEntBuilder setProjectId(String projectId);
         
         /**
-         * The ancestor item IDs.
+         * Must match the inquiry being responded to.
          * 
-         * @param ancestorItemIds the property value, NOT <code>null</code>! 
+         * @param inquiryId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        AncestorInfoEntBuilder setAncestorItemIds(java.util.List<String> ancestorItemIds);
+        KaiInquiryResponseEntBuilder setInquiryId(String inquiryId);
+        
+        /**
+         * The id of the chosen option.
+         * 
+         * @param selectedOptionId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        KaiInquiryResponseEntBuilder setSelectedOptionId(String selectedOptionId);
         
         
         /**
@@ -113,7 +128,7 @@ public interface AncestorInfoEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        AncestorInfoEnt build();
+        KaiInquiryResponseEnt build();
     
     }
 
