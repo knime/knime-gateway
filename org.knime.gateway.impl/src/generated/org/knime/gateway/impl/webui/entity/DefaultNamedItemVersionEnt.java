@@ -46,135 +46,124 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.ItemVersionEnt;
-import org.knime.gateway.api.webui.entity.LinkVariantEnt;
+import java.time.OffsetDateTime;
 
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
+import org.knime.gateway.api.webui.entity.NamedItemVersionEnt;
 
 /**
- * The link of a metanode or component.
+ * Corresponds to org.knime.hub.client.sdk.ent.catalog.NamedItemVersion
  *
- * @param url
- * @param updateStatus
- * @param isLinkVariantChangeable
- * @param isHubItemVersionChangeable
- * @param targetHubItemVersion
- * @param currentLinkVariant
+ * @param version
+ * @param title
+ * @param description
+ * @param author
+ * @param createdOn
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultTemplateLinkEnt(
-    String url,
-    UpdateStatusEnum updateStatus,
-    Boolean isLinkVariantChangeable,
-    Object isHubItemVersionChangeable,
-    ItemVersionEnt targetHubItemVersion,
-    LinkVariantEnt currentLinkVariant) implements TemplateLinkEnt {
+public record DefaultNamedItemVersionEnt(
+    Integer version,
+    String title,
+    String description,
+    String author,
+    OffsetDateTime createdOn) implements NamedItemVersionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultTemplateLinkEnt {
+    public DefaultNamedItemVersionEnt {
+        if(version == null) {
+            throw new IllegalArgumentException("<version> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "TemplateLink";
+        return "NamedItemVersion";
     }
   
     @Override
-    public String getUrl() {
-        return url;
+    public Integer getVersion() {
+        return version;
     }
     
     @Override
-    public UpdateStatusEnum getUpdateStatus() {
-        return updateStatus;
+    public String getTitle() {
+        return title;
     }
     
     @Override
-    public Boolean isLinkVariantChangeable() {
-        return isLinkVariantChangeable;
+    public String getDescription() {
+        return description;
     }
     
     @Override
-    public Object getIsHubItemVersionChangeable() {
-        return isHubItemVersionChangeable;
+    public String getAuthor() {
+        return author;
     }
     
     @Override
-    public ItemVersionEnt getTargetHubItemVersion() {
-        return targetHubItemVersion;
-    }
-    
-    @Override
-    public LinkVariantEnt getCurrentLinkVariant() {
-        return currentLinkVariant;
+    public OffsetDateTime getCreatedOn() {
+        return createdOn;
     }
     
     /**
-     * A builder for {@link DefaultTemplateLinkEnt}.
+     * A builder for {@link DefaultNamedItemVersionEnt}.
      */
-    public static class DefaultTemplateLinkEntBuilder implements TemplateLinkEntBuilder {
+    public static class DefaultNamedItemVersionEntBuilder implements NamedItemVersionEntBuilder {
 
-        private String m_url;
+        private Integer m_version;
 
-        private UpdateStatusEnum m_updateStatus;
+        private String m_title;
 
-        private Boolean m_isLinkVariantChangeable;
+        private String m_description;
 
-        private Object m_isHubItemVersionChangeable = null;
+        private String m_author;
 
-        private ItemVersionEnt m_targetHubItemVersion;
-
-        private LinkVariantEnt m_currentLinkVariant;
+        private OffsetDateTime m_createdOn;
 
         @Override
-        public DefaultTemplateLinkEntBuilder setUrl(String url) {
-             m_url = url;
+        public DefaultNamedItemVersionEntBuilder setVersion(Integer version) {
+             if(version == null) {
+                 throw new IllegalArgumentException("<version> must not be null.");
+             }
+             m_version = version;
              return this;
         }
 
         @Override
-        public DefaultTemplateLinkEntBuilder setUpdateStatus(UpdateStatusEnum updateStatus) {
-             m_updateStatus = updateStatus;
+        public DefaultNamedItemVersionEntBuilder setTitle(String title) {
+             m_title = title;
              return this;
         }
 
         @Override
-        public DefaultTemplateLinkEntBuilder setIsLinkVariantChangeable(Boolean isLinkVariantChangeable) {
-             m_isLinkVariantChangeable = isLinkVariantChangeable;
+        public DefaultNamedItemVersionEntBuilder setDescription(String description) {
+             m_description = description;
              return this;
         }
 
         @Override
-        public DefaultTemplateLinkEntBuilder setIsHubItemVersionChangeable(Object isHubItemVersionChangeable) {
-             m_isHubItemVersionChangeable = isHubItemVersionChangeable;
+        public DefaultNamedItemVersionEntBuilder setAuthor(String author) {
+             m_author = author;
              return this;
         }
 
         @Override
-        public DefaultTemplateLinkEntBuilder setTargetHubItemVersion(ItemVersionEnt targetHubItemVersion) {
-             m_targetHubItemVersion = targetHubItemVersion;
+        public DefaultNamedItemVersionEntBuilder setCreatedOn(OffsetDateTime createdOn) {
+             m_createdOn = createdOn;
              return this;
         }
 
         @Override
-        public DefaultTemplateLinkEntBuilder setCurrentLinkVariant(LinkVariantEnt currentLinkVariant) {
-             m_currentLinkVariant = currentLinkVariant;
-             return this;
-        }
-
-        @Override
-        public DefaultTemplateLinkEnt build() {
-            return new DefaultTemplateLinkEnt(
-                immutable(m_url),
-                immutable(m_updateStatus),
-                immutable(m_isLinkVariantChangeable),
-                immutable(m_isHubItemVersionChangeable),
-                immutable(m_targetHubItemVersion),
-                immutable(m_currentLinkVariant));
+        public DefaultNamedItemVersionEnt build() {
+            return new DefaultNamedItemVersionEnt(
+                immutable(m_version),
+                immutable(m_title),
+                immutable(m_description),
+                immutable(m_author),
+                immutable(m_createdOn));
         }
     
     }

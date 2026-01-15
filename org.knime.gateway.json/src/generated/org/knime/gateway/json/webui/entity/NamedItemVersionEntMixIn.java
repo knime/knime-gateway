@@ -44,8 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ItemVersionEnt;
-import org.knime.gateway.api.webui.entity.LinkVariantEnt;
+import java.time.OffsetDateTime;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder;
+import org.knime.gateway.api.webui.entity.NamedItemVersionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultNamedItemVersionEnt.DefaultNamedItemVersionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,38 +61,34 @@ import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplat
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultTemplateLinkEntBuilder.class)
-@JsonSerialize(as=TemplateLinkEnt.class)
+@JsonDeserialize(builder=DefaultNamedItemVersionEntBuilder.class)
+@JsonSerialize(as=NamedItemVersionEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
+public interface NamedItemVersionEntMixIn extends NamedItemVersionEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("url")
-    public String getUrl();
+    @JsonProperty("version")
+    public Integer getVersion();
     
     @Override
-    @JsonProperty("updateStatus")
-    public UpdateStatusEnum getUpdateStatus();
+    @JsonProperty("title")
+    public String getTitle();
     
     @Override
-    @JsonProperty("isLinkVariantChangeable")
-    public Boolean isLinkVariantChangeable();
+    @JsonProperty("description")
+    public String getDescription();
     
     @Override
-    @JsonProperty("isHubItemVersionChangeable")
-    public Object getIsHubItemVersionChangeable();
+    @JsonProperty("author")
+    public String getAuthor();
     
     @Override
-    @JsonProperty("targetHubItemVersion")
-    public ItemVersionEnt getTargetHubItemVersion();
-    
-    @Override
-    @JsonProperty("currentLinkVariant")
-    public LinkVariantEnt getCurrentLinkVariant();
+    @JsonProperty("createdOn")
+    public OffsetDateTime getCreatedOn();
     
 
     /**
@@ -103,34 +98,30 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TemplateLinkEntMixInBuilder extends TemplateLinkEntBuilder {
+    public static interface NamedItemVersionEntMixInBuilder extends NamedItemVersionEntBuilder {
     
         @Override
-        public TemplateLinkEntMixIn build();
+        public NamedItemVersionEntMixIn build();
     
         @Override
-        @JsonProperty("url")
-        public TemplateLinkEntMixInBuilder setUrl(final String url);
+        @JsonProperty("version")
+        public NamedItemVersionEntMixInBuilder setVersion(final Integer version);
         
         @Override
-        @JsonProperty("updateStatus")
-        public TemplateLinkEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
+        @JsonProperty("title")
+        public NamedItemVersionEntMixInBuilder setTitle(final String title);
         
         @Override
-        @JsonProperty("isLinkVariantChangeable")
-        public TemplateLinkEntMixInBuilder setIsLinkVariantChangeable(final Boolean isLinkVariantChangeable);
+        @JsonProperty("description")
+        public NamedItemVersionEntMixInBuilder setDescription(final String description);
         
         @Override
-        @JsonProperty("isHubItemVersionChangeable")
-        public TemplateLinkEntMixInBuilder setIsHubItemVersionChangeable(final Object isHubItemVersionChangeable);
+        @JsonProperty("author")
+        public NamedItemVersionEntMixInBuilder setAuthor(final String author);
         
         @Override
-        @JsonProperty("targetHubItemVersion")
-        public TemplateLinkEntMixInBuilder setTargetHubItemVersion(final ItemVersionEnt targetHubItemVersion);
-        
-        @Override
-        @JsonProperty("currentLinkVariant")
-        public TemplateLinkEntMixInBuilder setCurrentLinkVariant(final LinkVariantEnt currentLinkVariant);
+        @JsonProperty("createdOn")
+        public NamedItemVersionEntMixInBuilder setCreatedOn(final OffsetDateTime createdOn);
         
     }
 

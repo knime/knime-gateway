@@ -87,6 +87,9 @@
         },
         "isHubItemVersionChangeable" : false,
         "isLinkVariantChangeable" : true,
+        "targetHubItemVersion" : {
+          "type" : "current-state"
+        },
         "updateStatus" : "UP_TO_DATE",
         "url" : "knime://LOCAL/Component/"
       },

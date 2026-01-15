@@ -46,135 +46,104 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.ItemVersionEnt;
-import org.knime.gateway.api.webui.entity.LinkVariantEnt;
+import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
+import org.knime.gateway.api.webui.entity.ChangeComponentLinkCommandEnt;
 
 /**
- * The link of a metanode or component.
+ * Changes the source URI (link) of a linked component
  *
- * @param url
- * @param updateStatus
- * @param isLinkVariantChangeable
- * @param isHubItemVersionChangeable
- * @param targetHubItemVersion
- * @param currentLinkVariant
+ * @param kind
+ * @param nodeId
+ * @param itemVersion
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultTemplateLinkEnt(
-    String url,
-    UpdateStatusEnum updateStatus,
-    Boolean isLinkVariantChangeable,
-    Object isHubItemVersionChangeable,
-    ItemVersionEnt targetHubItemVersion,
-    LinkVariantEnt currentLinkVariant) implements TemplateLinkEnt {
+public record DefaultChangeComponentLinkCommandEnt(
+    KindEnum kind,
+    org.knime.gateway.api.entity.NodeIDEnt nodeId,
+    org.knime.gateway.api.webui.entity.ItemVersionEnt itemVersion) implements ChangeComponentLinkCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultTemplateLinkEnt {
+    public DefaultChangeComponentLinkCommandEnt {
+        if(kind == null) {
+            throw new IllegalArgumentException("<kind> must not be null.");
+        }
+        if(nodeId == null) {
+            throw new IllegalArgumentException("<nodeId> must not be null.");
+        }
+        if(itemVersion == null) {
+            throw new IllegalArgumentException("<itemVersion> must not be null.");
+        }
     }
 
     @Override
     public String getTypeID() {
-        return "TemplateLink";
+        return "ChangeComponentLinkCommand";
     }
   
     @Override
-    public String getUrl() {
-        return url;
+    public KindEnum getKind() {
+        return kind;
     }
     
     @Override
-    public UpdateStatusEnum getUpdateStatus() {
-        return updateStatus;
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId() {
+        return nodeId;
     }
     
     @Override
-    public Boolean isLinkVariantChangeable() {
-        return isLinkVariantChangeable;
-    }
-    
-    @Override
-    public Object getIsHubItemVersionChangeable() {
-        return isHubItemVersionChangeable;
-    }
-    
-    @Override
-    public ItemVersionEnt getTargetHubItemVersion() {
-        return targetHubItemVersion;
-    }
-    
-    @Override
-    public LinkVariantEnt getCurrentLinkVariant() {
-        return currentLinkVariant;
+    public org.knime.gateway.api.webui.entity.ItemVersionEnt getItemVersion() {
+        return itemVersion;
     }
     
     /**
-     * A builder for {@link DefaultTemplateLinkEnt}.
+     * A builder for {@link DefaultChangeComponentLinkCommandEnt}.
      */
-    public static class DefaultTemplateLinkEntBuilder implements TemplateLinkEntBuilder {
+    public static class DefaultChangeComponentLinkCommandEntBuilder implements ChangeComponentLinkCommandEntBuilder {
 
-        private String m_url;
+        private KindEnum m_kind;
 
-        private UpdateStatusEnum m_updateStatus;
+        private org.knime.gateway.api.entity.NodeIDEnt m_nodeId;
 
-        private Boolean m_isLinkVariantChangeable;
-
-        private Object m_isHubItemVersionChangeable = null;
-
-        private ItemVersionEnt m_targetHubItemVersion;
-
-        private LinkVariantEnt m_currentLinkVariant;
+        private org.knime.gateway.api.webui.entity.ItemVersionEnt m_itemVersion = null;
 
         @Override
-        public DefaultTemplateLinkEntBuilder setUrl(String url) {
-             m_url = url;
+        public DefaultChangeComponentLinkCommandEntBuilder setKind(KindEnum kind) {
+             if(kind == null) {
+                 throw new IllegalArgumentException("<kind> must not be null.");
+             }
+             m_kind = kind;
              return this;
         }
 
         @Override
-        public DefaultTemplateLinkEntBuilder setUpdateStatus(UpdateStatusEnum updateStatus) {
-             m_updateStatus = updateStatus;
+        public DefaultChangeComponentLinkCommandEntBuilder setNodeId(org.knime.gateway.api.entity.NodeIDEnt nodeId) {
+             if(nodeId == null) {
+                 throw new IllegalArgumentException("<nodeId> must not be null.");
+             }
+             m_nodeId = nodeId;
              return this;
         }
 
         @Override
-        public DefaultTemplateLinkEntBuilder setIsLinkVariantChangeable(Boolean isLinkVariantChangeable) {
-             m_isLinkVariantChangeable = isLinkVariantChangeable;
+        public DefaultChangeComponentLinkCommandEntBuilder setItemVersion(org.knime.gateway.api.webui.entity.ItemVersionEnt itemVersion) {
+             if(itemVersion == null) {
+                 throw new IllegalArgumentException("<itemVersion> must not be null.");
+             }
+             m_itemVersion = itemVersion;
              return this;
         }
 
         @Override
-        public DefaultTemplateLinkEntBuilder setIsHubItemVersionChangeable(Object isHubItemVersionChangeable) {
-             m_isHubItemVersionChangeable = isHubItemVersionChangeable;
-             return this;
-        }
-
-        @Override
-        public DefaultTemplateLinkEntBuilder setTargetHubItemVersion(ItemVersionEnt targetHubItemVersion) {
-             m_targetHubItemVersion = targetHubItemVersion;
-             return this;
-        }
-
-        @Override
-        public DefaultTemplateLinkEntBuilder setCurrentLinkVariant(LinkVariantEnt currentLinkVariant) {
-             m_currentLinkVariant = currentLinkVariant;
-             return this;
-        }
-
-        @Override
-        public DefaultTemplateLinkEnt build() {
-            return new DefaultTemplateLinkEnt(
-                immutable(m_url),
-                immutable(m_updateStatus),
-                immutable(m_isLinkVariantChangeable),
-                immutable(m_isHubItemVersionChangeable),
-                immutable(m_targetHubItemVersion),
-                immutable(m_currentLinkVariant));
+        public DefaultChangeComponentLinkCommandEnt build() {
+            return new DefaultChangeComponentLinkCommandEnt(
+                immutable(m_kind),
+                immutable(m_nodeId),
+                immutable(m_itemVersion));
         }
     
     }

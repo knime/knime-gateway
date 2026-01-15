@@ -85,6 +85,7 @@ import org.knime.gateway.impl.webui.entity.DefaultUpdateComponentLinkInformation
 import org.knime.gateway.impl.webui.entity.DefaultAddNodeCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultTransformMetanodePortsBarCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateNodeLabelCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultChangeComponentLinkCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultUpdateWorkflowAnnotationCommandEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowAnnotationCommandEnt;
@@ -162,6 +163,8 @@ import org.knime.gateway.impl.webui.entity.DefaultDeleteCommandEnt;
   @Type(value = DefaultAddBendpointCommandEnt.class, name = "add_bendpoint")
 ,
   @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
+,
+  @Type(value = DefaultChangeComponentLinkCommandEnt.class, name = "change_component_link")
 ,
   @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_ports_bar")
 ,
@@ -252,6 +255,8 @@ public interface WorkflowCommandEntMixIn extends WorkflowCommandEnt {
   @Type(value = DefaultAddBendpointCommandEnt.class, name = "add_bendpoint")
 ,
   @Type(value = DefaultUpdateComponentLinkInformationCommandEnt.class, name = "update_component_link_information")
+,
+  @Type(value = DefaultChangeComponentLinkCommandEnt.class, name = "change_component_link")
 ,
   @Type(value = DefaultTransformMetanodePortsBarCommandEnt.class, name = "transform_metanode_ports_bar")
 ,

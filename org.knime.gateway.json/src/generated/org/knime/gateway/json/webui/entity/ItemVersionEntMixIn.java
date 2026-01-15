@@ -44,56 +44,55 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ItemVersionEnt;
-import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder;
+import org.knime.gateway.api.webui.entity.ItemVersionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultItemVersionEnt.DefaultItemVersionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultItemVersionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultCurrentStateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSpecificVersionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultMostRecentEnt;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-
-@JsonDeserialize(builder=DefaultTemplateLinkEntBuilder.class)
-@JsonSerialize(as=TemplateLinkEnt.class)
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
+    visible = true,
+    defaultImpl = DefaultItemVersionEnt.class)
+@JsonSubTypes({
+    @Type(value = DefaultItemVersionEnt.class, name="ItemVersion")
+,
+  @Type(value = DefaultCurrentStateEnt.class, name = "current-state")
+,
+  @Type(value = DefaultMostRecentEnt.class, name = "most-recent")
+,
+  @Type(value = DefaultSpecificVersionEnt.class, name = "specific-version")
+})
+@JsonDeserialize(builder=DefaultItemVersionEntBuilder.class)
+@JsonSerialize(as=ItemVersionEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
+public interface ItemVersionEntMixIn extends ItemVersionEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("url")
-    public String getUrl();
-    
-    @Override
-    @JsonProperty("updateStatus")
-    public UpdateStatusEnum getUpdateStatus();
-    
-    @Override
-    @JsonProperty("isLinkVariantChangeable")
-    public Boolean isLinkVariantChangeable();
-    
-    @Override
-    @JsonProperty("isHubItemVersionChangeable")
-    public Object getIsHubItemVersionChangeable();
-    
-    @Override
-    @JsonProperty("targetHubItemVersion")
-    public ItemVersionEnt getTargetHubItemVersion();
-    
-    @Override
-    @JsonProperty("currentLinkVariant")
-    public LinkVariantEnt getCurrentLinkVariant();
+    @JsonProperty("type")
+    public TypeEnum getType();
     
 
     /**
@@ -101,36 +100,30 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
      *
      * @author Martin Horn, University of Konstanz
      */
-
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
+    visible = true,
+    defaultImpl = DefaultItemVersionEnt.class)
+@JsonSubTypes({
+    @Type(value = DefaultItemVersionEnt.class, name="ItemVersion")
+,
+  @Type(value = DefaultCurrentStateEnt.class, name = "current-state")
+,
+  @Type(value = DefaultMostRecentEnt.class, name = "most-recent")
+,
+  @Type(value = DefaultSpecificVersionEnt.class, name = "specific-version")
+})
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TemplateLinkEntMixInBuilder extends TemplateLinkEntBuilder {
+    public static interface ItemVersionEntMixInBuilder extends ItemVersionEntBuilder {
     
         @Override
-        public TemplateLinkEntMixIn build();
+        public ItemVersionEntMixIn build();
     
         @Override
-        @JsonProperty("url")
-        public TemplateLinkEntMixInBuilder setUrl(final String url);
-        
-        @Override
-        @JsonProperty("updateStatus")
-        public TemplateLinkEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
-        
-        @Override
-        @JsonProperty("isLinkVariantChangeable")
-        public TemplateLinkEntMixInBuilder setIsLinkVariantChangeable(final Boolean isLinkVariantChangeable);
-        
-        @Override
-        @JsonProperty("isHubItemVersionChangeable")
-        public TemplateLinkEntMixInBuilder setIsHubItemVersionChangeable(final Object isHubItemVersionChangeable);
-        
-        @Override
-        @JsonProperty("targetHubItemVersion")
-        public TemplateLinkEntMixInBuilder setTargetHubItemVersion(final ItemVersionEnt targetHubItemVersion);
-        
-        @Override
-        @JsonProperty("currentLinkVariant")
-        public TemplateLinkEntMixInBuilder setCurrentLinkVariant(final LinkVariantEnt currentLinkVariant);
+        @JsonProperty("type")
+        public ItemVersionEntMixInBuilder setType(final TypeEnum type);
         
     }
 

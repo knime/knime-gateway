@@ -92,6 +92,8 @@ import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultBoundsEnt;
 import org.knime.gateway.api.webui.entity.CategoryMetadataEnt.CategoryMetadataEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCategoryMetadataEnt;
+import org.knime.gateway.api.webui.entity.ChangeComponentLinkCommandEnt.ChangeComponentLinkCommandEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultChangeComponentLinkCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt.CollapseCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseResultEnt.CollapseResultEntBuilder;
@@ -130,6 +132,8 @@ import org.knime.gateway.api.webui.entity.CopyCommandEnt.CopyCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCopyCommandEnt;
 import org.knime.gateway.api.webui.entity.CopyResultEnt.CopyResultEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCopyResultEnt;
+import org.knime.gateway.api.webui.entity.CurrentStateEnt.CurrentStateEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultCurrentStateEnt;
 import org.knime.gateway.api.webui.entity.CustomJobManagerEnt.CustomJobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultCustomJobManagerEnt;
 import org.knime.gateway.api.webui.entity.CutCommandEnt.CutCommandEntBuilder;
@@ -156,6 +160,8 @@ import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt.GatewayPr
 import org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt.InsertNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.ItemVersionEnt.ItemVersionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultItemVersionEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultJobManagerEnt;
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt.KaiFeedbackEntBuilder;
@@ -214,6 +220,10 @@ import org.knime.gateway.api.webui.entity.MetaNodeStateEnt.MetaNodeStateEntBuild
 import org.knime.gateway.impl.webui.entity.DefaultMetaNodeStateEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt.MetaPortsEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultMetaPortsEnt;
+import org.knime.gateway.api.webui.entity.MostRecentEnt.MostRecentEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultMostRecentEnt;
+import org.knime.gateway.api.webui.entity.NamedItemVersionEnt.NamedItemVersionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultNamedItemVersionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeDescriptionEnt.NativeNodeDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNativeNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeEnt.NativeNodeEntBuilder;
@@ -324,6 +334,8 @@ import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt.SpacePathSegmentEn
 import org.knime.gateway.impl.webui.entity.DefaultSpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.SpaceProviderEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SpecificVersionEnt.SpecificVersionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultSpecificVersionEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultStyleRangeEnt;
 import org.knime.gateway.api.webui.entity.SyncStateEnt.SyncStateEntBuilder;
@@ -488,6 +500,9 @@ public class Interface2ImplMap {
         if(clazz == CategoryMetadataEntBuilder.class) {
             return (B)new DefaultCategoryMetadataEnt.DefaultCategoryMetadataEntBuilder();
         }        
+        if(clazz == ChangeComponentLinkCommandEntBuilder.class) {
+            return (B)new DefaultChangeComponentLinkCommandEnt.DefaultChangeComponentLinkCommandEntBuilder();
+        }        
         if(clazz == CollapseCommandEntBuilder.class) {
             return (B)new DefaultCollapseCommandEnt.DefaultCollapseCommandEntBuilder();
         }        
@@ -545,6 +560,9 @@ public class Interface2ImplMap {
         if(clazz == CopyResultEntBuilder.class) {
             return (B)new DefaultCopyResultEnt.DefaultCopyResultEntBuilder();
         }        
+        if(clazz == CurrentStateEntBuilder.class) {
+            return (B)new DefaultCurrentStateEnt.DefaultCurrentStateEntBuilder();
+        }        
         if(clazz == CustomJobManagerEntBuilder.class) {
             return (B)new DefaultCustomJobManagerEnt.DefaultCustomJobManagerEntBuilder();
         }        
@@ -583,6 +601,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == InsertNodeCommandEntBuilder.class) {
             return (B)new DefaultInsertNodeCommandEnt.DefaultInsertNodeCommandEntBuilder();
+        }        
+        if(clazz == ItemVersionEntBuilder.class) {
+            return (B)new DefaultItemVersionEnt.DefaultItemVersionEntBuilder();
         }        
         if(clazz == JobManagerEntBuilder.class) {
             return (B)new DefaultJobManagerEnt.DefaultJobManagerEntBuilder();
@@ -670,6 +691,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == MetaPortsEntBuilder.class) {
             return (B)new DefaultMetaPortsEnt.DefaultMetaPortsEntBuilder();
+        }        
+        if(clazz == MostRecentEntBuilder.class) {
+            return (B)new DefaultMostRecentEnt.DefaultMostRecentEntBuilder();
+        }        
+        if(clazz == NamedItemVersionEntBuilder.class) {
+            return (B)new DefaultNamedItemVersionEnt.DefaultNamedItemVersionEntBuilder();
         }        
         if(clazz == NativeNodeDescriptionEntBuilder.class) {
             return (B)new DefaultNativeNodeDescriptionEnt.DefaultNativeNodeDescriptionEntBuilder();
@@ -835,6 +862,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == SpaceProviderEntBuilder.class) {
             return (B)new DefaultSpaceProviderEnt.DefaultSpaceProviderEntBuilder();
+        }        
+        if(clazz == SpecificVersionEntBuilder.class) {
+            return (B)new DefaultSpecificVersionEnt.DefaultSpecificVersionEntBuilder();
         }        
         if(clazz == StyleRangeEntBuilder.class) {
             return (B)new DefaultStyleRangeEnt.DefaultStyleRangeEntBuilder();

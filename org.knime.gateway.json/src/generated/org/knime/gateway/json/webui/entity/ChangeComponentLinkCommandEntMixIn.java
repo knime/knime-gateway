@@ -44,8 +44,7 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ItemVersionEnt;
-import org.knime.gateway.api.webui.entity.LinkVariantEnt;
+import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
-import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplateLinkEntBuilder;
+import org.knime.gateway.api.webui.entity.ChangeComponentLinkCommandEnt;
+import org.knime.gateway.impl.webui.entity.DefaultChangeComponentLinkCommandEnt.DefaultChangeComponentLinkCommandEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,38 +61,26 @@ import org.knime.gateway.impl.webui.entity.DefaultTemplateLinkEnt.DefaultTemplat
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultTemplateLinkEntBuilder.class)
-@JsonSerialize(as=TemplateLinkEnt.class)
+@JsonDeserialize(builder=DefaultChangeComponentLinkCommandEntBuilder.class)
+@JsonSerialize(as=ChangeComponentLinkCommandEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
+public interface ChangeComponentLinkCommandEntMixIn extends ChangeComponentLinkCommandEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("url")
-    public String getUrl();
+    @JsonProperty("kind")
+    public KindEnum getKind();
     
     @Override
-    @JsonProperty("updateStatus")
-    public UpdateStatusEnum getUpdateStatus();
+    @JsonProperty("nodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getNodeId();
     
     @Override
-    @JsonProperty("isLinkVariantChangeable")
-    public Boolean isLinkVariantChangeable();
-    
-    @Override
-    @JsonProperty("isHubItemVersionChangeable")
-    public Object getIsHubItemVersionChangeable();
-    
-    @Override
-    @JsonProperty("targetHubItemVersion")
-    public ItemVersionEnt getTargetHubItemVersion();
-    
-    @Override
-    @JsonProperty("currentLinkVariant")
-    public LinkVariantEnt getCurrentLinkVariant();
+    @JsonProperty("itemVersion")
+    public org.knime.gateway.api.webui.entity.ItemVersionEnt getItemVersion();
     
 
     /**
@@ -103,34 +90,22 @@ public interface TemplateLinkEntMixIn extends TemplateLinkEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface TemplateLinkEntMixInBuilder extends TemplateLinkEntBuilder {
+    public static interface ChangeComponentLinkCommandEntMixInBuilder extends ChangeComponentLinkCommandEntBuilder {
     
         @Override
-        public TemplateLinkEntMixIn build();
+        public ChangeComponentLinkCommandEntMixIn build();
     
         @Override
-        @JsonProperty("url")
-        public TemplateLinkEntMixInBuilder setUrl(final String url);
+        @JsonProperty("kind")
+        public ChangeComponentLinkCommandEntMixInBuilder setKind(final KindEnum kind);
         
         @Override
-        @JsonProperty("updateStatus")
-        public TemplateLinkEntMixInBuilder setUpdateStatus(final UpdateStatusEnum updateStatus);
+        @JsonProperty("nodeId")
+        public ChangeComponentLinkCommandEntMixInBuilder setNodeId(final org.knime.gateway.api.entity.NodeIDEnt nodeId);
         
         @Override
-        @JsonProperty("isLinkVariantChangeable")
-        public TemplateLinkEntMixInBuilder setIsLinkVariantChangeable(final Boolean isLinkVariantChangeable);
-        
-        @Override
-        @JsonProperty("isHubItemVersionChangeable")
-        public TemplateLinkEntMixInBuilder setIsHubItemVersionChangeable(final Object isHubItemVersionChangeable);
-        
-        @Override
-        @JsonProperty("targetHubItemVersion")
-        public TemplateLinkEntMixInBuilder setTargetHubItemVersion(final ItemVersionEnt targetHubItemVersion);
-        
-        @Override
-        @JsonProperty("currentLinkVariant")
-        public TemplateLinkEntMixInBuilder setCurrentLinkVariant(final LinkVariantEnt currentLinkVariant);
+        @JsonProperty("itemVersion")
+        public ChangeComponentLinkCommandEntMixInBuilder setItemVersion(final org.knime.gateway.api.webui.entity.ItemVersionEnt itemVersion);
         
     }
 

@@ -65,6 +65,7 @@ import org.knime.gateway.api.webui.entity.AddWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.AlignNodesCommandEnt;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt;
 import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt;
+import org.knime.gateway.api.webui.entity.ChangeComponentLinkCommandEnt;
 import org.knime.gateway.api.webui.entity.CollapseCommandEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
@@ -234,6 +235,8 @@ public final class WorkflowCommands {
             command = new AddBendpoint(ce);
         } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) {
             command = new UpdateComponentLinkInformation(ce, linkVariants);
+        } else if (commandEnt instanceof ChangeComponentLinkCommandEnt ce) {
+            command = new ChangeComponentLink(ce);
         } else if (commandEnt instanceof ShareComponentCommandEnt ce) {
             command = new ShareComponent(ce, spaceProviders, linkVariants);
         } else if (commandEnt instanceof TransformMetanodePortsBarCommandEnt ce) {
