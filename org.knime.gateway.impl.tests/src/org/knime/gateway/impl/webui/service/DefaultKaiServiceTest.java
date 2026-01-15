@@ -62,6 +62,7 @@ import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiInquiryResponseEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionContextEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionRequestEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResponseEnt;
@@ -220,6 +221,20 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
 
         assertEquals(expectedActions.getAvailableActions(), returnedActions.getAvailableActions());
         verify(m_kaiHandler).listQuickActions(projectId);
+    }
+
+    /**
+     * Tests that the respondToInquiry method correctly delegates to the listener.
+     *
+     * @throws Exception not thrown
+     */
+    @Test
+    public void testRespondToInquiry() throws Exception {
+        var response = new DefaultKaiInquiryResponseEnt("bar", "inq-1", "allow");
+
+        DefaultKaiService.getInstance().respondToInquiry("build", response);
+
+        verify(m_kaiHandler).onInquiryResponse("build", response);
     }
 
 }
