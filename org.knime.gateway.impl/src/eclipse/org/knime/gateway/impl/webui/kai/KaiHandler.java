@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.KaiInquiryResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionsAvailableEnt;
@@ -79,6 +80,16 @@ public interface KaiHandler {
      * @param chainType the type of chain to cancel
      */
     void onCancel(String chainType);
+
+    /**
+     * Invoked when the user responds to a human-in-the-loop inquiry by K-AI,
+     * e.g. a permission to execute a tool.
+     *
+     * @param chainType qa or build
+     * @param response the user's response
+     * @since 5.10
+     */
+    void onInquiryResponse(String chainType, KaiInquiryResponseEnt response);
 
     /**
      * @return the UI strings (disclaimer and welcome messages) in JSON format
