@@ -88,6 +88,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/util/ItemVersions.java" type="org.knime.gateway.api.util.ItemVersions">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.util.ItemVersions"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/api/util/KnimeUrls.java" type="org.knime.gateway.api.util.KnimeUrls">
         <filter id="1110441988">
             <message_arguments>
@@ -110,6 +117,11 @@
                 <message_argument value="5.8"/>
                 <message_argument value="5.10"/>
                 <message_argument value="Misc"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="TemplateLink"/>
             </message_arguments>
         </filter>
     </resource>
@@ -206,6 +218,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/webui/util/TemplateLinkEntityFactory.java" type="org.knime.gateway.api.webui.util.TemplateLinkEntityFactory">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.util.TemplateLinkEntityFactory"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/AncestorInfoEnt.java" type="org.knime.gateway.api.webui.entity.AncestorInfoEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -213,57 +232,10 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/AppStateEnt.java" type="org.knime.gateway.api.webui.entity.AppStateEnt">
-        <filter id="403804204">
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ChangeComponentLinkCommandEnt.java" type="org.knime.gateway.api.webui.entity.ChangeComponentLinkCommandEnt">
+        <filter id="1110441988">
             <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt"/>
-                <message_argument value="getProjectSyncState()"/>
-            </message_arguments>
-        </filter>
-        <filter id="1211105284">
-            <message_arguments>
-                <message_argument value="getProjectSyncState()"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/AppStateEnt.java" type="org.knime.gateway.api.webui.entity.AppStateEnt$AppModeEnum">
-        <filter id="372346978">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppModeEnum"/>
-                <message_argument value="valueOf(String)"/>
-            </message_arguments>
-        </filter>
-        <filter id="372346978">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppModeEnum"/>
-                <message_argument value="values()"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/AppStateEnt.java" type="org.knime.gateway.api.webui.entity.AppStateEnt$AppStateEntBuilder">
-        <filter id="403804204">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder"/>
-                <message_argument value="setProjectSyncState(ProjectSyncStateEnt)"/>
-            </message_arguments>
-        </filter>
-        <filter id="1211105284">
-            <message_arguments>
-                <message_argument value="setProjectSyncState(ProjectSyncStateEnt)"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/AppStateEnt.java" type="org.knime.gateway.api.webui.entity.AppStateEnt$CanvasRendererEnum">
-        <filter id="372346978">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.CanvasRendererEnum"/>
-                <message_argument value="valueOf(String)"/>
-            </message_arguments>
-        </filter>
-        <filter id="372346978">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.AppStateEnt.CanvasRendererEnum"/>
-                <message_argument value="values()"/>
+                <message_argument value="org.knime.gateway.api.webui.entity.ChangeComponentLinkCommandEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -325,6 +297,13 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/CurrentStateEnt.java" type="org.knime.gateway.api.webui.entity.CurrentStateEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.CurrentStateEnt"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -391,6 +370,13 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setStatus(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ItemVersionEnt.java" type="org.knime.gateway.api.webui.entity.ItemVersionEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ItemVersionEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -516,6 +502,20 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/MostRecentEnt.java" type="org.knime.gateway.api.webui.entity.MostRecentEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.MostRecentEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/NamedItemVersionEnt.java" type="org.knime.gateway.api.webui.entity.NamedItemVersionEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.NamedItemVersionEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -664,6 +664,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SpecificVersionEnt.java" type="org.knime.gateway.api.webui.entity.SpecificVersionEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SpecificVersionEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SyncStateErrorEnt.java" type="org.knime.gateway.api.webui.entity.SyncStateErrorEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SyncStateErrorEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/SyncStateEnt.java" type="org.knime.gateway.api.webui.entity.SyncStateEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -688,6 +702,12 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.TemplateLinkEnt"/>
+                <message_argument value="getTargetHubItemVersion()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.TemplateLinkEnt"/>
                 <message_argument value="isLinkVariantChangeable()"/>
             </message_arguments>
         </filter>
@@ -700,6 +720,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getCurrentLinkVariant()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getTargetHubItemVersion()"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -721,6 +746,12 @@
                 <message_argument value="setIsLinkVariantChangeable(Boolean)"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.TemplateLinkEnt.TemplateLinkEntBuilder"/>
+                <message_argument value="setTargetHubItemVersion(ItemVersionEnt)"/>
+            </message_arguments>
+        </filter>
         <filter id="405901410">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.TemplateLinkEnt.TemplateLinkEntBuilder"/>
@@ -735,6 +766,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setIsLinkVariantChangeable(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setTargetHubItemVersion(ItemVersionEnt)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -777,6 +813,11 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/WorkflowCommandEnt.java" type="org.knime.gateway.api.webui.entity.WorkflowCommandEnt$KindEnum">
+        <filter id="1177550852">
+            <message_arguments>
+                <message_argument value="CHANGE_COMPONENT_LINK"/>
+            </message_arguments>
+        </filter>
         <filter id="1177550852">
             <message_arguments>
                 <message_argument value="SHARE_COMPONENT"/>
@@ -873,7 +914,18 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.service.ComponentService"/>
+                <message_argument value="getItemVersions(String, NodeIDEnt, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.ComponentService"/>
                 <message_argument value="getLinkVariants(String, NodeIDEnt, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getItemVersions(String, NodeIDEnt, NodeIDEnt)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">

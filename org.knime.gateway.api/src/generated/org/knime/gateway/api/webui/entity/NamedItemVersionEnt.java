@@ -44,8 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ItemVersionEnt;
-import org.knime.gateway.api.webui.entity.LinkVariantEnt;
+import java.time.OffsetDateTime;
 
 import java.util.function.BiConsumer;
 
@@ -57,138 +56,100 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The link of a metanode or component.
+ * Corresponds to org.knime.hub.client.sdk.ent.catalog.NamedItemVersion
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface TemplateLinkEnt extends GatewayEntity {
-
-  /**
-   * The status of the link of this metanode/component (UpToDate, HasUpdate, Error)
-   */
-  public enum UpdateStatusEnum {
-    UP_TO_DATE("UP_TO_DATE"),
-    
-    HAS_UPDATE("HAS_UPDATE"),
-    
-    ERROR("ERROR");
-
-    private String value;
-
-    UpdateStatusEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface NamedItemVersionEnt extends GatewayEntity {
 
 
   /**
-   * A URL, if the metanode/component is linked to.
-   * @return url 
+   * Version number of the item.
+   * @return version , never <code>null</code>
    **/
-  public String getUrl();
+  public Integer getVersion();
 
   /**
-   * The status of the link of this metanode/component (UpToDate, HasUpdate, Error)
-   * @return updateStatus 
+   * Get title
+   * @return title 
    **/
-  public UpdateStatusEnum getUpdateStatus();
+  public String getTitle();
 
   /**
-   * Whether this link variant can be changed or not.
-   * @return isLinkVariantChangeable 
+   * Get description
+   * @return description 
    **/
-  public Boolean isLinkVariantChangeable();
+  public String getDescription();
 
   /**
-   * Whether this Hub item version can be changed. This can only be true for shared templates on a Hub.
-   * @return isHubItemVersionChangeable 
+   * Get author
+   * @return author 
    **/
-  public Object getIsHubItemVersionChangeable();
+  public String getAuthor();
 
   /**
-   * Get targetHubItemVersion
-   * @return targetHubItemVersion 
+   * Get createdOn
+   * @return createdOn 
    **/
-  public ItemVersionEnt getTargetHubItemVersion();
-
-  /**
-   * Get currentLinkVariant
-   * @return currentLinkVariant 
-   **/
-  public LinkVariantEnt getCurrentLinkVariant();
+  public OffsetDateTime getCreatedOn();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (TemplateLinkEnt)other;
-      valueConsumer.accept("url", Pair.create(getUrl(), e.getUrl()));
-      valueConsumer.accept("updateStatus", Pair.create(getUpdateStatus(), e.getUpdateStatus()));
-      valueConsumer.accept("isLinkVariantChangeable", Pair.create(isLinkVariantChangeable(), e.isLinkVariantChangeable()));
-      valueConsumer.accept("isHubItemVersionChangeable", Pair.create(getIsHubItemVersionChangeable(), e.getIsHubItemVersionChangeable()));
-      valueConsumer.accept("targetHubItemVersion", Pair.create(getTargetHubItemVersion(), e.getTargetHubItemVersion()));
-      valueConsumer.accept("currentLinkVariant", Pair.create(getCurrentLinkVariant(), e.getCurrentLinkVariant()));
+      var e = (NamedItemVersionEnt)other;
+      valueConsumer.accept("version", Pair.create(getVersion(), e.getVersion()));
+      valueConsumer.accept("title", Pair.create(getTitle(), e.getTitle()));
+      valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
+      valueConsumer.accept("author", Pair.create(getAuthor(), e.getAuthor()));
+      valueConsumer.accept("createdOn", Pair.create(getCreatedOn(), e.getCreatedOn()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface TemplateLinkEntBuilder extends GatewayEntityBuilder<TemplateLinkEnt> {
+    public interface NamedItemVersionEntBuilder extends GatewayEntityBuilder<NamedItemVersionEnt> {
 
         /**
-         * A URL, if the metanode/component is linked to.
+         * Version number of the item.
          * 
-         * @param url the property value,  
+         * @param version the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        TemplateLinkEntBuilder setUrl(String url);
+        NamedItemVersionEntBuilder setVersion(Integer version);
         
         /**
-         * The status of the link of this metanode/component (UpToDate, HasUpdate, Error)
+   		 * Set title
          * 
-         * @param updateStatus the property value,  
+         * @param title the property value,  
          * @return this entity builder for chaining
          */
-        TemplateLinkEntBuilder setUpdateStatus(UpdateStatusEnum updateStatus);
+        NamedItemVersionEntBuilder setTitle(String title);
         
         /**
-         * Whether this link variant can be changed or not.
+   		 * Set description
          * 
-         * @param isLinkVariantChangeable the property value,  
+         * @param description the property value,  
          * @return this entity builder for chaining
          */
-        TemplateLinkEntBuilder setIsLinkVariantChangeable(Boolean isLinkVariantChangeable);
+        NamedItemVersionEntBuilder setDescription(String description);
         
         /**
-         * Whether this Hub item version can be changed. This can only be true for shared templates on a Hub.
+   		 * Set author
          * 
-         * @param isHubItemVersionChangeable the property value,  
+         * @param author the property value,  
          * @return this entity builder for chaining
          */
-        TemplateLinkEntBuilder setIsHubItemVersionChangeable(Object isHubItemVersionChangeable);
+        NamedItemVersionEntBuilder setAuthor(String author);
         
         /**
-   		 * Set targetHubItemVersion
+   		 * Set createdOn
          * 
-         * @param targetHubItemVersion the property value,  
+         * @param createdOn the property value,  
          * @return this entity builder for chaining
          */
-        TemplateLinkEntBuilder setTargetHubItemVersion(ItemVersionEnt targetHubItemVersion);
-        
-        /**
-   		 * Set currentLinkVariant
-         * 
-         * @param currentLinkVariant the property value,  
-         * @return this entity builder for chaining
-         */
-        TemplateLinkEntBuilder setCurrentLinkVariant(LinkVariantEnt currentLinkVariant);
+        NamedItemVersionEntBuilder setCreatedOn(OffsetDateTime createdOn);
         
         
         /**
@@ -198,7 +159,7 @@ public interface TemplateLinkEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        TemplateLinkEnt build();
+        NamedItemVersionEnt build();
     
     }
 

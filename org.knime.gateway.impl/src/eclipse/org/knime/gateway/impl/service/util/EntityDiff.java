@@ -48,13 +48,13 @@
  */
 package org.knime.gateway.impl.service.util;
 
+import org.knime.gateway.api.entity.GatewayEntity;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
  * Utility class to compare two {@link GatewayEntity GatewayEntities} while providing the result as patch operations via
@@ -88,6 +88,10 @@ final class EntityDiff {
 
     private static <P> boolean compareEntities(final String path, final GatewayEntity e1, final GatewayEntity e2,
         final PatchCreator<P> patchCreator) {
+        if (!e1.getClass().equals(e2.getClass())) {
+            patchCreator.replaced(path, e2);
+            return false;
+        }
         var areEqual = new AtomicBoolean(true);
         e1.forEachPropertyValue(e2, (name, entities) -> {
             var first = entities.getFirst();

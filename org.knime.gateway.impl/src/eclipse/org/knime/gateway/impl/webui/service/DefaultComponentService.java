@@ -48,15 +48,16 @@
  */
 package org.knime.gateway.impl.webui.service;
 
-import java.util.List;
-
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.core.util.hub.NamedItemVersion;
+import org.knime.core.util.pathresolve.ResolverUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
+import org.knime.gateway.api.webui.entity.NamedItemVersionEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -64,6 +65,12 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
+
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -137,9 +144,11 @@ public class DefaultComponentService implements ComponentService {
     @Override
     public List<LinkVariantInfoEnt> getLinkVariants(final String projectId, final NodeIDEnt workflowId,
         final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
-        if (!(ServiceUtilities.assertProjectIdAndGetNodeContainer(projectId, workflowId, VersionId.currentState(),
-            nodeId) instanceof SubNodeContainer snc)) {
-            throw new IllegalStateException("Node is not a component");
+        var nodeContainer = ServiceUtilities.assertProjectIdAndGetNodeContainer(projectId, workflowId,
+            VersionId.currentState(), nodeId);
+        if (!(nodeContainer instanceof SubNodeContainer snc)) {
+            throw new IllegalStateException("Node " + nodeId + " is not a component (type: "
+                + nodeContainer.getClass().getSimpleName() + ").");
         }
 
         try {
@@ -156,6 +165,39 @@ public class DefaultComponentService implements ComponentService {
                 .withCause(e) //
                 .build();
         }
+    }
+
+    @Override
+    public List<NamedItemVersionEnt> getItemVersions(final String projectId, final NodeIDEnt workflowId,
+        final NodeIDEnt nodeId) throws ServiceCallException, NodeNotFoundException {
+        var nodeContainer = ServiceUtilities.assertProjectIdAndGetNodeContainer(projectId, workflowId,
+            VersionId.currentState(), nodeId);
+        if (!(nodeContainer instanceof SubNodeContainer snc)) {
+            throw new IllegalStateException("Node " + nodeId + " is not a component (type: "
+                + nodeContainer.getClass().getSimpleName() + ").");
+        }
+        var uri = snc.getTemplateInformation().getSourceURI();
+        try {
+            return ResolverUtil.getHubItemVersionList(uri).stream() //
+                    .map(DefaultComponentService::namedItemVersionToEntity).toList();
+        } catch (ResourceAccessException e) {
+            throw ServiceCallException.builder() //
+                .withTitle("Failed to resolve component URL") //
+                .withDetails("Failed to resolve component URL: " + e.getMessage()) //
+                .canCopy(true) //
+                .withCause(e) //
+                .build();
+        }
+    }
+
+    private static NamedItemVersionEnt namedItemVersionToEntity(final NamedItemVersion namedItemVersion) {
+        return builder(NamedItemVersionEnt.NamedItemVersionEntBuilder.class) //
+            .setVersion(Integer.valueOf(namedItemVersion.version())) //
+            .setTitle(namedItemVersion.title()) //
+            .setAuthor(namedItemVersion.author()) //
+            .setDescription(namedItemVersion.description()) //
+            .setCreatedOn(OffsetDateTime.parse(namedItemVersion.createdOn())) //
+            .build();
     }
 
 }
