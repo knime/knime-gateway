@@ -83,6 +83,7 @@ import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt;
 import org.knime.gateway.api.webui.entity.TransformWorkflowAnnotationCommandEnt;
 import org.knime.gateway.api.webui.entity.TranslateCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentLinkInformationCommandEnt;
+import org.knime.gateway.api.webui.entity.ChangeComponentLinkCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentMetadataCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateComponentOrMetanodeNameCommandEnt;
 import org.knime.gateway.api.webui.entity.UpdateLinkedComponentsCommandEnt;
@@ -98,6 +99,7 @@ import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
+import org.knime.gateway.impl.webui.service.commands.ChangeComponentLink;
 
 /**
  * Allows one to execute, undo and redo workflow commands for workflows. Individual commands are assumed to be executed
@@ -180,7 +182,10 @@ public final class WorkflowCommands {
         final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders,
         final WorkflowMiddleware workflowMiddleware, final LinkVariants linkVariants) throws ServiceCallException {
         WorkflowCommand command;
-        if (commandEnt instanceof TranslateCommandEnt ce) {
+        if (commandEnt == null && m_workflowCommandToExecute != null) {
+            command = m_workflowCommandToExecute;
+            m_workflowCommandToExecute = null;
+        } else if (commandEnt instanceof TranslateCommandEnt ce) {
             command = new Translate(ce);
         } else if (commandEnt instanceof DeleteCommandEnt ce) {
             command = new Delete(ce);
@@ -234,6 +239,8 @@ public final class WorkflowCommands {
             command = new AddBendpoint(ce);
         } else if (commandEnt instanceof UpdateComponentLinkInformationCommandEnt ce) {
             command = new UpdateComponentLinkInformation(ce, linkVariants);
+        } else if (commandEnt instanceof ChangeComponentLinkCommandEnt ce) {
+            command = new ChangeComponentLink(ce);
         } else if (commandEnt instanceof ShareComponentCommandEnt ce) {
             command = new ShareComponent(ce, spaceProviders, linkVariants);
         } else if (commandEnt instanceof TransformMetanodePortsBarCommandEnt ce) {
@@ -243,16 +250,19 @@ public final class WorkflowCommands {
         } else if (commandEnt instanceof AlignNodesCommandEnt ce) {
             command = new AlignNodes(ce);
         } else {
-            if (m_workflowCommandToExecute != null) {
-                command = m_workflowCommandToExecute;
-                m_workflowCommandToExecute = null;
-            } else {
+            if (commandEnt == null) {
                 throw ServiceCallException.builder() //
                     .withTitle("Unknown command") //
-                    .withDetails("Command of type " + commandEnt.getClass().getSimpleName() + " cannot be executed.") //
+                    .withDetails("Command entity was null and no pending command set.") //
                     .canCopy(true) //
                     .build();
             }
+            throw ServiceCallException.builder() //
+                .withTitle("Unknown command") //
+                .withDetails("Command of type " + commandEnt.getClass().getSimpleName()
+                    + " cannot be executed.") //
+                .canCopy(true) //
+                .build();
         }
         return command;
     }

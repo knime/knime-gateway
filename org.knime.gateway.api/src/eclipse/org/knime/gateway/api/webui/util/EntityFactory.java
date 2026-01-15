@@ -109,6 +109,8 @@ public final class EntityFactory {
     public static final WorkflowMonitorStateEntityFactory WorkflowMonitorState =
         new WorkflowMonitorStateEntityFactory();
 
+    public static final TemplateLinkEntityFactory TemplateLink = new TemplateLinkEntityFactory();
+
     /**
      * Entity builder instance to build miscellaneous entities.
      *
