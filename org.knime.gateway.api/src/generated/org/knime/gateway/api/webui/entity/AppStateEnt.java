@@ -46,7 +46,6 @@ package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
-import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 
 import java.util.function.BiConsumer;
@@ -231,12 +230,6 @@ public interface AppStateEnt extends GatewayEntity {
    **/
   public java.util.List<SpaceProviderEnt> getSpaceProviders();
 
-  /**
-   * Get projectSyncState
-   * @return projectSyncState 
-   **/
-  public ProjectSyncStateEnt getProjectSyncState();
-
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -262,7 +255,6 @@ public interface AppStateEnt extends GatewayEntity {
       valueConsumer.accept("analyticsPlatformDownloadURL", Pair.create(getAnalyticsPlatformDownloadURL(), e.getAnalyticsPlatformDownloadURL()));
       valueConsumer.accept("isSubnodeLockingEnabled", Pair.create(isSubnodeLockingEnabled(), e.isSubnodeLockingEnabled()));
       valueConsumer.accept("spaceProviders", Pair.create(getSpaceProviders(), e.getSpaceProviders()));
-      valueConsumer.accept("projectSyncState", Pair.create(getProjectSyncState(), e.getProjectSyncState()));
   }
 
     /**
@@ -429,14 +421,6 @@ public interface AppStateEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         AppStateEntBuilder setSpaceProviders(java.util.List<SpaceProviderEnt> spaceProviders);
-        
-        /**
-   		 * Set projectSyncState
-         * 
-         * @param projectSyncState the property value,  
-         * @return this entity builder for chaining
-         */
-        AppStateEntBuilder setProjectSyncState(ProjectSyncStateEnt projectSyncState);
         
         
         /**

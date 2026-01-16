@@ -79,7 +79,7 @@ import org.knime.gateway.impl.webui.WorkflowKey;
  * @author Benjamin Moser, KNIME GmbH, Konstanz
  * @author Kai Franze, KNIME GmbH
  */
-public class WorkflowChangesListener implements Closeable {
+public class WorkflowChangesListener implements Closeable, Runnable {
 
     private final WorkflowManager m_wfm;
 
@@ -436,7 +436,8 @@ public class WorkflowChangesListener implements Closeable {
     /**
      * Notifies this listener that a change occurred.
      */
-    public void trigger() {
+    @Override
+    public void run() {
         callback();
     }
 

@@ -65,9 +65,8 @@ import org.junit.Test;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.DataSize;
-import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
-import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.syncing.HubUploader.SyncThresholdException;
 import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
 
@@ -79,7 +78,7 @@ public class WorkflowSyncerTest {
 
     private WorkflowManager m_wfm;
 
-    private AtomicInteger m_appUpdates;
+    private AtomicInteger m_stateChangesCount;
 
     private DefaultWorkflowSyncer m_syncer;
 
@@ -104,14 +103,14 @@ public class WorkflowSyncerTest {
         m_wfm = mock(WorkflowManager.class);
         when(m_wfm.getName()).thenReturn("test-wf");
 
-        // collect app-state update invocations
-        m_appUpdates = new AtomicInteger();
-        var appStateUpdater = new AppStateUpdater();
-        appStateUpdater.addAppStateChangedListener(m_appUpdates::incrementAndGet);
+        // count state changes invocations
+        m_stateChangesCount = new AtomicInteger();
+        Runnable listener = () -> m_stateChangesCount.incrementAndGet();
 
         var config = new WorkflowSyncer.SyncerConfig(Duration.ZERO, SOME_SIZE);
 
-        m_syncStateStore = new SyncStateStore(appStateUpdater::updateAppState);
+        m_syncStateStore = new SyncStateStore();
+        m_syncStateStore.addOnStateChangeListener(listener);
         m_localSaver = mock(LocalSaver.class);
         m_hubUploader = mock(HubUploader.class);
         m_workflowListener = mock(WorkflowListener.class);
@@ -149,9 +148,9 @@ public class WorkflowSyncerTest {
         verify(m_localSaver).saveProject(m_wfm);
         verify(m_hubUploader).uploadProject(m_wfm);
 
-        assertThat(m_syncer.getProjectSyncState().getState()).isEqualTo(ProjectSyncStateEnt.StateEnum.SYNCED);
+        assertThat(m_syncer.getSyncState().getState()).isEqualTo(SyncStateEnt.StateEnum.SYNCED);
         // WRITING -> UPLOAD -> SYNCED
-        assertThat(m_appUpdates.get()).isEqualTo(3);
+        assertThat(m_stateChangesCount.get()).isEqualTo(3);
     }
 
     /**
@@ -165,9 +164,9 @@ public class WorkflowSyncerTest {
 
         assertThatThrownBy(() -> m_syncer.syncProjectNow()).isInstanceOf(ServiceCallException.class);
 
-        assertThat(m_syncer.getProjectSyncState().getState()).isEqualTo(ProjectSyncStateEnt.StateEnum.ERROR);
+        assertThat(m_syncer.getSyncState().getState()).isEqualTo(SyncStateEnt.StateEnum.ERROR);
         // WRITING -> ERROR
-        assertThat(m_appUpdates.get()).isEqualTo(2);
+        assertThat(m_stateChangesCount.get()).isEqualTo(2);
     }
 
     /**
@@ -179,7 +178,7 @@ public class WorkflowSyncerTest {
     public void testAutoSyncAppliesDeferredDirtyUpdateAfterUpload() throws Exception {
         // Simulate workflow change happening during upload -> deferred DIRTY should win
         doAnswer(inv -> {
-            m_syncStateStore.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.DIRTY);
+            m_syncStateStore.changeStateDeferrable(SyncStateEnt.StateEnum.DIRTY);
             return null;
         }).when(m_hubUploader).uploadProjectWithThreshold(eq(m_wfm), any(DataSize.class));
 
@@ -188,9 +187,9 @@ public class WorkflowSyncerTest {
         verify(m_localSaver).saveProject(m_wfm);
         verify(m_hubUploader).uploadProjectWithThreshold(eq(m_wfm), any(DataSize.class));
 
-        assertThat(m_syncer.getProjectSyncState().getState()).isEqualTo(ProjectSyncStateEnt.StateEnum.DIRTY);
+        assertThat(m_syncer.getSyncState().getState()).isEqualTo(SyncStateEnt.StateEnum.DIRTY);
         // WRITING -> UPLOAD -> SYNCED -> DIRTY (deferred)
-        assertThat(m_appUpdates.get()).isEqualTo(4);
+        assertThat(m_stateChangesCount.get()).isEqualTo(4);
     }
 
     /**
@@ -206,8 +205,8 @@ public class WorkflowSyncerTest {
         m_syncer.syncProjectAutomatically(SOME_SIZE);
 
         verify(m_wfm).removeListener(m_workflowListener);
-        var state = m_syncer.getProjectSyncState();
-        assertThat(state.getState()).isEqualTo(ProjectSyncStateEnt.StateEnum.DIRTY);
+        var state = m_syncer.getSyncState();
+        assertThat(state.getState()).isEqualTo(SyncStateEnt.StateEnum.DIRTY);
         assertThat(state.getError().getCode()).isEqualTo(SyncThresholdException.class.getName());
     }
 

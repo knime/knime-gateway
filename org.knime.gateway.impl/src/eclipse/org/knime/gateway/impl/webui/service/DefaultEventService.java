@@ -63,7 +63,6 @@ import org.knime.gateway.api.webui.entity.WorkflowChangedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.WorkflowMonitorStateChangeEventTypeEnt;
 import org.knime.gateway.api.webui.service.EventService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.InvalidRequestException;
-import org.knime.gateway.impl.project.Project;
 import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.AppStateUpdater;
 import org.knime.gateway.impl.webui.NodeFactoryProvider;
@@ -153,18 +152,13 @@ public final class DefaultEventService implements EventService {
                     var key = projectId.map(SpaceProvidersManager.Key::of) //
                         .orElse(SpaceProvidersManager.Key.defaultKey());
                     var spaceProviders = m_spaceProvidersManager.getSpaceProviders(key);
-                    var workflowSyncer = projectId.flatMap(m_projectManager::getProject) //
-                            .flatMap(Project::getWorkflowManagerIfLoaded) //
-                            .flatMap(ServiceUtilities::getWorkflowSyncerFor) //
-                            .orElse(null);
                     var dependencies = new AppStateEntityFactory.ServiceDependencies( //
                         m_projectManager, //
                         m_preferencesProvider, //
-                        spaceProviders, //
+                        spaceProviders,
                         m_nodeFactoryProvider, //
                         m_nodeCollections, //
-                        m_kaiHandler, //
-                        workflowSyncer //
+                        m_kaiHandler //
                     );
                     return new AppStateChangedEventSource(m_eventConsumer, m_appStateUpdater, dependencies);
                 });
