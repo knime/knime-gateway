@@ -51,6 +51,7 @@ import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -70,6 +71,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
  * @param allowedActions
  * @param metadata
  * @param dirty
+ * @param syncState
  * @param componentPlaceholders
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -87,6 +89,7 @@ public record DefaultWorkflowEnt(
     AllowedWorkflowActionsEnt allowedActions,
     org.knime.gateway.api.webui.entity.EditableMetadataEnt metadata,
     Boolean dirty,
+    SyncStateEnt syncState,
     java.util.List<ComponentPlaceholderEnt> componentPlaceholders) implements WorkflowEnt {
 
     /**
@@ -177,6 +180,11 @@ public record DefaultWorkflowEnt(
     }
     
     @Override
+    public SyncStateEnt getSyncState() {
+        return syncState;
+    }
+    
+    @Override
     public java.util.List<ComponentPlaceholderEnt> getComponentPlaceholders() {
         return componentPlaceholders;
     }
@@ -207,6 +215,8 @@ public record DefaultWorkflowEnt(
         private org.knime.gateway.api.webui.entity.EditableMetadataEnt m_metadata = null;
 
         private Boolean m_dirty;
+
+        private SyncStateEnt m_syncState;
 
         private java.util.List<ComponentPlaceholderEnt> m_componentPlaceholders;
 
@@ -298,6 +308,12 @@ public record DefaultWorkflowEnt(
         }
 
         @Override
+        public DefaultWorkflowEntBuilder setSyncState(SyncStateEnt syncState) {
+             m_syncState = syncState;
+             return this;
+        }
+
+        @Override
         public DefaultWorkflowEntBuilder setComponentPlaceholders(java.util.List<ComponentPlaceholderEnt> componentPlaceholders) {
              m_componentPlaceholders = componentPlaceholders;
              return this;
@@ -317,6 +333,7 @@ public record DefaultWorkflowEnt(
                 immutable(m_allowedActions),
                 immutable(m_metadata),
                 immutable(m_dirty),
+                immutable(m_syncState),
                 immutable(m_componentPlaceholders));
         }
     

@@ -45,6 +45,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/service/util/WorkflowChangesListener.java" type="org.knime.gateway.impl.service.util.WorkflowChangesListener">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.service.util.WorkflowChangesListener"/>
+                <message_argument value="trigger()"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/entity/AppStateEntityFactory.java" type="org.knime.gateway.impl.webui.entity.AppStateEntityFactory$ServiceDependencies">
         <filter id="338722907">
             <message_arguments>
@@ -472,13 +480,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultProjectSyncStateEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultProjectSyncStateEnt">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultProjectSyncStateEnt"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultShareComponentCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultShareComponentCommandEnt">
         <filter id="338722907">
             <message_arguments>
@@ -567,6 +568,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSyncStateEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSyncStateEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSyncStateEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSyncStateErrorEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSyncStateErrorEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -646,6 +654,26 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setLinkVariant(LinkVariantEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultWorkflowEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt"/>
+                <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, EditableMetadataEnt, Boolean, List&lt;ComponentPlaceholderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, EditableMetadataEnt, Boolean, SyncStateEnt, List&lt;ComponentPlaceholderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultWorkflowEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt$DefaultWorkflowEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setSyncState(SyncStateEnt)"/>
             </message_arguments>
         </filter>
     </resource>

@@ -46,7 +46,6 @@ package org.knime.gateway.json.webui.entity;
 
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
-import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 
 
@@ -153,10 +152,6 @@ public interface AppStateEntMixIn extends AppStateEnt {
     @JsonProperty("spaceProviders")
     public java.util.List<SpaceProviderEnt> getSpaceProviders();
     
-    @Override
-    @JsonProperty("projectSyncState")
-    public ProjectSyncStateEnt getProjectSyncState();
-    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -249,10 +244,6 @@ public interface AppStateEntMixIn extends AppStateEnt {
         @Override
         @JsonProperty("spaceProviders")
         public AppStateEntMixInBuilder setSpaceProviders(final java.util.List<SpaceProviderEnt> spaceProviders);
-        
-        @Override
-        @JsonProperty("projectSyncState")
-        public AppStateEntMixInBuilder setProjectSyncState(final ProjectSyncStateEnt projectSyncState);
         
     }
 

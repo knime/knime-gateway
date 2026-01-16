@@ -56,12 +56,12 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * The synchronization state of a project.
+ * The synchronization state of a workflow project.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ProjectSyncStateEnt extends GatewayEntity {
+public interface SyncStateEnt extends GatewayEntity {
 
   /**
    * Gets or Sets state
@@ -113,7 +113,7 @@ public interface ProjectSyncStateEnt extends GatewayEntity {
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ProjectSyncStateEnt)other;
+      var e = (SyncStateEnt)other;
       valueConsumer.accept("state", Pair.create(getState(), e.getState()));
       valueConsumer.accept("isAutoSyncEnabled", Pair.create(isAutoSyncEnabled(), e.isAutoSyncEnabled()));
       valueConsumer.accept("error", Pair.create(getError(), e.getError()));
@@ -122,7 +122,7 @@ public interface ProjectSyncStateEnt extends GatewayEntity {
     /**
      * The builder for the entity.
      */
-    public interface ProjectSyncStateEntBuilder extends GatewayEntityBuilder<ProjectSyncStateEnt> {
+    public interface SyncStateEntBuilder extends GatewayEntityBuilder<SyncStateEnt> {
 
         /**
    		 * Set state
@@ -130,7 +130,7 @@ public interface ProjectSyncStateEnt extends GatewayEntity {
          * @param state the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectSyncStateEntBuilder setState(StateEnum state);
+        SyncStateEntBuilder setState(StateEnum state);
         
         /**
          * Whether automatic synchronization is currently enabled.
@@ -138,7 +138,7 @@ public interface ProjectSyncStateEnt extends GatewayEntity {
          * @param isAutoSyncEnabled the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectSyncStateEntBuilder setIsAutoSyncEnabled(Boolean isAutoSyncEnabled);
+        SyncStateEntBuilder setIsAutoSyncEnabled(Boolean isAutoSyncEnabled);
         
         /**
    		 * Set error
@@ -146,7 +146,7 @@ public interface ProjectSyncStateEnt extends GatewayEntity {
          * @param error the property value,  
          * @return this entity builder for chaining
          */
-        ProjectSyncStateEntBuilder setError(SyncStateErrorEnt error);
+        SyncStateEntBuilder setError(SyncStateErrorEnt error);
         
         
         /**
@@ -156,7 +156,7 @@ public interface ProjectSyncStateEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ProjectSyncStateEnt build();
+        SyncStateEnt build();
     
     }
 

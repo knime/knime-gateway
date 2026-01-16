@@ -51,14 +51,16 @@ package org.knime.gateway.impl.webui.syncing;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
-import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt.ProjectSyncStateEntBuilder;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
+import org.knime.gateway.api.webui.entity.SyncStateEnt.SyncStateEntBuilder;
 import org.knime.gateway.api.webui.entity.SyncStateErrorEnt;
 import org.knime.gateway.api.webui.entity.SyncStateErrorEnt.SyncStateErrorEntBuilder;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer;
 
 /**
  * Stores the current sync state of a project and notifies a callback on updates.
@@ -69,10 +71,9 @@ final class SyncStateStore {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(SyncStateStore.class);
 
-    private final Runnable m_onStateChange;
+    private final Set<Runnable> m_onStateChangeListeners = Collections.synchronizedSet(new HashSet<>());
 
-
-    private ProjectSyncStateEnt.StateEnum m_state = ProjectSyncStateEnt.StateEnum.SYNCED;
+    private SyncStateEnt.StateEnum m_state = SyncStateEnt.StateEnum.SYNCED;
 
     private boolean m_autoSyncEnabled = true;
 
@@ -83,14 +84,7 @@ final class SyncStateStore {
     private Runnable m_onUnlock = () -> {
     };
 
-    /**
-     * Constructor needed for the {@link DefaultWorkflowSyncer}
-     */
-    SyncStateStore(final Runnable onStateChange) {
-        m_onStateChange = onStateChange;
-    }
-
-    synchronized ProjectSyncStateEnt.StateEnum state() {
+    synchronized SyncStateEnt.StateEnum state() {
         return m_state;
     }
 
@@ -111,10 +105,10 @@ final class SyncStateStore {
         };
     }
 
-    synchronized ProjectSyncStateEnt buildSyncStateEnt() {
+    synchronized SyncStateEnt buildSyncStateEnt() {
         final var errorEnt =
-            m_error == null ? null : buildSyncStateErrorEnt(m_error, m_state == ProjectSyncStateEnt.StateEnum.ERROR);
-        return builder(ProjectSyncStateEntBuilder.class) //
+            m_error == null ? null : buildSyncStateErrorEnt(m_error, m_state == SyncStateEnt.StateEnum.ERROR);
+        return builder(SyncStateEntBuilder.class) //
             .setState(m_state) //
             .setIsAutoSyncEnabled(m_autoSyncEnabled) //
             .setError(errorEnt) //
@@ -136,7 +130,7 @@ final class SyncStateStore {
      * {@link WorkflowSyncer#notifyWorkflowChanged()} is called during an ongoing workflow upload.
      *
      */
-    synchronized void changeStateDeferrable(final ProjectSyncStateEnt.StateEnum newState) {
+    synchronized void changeStateDeferrable(final SyncStateEnt.StateEnum newState) {
         if (m_locked) {
             // We defer the update until allowStateChanges
             m_onUnlock = () -> changeState(newState);
@@ -145,25 +139,33 @@ final class SyncStateStore {
         changeState(newState);
     }
 
-    synchronized void changeState(final ProjectSyncStateEnt.StateEnum state) {
+    synchronized void changeState(final SyncStateEnt.StateEnum state) {
         changeState(state, null);
     }
 
-    synchronized void changeState(final ProjectSyncStateEnt.StateEnum state, final Error error) {
+    synchronized void changeState(final SyncStateEnt.StateEnum state, final Error error) {
         changeState(state, error, m_autoSyncEnabled);
     }
 
-    synchronized void changeState(final ProjectSyncStateEnt.StateEnum state, final Error error,
+    synchronized void changeState(final SyncStateEnt.StateEnum state, final Error error,
         final boolean autoSyncEnabled) {
         m_state = state;
         m_autoSyncEnabled = autoSyncEnabled;
         m_error = error;
-        m_onStateChange.run();
+        m_onStateChangeListeners.forEach(Runnable::run);
     }
 
     synchronized void reset() {
         m_autoSyncEnabled = true;
         m_error = null;
+    }
+
+    void addOnStateChangeListener(final Runnable listener) {
+        m_onStateChangeListeners.add(listener);
+    }
+
+    void removeOnStateChangeListener(final Runnable listener) {
+        m_onStateChangeListeners.remove(listener);
     }
 
     record Error(String code, String title, String stackTrace) {

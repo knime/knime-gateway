@@ -166,7 +166,6 @@ import org.knime.gateway.api.webui.entity.ProjectDisposedEventEnt;
 import org.knime.gateway.api.webui.entity.ProjectDisposedEventTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
-import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
 import org.knime.gateway.api.webui.entity.RemovePortCommandEnt;
 import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
@@ -184,6 +183,7 @@ import org.knime.gateway.api.webui.entity.SpaceItemVersionEnt;
 import org.knime.gateway.api.webui.entity.SpacePathSegmentEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
 import org.knime.gateway.api.webui.entity.SyncStateErrorEnt;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 import org.knime.gateway.api.webui.entity.TransformMetanodePortsBarCommandEnt;
@@ -363,7 +363,6 @@ public class ListEntities {
         res.add(ProjectDisposedEventTypeEnt.class);
         res.add(ProjectEnt.class);
         res.add(ProjectMetadataEnt.class);
-        res.add(ProjectSyncStateEnt.class);
         res.add(RemovePortCommandEnt.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.class);
         res.add(ReplaceNodeCommandEnt.class);
@@ -381,6 +380,7 @@ public class ListEntities {
         res.add(SpacePathSegmentEnt.class);
         res.add(SpaceProviderEnt.class);
         res.add(StyleRangeEnt.class);
+        res.add(SyncStateEnt.class);
         res.add(SyncStateErrorEnt.class);
         res.add(TemplateLinkEnt.class);
         res.add(TransformMetanodePortsBarCommandEnt.class);
@@ -545,7 +545,6 @@ public class ListEntities {
         res.add(ProjectDisposedEventTypeEnt.ProjectDisposedEventTypeEntBuilder.class);
         res.add(ProjectEnt.ProjectEntBuilder.class);
         res.add(ProjectMetadataEnt.ProjectMetadataEntBuilder.class);
-        res.add(ProjectSyncStateEnt.ProjectSyncStateEntBuilder.class);
         res.add(RemovePortCommandEnt.RemovePortCommandEntBuilder.class);
         res.add(ReorderWorkflowAnnotationsCommandEnt.ReorderWorkflowAnnotationsCommandEntBuilder.class);
         res.add(ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder.class);
@@ -563,6 +562,7 @@ public class ListEntities {
         res.add(SpacePathSegmentEnt.SpacePathSegmentEntBuilder.class);
         res.add(SpaceProviderEnt.SpaceProviderEntBuilder.class);
         res.add(StyleRangeEnt.StyleRangeEntBuilder.class);
+        res.add(SyncStateEnt.SyncStateEntBuilder.class);
         res.add(SyncStateErrorEnt.SyncStateErrorEntBuilder.class);
         res.add(TemplateLinkEnt.TemplateLinkEntBuilder.class);
         res.add(TransformMetanodePortsBarCommandEnt.TransformMetanodePortsBarCommandEntBuilder.class);

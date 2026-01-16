@@ -515,6 +515,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SyncStateEnt.java" type="org.knime.gateway.api.webui.entity.SyncStateEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SyncStateEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/SyncStateErrorEnt.java" type="org.knime.gateway.api.webui.entity.SyncStateErrorEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -624,6 +631,32 @@
         <filter id="1177550852">
             <message_arguments>
                 <message_argument value="SHARE_COMPONENT"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/WorkflowEnt.java" type="org.knime.gateway.api.webui.entity.WorkflowEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.WorkflowEnt"/>
+                <message_argument value="getSyncState()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getSyncState()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/WorkflowEnt.java" type="org.knime.gateway.api.webui.entity.WorkflowEnt$WorkflowEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder"/>
+                <message_argument value="setSyncState(SyncStateEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setSyncState(SyncStateEnt)"/>
             </message_arguments>
         </filter>
     </resource>

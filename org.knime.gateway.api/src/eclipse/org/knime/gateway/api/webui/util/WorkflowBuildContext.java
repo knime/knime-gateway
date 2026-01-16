@@ -70,6 +70,7 @@ import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowEnt;
 
 /**
@@ -109,6 +110,8 @@ public final class WorkflowBuildContext {
 
     private final Collection<ComponentPlaceholderEnt> m_componentPlaceholders;
 
+    private final Supplier<SyncStateEnt> m_syncStateSupplier;
+
     private WorkflowBuildContext(final WorkflowManager wfm, final WorkflowBuildContextBuilder builder,
         final boolean isInStreamingMode, final DependentNodeProperties depNodeProps,
         final Collection<ComponentPlaceholderEnt> componentPlaceholders) {
@@ -122,6 +125,7 @@ public final class WorkflowBuildContext {
         m_canRedo = builder.m_canRedo;
         m_spaceProviderTypes = builder.m_spaceProviderTypes;
         m_version = builder.m_version;
+        m_syncStateSupplier = builder.m_syncStateSupplier;
     }
 
     NodeIDEnt buildNodeIDEnt(final NodeID nodeID) {
@@ -225,6 +229,10 @@ public final class WorkflowBuildContext {
             .orElse(null);
     }
 
+    SyncStateEnt getSyncStateEnt() {
+        return m_syncStateSupplier == null ? null : m_syncStateSupplier.get();
+    }
+
     /**
      * Creates a new builder instance.
      *
@@ -252,6 +260,8 @@ public final class WorkflowBuildContext {
         private VersionId m_version;
 
         private Collection<ComponentPlaceholderEnt> m_componentPlaceholders;
+
+        private Supplier<SyncStateEnt> m_syncStateSupplier;
 
         private WorkflowBuildContextBuilder() {
             //
@@ -320,6 +330,8 @@ public final class WorkflowBuildContext {
 
         /**
          * The version of the project this workflow belongs to.
+         * @param version
+         * @return this builder instance
          */
         public WorkflowBuildContextBuilder setVersion(final VersionId version) {
             m_version = CheckUtils.checkArgumentNotNull(version);
@@ -335,6 +347,17 @@ public final class WorkflowBuildContext {
         public WorkflowBuildContextBuilder
             setComponentPlaceholders(final Collection<ComponentPlaceholderEnt> componentPlaceholders) {
             m_componentPlaceholders = componentPlaceholders;
+            return this;
+        }
+
+        /**
+         * @param syncStateSupplier supplies the SyncStateEnt for the workflow
+         * @return this builder instance
+         *
+         * @since 5.10
+         */
+        public WorkflowBuildContextBuilder setSyncStateSupplier(final Supplier<SyncStateEnt> syncStateSupplier) {
+            m_syncStateSupplier = syncStateSupplier;
             return this;
         }
 

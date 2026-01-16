@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
 
 /**
  * Unit tests for {@link SyncStateStore} focusing on deferring state changes.
@@ -63,17 +63,19 @@ public class SyncStateStoreTest {
     @Test
     public void testDefersStateChangeWhileLockedAndAppliesOnUnlock() {
         var stateChangeCalls = new AtomicInteger();
-        var store = new SyncStateStore(stateChangeCalls::incrementAndGet);
+        Runnable onStateChange = stateChangeCalls::incrementAndGet;
+        var store = new SyncStateStore();
+        store.addOnStateChangeListener(onStateChange);
 
         store.deferStateChanges();
-        store.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.ERROR);
+        store.changeStateDeferrable(SyncStateEnt.StateEnum.ERROR);
 
-        assertThat(store.state()).isEqualTo(ProjectSyncStateEnt.StateEnum.SYNCED);
+        assertThat(store.state()).isEqualTo(SyncStateEnt.StateEnum.SYNCED);
         assertThat(stateChangeCalls.get()).isZero();
 
         store.allowStateChanges();
 
-        assertThat(store.state()).isEqualTo(ProjectSyncStateEnt.StateEnum.ERROR);
+        assertThat(store.state()).isEqualTo(SyncStateEnt.StateEnum.ERROR);
         assertThat(stateChangeCalls.get()).isEqualTo(1);
     }
 
@@ -83,16 +85,18 @@ public class SyncStateStoreTest {
     @Test
     public void testLastDeferredStateWinsWhenMultipleQueued() {
         var stateChangeCalls = new AtomicInteger();
-        var store = new SyncStateStore(stateChangeCalls::incrementAndGet);
+        Runnable onStateChange = stateChangeCalls::incrementAndGet;
+        var store = new SyncStateStore();
+        store.addOnStateChangeListener(onStateChange);
 
         store.deferStateChanges();
-        store.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.DIRTY);
-        store.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.ERROR);
+        store.changeStateDeferrable(SyncStateEnt.StateEnum.DIRTY);
+        store.changeStateDeferrable(SyncStateEnt.StateEnum.ERROR);
 
         store.allowStateChanges();
         store.allowStateChanges(); // a second unlock should have no effect
 
-        assertThat(store.state()).isEqualTo(ProjectSyncStateEnt.StateEnum.ERROR);
+        assertThat(store.state()).isEqualTo(SyncStateEnt.StateEnum.ERROR);
         assertThat(stateChangeCalls.get()).isEqualTo(1);
     }
 }

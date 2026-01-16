@@ -63,6 +63,8 @@ public final class NodeIDEnt {
 
     private static final String ROOT_MARKER = "root";
 
+    private static final NodeIDEnt ROOT_ID_ENT = new NodeIDEnt();
+
     /**
      * Helper to determine whether a workflow has a 'superfluous' parent. E.g. if the workflow is part of a component
      * project or the project workflow is not directly registered under WorkflowManager.ROOT but one level underneath.
@@ -144,7 +146,7 @@ public final class NodeIDEnt {
      * @return the node id entity
      */
     public static NodeIDEnt getRootID() {
-        return new NodeIDEnt();
+        return ROOT_ID_ENT;
     }
 
     /**
@@ -206,7 +208,7 @@ public final class NodeIDEnt {
     }
 
     /**
-     * @param id the id to check agains
+     * @param id the id to check against
      * @return {@code true} if this node id is equal or a parent node id of the passed id; otherwise {@code false}
      */
     public boolean isEqualOrParentOf(final NodeIDEnt id) {

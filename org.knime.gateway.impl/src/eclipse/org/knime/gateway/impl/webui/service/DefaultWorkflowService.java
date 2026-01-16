@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.entity.NodeIDEnt.getRootID;
 import static org.knime.gateway.impl.webui.service.ServiceUtilities.getSpaceProvidersKey;
 
 import java.util.List;
@@ -136,12 +137,14 @@ public final class DefaultWorkflowService implements WorkflowService {
             Map<String, SpaceProviderEnt.TypeEnum> providerTypes = m_spaceProvidersManager == null //
                 ? Map.of() //
                 : m_spaceProvidersManager.getSpaceProviders(Key.of(wfKey.getProjectId())).getProviderTypes();
+            var workflowSyncer = m_workflowMiddleware.getWorkflowSyncer(wfKey);
             buildContext.includeInteractionInfo(true)//
                 .canUndo(m_workflowMiddleware.getCommands().canUndo(wfKey))//
                 .canRedo(m_workflowMiddleware.getCommands().canRedo(wfKey))//
                 .setSpaceProviderTypes(providerTypes) //
                 .setComponentPlaceholders(
-                    m_workflowMiddleware.getComponentLoadJobManager(wfKey).getComponentPlaceholdersAndCleanUp());
+                    m_workflowMiddleware.getComponentLoadJobManager(wfKey).getComponentPlaceholdersAndCleanUp()) //
+                .setSyncStateSupplier(workflowSyncer::getSyncState);
         } else {
             buildContext.includeInteractionInfo(false);
         }
@@ -195,12 +198,7 @@ public final class DefaultWorkflowService implements WorkflowService {
             return;
         }
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        final var project = m_projectManager.getProject(projectId).orElseThrow(); // No specific version needed here
-        var syncer = ServiceUtilities.getWorkflowSyncerFor(project.getWorkflowManagerIfLoaded().orElseThrow());
-        // Only set in browser context.
-        if (syncer.isPresent()) {
-            syncer.get().syncProjectNow();
-        }
+        m_workflowMiddleware.getWorkflowSyncer(new WorkflowKey(projectId, getRootID())).syncProjectNow();
     }
 
     @Override

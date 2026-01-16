@@ -392,7 +392,9 @@ public final class WorkflowEntityFactory {
                 .setMetaOutPorts(buildMetaPortsEntForWorkflow(wfm, false, buildContext))//
                 .setMetadata(metadata)//
                 .setComponentPlaceholders(componentPlaceholders.isEmpty() ? null : componentPlaceholders)//
-                .setDirty(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)).build();
+                .setDirty(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)) //
+                .setSyncState(buildContext.getSyncStateEnt()) //
+                .build();
         }
     }
 

@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.webui.syncing;
 
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Optional;
@@ -60,12 +61,12 @@ import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowResourceCache.WorkflowResource;
 import org.knime.gateway.api.util.DataSize;
-import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.util.Debouncer;
-import org.knime.gateway.impl.webui.AppStateUpdater;
+import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.syncing.HubUploader.SyncThresholdException;
 import org.knime.gateway.impl.webui.syncing.LocalSaver.SyncWhileWorkflowExecutingException;
@@ -78,16 +79,20 @@ import org.knime.gateway.impl.webui.syncing.LocalSaver.SyncWhileWorkflowExecutin
  */
 public interface WorkflowSyncer extends WorkflowResource {
 
-    /** Defines the auto-save interval for syncing workflows in seconds */
-    String SYNC_AUTO_SAVE_INTERVAL_PROP = "com.knime.gateway.executor.sync.autoSaveInterval";
-
-    /** Defines the auto-save threshold for syncing workflows in Kibibytes. If negative, disables auto-save. */
-    String SYNC_AUTO_SAVE_THRESHOLD_PROP = "com.knime.gateway.executor.sync.autoSaveThreshold";
+    /**
+     * @param config
+     * @return {@code true} if the syncer can (and should) be enabled, false otherwise
+     */
+    static boolean canBeEnabled(final SyncerConfig config) {
+        return WebUIMode.getMode() == WebUIMode.DEFAULT && //
+            GraphicsEnvironment.isHeadless() && //
+            config.sizeThreshold().bytes() >= 0;
+    }
 
     /**
      * @return the current project sync state
      */
-    ProjectSyncStateEnt getProjectSyncState();
+    SyncStateEnt getSyncState();
 
     /**
      * To manually synchronize the project
@@ -97,6 +102,16 @@ public interface WorkflowSyncer extends WorkflowResource {
      * @throws NetworkException -
      */
     void syncProjectNow() throws ServiceCallException, LoggedOutException, NetworkException;
+
+    /**
+     * @param listener listener to be called when the sync state changes
+     */
+    void addOnStateChangeListener(Runnable listener);
+
+    /**
+     * @param listener the listener to be removed
+     */
+    void removeOnStateChangeListener(Runnable listener);
 
     /**
      * To unregister listeners on the workflow when it is disposed.
@@ -129,24 +144,17 @@ public interface WorkflowSyncer extends WorkflowResource {
         private final AtomicBoolean m_disposed = new AtomicBoolean(false);
 
         /**
-         * Bundles collaborators needed by the default syncer.
-         */
-        public record Dependencies(AppStateUpdater appStateUpdater, SpaceProvider provider) {
-
-        }
-
-        /**
          * Creates a workflow syncer wired with default services.
          */
         public DefaultWorkflowSyncer(final WorkflowManager targetWfm, final SyncerConfig config,
-            final Dependencies dependencies) {
+            final SpaceProvider spaceProvider) {
             this( //
                 targetWfm, //
                 config, //
-                new SyncStateStore(() -> dependencies.appStateUpdater().updateAppState()), //
+                new SyncStateStore(), //
                 SyncingListener::new, //
                 new LocalSaver(), //
-                new HubUploader(dependencies.provider()), //
+                new HubUploader(spaceProvider), //
                 task -> new Debouncer(config.debounceInterval(), task) //
             );
         }
@@ -170,7 +178,7 @@ public interface WorkflowSyncer extends WorkflowResource {
         }
 
         @Override
-        public ProjectSyncStateEnt getProjectSyncState() {
+        public SyncStateEnt getSyncState() {
             return m_syncStateStore.buildSyncStateEnt();
         }
 
@@ -178,7 +186,7 @@ public interface WorkflowSyncer extends WorkflowResource {
             if (m_disposed.get()) {
                 return;
             }
-            m_syncStateStore.changeStateDeferrable(ProjectSyncStateEnt.StateEnum.DIRTY);
+            m_syncStateStore.changeStateDeferrable(SyncStateEnt.StateEnum.DIRTY);
             m_debouncedProjectSync.call();
         }
 
@@ -190,29 +198,29 @@ public interface WorkflowSyncer extends WorkflowResource {
                 return;
             }
 
-            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.WRITING);
+            m_syncStateStore.changeState(SyncStateEnt.StateEnum.WRITING);
             try {
                 m_localSaver.saveProject(m_wfm);
             } catch (IOException e) {
-                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR, new SyncStateStore.Error(e));
+                m_syncStateStore.changeState(SyncStateEnt.StateEnum.ERROR, new SyncStateStore.Error(e));
                 return;
             } catch (SyncWhileWorkflowExecutingException e) {
-                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.DIRTY, new SyncStateStore.Error(e));
+                m_syncStateStore.changeState(SyncStateEnt.StateEnum.DIRTY, new SyncStateStore.Error(e));
                 return;
             }
 
-            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
+            m_syncStateStore.changeState(SyncStateEnt.StateEnum.UPLOAD);
             m_syncStateStore.deferStateChanges(); // defer latest deferrable update
             try {
                 m_hubUploader.uploadProjectWithThreshold(m_wfm, syncThreshold);
-                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
+                m_syncStateStore.changeState(SyncStateEnt.StateEnum.SYNCED);
             } catch (IOException e) {
                 m_syncStateStore.changeState( //
-                    ProjectSyncStateEnt.StateEnum.ERROR, //
+                    SyncStateEnt.StateEnum.ERROR, //
                     new SyncStateStore.Error(e));
             } catch (SyncThresholdException e) {
                 m_syncStateStore.changeState( //
-                    ProjectSyncStateEnt.StateEnum.DIRTY, //
+                    SyncStateEnt.StateEnum.DIRTY, //
                     new SyncStateStore.Error(e), //
                     false);
                 dispose(); // fully disable once we enter this state
@@ -225,7 +233,7 @@ public interface WorkflowSyncer extends WorkflowResource {
         public void syncProjectNow() throws ServiceCallException, LoggedOutException, NetworkException {
             assertIsNotSyncing(m_syncStateStore.state());
 
-            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.WRITING);
+            m_syncStateStore.changeState(SyncStateEnt.StateEnum.WRITING);
             try {
                 m_localSaver.saveProject(m_wfm);
             } catch (IOException e) {
@@ -236,22 +244,22 @@ public interface WorkflowSyncer extends WorkflowResource {
                 return;
             }
 
-            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.UPLOAD);
+            m_syncStateStore.changeState(SyncStateEnt.StateEnum.UPLOAD);
             m_syncStateStore.deferStateChanges(); // defer latest deferrable update
             try {
                 m_hubUploader.uploadProject(m_wfm);
-                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.SYNCED);
+                m_syncStateStore.changeState(SyncStateEnt.StateEnum.SYNCED);
             } catch (LoggedOutException | NetworkException | ServiceCallException e) {
                 LOGGER.error("Error during manual project sync: %s".formatted(e.getMessage()), e);
-                m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR);
+                m_syncStateStore.changeState(SyncStateEnt.StateEnum.ERROR);
                 throw e;
             } finally {
                 m_syncStateStore.allowStateChanges(); // apply deferred state change
             }
         }
 
-        private static void assertIsNotSyncing(final ProjectSyncStateEnt.StateEnum state) throws ServiceCallException {
-            if (state == ProjectSyncStateEnt.StateEnum.WRITING || state == ProjectSyncStateEnt.StateEnum.UPLOAD) {
+        private static void assertIsNotSyncing(final SyncStateEnt.StateEnum state) throws ServiceCallException {
+            if (state == SyncStateEnt.StateEnum.WRITING || state == SyncStateEnt.StateEnum.UPLOAD) {
                 throw ServiceCallException.builder() //
                     .withTitle("Workflow is currently syncing") //
                     .withDetails("Please wait until the current sync operation is finished.") //
@@ -262,7 +270,7 @@ public interface WorkflowSyncer extends WorkflowResource {
 
         private void handleSyncIOException(final IOException e) throws ServiceCallException {
             LOGGER.error("Error during manual project sync: %s".formatted(e.getMessage()), e);
-            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR);
+            m_syncStateStore.changeState(SyncStateEnt.StateEnum.ERROR);
             throw ServiceCallException.builder() //
                 .withTitle("Failed to save workflow") //
                 .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
@@ -274,7 +282,7 @@ public interface WorkflowSyncer extends WorkflowResource {
         private void handleSyncWhileExecutingException(final SyncWhileWorkflowExecutingException e)
             throws ServiceCallException {
             LOGGER.error("Project sync skipped because workflow is executing: %s".formatted(e.getMessage()), e);
-            m_syncStateStore.changeState(ProjectSyncStateEnt.StateEnum.ERROR);
+            m_syncStateStore.changeState(SyncStateEnt.StateEnum.ERROR);
             throw ServiceCallException.builder() //
                 .withTitle("Workflow is currently executing") //
                 .withDetails("Cannot save workflow while it is executing.") //
@@ -291,6 +299,16 @@ public interface WorkflowSyncer extends WorkflowResource {
             LOGGER.info("'dispose' called for workflow <%s>".formatted(m_wfm.getName()));
             m_wfm.removeListener(m_workflowListener);
             m_debouncedProjectSync.shutdown();
+        }
+
+        @Override
+        public void addOnStateChangeListener(final Runnable listener) {
+            m_syncStateStore.addOnStateChangeListener(listener);
+        }
+
+        @Override
+        public void removeOnStateChangeListener(final Runnable listener) {
+            m_syncStateStore.removeOnStateChangeListener(listener);
         }
 
         private static final class SyncingListener implements WorkflowListener {
@@ -321,6 +339,13 @@ public interface WorkflowSyncer extends WorkflowResource {
      * @param sizeThreshold data size threshold for auto-save
      */
     record SyncerConfig(Duration debounceInterval, DataSize sizeThreshold) {
+
+        /** Defines the auto-save interval for syncing workflows in seconds */
+        private static final String SYNC_AUTO_SAVE_INTERVAL_PROP = "com.knime.gateway.executor.sync.autoSaveInterval";
+
+        /** Defines the auto-save threshold for syncing workflows in Kibibytes. If negative, disables auto-save. */
+        private static final String SYNC_AUTO_SAVE_THRESHOLD_PROP = "com.knime.gateway.executor.sync.autoSaveThreshold";
+
         private static final Duration SYNC_AUTO_SAVE_INTERVAL_DEFAULT = Duration.ofSeconds(15);
 
         private static final DataSize SYNC_AUTO_SAVE_THRESHOLD_DEFAULT = DataSize.ofKibiBytes(10 * 1024l);
@@ -328,22 +353,18 @@ public interface WorkflowSyncer extends WorkflowResource {
         /**
          * Parse debounce interval (seconds) and size threshold (KiB) into a config with defaults.
          *
-         * @param debounceIntervalString seconds between automatic sync attempts
-         * @param sizeThresholdString size threshold in KiB for auto-save
-         * @return parsed {@link SyncerConfig} with non-negative values and sensible defaults
+         * @return parsed {@link SyncerConfig} with non-negative values and sensible defaults or empty invalid
          */
-        public static Optional<SyncerConfig> of(final String debounceIntervalString, final String sizeThresholdString) {
-            var givenSizeThreshold = parseInteger(sizeThresholdString);
-            if (givenSizeThreshold.isPresent() && givenSizeThreshold.get() < 0) {
-                return Optional.empty();
-            }
+        public static SyncerConfig fromSystemProperties() {
+            var debounceIntervalString = System.getProperty(SYNC_AUTO_SAVE_INTERVAL_PROP);
+            var sizeThresholdString = System.getProperty(SYNC_AUTO_SAVE_THRESHOLD_PROP);
             final var debounceInterval = parseInteger(debounceIntervalString) //
                 .map(Duration::ofSeconds) //
                 .orElse(SYNC_AUTO_SAVE_INTERVAL_DEFAULT);
-            final var sizeThreshold = givenSizeThreshold //
+            final var sizeThreshold = parseInteger(sizeThresholdString)//
                 .map(DataSize::ofKibiBytes) //
                 .orElse(SYNC_AUTO_SAVE_THRESHOLD_DEFAULT);
-            return Optional.of(new SyncerConfig(debounceInterval, sizeThreshold));
+            return new SyncerConfig(debounceInterval, sizeThreshold);
         }
 
         private static Optional<Integer> parseInteger(final String value) {
@@ -357,5 +378,38 @@ public interface WorkflowSyncer extends WorkflowResource {
             }
         }
     }
+
+    /**
+     * A no-operation {@link WorkflowSyncer} implementation.
+     */
+    WorkflowSyncer DISABLED_SYNCER = new WorkflowSyncer() {
+
+        @Override
+        public SyncStateEnt getSyncState() {
+            return null;
+        }
+
+        @Override
+        public void syncProjectNow() {
+            // since this syncer-instance effectively disables the syncing functionality altogether (by returning null at 'getSyncState')
+            // we would never expect this method to be called
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void addOnStateChangeListener(final Runnable listener) {
+            // no-op
+        }
+
+        @Override
+        public void removeOnStateChangeListener(final Runnable listener) {
+            // no-op
+        }
+
+        @Override
+        public void dispose() {
+            // no-op
+        }
+    };
 
 }

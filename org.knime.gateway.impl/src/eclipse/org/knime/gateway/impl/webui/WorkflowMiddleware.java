@@ -60,11 +60,14 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowResourceCache;
+import org.knime.core.node.workflow.WorkflowResourceCache.WorkflowResource;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
@@ -96,6 +99,8 @@ import org.knime.gateway.impl.webui.service.commands.WorkflowCommands;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager.Key;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer;
+import org.knime.gateway.impl.webui.syncing.WorkflowSyncer.SyncerConfig;
 
 /**
  * Provides utility methods to operate on a workflow represented by a {@link WorkflowKey} where the methods require to
@@ -300,10 +305,12 @@ public final class WorkflowMiddleware {
             .includeInteractionInfo(includeInteractionInfo);
         final var ws = getWorkflowState(wfKey);
         if (includeInteractionInfo) {
+            var workflowSyncer = getWorkflowSyncer(wfKey);
             buildContextBuilder.canUndo(m_commands.canUndo(wfKey))//
                 .canRedo(m_commands.canRedo(wfKey))//
                 .setDependentNodeProperties(() -> getDependentNodeProperties(wfKey))//
-                .setComponentPlaceholders(getComponentLoadJobManager(wfKey).getComponentPlaceholdersAndCleanUp());
+                .setComponentPlaceholders(getComponentLoadJobManager(wfKey).getComponentPlaceholdersAndCleanUp()) //
+                .setSyncStateSupplier(workflowSyncer::getSyncState);
         }
         if (m_spaceProvidersManager != null) {
             buildContextBuilder.setSpaceProviderTypes(
@@ -392,6 +399,17 @@ public final class WorkflowMiddleware {
      */
     public ComponentLoadJobManager getComponentLoadJobManager(final WorkflowKey wfKey) {
         return getWorkflowState(wfKey).componentLoadJobManager();
+    }
+
+    /**
+     * -
+     *
+     * @param wfKey
+     * @return the workflow syncer for the given workflow
+     * @since 5.10
+     */
+    public WorkflowSyncer getWorkflowSyncer(final WorkflowKey wfKey) {
+        return getWorkflowState(wfKey).workflowSyncer();
     }
 
     /**
@@ -496,6 +514,33 @@ public final class WorkflowMiddleware {
             return m_componentLoadJobManager;
         }
 
+        WorkflowSyncer workflowSyncer() {
+            var syncer = getWorkflowResource(WorkflowSyncer.class, m_wfm).orElse(null);
+            if (syncer != null) {
+                syncer.addOnStateChangeListener(changesListener());
+                return syncer;
+            }
+            var workflowSyncer = createWorkflowSyncer(m_wfm, m_spaceProviders, changesListener());
+            // Note: the workflow-syncer resource is attached to the project workflow,
+            // not necessarily to the instance that is passed here (if it's a sub-workflow)
+            attachWorkflowResource(m_wfm, WorkflowSyncer.class, workflowSyncer);
+            return workflowSyncer;
+        }
+
+        private static WorkflowSyncer createWorkflowSyncer(final WorkflowManager wfm,
+            final SpaceProviders spaceProviders, final WorkflowChangesListener changesListener) {
+            var config = SyncerConfig.fromSystemProperties();
+            if (!WorkflowSyncer.canBeEnabled(config)) {
+                return WorkflowSyncer.DISABLED_SYNCER;
+            }
+            var provider = spaceProviders.getAllSpaceProviders().stream().findFirst().orElseThrow();
+            // Since the workflow syncer is always attached to the project workflow only, we
+            // also need to initialize it with the project workflow manager.
+            var syncer = new WorkflowSyncer.DefaultWorkflowSyncer(wfm.getProjectWFM(), config, provider);
+            syncer.addOnStateChangeListener(changesListener);
+            return syncer;
+        }
+
         void dispose() {
             if (m_depNodeProperties != null) {
                 m_depNodeProperties.dispose();
@@ -508,6 +553,26 @@ public final class WorkflowMiddleware {
             }
             if (m_componentLoadJobManager != null) {
                 m_componentLoadJobManager.cancelAndRemoveAllLoadJobs();
+            }
+        }
+
+        private static <T extends WorkflowResource> void attachWorkflowResource(final WorkflowManager wfm,
+            final Class<T> resourceClass, final T resource) {
+            NodeContext.pushContext(wfm);
+            try {
+                WorkflowResourceCache.computeIfAbsent(resourceClass, () -> resource);
+            } finally {
+                NodeContext.removeLastContext();
+            }
+        }
+
+        private static <T extends WorkflowResource> Optional<T>
+            getWorkflowResource(final Class<T> workflowResourceClass, final WorkflowManager wfm) {
+            NodeContext.pushContext(wfm);
+            try {
+                return WorkflowResourceCache.get(workflowResourceClass);
+            } finally {
+                NodeContext.removeLastContext();
             }
         }
 

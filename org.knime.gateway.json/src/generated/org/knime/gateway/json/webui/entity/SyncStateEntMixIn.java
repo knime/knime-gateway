@@ -52,8 +52,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
-import org.knime.gateway.impl.webui.entity.DefaultProjectSyncStateEnt.DefaultProjectSyncStateEntBuilder;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
+import org.knime.gateway.impl.webui.entity.DefaultSyncStateEnt.DefaultSyncStateEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -61,10 +61,10 @@ import org.knime.gateway.impl.webui.entity.DefaultProjectSyncStateEnt.DefaultPro
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultProjectSyncStateEntBuilder.class)
-@JsonSerialize(as=ProjectSyncStateEnt.class)
+@JsonDeserialize(builder=DefaultSyncStateEntBuilder.class)
+@JsonSerialize(as=SyncStateEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ProjectSyncStateEntMixIn extends ProjectSyncStateEnt {
+public interface SyncStateEntMixIn extends SyncStateEnt {
 
     @Override
     @JsonIgnore
@@ -90,22 +90,22 @@ public interface ProjectSyncStateEntMixIn extends ProjectSyncStateEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ProjectSyncStateEntMixInBuilder extends ProjectSyncStateEntBuilder {
+    public static interface SyncStateEntMixInBuilder extends SyncStateEntBuilder {
     
         @Override
-        public ProjectSyncStateEntMixIn build();
+        public SyncStateEntMixIn build();
     
         @Override
         @JsonProperty("state")
-        public ProjectSyncStateEntMixInBuilder setState(final StateEnum state);
+        public SyncStateEntMixInBuilder setState(final StateEnum state);
         
         @Override
         @JsonProperty("isAutoSyncEnabled")
-        public ProjectSyncStateEntMixInBuilder setIsAutoSyncEnabled(final Boolean isAutoSyncEnabled);
+        public SyncStateEntMixInBuilder setIsAutoSyncEnabled(final Boolean isAutoSyncEnabled);
         
         @Override
         @JsonProperty("error")
-        public ProjectSyncStateEntMixInBuilder setError(final SyncStateErrorEnt error);
+        public SyncStateEntMixInBuilder setError(final SyncStateErrorEnt error);
         
     }
 

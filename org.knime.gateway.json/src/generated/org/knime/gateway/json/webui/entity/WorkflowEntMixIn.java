@@ -49,6 +49,7 @@ import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -121,6 +122,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     public Boolean isDirty();
     
     @Override
+    @JsonProperty("syncState")
+    public SyncStateEnt getSyncState();
+    
+    @Override
     @JsonProperty("componentPlaceholders")
     public java.util.List<ComponentPlaceholderEnt> getComponentPlaceholders();
     
@@ -180,6 +185,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("dirty")
         public WorkflowEntMixInBuilder setDirty(final Boolean dirty);
+        
+        @Override
+        @JsonProperty("syncState")
+        public WorkflowEntMixInBuilder setSyncState(final SyncStateEnt syncState);
         
         @Override
         @JsonProperty("componentPlaceholders")
