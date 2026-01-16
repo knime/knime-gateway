@@ -48,10 +48,10 @@ import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.SyncStateErrorEnt;
 
-import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
 
 /**
- * The synchronization state of a project.
+ * The synchronization state of a workflow project.
  *
  * @param state
  * @param isAutoSyncEnabled
@@ -60,15 +60,15 @@ import org.knime.gateway.api.webui.entity.ProjectSyncStateEnt;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultProjectSyncStateEnt(
+public record DefaultSyncStateEnt(
     StateEnum state,
     Boolean isAutoSyncEnabled,
-    SyncStateErrorEnt error) implements ProjectSyncStateEnt {
+    SyncStateErrorEnt error) implements SyncStateEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultProjectSyncStateEnt {
+    public DefaultSyncStateEnt {
         if(state == null) {
             throw new IllegalArgumentException("<state> must not be null.");
         }
@@ -79,7 +79,7 @@ public record DefaultProjectSyncStateEnt(
 
     @Override
     public String getTypeID() {
-        return "ProjectSyncState";
+        return "SyncState";
     }
   
     @Override
@@ -98,9 +98,9 @@ public record DefaultProjectSyncStateEnt(
     }
     
     /**
-     * A builder for {@link DefaultProjectSyncStateEnt}.
+     * A builder for {@link DefaultSyncStateEnt}.
      */
-    public static class DefaultProjectSyncStateEntBuilder implements ProjectSyncStateEntBuilder {
+    public static class DefaultSyncStateEntBuilder implements SyncStateEntBuilder {
 
         private StateEnum m_state;
 
@@ -109,7 +109,7 @@ public record DefaultProjectSyncStateEnt(
         private SyncStateErrorEnt m_error;
 
         @Override
-        public DefaultProjectSyncStateEntBuilder setState(StateEnum state) {
+        public DefaultSyncStateEntBuilder setState(StateEnum state) {
              if(state == null) {
                  throw new IllegalArgumentException("<state> must not be null.");
              }
@@ -118,7 +118,7 @@ public record DefaultProjectSyncStateEnt(
         }
 
         @Override
-        public DefaultProjectSyncStateEntBuilder setIsAutoSyncEnabled(Boolean isAutoSyncEnabled) {
+        public DefaultSyncStateEntBuilder setIsAutoSyncEnabled(Boolean isAutoSyncEnabled) {
              if(isAutoSyncEnabled == null) {
                  throw new IllegalArgumentException("<isAutoSyncEnabled> must not be null.");
              }
@@ -127,14 +127,14 @@ public record DefaultProjectSyncStateEnt(
         }
 
         @Override
-        public DefaultProjectSyncStateEntBuilder setError(SyncStateErrorEnt error) {
+        public DefaultSyncStateEntBuilder setError(SyncStateErrorEnt error) {
              m_error = error;
              return this;
         }
 
         @Override
-        public DefaultProjectSyncStateEnt build() {
-            return new DefaultProjectSyncStateEnt(
+        public DefaultSyncStateEnt build() {
+            return new DefaultSyncStateEnt(
                 immutable(m_state),
                 immutable(m_isAutoSyncEnabled),
                 immutable(m_error));

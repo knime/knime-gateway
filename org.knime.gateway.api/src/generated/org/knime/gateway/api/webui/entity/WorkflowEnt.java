@@ -49,6 +49,7 @@ import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ConnectionEnt;
 import org.knime.gateway.api.webui.entity.MetaPortsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
+import org.knime.gateway.api.webui.entity.SyncStateEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowInfoEnt;
 
@@ -137,6 +138,12 @@ public interface WorkflowEnt extends GatewayEntity {
   public Boolean isDirty();
 
   /**
+   * Get syncState
+   * @return syncState 
+   **/
+  public SyncStateEnt getSyncState();
+
+  /**
    * List of placeholders or absent if there are none.
    * @return componentPlaceholders 
    **/
@@ -158,6 +165,7 @@ public interface WorkflowEnt extends GatewayEntity {
       valueConsumer.accept("allowedActions", Pair.create(getAllowedActions(), e.getAllowedActions()));
       valueConsumer.accept("metadata", Pair.create(getMetadata(), e.getMetadata()));
       valueConsumer.accept("dirty", Pair.create(isDirty(), e.isDirty()));
+      valueConsumer.accept("syncState", Pair.create(getSyncState(), e.getSyncState()));
       valueConsumer.accept("componentPlaceholders", Pair.create(getComponentPlaceholders(), e.getComponentPlaceholders()));
   }
 
@@ -253,6 +261,14 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setDirty(Boolean dirty);
+        
+        /**
+   		 * Set syncState
+         * 
+         * @param syncState the property value,  
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setSyncState(SyncStateEnt syncState);
         
         /**
          * List of placeholders or absent if there are none.

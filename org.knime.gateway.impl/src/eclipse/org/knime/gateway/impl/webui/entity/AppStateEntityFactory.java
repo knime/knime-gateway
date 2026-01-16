@@ -96,7 +96,6 @@ import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
-import org.knime.gateway.impl.webui.syncing.WorkflowSyncer;
 
 /**
  * Utility methods to build {@link AppStateEnt}-instances. Usually it would be part of the {@link EntityFactory}.
@@ -134,13 +133,12 @@ public final class AppStateEntityFactory {
      */
     @SuppressWarnings("javadoc")
     public record ServiceDependencies( //
-            ProjectManager projectManager, //
-            PreferencesProvider preferencesProvider, //
-            SpaceProviders spaceProviders, //
-            NodeFactoryProvider nodeFactoryProvider, //
-            NodeCollections nodeCollections, //
-            KaiHandler kaiHandler, //
-            WorkflowSyncer workflowSyncer //
+        ProjectManager projectManager, //
+        PreferencesProvider preferencesProvider, //
+        SpaceProviders spaceProviders, //
+        NodeFactoryProvider nodeFactoryProvider, //
+        NodeCollections nodeCollections, //
+        KaiHandler kaiHandler //
     ) {
     }
 
@@ -166,9 +164,6 @@ public final class AppStateEntityFactory {
             .flatMap(NodeCollections::getActiveCollection);
         var kaiHandler = dependencies.kaiHandler();
         var appMode = getAppModeEnum();
-        var projectSyncState = Optional.ofNullable(dependencies.workflowSyncer()) //
-            .map(WorkflowSyncer::getProjectSyncState) //
-            .orElse(null);
         return builder(AppStateEntBuilder.class) //
             .setAppMode(appMode) //
             .setOpenProjects(projects) //
@@ -201,7 +196,6 @@ public final class AppStateEntityFactory {
             .setSpaceProviders(appMode == AppModeEnum.DEFAULT
                 ? buildSpaceProviderEnts(dependencies.spaceProviders(), false)
                 : null) //
-            .setProjectSyncState(projectSyncState) //
             .build();
     }
 
@@ -296,7 +290,6 @@ public final class AppStateEntityFactory {
             if (getAppModeEnum() == AppModeEnum.DEFAULT) {
                 setIfChanged(oldAppState, newAppState, AppStateEnt::getSpaceProviders, builder::setSpaceProviders);
             }
-            setIfChanged(oldAppState, newAppState, AppStateEnt::getProjectSyncState, builder::setProjectSyncState);
             return builder.build();
         }
     }
