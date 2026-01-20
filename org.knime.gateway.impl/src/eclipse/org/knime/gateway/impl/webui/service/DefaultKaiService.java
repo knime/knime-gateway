@@ -51,6 +51,7 @@ package org.knime.gateway.impl.webui.service;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.KaiFeedbackEnt;
 import org.knime.gateway.api.webui.entity.KaiInquiryResponseEnt;
@@ -65,6 +66,8 @@ import org.knime.gateway.api.webui.service.KaiService;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NodeNotFoundException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NotASubWorkflowException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
+import org.knime.gateway.impl.project.Project;
+import org.knime.gateway.impl.project.ProjectManager;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.WorkflowUtil;
@@ -138,6 +141,9 @@ public final class DefaultKaiService implements KaiService {
     private final WorkflowMiddleware m_workflowMiddleware =
         ServiceDependencies.getServiceDependency(WorkflowMiddleware.class, true);
 
+    private final ProjectManager m_projectManager =
+        ServiceDependencies.getServiceDependency(ProjectManager.class, true);
+
     /**
      * @return the singleton instance of this service
      */
@@ -169,20 +175,20 @@ public final class DefaultKaiService implements KaiService {
     public void makeAiRequest(final String kaiChainId, final KaiRequestEnt kaiRequestEnt) {
         var projectId = kaiRequestEnt.getProjectId();
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        var workflowKey = new WorkflowKey(kaiRequestEnt.getProjectId(),
-            kaiRequestEnt.getWorkflowId());
+        var workflowKey = new WorkflowKey(kaiRequestEnt.getProjectId(), kaiRequestEnt.getWorkflowId());
         var commandExecutor = new KaiCommandExecutorImpl(workflowKey);
 
         var messages = kaiRequestEnt.getMessages().stream()//
-                .map(m -> new KaiHandler.Message(fromRoleEnum(m.getRole()), m.getContent()))//
-                .toList();
+            .map(m -> new KaiHandler.Message(fromRoleEnum(m.getRole()), m.getContent()))//
+            .toList();
 
         var startPosition = kaiRequestEnt.getStartPosition();
         var request = new KaiHandler.Request(kaiRequestEnt.getConversationId(), kaiChainId, projectId, commandExecutor,
             kaiRequestEnt.getSelectedNodes(), messages,
             startPosition == null ? null : new Position(startPosition.getX(), startPosition.getY()));
-        getListener().ifPresent(l -> l.onNewRequest(request));
-
+        try (var wfScope = getWfScope(request.projectId())) {
+            getListener().ifPresent(l -> l.onNewRequest(request));
+        }
     }
 
     private static KaiHandler.Role fromRoleEnum(final RoleEnum role) {
@@ -195,34 +201,61 @@ public final class DefaultKaiService implements KaiService {
 
     @Override
     public void submitFeedback(final String kaiFeedbackId, final KaiFeedbackEnt kaiFeedback) {
-        getListener().ifPresent(l -> l.onFeedback(kaiFeedbackId, kaiFeedback.getProjectId(), kaiFeedback.isPositive(),
-            kaiFeedback.getComment()));
+        try (var wfScope = getWfScope(kaiFeedback.getProjectId())) {
+            getListener().ifPresent(l -> l.onFeedback(kaiFeedbackId, kaiFeedback.getProjectId(),
+                kaiFeedback.isPositive(), kaiFeedback.getComment()));
+        }
     }
 
     @Override
     public KaiUsageEnt getUsage(final String projectId) {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        return getListener().map(l -> l.getUsage(projectId)).orElse(null);
+        try (var wfScope = getWfScope(projectId)) {
+            return getListener().map(l -> l.getUsage(projectId)).orElse(null);
+        }
     }
 
     @Override
     public KaiQuickActionResponseEnt executeQuickAction(final String kaiQuickActionId,
         final KaiQuickActionRequestEnt kaiQuickActionRequest) {
         DefaultServiceContext.assertWorkflowProjectId(kaiQuickActionRequest.getProjectId());
-        return getListener().map(l -> l.executeQuickAction(kaiQuickActionId, kaiQuickActionRequest)).orElse(null);
+        try (var wfScope = getWfScope(kaiQuickActionRequest.getProjectId())) {
+            return getListener().map(l -> l.executeQuickAction(kaiQuickActionId, kaiQuickActionRequest)).orElse(null);
+        }
     }
 
     @Override
     public KaiQuickActionsAvailableEnt listQuickActions(final String projectId) {
         DefaultServiceContext.assertWorkflowProjectId(projectId);
-        return getListener().map(l -> l.listQuickActions(projectId)).orElse(null);
+        try (var wfScope = getWfScope(projectId)) {
+            return getListener().map(l -> l.listQuickActions(projectId)).orElse(null);
+        }
     }
 
     @Override
     public void respondToInquiry(final String kaiChainId, final KaiInquiryResponseEnt kaiInquiryResponse) {
         DefaultServiceContext.assertWorkflowProjectId(kaiInquiryResponse.getProjectId());
-        getListener().ifPresent(l -> l.onInquiryResponse(kaiChainId, kaiInquiryResponse));
+        try (var wfScope = getWfScope(kaiInquiryResponse.getProjectId())) {
+            getListener().ifPresent(l -> l.onInquiryResponse(kaiChainId, kaiInquiryResponse));
+        }
+    }
 
+    private WorkflowManagerScope getWfScope(final String projectId) {
+        return new WorkflowManagerScope(m_projectManager.getProject(projectId)//
+            .flatMap(Project::getWorkflowManagerIfLoaded)//
+            .orElseThrow());
+    }
+
+    private static final class WorkflowManagerScope implements AutoCloseable {
+
+        WorkflowManagerScope(final WorkflowManager wfm) {
+            NodeContext.pushContext(wfm);
+        }
+
+        @Override
+        public void close() {
+            NodeContext.removeLastContext();
+        }
     }
 
 }
