@@ -61,8 +61,8 @@ import org.knime.gateway.api.webui.entity.KaiMessageEnt.RoleEnum;
 import org.knime.gateway.api.webui.entity.KaiQuickActionRequestEnt;
 import org.knime.gateway.api.webui.entity.KaiQuickActionResponseEnt;
 import org.knime.gateway.api.webui.entity.KaiUsageEnt;
-import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiInquiryResponseEnt;
+import org.knime.gateway.impl.webui.entity.DefaultKaiMessageEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionContextEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionRequestEnt;
 import org.knime.gateway.impl.webui.entity.DefaultKaiQuickActionResponseEnt;
@@ -75,6 +75,7 @@ import org.knime.gateway.impl.webui.kai.KaiHandler;
 import org.knime.gateway.impl.webui.kai.KaiHandler.CodeAssistant;
 import org.knime.gateway.impl.webui.kai.KaiHandler.UiStrings;
 import org.knime.gateway.impl.webui.kai.KaiHandler.WelcomeMessages;
+import org.knime.gateway.testing.helper.TestWorkflowCollection;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -90,11 +91,16 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
     @Mock
     private KaiHandler m_kaiHandler;
 
+    private String m_projectId;
+
     /**
      * Registers the mock listener in the DefaultKaiService.
+     * @throws Exception if test workflow fails to load
      */
     @Before
-    public void setup() {
+    public void setup() throws Exception {
+        var wfmAndId = loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI);
+        m_projectId = wfmAndId.getFirst().toString();
         ServiceDependencies.setServiceDependency(KaiHandler.class, m_kaiHandler);
     }
 
@@ -122,16 +128,17 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testMakeAiRequest() throws Exception {
+
         DefaultKaiMessageEnt message = new DefaultKaiMessageEnt(RoleEnum.USER, "Hello there");
         List<String> selectedNodes = List.of("bli", "bla", "blub");
         var incomingRequest =
-            new DefaultKaiRequestEnt("foo", "bar", "baz", selectedNodes, new DefaultXYEnt(0, 0), List.of(message));
+            new DefaultKaiRequestEnt("foo", m_projectId, "baz", selectedNodes, new DefaultXYEnt(0, 0), List.of(message));
 
         DefaultKaiService.getInstance().makeAiRequest("qa", incomingRequest);
         verify(m_kaiHandler).onNewRequest(argThat(request -> //
         request.conversationId().equals("foo") && //
             request.chainType().equals("qa") && //
-            request.projectId().equals("bar") && //
+            request.projectId().equals(m_projectId) && //
             request.selectedNodes().equals(selectedNodes) && //
             request.messages().equals(List.of(new KaiHandler.Message(KaiHandler.Role.USER, "Hello there"))) && //
             request.startPosition().equals(new KaiHandler.Position(0, 0))//
@@ -158,15 +165,14 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
     @Test
     public void testGetUsage() throws Exception {
         var expectedUsage = new DefaultKaiUsageEnt(100, 25);
-        String projectId = "bar";
 
-        Mockito.when(m_kaiHandler.getUsage(projectId)).thenReturn(expectedUsage);
+        Mockito.when(m_kaiHandler.getUsage(m_projectId)).thenReturn(expectedUsage);
 
-        KaiUsageEnt returnedUsage = DefaultKaiService.getInstance().getUsage(projectId);
+        KaiUsageEnt returnedUsage = DefaultKaiService.getInstance().getUsage(m_projectId);
 
         assertEquals(expectedUsage.getLimit(), returnedUsage.getLimit());
         assertEquals(expectedUsage.getUsed(), returnedUsage.getUsed());
-        verify(m_kaiHandler).getUsage(projectId);
+        verify(m_kaiHandler).getUsage(m_projectId);
     }
 
     /**
@@ -177,12 +183,11 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
     @Test
     public void testExecuteQuickAction() throws Exception {
         String kaiQuickActionId = "quickAction123";
-        String projectId = "bar";
 
         var context = new DefaultKaiQuickActionContextEnt();
         var request = new DefaultKaiQuickActionRequestEnt(
             KaiQuickActionRequestEnt.ActionIdEnum.GENERATEANNOTATION,
-            projectId,
+            m_projectId,
             context
         );
 
@@ -212,15 +217,14 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testListQuickActions() throws Exception {
-        String projectId = "bar";
         var expectedActions = new DefaultKaiQuickActionsAvailableEnt(List.of("action1", "action2", "action3"));
 
-        Mockito.when(m_kaiHandler.listQuickActions(projectId)).thenReturn(expectedActions);
+        Mockito.when(m_kaiHandler.listQuickActions(m_projectId)).thenReturn(expectedActions);
 
-        var returnedActions = DefaultKaiService.getInstance().listQuickActions(projectId);
+        var returnedActions = DefaultKaiService.getInstance().listQuickActions(m_projectId);
 
         assertEquals(expectedActions.getAvailableActions(), returnedActions.getAvailableActions());
-        verify(m_kaiHandler).listQuickActions(projectId);
+        verify(m_kaiHandler).listQuickActions(m_projectId);
     }
 
     /**
@@ -230,7 +234,7 @@ public final class DefaultKaiServiceTest extends GatewayServiceTest {
      */
     @Test
     public void testRespondToInquiry() throws Exception {
-        var response = new DefaultKaiInquiryResponseEnt("bar", "inq-1", "allow");
+        var response = new DefaultKaiInquiryResponseEnt(m_projectId, "inq-1", "allow");
 
         DefaultKaiService.getInstance().respondToInquiry("build", response);
 

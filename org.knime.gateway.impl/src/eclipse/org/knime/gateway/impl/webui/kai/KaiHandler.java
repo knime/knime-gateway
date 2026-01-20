@@ -70,6 +70,8 @@ public interface KaiHandler {
     /**
      * Invoked when the user sends a message in the chat.
      *
+     * Requires NodeContext to be set.
+     *
      * @param request the user request
      */
     void onNewRequest(Request request);
@@ -97,6 +99,10 @@ public interface KaiHandler {
     UiStrings getUiStrings();
 
     /**
+     * Invoked by the UI to check usage limits of the user.
+     *
+     * Requires NodeContext to be set.
+     *
      * @param projectId the ID of the current workflow/project required for authentication.
      * @return the AI interaction usage for current user.
      * @since 5.8
@@ -104,6 +110,10 @@ public interface KaiHandler {
     KaiUsageEnt getUsage(String projectId);
 
     /**
+     * Invoked when user wants to execute a QuickAction.
+     *
+     * Requires NodeContext to be set.
+     *
      * @param actionId ID of the AI quick action to be executed.
      * @param request request body containing the necessary context for the quick action.
      * @return response containing the execution result.
@@ -112,6 +122,8 @@ public interface KaiHandler {
     KaiQuickActionResponseEnt executeQuickAction(String actionId, KaiQuickActionRequestEnt request);
 
     /**
+     * Requires NodeContext to be set.
+     *
      * @param projectId ID of the active workflow.
      * @return the list list of AI quick actions available at the connected KNIME Hub.
      * @since 5.8
@@ -120,6 +132,9 @@ public interface KaiHandler {
 
     /**
      * Invoked if the user provides feedback on one of K-AI's answers.
+     *
+     * Requires NodeContext to be set.
+     *
      * @param kaiFeedbackId ID of the feedback
      * @param projectId ID of the top-level workflow
      * @param isPositive whether the feedback is positive or negative
