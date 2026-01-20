@@ -52,6 +52,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -213,7 +214,7 @@ public class WorkflowSyncerTest {
 
         m_syncer.syncProjectAutomatically(SOME_SIZE);
 
-        verify(m_wfm).removeListener(m_workflowListener);
+        verify(m_wfm, never()).removeListener(m_workflowListener);
         var state = m_syncer.getSyncState();
         assertThat(state.getState()).isEqualTo(SyncStateEnt.StateEnum.DIRTY);
         assertThat(state.getError().getCode()).isEqualTo(SyncThresholdException.class.getName());

@@ -102,8 +102,13 @@ public final class Debouncer {
     /**
      * Will schedule the task to be executed after the specified delay. If called again before the delay has passed, the
      * previous call is cancelled and the delay restarts.
+     *
+     * Won't do anything if {@link #shutdown()} has been called.
      */
     public void call() {
+        if (m_scheduler.isShutdown()) {
+            return;
+        }
         if (m_pendingTask != null && !m_pendingTask.isDone()) {
             m_pendingTask.cancel(false); // Set to 'false' to not cancel if the actual sync is already running
         }
@@ -116,4 +121,5 @@ public final class Debouncer {
     public void shutdown() {
         m_scheduler.shutdown();
     }
+
 }

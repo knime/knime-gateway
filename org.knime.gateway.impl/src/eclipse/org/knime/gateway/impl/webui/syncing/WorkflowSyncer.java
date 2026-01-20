@@ -223,7 +223,7 @@ public interface WorkflowSyncer extends WorkflowResource {
                     SyncStateEnt.StateEnum.DIRTY, //
                     new SyncStateStore.Error(e), //
                     false);
-                dispose(); // fully disable once we enter this state
+                m_debouncedProjectSync.shutdown();
             } finally {
                 m_syncStateStore.allowStateChanges(); // apply deferred state change
             }
