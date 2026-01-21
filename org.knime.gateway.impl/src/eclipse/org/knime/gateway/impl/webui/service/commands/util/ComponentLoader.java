@@ -112,7 +112,7 @@ public final class ComponentLoader {
     public static LoadResult loadComponent(final AddComponentCommandEnt commandEnt, final WorkflowManager wfm,
         final SpaceProviders spaceProviders, final ExecutionMonitor exec) throws CanceledExecutionException {
 
-        var spaceIdProvided = commandEnt.getSpaceId() == null || commandEnt.getSpaceId().isBlank();
+        var spaceIdProvided = commandEnt.getSpaceId() != null && !commandEnt.getSpaceId().isBlank();
         var provider = spaceProviders.getSpaceProvider(commandEnt.getProviderId());
 
         final DownloadedItem downloadedItem;
