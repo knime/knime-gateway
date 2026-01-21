@@ -56,8 +56,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
+import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
@@ -143,7 +146,7 @@ public interface SpaceProvider {
      * @throws LoggedOutException
      * @throws UnsupportedOperationException if not supported
      */
-    default List<ComponentSearchItemEnt> searchComponents(String query, final int limit, final int offset)
+    default List<ComponentSearchItemEnt> searchComponents(String query, final Integer limit, final Integer offset)
         throws NetworkException, LoggedOutException, MutableServiceCallException {
         throw new UnsupportedOperationException();
     }
