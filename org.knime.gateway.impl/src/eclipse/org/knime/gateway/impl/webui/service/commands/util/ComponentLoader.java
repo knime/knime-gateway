@@ -48,7 +48,6 @@
  */
 package org.knime.gateway.impl.webui.service.commands.util;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
@@ -84,6 +83,7 @@ import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -111,21 +111,16 @@ public final class ComponentLoader {
      */
     public static LoadResult loadComponent(final AddComponentCommandEnt commandEnt, final WorkflowManager wfm,
         final SpaceProviders spaceProviders, final ExecutionMonitor exec) throws CanceledExecutionException {
-        final URI uri;
-        final Path localPath;
-        exec.setMessage("Downloading...");
+
+        var spaceIdProvided = commandEnt.getSpaceId() == null || commandEnt.getSpaceId().isBlank();
+        var provider = spaceProviders.getSpaceProvider(commandEnt.getProviderId());
+
+        final DownloadedItem downloadedItem;
         try {
-            var provider = spaceProviders.getSpaceProvider(commandEnt.getProviderId());
-            if (commandEnt.getSpaceId() == null || commandEnt.getSpaceId().isBlank()) {
-                uri = provider.toKnimeUrl(commandEnt.getProviderId());
-                localPath = provider //
-                    .toLocalAbsolutePath(exec, commandEnt.getItemId(), VersionId.currentState()) //
-                    .orElseThrow();
-            } else {
-                var space = spaceProviders.getSpace(commandEnt.getProviderId(), commandEnt.getSpaceId());
-                uri = space.toKnimeUrl(commandEnt.getItemId());
-                localPath = space.toLocalAbsolutePath(exec, commandEnt.getItemId()).orElseThrow();
-            }
+            exec.setMessage("Downloading...");
+            downloadedItem = spaceIdProvided //
+                ? downloadComponent(provider, commandEnt.getSpaceId(), commandEnt.getItemId(), exec) //
+                : downloadComponent(provider, commandEnt.getItemId(), exec);
         } catch (GatewayException ex) {
             throw new CompletionException(compileLoadingFailedErrorMessage(ex), ex);
         } catch (final MutableServiceCallException ex) {
@@ -135,8 +130,13 @@ public final class ComponentLoader {
         var componentName = commandEnt.getName();
         try (var lock = wfm.lock()) {
             exec.setMessage("Loading component...");
-            var position = Geometry.Point.of(commandEnt.getPosition());
-            var loadResult = loadComponent(wfm, localPath.toFile(), uri, componentName, position, exec);
+            var loadResult = loadComponent( //
+                wfm, //
+                downloadedItem, //
+                componentName, //
+                Geometry.Point.of(commandEnt.getPosition()), //
+                exec //
+            );
             var isOk = loadResult.getStatus().isOK();
             return new LoadResult( //
                 loadResult.getComponentId(), //
@@ -150,6 +150,28 @@ public final class ComponentLoader {
             var loadingFailedErrorMessage = compileLoadingFailedErrorMessage(rootCause);
             throw new CompletionException(loadingFailedErrorMessage, rootCause);
         }
+    }
+
+    private record DownloadedItem(URI sourceUri, Path localPath) {
+    }
+
+    private static DownloadedItem downloadComponent(final SpaceProvider spaceProvider, final String itemId,
+        final ExecutionMonitor exec) throws CanceledExecutionException, MutableServiceCallException,
+        ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException {
+        return new DownloadedItem( //
+            spaceProvider.toKnimeUrl(itemId), //
+            spaceProvider.toLocalAbsolutePath(exec, itemId, VersionId.currentState()).orElseThrow() //
+        );
+    }
+
+    private static DownloadedItem downloadComponent(final SpaceProvider spaceProvider, final String spaceId,
+        final String itemId, final ExecutionMonitor exec) throws MutableServiceCallException,
+        ServiceExceptions.NetworkException, ServiceExceptions.LoggedOutException, CanceledExecutionException {
+        var space = spaceProvider.getSpace(spaceId);
+        return new DownloadedItem( //
+            space.toKnimeUrl(itemId), //
+            space.toLocalAbsolutePath(exec, itemId, VersionId.currentState()).orElseThrow() //
+        );
     }
 
     /**
@@ -185,15 +207,16 @@ public final class ComponentLoader {
         return String.format("%s %s", error, causeMessage);
     }
 
-    private static LoadResultInternalRoot loadComponent(final WorkflowManager parentWFM, final File parentFile,
-        final URI templateURI, final String componentName, final Geometry.Point position,
+    private static LoadResultInternalRoot loadComponent(final WorkflowManager parentWFM,
+        final DownloadedItem downloadedItem, final String componentName, final Geometry.Point position,
         final ExecutionMonitor executionMonitor)
         throws IOException, UnsupportedWorkflowVersionException, InvalidSettingsException, CanceledExecutionException {
         executionMonitor.checkCanceled();
         var loadHelper = createWorkflowLoadHelper();
-        var loadPersistor = loadHelper.createTemplateLoadPersistor(parentFile, templateURI);
+        var loadPersistor =
+            loadHelper.createTemplateLoadPersistor(downloadedItem.localPath().toFile(), downloadedItem.sourceUri());
         loadPersistor.setNameOverwrite(componentName);
-        var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + templateURI + "\"");
+        var loadResult = new MetaNodeLinkUpdateResult("Shared instance from \"" + downloadedItem.sourceUri() + "\"");
         // NXT-3549 (workaround) - cancelation of component load has side effects/bug
         parentWFM.load(loadPersistor, loadResult, executionMonitor.createNonCancelableSubProgress(), false);
 
@@ -325,7 +348,7 @@ public final class ComponentLoader {
 
         /**
          * (copied from {@link LoadWorkflowRunnable})
-         *
+         * <p>
          * Depending on what's missing it returns "a missing node extension", "a missing table format extension" and
          * also respects singular/plural.
          */
