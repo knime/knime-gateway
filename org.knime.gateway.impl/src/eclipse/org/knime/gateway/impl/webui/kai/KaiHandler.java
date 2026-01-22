@@ -122,6 +122,7 @@ public interface KaiHandler {
     KaiQuickActionResponseEnt executeQuickAction(String actionId, KaiQuickActionRequestEnt request);
 
     /**
+     * Invoked when the user requests the list of available QuickActions.
      * Requires NodeContext to be set.
      *
      * @param projectId ID of the active workflow.
