@@ -146,7 +146,7 @@ public interface SpaceProvider {
      * @throws LoggedOutException
      * @throws UnsupportedOperationException if not supported
      */
-    default List<ComponentSearchItemEnt> searchComponents(String query, final Integer limit, final Integer offset)
+    default List<ComponentSearchItemEnt> searchComponents(final String query, final Integer limit, final Integer offset)
         throws NetworkException, LoggedOutException, MutableServiceCallException {
         throw new UnsupportedOperationException();
     }

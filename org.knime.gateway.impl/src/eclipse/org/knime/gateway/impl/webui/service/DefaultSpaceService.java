@@ -357,8 +357,7 @@ public class DefaultSpaceService implements SpaceService {
                     .withDetails("No Hub space provider is configured.") //
                     .canCopy(true) //
                     .build());
-            return hubProvider.searchComponents(query, limit, offset).stream() //
-                .toList();
+            return hubProvider.searchComponents(query, limit, offset).stream().toList();
         } catch (MutableServiceCallException e) {
             throw e.toGatewayException("Component search not available");
         }

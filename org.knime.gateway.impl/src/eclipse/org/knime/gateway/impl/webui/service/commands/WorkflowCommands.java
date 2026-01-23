@@ -162,7 +162,7 @@ public final class WorkflowCommands {
      */
     public <E extends WorkflowCommandEnt> CommandResultEnt execute(final WorkflowKey wfKey, final E commandEnt,
         final WorkflowMiddleware workflowMiddleware, final NodeFactoryProvider nodeFactoryProvider,
-        final SpaceProviders spaceProviders, LinkVariants linkVariants) throws ServiceCallException {
+        final SpaceProviders spaceProviders, final LinkVariants linkVariants) throws ServiceCallException {
         var command =
             createWorkflowCommand(commandEnt, nodeFactoryProvider, spaceProviders, workflowMiddleware, linkVariants);
 
@@ -178,7 +178,7 @@ public final class WorkflowCommands {
     @SuppressWarnings("java:S1541")
     private <E extends WorkflowCommandEnt> WorkflowCommand createWorkflowCommand(final E commandEnt, // NOSONAR: See below.
         final NodeFactoryProvider nodeFactoryProvider, final SpaceProviders spaceProviders,
-        final WorkflowMiddleware workflowMiddleware, LinkVariants linkVariants) throws ServiceCallException {
+        final WorkflowMiddleware workflowMiddleware, final LinkVariants linkVariants) throws ServiceCallException {
         WorkflowCommand command;
         if (commandEnt instanceof TranslateCommandEnt ce) {
             command = new Translate(ce);

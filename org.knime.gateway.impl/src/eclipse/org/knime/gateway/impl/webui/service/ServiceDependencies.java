@@ -178,7 +178,7 @@ public final class ServiceDependencies {
         final NodeCollections nodeCollections, //
         final NodeCategoryExtensions nodeCategoryExtensions, //
         final SelectionEventBus selectionEventBus, final LinkVariants linkVariants, //
-        FeatureFlags.FromSystemProperties featureFlags) {
+        final FeatureFlags.FromSystemProperties featureFlags) {
         if (!ServiceInstances.areServicesInitialized()) {
             ServiceDependencies.setServiceDependency(AppStateUpdater.class, appStateUpdater);
             ServiceDependencies.setServiceDependency(EventConsumer.class, eventConsumer);

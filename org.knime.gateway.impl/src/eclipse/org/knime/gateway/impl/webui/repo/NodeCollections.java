@@ -53,8 +53,8 @@ import org.knime.gateway.impl.webui.PreferencesProvider;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 
 /**
- * Provide information about node collections to services. A node collection is a subset of all installed nodes.
- * This can be used to limit the set of nodes displayed to the user.
+ * Provide information about node collections to services. A node collection is a subset of all installed nodes. This
+ * can be used to limit the set of nodes displayed to the user.
  *
  * @author Benjamin Moser, KNIME GmbH
  */
@@ -64,7 +64,7 @@ public final class NodeCollections {
 
     private final WebUIMode m_mode;
 
-    public NodeCollections(final PreferencesProvider preferencesProvider, WebUIMode mode) {
+    public NodeCollections(final PreferencesProvider preferencesProvider, final WebUIMode mode) {
         this.m_preferencesProvider = preferencesProvider;
         this.m_mode = mode;
     }

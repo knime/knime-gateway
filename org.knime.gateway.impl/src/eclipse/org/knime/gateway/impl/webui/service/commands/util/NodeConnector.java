@@ -254,6 +254,7 @@ public final class NodeConnector {
 
     /**
      * Create a connection between two ports
+     * 
      * @param wfm The workflow to work in
      * @param sourcePort The start port of the connection
      * @param destinationPort The end port of the connection
@@ -261,9 +262,8 @@ public final class NodeConnector {
      * @return the new connection or {@code Optional.empty()} if the connection couldn't be created
      */
     public static Optional<ConnectionContainer> connect(final WorkflowManager wfm,
-        final Connectable.SourcePort<?> sourcePort,
-        Connectable.DestinationPort<?> destinationPort,
-        boolean track) {
+        final Connectable.SourcePort<?> sourcePort, final Connectable.DestinationPort<?> destinationPort,
+        final boolean track) {
         var result = connect(wfm, sourcePort.owner().getNodeId(), sourcePort.index(),
             destinationPort.owner().getNodeId(), destinationPort.index(), track);
         return Optional.ofNullable(result);
