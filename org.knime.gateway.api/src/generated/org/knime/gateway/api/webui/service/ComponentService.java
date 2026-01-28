@@ -49,6 +49,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
+import org.knime.gateway.api.webui.entity.NamedItemVersionEnt;
 
 /**
  * Operations on individual components in a workflow.
@@ -83,6 +84,19 @@ public interface ComponentService extends GatewayService {
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      */
     ComponentNodeDescriptionEnt getComponentDescription(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, String versionId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException;
+        
+    /**
+     * Returns the available item versions for the linked component represented by the given node.
+     *
+     * @param projectId ID of the workflow-project.
+     * @param workflowId The ID of a workflow which has the same format as a node-id.
+     * @param nodeId The ID of a node. The node-id format: Node IDs always start with &#39;root&#39; and optionally followed by numbers separated by &#39;:&#39; referring to nested nodes/subworkflows,e.g. root:3:6:4. Nodes within components require an additional trailing &#39;0&#39;, e.g. &#39;root:3:6:0:4&#39; (if &#39;root:3:6&#39; is a component).
+     *
+     * @return the result
+     * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
+     * @throws ServiceExceptions.NodeNotFoundException The requested node was not found.
+     */
+    java.util.List<NamedItemVersionEnt> getItemVersions(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException;
         
     /**
      * Returns the available link variants for the linked component represented by the given node.

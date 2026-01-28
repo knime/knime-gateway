@@ -18,33 +18,6 @@
  */
 package org.knime.gateway.api.webui.util;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singleton;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
-import static org.knime.gateway.api.util.EntityUtil.toLinkEnts;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -70,7 +43,6 @@ import org.knime.core.node.workflow.ComponentMetadata;
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.FlowScopeContext;
 import org.knime.core.node.workflow.LoopEndNode;
-import org.knime.core.node.workflow.MetaNodeTemplateInformation.Role;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeAnnotation;
 import org.knime.core.node.workflow.NodeContainer;
@@ -86,7 +58,6 @@ import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2.LocationType;
-import org.knime.core.util.KnimeUrlType;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.dialog.SubNodeContainerDialogFactory;
 import org.knime.core.webui.node.view.NodeViewManager;
@@ -96,7 +67,6 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
 import org.knime.gateway.api.util.EntityUtil;
-import org.knime.gateway.api.util.KnimeUrls;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt;
 import org.knime.gateway.api.webui.entity.AllowedConnectionActionsEnt.AllowedConnectionActionsEntBuilder;
@@ -164,12 +134,8 @@ import org.knime.gateway.api.webui.entity.PortGroupEnt;
 import org.knime.gateway.api.webui.entity.PortGroupEnt.PortGroupEntBuilder;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt;
 import org.knime.gateway.api.webui.entity.ProjectMetadataEnt.ProjectMetadataEntBuilder;
-import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt;
 import org.knime.gateway.api.webui.entity.StyleRangeEnt.StyleRangeEntBuilder;
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt.TemplateLinkEntBuilder;
-import org.knime.gateway.api.webui.entity.TemplateLinkEnt.UpdateStatusEnum;
 import org.knime.gateway.api.webui.entity.TypedTextEnt.ContentTypeEnum;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt;
 import org.knime.gateway.api.webui.entity.WorkflowAnnotationEnt.WorkflowAnnotationEntBuilder;
@@ -182,6 +148,32 @@ import org.knime.gateway.api.webui.entity.WorkflowInfoEnt.WorkflowInfoEntBuilder
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.api.webui.util.WorkflowBuildContext.WorkflowBuildContextBuilder;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singleton;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+import static org.knime.gateway.api.util.EntityUtil.toLinkEnts;
 
 /**
  * See {@link EntityFactory}.
@@ -569,7 +561,7 @@ public final class WorkflowEntityFactory {
             .setState(buildNodeStateEnt(snc))//
             .setIcon(createIconDataURL(snc.getMetadata().getIcon().orElse(null)))//
             .setKind(KindEnum.COMPONENT)//
-            .setLink(buildTemplateLinkEnt(snc, buildContext))//
+            .setLink(TemplateLinkEntityFactory.buildTemplateLinkEnt(snc, buildContext::getSpaceProviderType))//
             .setDialogType(getDialogType(snc)) //
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(snc)) //
@@ -750,7 +742,7 @@ public final class WorkflowEntityFactory {
             .setPosition(buildXYEnt(wm.getUIInformation()))//
             .setState(buildMetaNodeStateEnt(wm.getNodeContainerState()))//
             .setKind(KindEnum.METANODE)//
-            .setLink(buildTemplateLinkEnt(wm, buildContext))//
+            .setLink(TemplateLinkEntityFactory.buildTemplateLinkEnt(wm, buildContext::getSpaceProviderType))//
             .setAllowedActions(allowedActions)//
             .setExecutionInfo(buildNodeExecutionInfoEnt(wm))//
             .setIsLocked(CoreUtil.isLocked(wm).orElse(null))//
@@ -1257,7 +1249,7 @@ public final class WorkflowEntityFactory {
             .setName(wfm.getName())//
             .setContainerId(getContainerId(wfm, buildContext))//
             .setContainerType(getContainerType(wfm))//
-            .setLinked(getTemplateLink(template) != null ? Boolean.TRUE : null)//
+            .setLinked(TemplateLinkEntityFactory.getTemplateLink(template) != null ? Boolean.TRUE : null)//
             .setContainsLinkedComponents(getContainsLinkedComponents(wfm)) //
             .setProviderType(switch (locationType) {
                 case LOCAL -> ProviderTypeEnum.LOCAL;
@@ -1611,55 +1603,6 @@ public final class WorkflowEntityFactory {
                 .orElse(null);
         }
         return null;
-    }
-
-    private static String getTemplateLink(final NodeContainerTemplate nct) {
-        if (nct instanceof SubNodeContainer snc && snc.isProject()) {
-            return null;
-        }
-        var sourceURI = nct.getTemplateInformation().getSourceURI();
-        return sourceURI == null ? null : sourceURI.toString();
-    }
-
-    private static TemplateLinkEnt buildTemplateLinkEnt(final NodeContainerTemplate nct,
-        final WorkflowBuildContext buildContext) {
-        final var templateInfo = nct.getTemplateInformation();
-        if (templateInfo.getRole() != Role.Link) { // Only works for linked components and metanodes
-            return null;
-        }
-
-        var updateStatus = switch (templateInfo.getUpdateStatus()) {
-            case UpToDate -> UpdateStatusEnum.UP_TO_DATE;
-            case HasUpdate -> UpdateStatusEnum.HAS_UPDATE;
-            case Error -> UpdateStatusEnum.ERROR;
-        };
-
-        final var linkUri = templateInfo.getSourceURI();
-
-        return builder(TemplateLinkEntBuilder.class) //
-            .setUrl(getTemplateLink(nct))//
-            .setUpdateStatus(updateStatus) //
-            .setIsLinkVariantChangeable( //
-                KnimeUrls.isLinkTypeChangeable( //
-                    linkUri, //
-                    CoreUtil.getProjectWorkflow(nct.getParent()).getContextV2(), //
-                    buildContext::getSpaceProviderType) //
-            ) //
-            .setIsHubItemVersionChangeable(isHubItemVersionChangeable(linkUri, buildContext)) //
-            .setCurrentLinkVariant(KnimeUrls.getLinkVariant(linkUri)) //
-            .build();
-    }
-
-    /**
-     * The version of a KNIME URL can be changed if it is an absolute URL to a Hub repository item.
-     *
-     * @param uri KNIME URL to check
-     * @param buildContext build context to determine whether the URL points to a Hub
-     * @return {@code true} if changing Hub versions is possible, {@code false} otherwise
-     */
-    private static boolean isHubItemVersionChangeable(final URI uri, final WorkflowBuildContext buildContext) {
-        return KnimeUrlType.getType(uri).orElse(null) == KnimeUrlType.MOUNTPOINT_ABSOLUTE
-            && buildContext.getSpaceProviderType(uri.getAuthority()).orElse(null) == SpaceProviderEnt.TypeEnum.HUB;
     }
 
     /**
