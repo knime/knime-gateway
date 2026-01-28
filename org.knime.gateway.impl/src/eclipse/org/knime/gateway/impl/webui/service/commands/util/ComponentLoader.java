@@ -55,6 +55,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -102,15 +103,18 @@ public final class ComponentLoader {
     /**
      * Loads a component from a {@link AddComponentCommandEnt}.
      *
-     * @param commandEnt contain the all the infos required to load the component
-     * @param wfm the workflow to load the component in
-     * @param spaceProviders to be able to access the space to (down-)load the component from
+     * @param commandEnt contains all information required to load the component
+     * @param wfm the workflow to load the component into
+     * @param spaceProviders provides access to the space for downloading the component
      * @param exec progress and cancellation
-     * @return infos about the loaded component
-     * @throws CanceledExecutionException in case the component loading was canceled
+     * @return the {@link NodeID} of the loaded component
+     * @throws ComponentLoadedWithWarningsException if the component is created but the load result has warnings or
+     *             errors
+     * @throws CancellationException if loading is canceled
+     * @throws CompletionException if loading fails due to download or workflow errors
      */
-    public static LoadResult loadComponent(final AddComponentCommandEnt commandEnt, final WorkflowManager wfm,
-        final SpaceProviders spaceProviders, final ExecutionMonitor exec) throws CanceledExecutionException {
+    public static NodeID loadComponent(final AddComponentCommandEnt commandEnt, final WorkflowManager wfm,
+        final SpaceProviders spaceProviders, final ExecutionMonitor exec) {
 
         var isSpaceIdProvided = commandEnt.getSpaceId() != null && !commandEnt.getSpaceId().isBlank();
         var provider = spaceProviders.getSpaceProvider(commandEnt.getProviderId());
@@ -125,30 +129,60 @@ public final class ComponentLoader {
             throw new CompletionException(compileLoadingFailedErrorMessage(ex), ex);
         } catch (final MutableServiceCallException ex) {
             throw new CompletionException(ex.toGatewayException("Failed to fetch component template"));
+        } catch (final CanceledExecutionException e) {
+            throw new CancellationException(e.getMessage());
         }
 
         var componentName = commandEnt.getName();
+        LoadResultInternalRoot loadResult;
         try (var lock = wfm.lock()) {
             exec.setMessage("Loading component...");
-            var loadResult = loadComponent( //
+            loadResult = loadComponent( // throws CanceledExecutionException
                 wfm, //
                 downloadedItem, //
                 componentName, //
                 Geometry.Point.of(commandEnt.getPosition()), //
                 exec //
             );
-            var isOk = loadResult.getStatus().isOK();
-            return new LoadResult( //
-                loadResult.getComponentId(), //
-                isOk ? null : loadResult.getTitleAndAggregatedMessage().getFirst(), //
-                isOk ? null : loadResult.getTitleAndAggregatedMessage().getSecond() //
-            );
         } catch (CanceledExecutionException e) {
-            throw e;
+            throw new CancellationException(e.getMessage());
         } catch (Throwable t) { // NOSONAR
             var rootCause = ExceptionUtils.getRootCause(t);
             var loadingFailedErrorMessage = compileLoadingFailedErrorMessage(rootCause);
             throw new CompletionException(loadingFailedErrorMessage, rootCause);
+        }
+
+        if (!loadResult.getStatus().isOK()) {
+            throw new ComponentLoadedWithWarningsException( //
+                loadResult.getComponentId(), //
+                loadResult.getTitleAndAggregatedMessage().getFirst(), //
+                loadResult.getTitleAndAggregatedMessage().getSecond() //
+            );
+        } else {
+            return loadResult.getComponentId();
+        }
+    }
+
+    /**
+     * Signals that a component was created but the load result contains warnings or errors.
+     */
+    public static class ComponentLoadedWithWarningsException extends RuntimeException {
+
+        private final String m_title;
+        private final NodeID m_componentId;
+
+        public ComponentLoadedWithWarningsException(NodeID componentId, final String title, final String message) {
+            super(message);
+            m_title = title;
+            m_componentId = componentId;
+        }
+
+        public String getTitle() {
+            return m_title;
+        }
+
+        public NodeID getComponentId() {
+            return m_componentId;
         }
     }
 
@@ -172,17 +206,6 @@ public final class ComponentLoader {
             space.toKnimeUrl(itemId), //
             space.toLocalAbsolutePath(exec, itemId).orElseThrow() //
         );
-    }
-
-    /**
-     * Represents the load result once a component loaded successfully.
-     *
-     * @param componentId the id of the successfully added component
-     * @param message a message on warnings/problems during load; can be {@code null}
-     * @param details some more details regarding the loading problems; can be {@code null}
-     */
-    public record LoadResult(NodeID componentId, String message, String details) {
-
     }
 
     private static String compileLoadingFailedErrorMessage(final Throwable cause) {

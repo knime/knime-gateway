@@ -55,6 +55,7 @@ import org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt;
  * @param name
  * @param description
  * @param portTypeName
+ * @param portTypeId
  * @param color
  * @param optional
  *
@@ -65,6 +66,7 @@ public record DefaultComponentSearchItemPortEnt(
     String name,
     String description,
     String portTypeName,
+    String portTypeId,
     String color,
     Boolean optional) implements ComponentSearchItemPortEnt {
 
@@ -74,6 +76,9 @@ public record DefaultComponentSearchItemPortEnt(
     public DefaultComponentSearchItemPortEnt {
         if(portTypeName == null) {
             throw new IllegalArgumentException("<portTypeName> must not be null.");
+        }
+        if(portTypeId == null) {
+            throw new IllegalArgumentException("<portTypeId> must not be null.");
         }
     }
 
@@ -98,6 +103,11 @@ public record DefaultComponentSearchItemPortEnt(
     }
     
     @Override
+    public String getPortTypeId() {
+        return portTypeId;
+    }
+    
+    @Override
     public String getColor() {
         return color;
     }
@@ -117,6 +127,8 @@ public record DefaultComponentSearchItemPortEnt(
         private String m_description;
 
         private String m_portTypeName;
+
+        private String m_portTypeId;
 
         private String m_color;
 
@@ -144,6 +156,15 @@ public record DefaultComponentSearchItemPortEnt(
         }
 
         @Override
+        public DefaultComponentSearchItemPortEntBuilder setPortTypeId(String portTypeId) {
+             if(portTypeId == null) {
+                 throw new IllegalArgumentException("<portTypeId> must not be null.");
+             }
+             m_portTypeId = portTypeId;
+             return this;
+        }
+
+        @Override
         public DefaultComponentSearchItemPortEntBuilder setColor(String color) {
              m_color = color;
              return this;
@@ -161,6 +182,7 @@ public record DefaultComponentSearchItemPortEnt(
                 immutable(m_name),
                 immutable(m_description),
                 immutable(m_portTypeName),
+                immutable(m_portTypeId),
                 immutable(m_color),
                 immutable(m_optional));
         }

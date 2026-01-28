@@ -95,6 +95,18 @@ public interface AddComponentCommandEntMixIn extends AddComponentCommandEnt {
     @JsonProperty("name")
     public String getName();
     
+    @Override
+    @JsonProperty("sourceNodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId();
+    
+    @Override
+    @JsonProperty("sourcePortIdx")
+    public Integer getSourcePortIdx();
+    
+    @Override
+    @JsonProperty("nodeRelation")
+    public NodeRelationEnum getNodeRelation();
+    
 
     /**
      * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
@@ -131,6 +143,18 @@ public interface AddComponentCommandEntMixIn extends AddComponentCommandEnt {
         @Override
         @JsonProperty("name")
         public AddComponentCommandEntMixInBuilder setName(final String name);
+        
+        @Override
+        @JsonProperty("sourceNodeId")
+        public AddComponentCommandEntMixInBuilder setSourceNodeId(final org.knime.gateway.api.entity.NodeIDEnt sourceNodeId);
+        
+        @Override
+        @JsonProperty("sourcePortIdx")
+        public AddComponentCommandEntMixInBuilder setSourcePortIdx(final Integer sourcePortIdx);
+        
+        @Override
+        @JsonProperty("nodeRelation")
+        public AddComponentCommandEntMixInBuilder setNodeRelation(final NodeRelationEnum nodeRelation);
         
     }
 

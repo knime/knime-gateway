@@ -64,6 +64,27 @@ import org.knime.gateway.api.entity.GatewayEntity;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
+  /**
+   * Optional parameter that describe the relation of the new node with the given node,  either a Successor or a predecessor of the given node
+   */
+  public enum NodeRelationEnum {
+    PREDECESSORS("PREDECESSORS"),
+    
+    SUCCESSORS("SUCCESSORS");
+
+    private String value;
+
+    NodeRelationEnum(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+  }
+
 
   /**
    * Get providerId
@@ -95,6 +116,24 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
    **/
   public String getName();
 
+  /**
+   * Optional parameter identifying the existing node to connect to
+   * @return sourceNodeId 
+   **/
+  public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId();
+
+  /**
+   * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
+   * @return sourcePortIdx 
+   **/
+  public Integer getSourcePortIdx();
+
+  /**
+   * Optional parameter that describe the relation of the new node with the given node,  either a Successor or a predecessor of the given node
+   * @return nodeRelation 
+   **/
+  public NodeRelationEnum getNodeRelation();
+
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
@@ -106,6 +145,9 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
       valueConsumer.accept("itemId", Pair.create(getItemId(), e.getItemId()));
       valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("sourceNodeId", Pair.create(getSourceNodeId(), e.getSourceNodeId()));
+      valueConsumer.accept("sourcePortIdx", Pair.create(getSourcePortIdx(), e.getSourcePortIdx()));
+      valueConsumer.accept("nodeRelation", Pair.create(getNodeRelation(), e.getNodeRelation()));
   }
 
     /**
@@ -160,6 +202,30 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
          * @return this entity builder for chaining
          */
         AddComponentCommandEntBuilder setName(String name);
+        
+        /**
+         * Optional parameter identifying the existing node to connect to
+         * 
+         * @param sourceNodeId the property value,  
+         * @return this entity builder for chaining
+         */
+        AddComponentCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId);
+        
+        /**
+         * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
+         * 
+         * @param sourcePortIdx the property value,  
+         * @return this entity builder for chaining
+         */
+        AddComponentCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx);
+        
+        /**
+         * Optional parameter that describe the relation of the new node with the given node,  either a Successor or a predecessor of the given node
+         * 
+         * @param nodeRelation the property value,  
+         * @return this entity builder for chaining
+         */
+        AddComponentCommandEntBuilder setNodeRelation(NodeRelationEnum nodeRelation);
         
         
         /**
