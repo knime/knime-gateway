@@ -82,6 +82,12 @@ public interface ComponentSearchItemPortEnt extends GatewayEntity {
   public String getPortTypeName();
 
   /**
+   * The identifier of the port type
+   * @return portTypeId , never <code>null</code>
+   **/
+  public String getPortTypeId();
+
+  /**
    * Hex string of port type color
    * @return color 
    **/
@@ -101,6 +107,7 @@ public interface ComponentSearchItemPortEnt extends GatewayEntity {
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("portTypeName", Pair.create(getPortTypeName(), e.getPortTypeName()));
+      valueConsumer.accept("portTypeId", Pair.create(getPortTypeId(), e.getPortTypeId()));
       valueConsumer.accept("color", Pair.create(getColor(), e.getColor()));
       valueConsumer.accept("optional", Pair.create(isOptional(), e.isOptional()));
   }
@@ -133,6 +140,14 @@ public interface ComponentSearchItemPortEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         ComponentSearchItemPortEntBuilder setPortTypeName(String portTypeName);
+        
+        /**
+         * The identifier of the port type
+         * 
+         * @param portTypeId the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        ComponentSearchItemPortEntBuilder setPortTypeId(String portTypeId);
         
         /**
          * Hex string of port type color

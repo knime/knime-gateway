@@ -82,6 +82,10 @@ public interface ComponentSearchItemPortEntMixIn extends ComponentSearchItemPort
     public String getPortTypeName();
     
     @Override
+    @JsonProperty("portTypeId")
+    public String getPortTypeId();
+    
+    @Override
     @JsonProperty("color")
     public String getColor();
     
@@ -113,6 +117,10 @@ public interface ComponentSearchItemPortEntMixIn extends ComponentSearchItemPort
         @Override
         @JsonProperty("portTypeName")
         public ComponentSearchItemPortEntMixInBuilder setPortTypeName(final String portTypeName);
+        
+        @Override
+        @JsonProperty("portTypeId")
+        public ComponentSearchItemPortEntMixInBuilder setPortTypeId(final String portTypeId);
         
         @Override
         @JsonProperty("color")
