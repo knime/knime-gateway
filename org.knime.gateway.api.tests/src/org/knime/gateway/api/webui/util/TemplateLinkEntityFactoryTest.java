@@ -41,6 +41,7 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.hub.ItemVersion;
 import org.knime.core.util.hub.ItemVersionStringPersistor;
+import org.knime.gateway.api.webui.entity.ItemVersionEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
 import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
@@ -90,7 +91,7 @@ class TemplateLinkEntityFactoryTest {
         assertThat(linkEnt.getUpdateStatus()).isEqualTo(TemplateLinkEnt.UpdateStatusEnum.UP_TO_DATE);
         assertThat(linkEnt.isLinkVariantChangeable()).isTrue();
         assertThat(linkEnt.getIsHubItemVersionChangeable()).isEqualTo(Boolean.TRUE);
-        assertThat(linkEnt.getTargetHubItemVersion()).isEqualTo(ItemVersionStringPersistor.toString(ItemVersion.mostRecent()));
+        assertThat(linkEnt.getTargetHubItemVersion().getType()).isEqualTo(ItemVersionEnt.TypeEnum.MOST_RECENT);
         assertThat(linkEnt.getCurrentLinkVariant()).isNotNull();
         assertThat(linkEnt.getCurrentLinkVariant().getVariant())
             .isEqualTo(LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_PATH);
