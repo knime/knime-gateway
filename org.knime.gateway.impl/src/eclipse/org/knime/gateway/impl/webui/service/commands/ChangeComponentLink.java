@@ -100,7 +100,7 @@ public final class ChangeComponentLink extends AbstractWorkflowCommand {
                 .build();
         }
         m_previousTemplateInfo = previousTemplateInfo;
-        var newUri = transformUri(previousTemplateInfo.getSourceURI());
+        var newUri = transformUri(previousTemplateInfo.getSourceURI(), m_requestedItemVersion);
         final var updatedTemplateInfo = createUpdatedTemplateInformation(previousTemplateInfo, newUri);
         if (previousTemplateInfo.equals(updatedTemplateInfo)) {
             return false;
@@ -109,11 +109,11 @@ public final class ChangeComponentLink extends AbstractWorkflowCommand {
         return true;
     }
 
-    private URI transformUri(URI previousLink) throws ServiceCallException {
+    private static URI transformUri(URI previousLink, ItemVersionEnt requestedItemVersion) throws ServiceCallException {
         URI newLink;
         try {
             newLink = URLResolverUtil.applyTo( //
-                ItemVersions.fromEntity(m_requestedItemVersion), //
+                ItemVersions.fromEntity(requestedItemVersion), //
                 previousLink //
             );
         } catch (URISyntaxException e) {
