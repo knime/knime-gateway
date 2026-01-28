@@ -48,6 +48,7 @@
  */
 package org.knime.gateway.impl.util;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -58,6 +59,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+import org.knime.gateway.impl.util.Debouncer.State;
 
 /**
  * Tests for {@link Debouncer}.
@@ -104,11 +106,15 @@ public class DebouncerTest {
         });
 
         try {
+            assertThat(debouncer.getState(), is(State.IDLE));
             debouncer.call();
+            assertThat(debouncer.getState(), is(State.SCHEDULED));
             Thread.sleep(300);
             debouncer.call();
+            assertThat(debouncer.getState(), is(State.SCHEDULED));
             Thread.sleep(300);
             debouncer.call();
+            assertThat(debouncer.getState(), is(State.SCHEDULED));
 
             assertThat("No execution should happen before the final delay elapses",
                 latch.await(700, TimeUnit.MILLISECONDS), is(false));
@@ -118,8 +124,46 @@ public class DebouncerTest {
 
             Thread.sleep(600);
             assertThat("Cancelled executions must not leak through", executions.get(), is(1));
+            assertThat(debouncer.getState(), is(State.IDLE));
         } finally {
             debouncer.shutdown();
+        }
+    }
+
+    /**
+     * Ensure a fixed interval between execution independent from how long the execution takes (NXT-4433).
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void testCallScheduledOnlyAfterExecutionCompleted() throws InterruptedException {
+        var debouncer = new Debouncer(Duration.ofSeconds(2), () -> {
+            sleep(1);
+        });
+
+        try {
+            var start = System.currentTimeMillis();
+            debouncer.call();
+            await().until(() -> debouncer.getState() == State.EXECUTING);
+            debouncer.call();
+            assertThat(debouncer.getState(), is(State.EXECUTING_AND_SCHEDULED));
+            await().until(() -> debouncer.getState() == State.EXECUTING);
+            var end = System.currentTimeMillis();
+
+            // 2s first call delay + 1s execution + 2s second call delay
+            assertThat("Total time must be 5s", (end - start) / 1000, is(5l));
+
+        } finally {
+            debouncer.shutdown();
+        }
+    }
+
+    private static void sleep(final long seconds) {
+        try {
+            Thread.sleep(seconds * 1000l);
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
     }
 }
