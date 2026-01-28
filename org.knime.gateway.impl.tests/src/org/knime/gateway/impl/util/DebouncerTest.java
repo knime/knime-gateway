@@ -49,6 +49,7 @@
 package org.knime.gateway.impl.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
 import java.time.Duration;
@@ -56,6 +57,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.IntStream;
 
 import org.junit.Test;
 
@@ -98,28 +101,191 @@ public class DebouncerTest {
     public void testCallResetsDelay() throws Exception {
         var executions = new AtomicInteger();
         var latch = new CountDownLatch(1);
+        var executionTime = new AtomicLong(); // to be able to modify from lambda
         var debouncer = new Debouncer(Duration.ofSeconds(1), () -> {
             executions.incrementAndGet();
+            executionTime.set(System.currentTimeMillis());
             latch.countDown();
         });
 
         try {
             debouncer.call();
             Thread.sleep(300);
+            assertThat("No execution should happen before the final delay elapses",
+                latch.await(100, TimeUnit.MILLISECONDS), is(false));
             debouncer.call();
             Thread.sleep(300);
+            assertThat("No execution should happen before the final delay elapses",
+                latch.await(100, TimeUnit.MILLISECONDS), is(false));
             debouncer.call();
+            var lastCallTime = System.currentTimeMillis();
 
             assertThat("No execution should happen before the final delay elapses",
                 latch.await(700, TimeUnit.MILLISECONDS), is(false));
 
             assertThat("Only one execution expected after debouncing", latch.await(2, TimeUnit.SECONDS), is(true));
             assertThat(executions.get(), is(1));
+            assertThat("Execution should happen after the final call delay",
+                executionTime.get() - lastCallTime, greaterThanOrEqualTo(1000L));
 
             Thread.sleep(600);
             assertThat("Cancelled executions must not leak through", executions.get(), is(1));
         } finally {
             debouncer.shutdown();
+        }
+    }
+
+    /**
+     * Ensures no execution happens after shutdown.
+     */
+    @Test
+    public void testCallIgnoredAfterShutdown() throws Exception {
+        var latch = new CountDownLatch(1);
+        var debouncer = new Debouncer(Duration.ofSeconds(1), latch::countDown);
+        debouncer.shutdown();
+
+        debouncer.call();
+
+        assertThat("Task must not run after shutdown", latch.await(1500, TimeUnit.MILLISECONDS), is(false));
+    }
+
+    /**
+     * Ensures exceptions in the runnable do not stall the debouncer.
+     */
+    @Test
+    public void testExceptionInRunnableDoesNotStall() throws Exception {
+        var executions = new AtomicInteger();
+        var latch = new CountDownLatch(2);
+        var firstStartLatch = new CountDownLatch(1);
+        var debouncer = new Debouncer(Duration.ofMillis(200), () -> {
+            executions.incrementAndGet();
+            firstStartLatch.countDown();
+            latch.countDown();
+            throw new RuntimeException("boom");
+        });
+
+        try {
+            debouncer.call();
+            assertThat("First execution should start", firstStartLatch.await(2, TimeUnit.SECONDS), is(true));
+            debouncer.call();
+
+            assertThat("Both executions should happen despite exceptions", latch.await(2, TimeUnit.SECONDS), is(true));
+            assertThat(executions.get(), is(2));
+        } finally {
+            debouncer.shutdown();
+        }
+    }
+
+    /**
+     * Ensures a burst of calls coalesces to a single execution.
+     */
+    @Test
+    public void testBurstCallsCoalesce() throws Exception {
+        var executions = new AtomicInteger();
+        var latch = new CountDownLatch(1);
+        var debouncer = new Debouncer(Duration.ofMillis(300), () -> {
+            executions.incrementAndGet();
+            latch.countDown();
+        });
+
+        try {
+            IntStream.range(0, 20).forEach(i -> debouncer.call());
+            assertThat("Execution should happen after delay", latch.await(2, TimeUnit.SECONDS), is(true));
+            assertThat(executions.get(), is(1));
+        } finally {
+            debouncer.shutdown();
+        }
+    }
+
+    /**
+     * Ensures a call during execution schedules a follow-up after completion.
+     */
+    @Test
+    public void testCallDuringExecutionSchedulesFollowUp() throws Exception {
+        var executions = new AtomicInteger();
+        var latch = new CountDownLatch(2);
+        var firstStartLatch = new CountDownLatch(1);
+        var startTimes = new long[2];
+        var debouncer = new Debouncer(Duration.ofMillis(500), () -> {
+            startTimes[executions.getAndIncrement()] = System.currentTimeMillis();
+            firstStartLatch.countDown();
+            sleep(1);
+            latch.countDown();
+        });
+
+        try {
+            debouncer.call();
+            assertThat("First execution should start", firstStartLatch.await(3, TimeUnit.SECONDS), is(true));
+            debouncer.call();
+
+            assertThat("Second execution should happen", latch.await(6, TimeUnit.SECONDS), is(true));
+            assertThat(startTimes[1] - startTimes[0], greaterThanOrEqualTo(1500L));
+        } finally {
+            debouncer.shutdown();
+        }
+    }
+
+    /**
+     * Ensures re-scheduling while scheduled resets the delay.
+     */
+    @Test
+    public void testCancelWhileScheduledResetsDelay() throws Exception {
+        var latch = new CountDownLatch(1);
+        var start = System.currentTimeMillis();
+        var debouncer = new Debouncer(Duration.ofMillis(800), latch::countDown);
+
+        try {
+            debouncer.call();
+            Thread.sleep(300);
+            debouncer.call();
+
+            assertThat("Execution should occur after the last call delay", latch.await(2, TimeUnit.SECONDS), is(true));
+            assertThat(System.currentTimeMillis() - start, greaterThanOrEqualTo(1100L));
+        } finally {
+            debouncer.shutdown();
+        }
+    }
+
+    /**
+     * Ensure a fixed interval between execution independent from how long the execution takes (NXT-4433).
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void testCallScheduledOnlyAfterExecutionCompleted() throws InterruptedException {
+        var executions = new AtomicInteger();
+        var latch = new CountDownLatch(2);
+        var firstStartLatch = new CountDownLatch(1);
+        var startTimes = new long[2];
+        var debouncer = new Debouncer(Duration.ofSeconds(2), () -> {
+            startTimes[executions.getAndIncrement()] = System.currentTimeMillis();
+            firstStartLatch.countDown();
+            sleep(1);
+            latch.countDown();
+        });
+
+        try {
+            debouncer.call();
+            assertThat("First execution should start", firstStartLatch.await(4, TimeUnit.SECONDS), is(true));
+            debouncer.call();
+            assertThat("Second execution should happen after first completes", latch.await(7, TimeUnit.SECONDS),
+                is(true));
+
+            // 1s execution + 2s delay between the start of executions
+            assertThat("Start times must be at least 3s apart", startTimes[1] - startTimes[0],
+                greaterThanOrEqualTo(3000L));
+
+        } finally {
+            debouncer.shutdown();
+        }
+    }
+
+    private static void sleep(final long seconds) {
+        try {
+            Thread.sleep(seconds * 1000L);
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
     }
 }

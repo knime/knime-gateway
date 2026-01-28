@@ -50,31 +50,35 @@ package org.knime.gateway.impl.util;
 
 import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Can be used to wrap actions that should not be executed too frequently.
  *
  * @author Kai Franze, KNIME GmbH, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @since 5.10
  */
 public final class Debouncer {
 
-    private final ScheduledExecutorService m_scheduler =
-        Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
+    /**
+     * It is vital for the debounce implementation that this is a single-thread executor.
+     */
+    private final ExecutorService m_executor = Executors.newSingleThreadExecutor(new DaemonThreadFactory());
 
-    private final Duration m_delay;
+    private final Runnable m_runnable;
 
-    private ScheduledFuture<?> m_pendingTask;
+    private final AtomicReference<State> m_state = new AtomicReference<>(State.IDLE);
 
-    private final Runnable m_task;
+    private final Semaphore m_semaphore = new Semaphore(0);
 
     /**
-     * Daemon threads do not block JVM shutdown even if call to {@link this#shutdown()} is missed.
+     * Daemon threads do not block JVM shutdown even if call to {@link #shutdown()} is missed.
      */
     private static final class DaemonThreadFactory implements ThreadFactory {
 
@@ -92,34 +96,72 @@ public final class Debouncer {
      * Creates a new Debouncer.
      *
      * @param delay -
-     * @param task -
+     * @param userTask -
      */
-    public Debouncer(final Duration delay, final Runnable task) {
-        m_delay = delay;
-        m_task = task;
+    public Debouncer(final Duration delay, final Runnable userTask) {
+        m_runnable = () -> {
+            // each call during the delay restarts the delay, multiple calls collapse to a single follow-up run
+            do {
+                try {
+                    // block until delay has elapsed or permit becomes available
+                    m_semaphore.tryAcquire(delay.toMillis(), TimeUnit.MILLISECONDS);
+                } catch (InterruptedException ex) { // formality
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            } while (m_state.updateAndGet( //
+                state -> state == State.QUEUED //
+                    ? State.SCHEDULED //
+                    : State.IDLE //
+            ) == State.SCHEDULED);
+            // go again if we've had an incoming call during tryAcquire
+            // the do-while "drains" the QUEUED state by delaying again and invoking a follow-up userTask run
+            userTask.run();
+        };
     }
 
     /**
      * Will schedule the task to be executed after the specified delay. If called again before the delay has passed, the
-     * previous call is cancelled and the delay restarts.
+     * previous call is cancelled and the delay restarts. If called while the task is already running, another execution
+     * will be scheduled once the task is done.
      *
      * Won't do anything if {@link #shutdown()} has been called.
      */
     public void call() {
-        if (m_scheduler.isShutdown()) {
+        if (m_executor.isShutdown()) {
             return;
         }
-        if (m_pendingTask != null && !m_pendingTask.isDone()) {
-            m_pendingTask.cancel(false); // Set to 'false' to not cancel if the actual sync is already running
+
+        if (m_state.compareAndSet(State.IDLE, State.SCHEDULED)) {
+            // if IDLE: transition to SCHEDULED and enqueue runnable on thread executor
+            m_executor.execute(m_runnable);
+        } else if (m_state.compareAndSet(State.SCHEDULED, State.QUEUED)) {
+            // if SCHEDULED: transition to QUEUED and unblock any runnable currently at tryAcquire,
+            // drop this #call
+            m_semaphore.release();
         }
-        m_pendingTask = m_scheduler.schedule(m_task::run, m_delay.toSeconds(), TimeUnit.SECONDS);
     }
 
     /**
      * Shuts down the internal scheduler.
      */
     public void shutdown() {
-        m_scheduler.shutdown();
+        m_executor.shutdown();
+    }
+
+    private enum State {
+            /**
+             * No worker queued
+             */
+            IDLE,
+            /**
+             * Worker waiting a delay
+             */
+            SCHEDULED,
+            /**
+             * "Delay has been reset"-signal is pending
+             */
+            QUEUED,
     }
 
 }
