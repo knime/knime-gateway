@@ -25,6 +25,8 @@
             org.knime.gateway.impl.jsonrpc/src/generated/**/*,
             org.knime.gateway.json/src/generated/**/*
         </sonar.exclusions>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
     <profiles>
