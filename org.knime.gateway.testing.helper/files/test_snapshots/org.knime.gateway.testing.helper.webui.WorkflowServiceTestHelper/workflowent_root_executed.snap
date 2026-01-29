@@ -1945,6 +1945,7 @@
         "canCollapse" : "true",
         "canDelete" : true,
         "canExecute" : false,
+        "canOpenLegacyFlowVariableDialog" : true,
         "canOpenView" : false,
         "canReset" : false
       },
@@ -1957,7 +1958,7 @@
         },
         "textAlign" : "center"
       },
-      "dialogType" : "swing",
+      "dialogType" : "web",
       "hasView" : false,
       "id" : "root:5",
       "inPorts" : [ {
@@ -1975,6 +1976,7 @@
         "optional" : false,
         "typeId" : "org.knime.core.node.BufferedDataTable"
       } ],
+      "inputContentVersion" : "PLACEHOLDER_FOR_VERSION",
       "kind" : "node",
       "outPorts" : [ {
         "canRemove" : false,

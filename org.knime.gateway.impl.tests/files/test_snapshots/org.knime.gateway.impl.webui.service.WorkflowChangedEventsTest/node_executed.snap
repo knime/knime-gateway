@@ -152,6 +152,10 @@
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
   "op" : "replace",
+  "path" : "/nodes/root:5/inputContentVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:6/outPorts/0/portContentVersion",
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
