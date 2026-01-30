@@ -75,6 +75,8 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
     
     LEARNER("Learner"),
     
+    PREDICTOR("Predictor"),
+    
     SINK("Sink"),
     
     OTHER("Other");
@@ -119,7 +121,7 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
 
   /**
    * The type (a.k.a. \&quot;kind\&quot;) of the component
-   * @return type , never <code>null</code>
+   * @return type 
    **/
   public TypeEnum getType();
 
@@ -189,7 +191,7 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
         /**
          * The type (a.k.a. \&quot;kind\&quot;) of the component
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param type the property value,  
          * @return this entity builder for chaining
          */
         ComponentSearchItemEntBuilder setType(TypeEnum type);

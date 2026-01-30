@@ -77,9 +77,6 @@ public record DefaultNativeNodeInvariantsEnt(
         if(name == null) {
             throw new IllegalArgumentException("<name> must not be null.");
         }
-        if(type == null) {
-            throw new IllegalArgumentException("<type> must not be null.");
-        }
     }
 
     @Override
@@ -138,9 +135,6 @@ public record DefaultNativeNodeInvariantsEnt(
 
         @Override
         public DefaultNativeNodeInvariantsEntBuilder setType(TypeEnum type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("<type> must not be null.");
-             }
              m_type = type;
              return this;
         }

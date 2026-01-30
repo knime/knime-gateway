@@ -308,6 +308,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentSearchItemEnt.java" type="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt$TypeEnum">
+        <filter id="1177550852">
+            <message_arguments>
+                <message_argument value="PREDICTOR"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentSearchItemPortEnt.java" type="org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt">
         <filter id="403804204">
             <message_arguments>

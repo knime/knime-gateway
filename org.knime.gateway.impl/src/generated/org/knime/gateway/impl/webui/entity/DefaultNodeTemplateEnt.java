@@ -87,9 +87,6 @@ public record DefaultNodeTemplateEnt(
         if(name == null) {
             throw new IllegalArgumentException("<name> must not be null.");
         }
-        if(type == null) {
-            throw new IllegalArgumentException("<type> must not be null.");
-        }
         if(id == null) {
             throw new IllegalArgumentException("<id> must not be null.");
         }
@@ -179,9 +176,6 @@ public record DefaultNodeTemplateEnt(
 
         @Override
         public DefaultNodeTemplateEntBuilder setType(TypeEnum type) {
-             if(type == null) {
-                 throw new IllegalArgumentException("<type> must not be null.");
-             }
              m_type = type;
              return this;
         }

@@ -132,7 +132,7 @@ public interface NativeNodeInvariantsEnt extends GatewayEntity {
 
   /**
    * The type of the node.
-   * @return type , never <code>null</code>
+   * @return type 
    **/
   public TypeEnum getType();
 
@@ -182,7 +182,7 @@ public interface NativeNodeInvariantsEnt extends GatewayEntity {
         /**
          * The type of the node.
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param type the property value,  
          * @return this entity builder for chaining
          */
         NativeNodeInvariantsEntBuilder setType(TypeEnum type);

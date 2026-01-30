@@ -123,7 +123,7 @@ public interface NodeTemplateEnt extends GatewayEntity, NativeNodeInvariantsEnt 
         /**
          * The type of the node.
          * 
-         * @param type the property value, NOT <code>null</code>! 
+         * @param type the property value,  
          * @return this entity builder for chaining
          */
         NodeTemplateEntBuilder setType(TypeEnum type);
