@@ -13,6 +13,12 @@
                 <message_argument value="5.9.0"/>
             </message_arguments>
         </filter>
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.11.0"/>
+                <message_argument value="5.10.0"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.kai.CodeKaiHandler">
         <filter id="305324134">
@@ -371,6 +377,20 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="getProviderTypes()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/syncing/WorkflowSyncer.java" type="org.knime.gateway.impl.webui.syncing.WorkflowSyncer$DefaultWorkflowSyncer">
+        <filter id="337686583">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.syncing.WorkflowSyncer.DefaultWorkflowSyncer"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/syncing/WorkflowSyncer.java" type="org.knime.gateway.impl.webui.syncing.WorkflowSyncer$SyncerConfig">
+        <filter id="337686583">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.syncing.WorkflowSyncer.SyncerConfig"/>
             </message_arguments>
         </filter>
     </resource>
@@ -884,9 +904,27 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentSearchItemPortEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemPortEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemPortEnt"/>
+                <message_argument value="DefaultComponentSearchItemPortEnt(String, String, String, String, Boolean)"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemPortEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultComponentSearchItemPortEnt(String, String, String, String, String, Boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentSearchItemPortEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemPortEnt$DefaultComponentSearchItemPortEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setPortTypeId(String)"/>
             </message_arguments>
         </filter>
     </resource>

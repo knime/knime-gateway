@@ -7,6 +7,12 @@
                 <message_argument value="5.9.0"/>
             </message_arguments>
         </filter>
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.11.0"/>
+                <message_argument value="5.10.0"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/api/service/GatewayException.java" type="org.knime.gateway.api.service.GatewayException">
         <filter id="338792546">
@@ -303,9 +309,33 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentSearchItemPortEnt.java" type="org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt"/>
+                <message_argument value="getPortTypeId()"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getPortTypeId()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentSearchItemPortEnt.java" type="org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt$ComponentSearchItemPortEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt.ComponentSearchItemPortEntBuilder"/>
+                <message_argument value="setPortTypeId(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setPortTypeId(String)"/>
             </message_arguments>
         </filter>
     </resource>
