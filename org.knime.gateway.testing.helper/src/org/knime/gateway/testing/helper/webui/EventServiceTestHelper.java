@@ -151,7 +151,13 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
     static PatchOpEnt waitAndFindPatchOpForPath(final String path, final List<Object> events) {
         AtomicReference<PatchOpEnt> res = new AtomicReference<>();
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            res.set(events.stream() //
+            // Snapshot the synchronized list to avoid ConcurrentModificationException when a test polls (Awaitility)
+            // while the event consumer thread appends new events.
+            List<Object> snapshot;
+            synchronized (events) {
+                snapshot = new ArrayList<>(events);
+            }
+            res.set(snapshot.stream() //
                 .flatMap(e -> ((CompositeEventEnt)e).getEvents().stream()) //
                 .filter(WorkflowChangedEventEnt.class::isInstance) //
                 .map(WorkflowChangedEventEnt.class::cast) //
@@ -164,7 +170,13 @@ public class EventServiceTestHelper extends WebUIGatewayServiceTestHelper {
     }
 
     private static void assertThatThereIsNoPathForPatchOp(final String path, final List<Object> events) {
-        assertFalse("unexpected patch op for path " + path, events.stream() //
+        // Snapshot the synchronized list to avoid ConcurrentModificationException when a test polls (Awaitility)
+        // while the event consumer thread appends new events.
+        List<Object> snapshot;
+        synchronized (events) {
+            snapshot = new ArrayList<>(events);
+        }
+        assertFalse("unexpected patch op for path " + path, snapshot.stream() //
             .flatMap(e -> ((CompositeEventEnt)e).getEvents().stream()) //
             .filter(WorkflowChangedEventEnt.class::isInstance) //
             .map(WorkflowChangedEventEnt.class::cast) //

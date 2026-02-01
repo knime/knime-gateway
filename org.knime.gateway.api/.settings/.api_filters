@@ -14,6 +14,118 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/entity/DataValueViewEnt.java" type="org.knime.gateway.api.entity.DataValueViewEnt">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="DataValueViewManager"/>
+                <message_argument value="DataValueViewEnt"/>
+                <message_argument value="DataValueViewEnt(DataValueWrapper, DataValueViewManager)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="DataValueWrapper"/>
+                <message_argument value="DataValueViewEnt"/>
+                <message_argument value="DataValueViewEnt(DataValueWrapper, DataValueViewManager)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/entity/NodeDialogEnt.java" type="org.knime.gateway.api.entity.NodeDialogEnt">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="SingleNodeContainerUI"/>
+                <message_argument value="NodeDialogEnt"/>
+                <message_argument value="NodeDialogEnt(SingleNodeContainerUI)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/entity/NodeIDEnt.java" type="org.knime.gateway.api.entity.NodeIDEnt">
+        <filter id="1141899266">
+            <message_arguments>
+                <message_argument value="5.10"/>
+                <message_argument value="5.11"/>
+                <message_argument value="hasSuperfluousParent(WorkflowManager)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/entity/NodeViewEnt.java" type="org.knime.gateway.api.entity.NodeViewEnt">
+        <filter id="643842064">
+            <message_arguments>
+                <message_argument value="RenderingConfigEnt"/>
+                <message_argument value="NodeViewEnt"/>
+                <message_argument value="getRenderingConfig()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/entity/PortViewEnt.java" type="org.knime.gateway.api.entity.PortViewEnt">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="NodePortWrapper"/>
+                <message_argument value="PortViewEnt"/>
+                <message_argument value="PortViewEnt(NodePortWrapper, PortViewManager, Supplier&lt;List&lt;String&gt;&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="PortViewManager"/>
+                <message_argument value="PortViewEnt"/>
+                <message_argument value="PortViewEnt(NodePortWrapper, PortViewManager, Supplier&lt;List&lt;String&gt;&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/entity/StopValuesCIELabModelEnt.java" type="org.knime.gateway.api.entity.StopValuesCIELabModelEnt">
+        <filter id="1108344834">
+            <message_arguments>
+                <message_argument value="5.10"/>
+                <message_argument value="5.11"/>
+                <message_argument value="org.knime.gateway.api.entity.StopValuesCIELabModelEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/entity/UIExtensionEnt.java" type="org.knime.gateway.api.entity.UIExtensionEnt">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="DataServiceManager&lt;N&gt;"/>
+                <message_argument value="UIExtensionEnt&lt;N&gt;"/>
+                <message_argument value="UIExtensionEnt(N, PageResourceManager&lt;N&gt;, DataServiceManager&lt;N&gt;, PageResourceManagerPageType)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="DataServiceManager&lt;N&gt;"/>
+                <message_argument value="UIExtensionEnt&lt;N&gt;"/>
+                <message_argument value="UIExtensionEnt(N, PageResourceManager&lt;N&gt;, DataServiceManager&lt;N&gt;, PageResourceManagerPageType, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="PageResourceManager&lt;N&gt;"/>
+                <message_argument value="UIExtensionEnt&lt;N&gt;"/>
+                <message_argument value="UIExtensionEnt(N, PageResourceManager&lt;N&gt;, DataServiceManager&lt;N&gt;, PageResourceManagerPageType)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="PageResourceManager&lt;N&gt;"/>
+                <message_argument value="UIExtensionEnt&lt;N&gt;"/>
+                <message_argument value="UIExtensionEnt(N, PageResourceManager&lt;N&gt;, DataServiceManager&lt;N&gt;, PageResourceManagerPageType, boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="PageType"/>
+                <message_argument value="UIExtensionEnt&lt;N&gt;"/>
+                <message_argument value="UIExtensionEnt(N, PageResourceManager&lt;N&gt;, DataServiceManager&lt;N&gt;, PageResourceManagerPageType)"/>
+            </message_arguments>
+        </filter>
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="PageType"/>
+                <message_argument value="UIExtensionEnt&lt;N&gt;"/>
+                <message_argument value="UIExtensionEnt(N, PageResourceManager&lt;N&gt;, DataServiceManager&lt;N&gt;, PageResourceManagerPageType, boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/api/service/GatewayException.java" type="org.knime.gateway.api.service.GatewayException">
         <filter id="338792546">
             <message_arguments>
@@ -88,6 +200,15 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/util/DataSize.java" type="org.knime.gateway.api.util.DataSize">
+        <filter id="1108344834">
+            <message_arguments>
+                <message_argument value="5.10"/>
+                <message_argument value="5.11"/>
+                <message_argument value="org.knime.gateway.api.util.DataSize"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/api/util/ItemVersions.java" type="org.knime.gateway.api.util.ItemVersions">
         <filter id="1110441988">
             <message_arguments>
@@ -108,6 +229,13 @@
                 <message_argument value="5.8"/>
                 <message_argument value="5.10"/>
                 <message_argument value="org.knime.gateway.api.webui.service.util.MutableServiceCallException"/>
+            </message_arguments>
+        </filter>
+        <filter id="1141899266">
+            <message_arguments>
+                <message_argument value="5.10"/>
+                <message_argument value="5.11"/>
+                <message_argument value="MutableServiceCallException(String, boolean)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -138,6 +266,22 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="buildSpaceGroupEnt(String, String, SpaceGroupEnt.TypeEnum, List&lt;SpaceEnt&gt;, boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/webui/util/TemplateLinkEntityFactory.java" type="org.knime.gateway.api.webui.util.TemplateLinkEntityFactory">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.util.TemplateLinkEntityFactory"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/webui/util/WorkflowBuildContext.java" type="org.knime.gateway.api.webui.util.WorkflowBuildContext$WorkflowBuildContextBuilder">
+        <filter id="1141899266">
+            <message_arguments>
+                <message_argument value="5.10"/>
+                <message_argument value="5.11"/>
+                <message_argument value="setSyncStateSupplier(Supplier&lt;SyncStateEnt&gt;)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -218,13 +362,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/gateway/api/webui/util/TemplateLinkEntityFactory.java" type="org.knime.gateway.api.webui.util.TemplateLinkEntityFactory">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.util.TemplateLinkEntityFactory"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/AncestorInfoEnt.java" type="org.knime.gateway.api.webui.entity.AncestorInfoEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -299,14 +436,12 @@
                 <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/CurrentStateEnt.java" type="org.knime.gateway.api.webui.entity.CurrentStateEnt">
-        <filter id="1110441988">
+        <filter id="1211105284">
             <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.CurrentStateEnt"/>
+                <message_argument value="getPortTypeId()"/>
             </message_arguments>
         </filter>
-        <filter id="1211105284">
+        <filter id="1227882500">
             <message_arguments>
                 <message_argument value="getPortTypeId()"/>
             </message_arguments>
@@ -322,6 +457,18 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setPortTypeId(String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/CurrentStateEnt.java" type="org.knime.gateway.api.webui.entity.CurrentStateEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.CurrentStateEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getPortTypeId()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -577,6 +724,12 @@
                 <message_argument value="org.knime.gateway.api_5.10.0"/>
             </message_arguments>
         </filter>
+        <filter id="405995624">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.LinkTypeEnum"/>
+                <message_argument value="org.knime.gateway.api_5.11.0"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ShareComponentCommandEnt"/>
@@ -668,13 +821,6 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.SpecificVersionEnt"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/SyncStateErrorEnt.java" type="org.knime.gateway.api.webui.entity.SyncStateErrorEnt">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.entity.SyncStateErrorEnt"/>
             </message_arguments>
         </filter>
     </resource>
