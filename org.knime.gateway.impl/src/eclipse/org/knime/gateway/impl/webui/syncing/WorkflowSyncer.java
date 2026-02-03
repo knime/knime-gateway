@@ -69,7 +69,6 @@ import org.knime.gateway.impl.util.Debouncer;
 import org.knime.gateway.impl.webui.modes.WebUIMode;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.syncing.HubUploader.SyncThresholdException;
-import org.knime.gateway.impl.webui.syncing.LocalSaver.SyncWhileWorkflowExecutingException;
 
 /**
  * Automatically sync the currently open project
@@ -204,9 +203,6 @@ public interface WorkflowSyncer extends WorkflowResource {
             } catch (IOException e) {
                 m_syncStateStore.changeState(SyncStateEnt.StateEnum.ERROR, new SyncStateStore.Error(e));
                 return;
-            } catch (SyncWhileWorkflowExecutingException e) {
-                m_syncStateStore.changeState(SyncStateEnt.StateEnum.DIRTY, new SyncStateStore.Error(e));
-                return;
             }
 
             m_syncStateStore.changeState(SyncStateEnt.StateEnum.UPLOAD);
@@ -239,9 +235,6 @@ public interface WorkflowSyncer extends WorkflowResource {
             } catch (IOException e) {
                 handleSyncIOException(e);
                 return;
-            } catch (SyncWhileWorkflowExecutingException e) {
-                handleSyncWhileExecutingException(e);
-                return;
             }
 
             m_syncStateStore.changeState(SyncStateEnt.StateEnum.UPLOAD);
@@ -272,21 +265,9 @@ public interface WorkflowSyncer extends WorkflowResource {
             LOGGER.error("Error during manual project sync: %s".formatted(e.getMessage()), e);
             m_syncStateStore.changeState(SyncStateEnt.StateEnum.ERROR);
             throw ServiceCallException.builder() //
-                .withTitle("Failed to save workflow") //
+                .withTitle("Failed to sync workflow") //
                 .withDetails(e.getClass().getSimpleName() + ": " + e.getMessage()) //
                 .canCopy(true) //
-                .withCause(e) //
-                .build();
-        }
-
-        private void handleSyncWhileExecutingException(final SyncWhileWorkflowExecutingException e)
-            throws ServiceCallException {
-            LOGGER.error("Project sync skipped because workflow is executing: %s".formatted(e.getMessage()), e);
-            m_syncStateStore.changeState(SyncStateEnt.StateEnum.ERROR);
-            throw ServiceCallException.builder() //
-                .withTitle("Workflow is currently executing") //
-                .withDetails("Cannot save workflow while it is executing.") //
-                .canCopy(false) //
                 .withCause(e) //
                 .build();
         }

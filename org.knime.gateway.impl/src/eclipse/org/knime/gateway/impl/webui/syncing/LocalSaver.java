@@ -64,14 +64,12 @@ final class LocalSaver {
 
     /**
      * @throws UnsupportedOperationException if the workflow is a component project
-     * @throws SyncWhileWorkflowExecutingException if the workflow is currently executing
      * @throws IOException if saving the workflow fails
      */
     @SuppressWarnings("static-method") // used as parameter/dependency, clearer and easier if not static
     void saveProject(final WorkflowManager wfm)
-        throws IOException, SyncWhileWorkflowExecutingException {
+        throws IOException {
         assertIsWorkflowProject(wfm);
-        assertWorkflowNotExecuting(wfm);
         try {
             wfm.save( //
                 wfm.getContextV2().getExecutorInfo().getLocalWorkflowPath().toFile(), //
@@ -92,22 +90,4 @@ final class LocalSaver {
         }
     }
 
-    /**
-     * @throws SyncWhileWorkflowExecutingException if the workflow is currently executing
-     */
-    private static void assertWorkflowNotExecuting(final WorkflowManager wfm)
-        throws SyncWhileWorkflowExecutingException {
-        final var state = wfm.getNodeContainerState();
-        if (state.isExecutionInProgress() || state.isExecutingRemotely()) {
-            throw new SyncWhileWorkflowExecutingException("Cannot save workflow while it is executing");
-        }
-    }
-
-    static final class SyncWhileWorkflowExecutingException extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        SyncWhileWorkflowExecutingException(final String message) {
-            super(message);
-        }
-    }
 }
