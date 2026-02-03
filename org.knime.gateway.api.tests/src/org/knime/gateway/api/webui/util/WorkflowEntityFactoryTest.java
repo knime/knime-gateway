@@ -51,7 +51,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,9 +63,15 @@ import org.knime.core.node.NodeAndBundleInformationPersistor;
 import org.knime.core.node.missing.MissingNodeFactory;
 import org.knime.core.node.missing.MissingNodeFactory.Reason;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.MetaNodeTemplateInformation;
+import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.webui.entity.ItemVersionEnt;
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt.TypeEnum;
+import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
+import org.knime.gateway.api.webui.entity.TemplateLinkEnt;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -119,5 +128,31 @@ class WorkflowEntityFactoryTest {
 
         var forbiddenUrl = new URL("http://blub.com");
         assertThrows(IllegalStateException.class, () -> WorkflowEntityFactory.createIconDataURL(forbiddenUrl));
+    }
+
+    @Test
+    void testBuildTemplateLinkEntFromWorkflow() throws URISyntaxException {
+        var metanode = m_wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "component");
+        var componentId = m_wfm.convertMetaNodeToSubNode(metanode.getID()).getConvertedNodeID();
+        var component = (SubNodeContainer)m_wfm.getNodeContainer(componentId);
+
+        var linkUri = new URI("knime://My-Hub/Users/test/component?version=most-recent");
+        component.setTemplateInformation(
+            MetaNodeTemplateInformation.createNewTemplate(SubNodeContainer.class).createLink(linkUri));
+
+        var linkEnt = WorkflowEntityFactory.buildTemplateLinkEnt( //
+            component, //
+            s -> Optional.of(SpaceProviderEnt.TypeEnum.HUB) //
+        );
+
+        assertThat(linkEnt).isNotNull();
+        assertThat(linkEnt.getUrl()).isEqualTo(linkUri.toString());
+        assertThat(linkEnt.getUpdateStatus()).isEqualTo(TemplateLinkEnt.UpdateStatusEnum.UP_TO_DATE);
+        assertThat(linkEnt.isLinkVariantChangeable()).isTrue();
+        assertThat(linkEnt.getIsHubItemVersionChangeable()).isEqualTo(Boolean.TRUE);
+        assertThat(linkEnt.getTargetHubItemVersion().getType()).isEqualTo(ItemVersionEnt.TypeEnum.MOST_RECENT);
+        assertThat(linkEnt.getCurrentLinkVariant()).isNotNull();
+        assertThat(linkEnt.getCurrentLinkVariant().getVariant())
+            .isEqualTo(LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_PATH);
     }
 }

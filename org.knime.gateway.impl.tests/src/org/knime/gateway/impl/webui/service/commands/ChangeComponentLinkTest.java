@@ -36,7 +36,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
-import java.math.BigDecimal;
 import java.net.URI;
 
 import org.junit.Test;
