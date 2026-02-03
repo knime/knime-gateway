@@ -48,6 +48,11 @@
  */
 package org.knime.gateway.impl.webui.service;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.util.exception.ResourceAccessException;
 import org.knime.core.util.hub.NamedItemVersion;
@@ -65,12 +70,6 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
-
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.util.List;
-
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany

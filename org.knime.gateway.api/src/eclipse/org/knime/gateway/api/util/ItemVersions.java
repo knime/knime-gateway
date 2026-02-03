@@ -45,16 +45,14 @@
  */
 package org.knime.gateway.api.util;
 
+import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
+
 import org.knime.core.util.hub.ItemVersion;
 import org.knime.core.util.hub.SpecificVersion;
 import org.knime.gateway.api.webui.entity.CurrentStateEnt;
 import org.knime.gateway.api.webui.entity.ItemVersionEnt;
 import org.knime.gateway.api.webui.entity.MostRecentEnt;
 import org.knime.gateway.api.webui.entity.SpecificVersionEnt;
-
-import java.math.BigDecimal;
-
-import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 /**
  * Utility methods around {@link org.knime.core.util.hub.ItemVersion}.
