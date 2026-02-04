@@ -57,7 +57,7 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Encapsulates a request to K-AI which contains the entire conversation  as well as information on the open workflow, subworkflow and selected nodes. 
+ * Encapsulates a request to K-AI which contains the entire conversation as well as information on the open workflow, subworkflow and selected nodes. 
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */

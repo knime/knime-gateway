@@ -65,7 +65,7 @@ public interface ProjectDisposedEventTypeEnt extends GatewayEntity, EventTypeEnt
 
 
   /**
-   * The event is going to emitted if the project  with this id is disposed.
+   * The event is going to emitted if the project with this id is disposed.
    * @return projectId , never <code>null</code>
    **/
   public String getProjectId();
@@ -93,7 +93,7 @@ public interface ProjectDisposedEventTypeEnt extends GatewayEntity, EventTypeEnt
         ProjectDisposedEventTypeEntBuilder setTypeId(String typeId);
         
         /**
-         * The event is going to emitted if the project  with this id is disposed.
+         * The event is going to emitted if the project with this id is disposed.
          * 
          * @param projectId the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

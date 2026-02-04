@@ -72,13 +72,13 @@ public interface TranslateCommandEnt extends GatewayEntity, PartBasedCommandEnt 
   public XYEnt getTranslation();
 
   /**
-   * Whether to move the in-ports bar of a metanode. Requires the  metanode ports bar position to be set. Will fail otherwise.
+   * Whether to move the in-ports bar of a metanode. Requires the metanode ports bar position to be set. Will fail otherwise.
    * @return metanodeInPortsBar 
    **/
   public Boolean isMetanodeInPortsBar();
 
   /**
-   * Whether to move the out-ports bar of a metanode. Requires the  metanode ports bar position to be set. Will fail otherwise.
+   * Whether to move the out-ports bar of a metanode. Requires the metanode ports bar position to be set. Will fail otherwise.
    * @return metanodeOutPortsBar 
    **/
   public Boolean isMetanodeOutPortsBar();
@@ -143,7 +143,7 @@ public interface TranslateCommandEnt extends GatewayEntity, PartBasedCommandEnt 
         TranslateCommandEntBuilder setTranslation(XYEnt translation);
         
         /**
-         * Whether to move the in-ports bar of a metanode. Requires the  metanode ports bar position to be set. Will fail otherwise.
+         * Whether to move the in-ports bar of a metanode. Requires the metanode ports bar position to be set. Will fail otherwise.
          * 
          * @param metanodeInPortsBar the property value,  
          * @return this entity builder for chaining
@@ -151,7 +151,7 @@ public interface TranslateCommandEnt extends GatewayEntity, PartBasedCommandEnt 
         TranslateCommandEntBuilder setMetanodeInPortsBar(Boolean metanodeInPortsBar);
         
         /**
-         * Whether to move the out-ports bar of a metanode. Requires the  metanode ports bar position to be set. Will fail otherwise.
+         * Whether to move the out-ports bar of a metanode. Requires the metanode ports bar position to be set. Will fail otherwise.
          * 
          * @param metanodeOutPortsBar the property value,  
          * @return this entity builder for chaining
