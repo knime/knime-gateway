@@ -217,7 +217,7 @@ public class WorkflowSyncerTest {
         verify(m_wfm, never()).removeListener(m_workflowListener);
         var state = m_syncer.getSyncState();
         assertThat(state.getState()).isEqualTo(SyncStateEnt.StateEnum.DIRTY);
-        assertThat(state.getError().getCode()).isEqualTo(SyncThresholdException.class.getName());
+        assertThat(state.getError().getCode()).isEqualTo(SyncThresholdException.class.getSimpleName());
     }
 
 }
