@@ -52,7 +52,7 @@ import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.KaiRequestEnt;
 
 /**
- * Encapsulates a request to K-AI which contains the entire conversation  as well as information on the open workflow, subworkflow and selected nodes. 
+ * Encapsulates a request to K-AI which contains the entire conversation as well as information on the open workflow, subworkflow and selected nodes. 
  *
  * @param conversationId
  * @param projectId

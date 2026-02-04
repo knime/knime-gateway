@@ -66,7 +66,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface AppStateEnt extends GatewayEntity {
 
   /**
-   * The general mode the app is initialized with.  Control various aspects of the app  (ui elements being hidden/shown, whether a workflow can be edited, ...)
+   * The general mode the app is initialized with. Control various aspects of the app (ui elements being hidden/shown, whether a workflow can be edited, ...)
    */
   public enum AppModeEnum {
     DEFAULT("default"),
@@ -111,7 +111,7 @@ public interface AppStateEnt extends GatewayEntity {
 
 
   /**
-   * The general mode the app is initialized with.  Control various aspects of the app  (ui elements being hidden/shown, whether a workflow can be edited, ...)
+   * The general mode the app is initialized with. Control various aspects of the app (ui elements being hidden/shown, whether a workflow can be edited, ...)
    * @return appMode 
    **/
   public AppModeEnum getAppMode();
@@ -263,7 +263,7 @@ public interface AppStateEnt extends GatewayEntity {
     public interface AppStateEntBuilder extends GatewayEntityBuilder<AppStateEnt> {
 
         /**
-         * The general mode the app is initialized with.  Control various aspects of the app  (ui elements being hidden/shown, whether a workflow can be edited, ...)
+         * The general mode the app is initialized with. Control various aspects of the app (ui elements being hidden/shown, whether a workflow can be edited, ...)
          * 
          * @param appMode the property value,  
          * @return this entity builder for chaining

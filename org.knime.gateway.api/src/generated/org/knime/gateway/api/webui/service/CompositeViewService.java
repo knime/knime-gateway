@@ -57,7 +57,7 @@ import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 public interface CompositeViewService extends GatewayService {
 
     /**
-     * Iterates over all data services of nodes in the composite view and deactivates them. If a component is nested in another component, the data services of the view of nested component  are also recursively deactivated.
+     * Iterates over all data services of nodes in the composite view and deactivates them. If a component is nested in another component, the data services of the view of nested component are also recursively deactivated.
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a workflow which has the same format as a node-id.
@@ -111,7 +111,7 @@ public interface CompositeViewService extends GatewayService {
     Object pollComponentReexecutionStatus(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, String resetNodeIdSuffix)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException;
         
     /**
-     * Applies viewValues as new default.  First the viewValues will be validated, then applied and when necessary the component will be executed.
+     * Applies viewValues as new default. First the viewValues will be validated, then applied and when necessary the component will be executed.
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a workflow which has the same format as a node-id.
@@ -125,7 +125,7 @@ public interface CompositeViewService extends GatewayService {
     void setViewValuesAsNewDefault(String projectId, org.knime.gateway.api.entity.NodeIDEnt workflowId, org.knime.gateway.api.entity.NodeIDEnt nodeId, java.util.Map<String, String> viewValues)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.NodeNotFoundException;
         
     /**
-     * Triggers the re-execution process (and updates the viewValues) for the whole component, i.e.,  every containing node will be re-executed. If a specific node has triggered the re-execution process use  &#39;trigger-reexecution/{resetNodeIdSuffix}&#39; to only re-execute that node together  with every down-stream node of it.
+     * Triggers the re-execution process (and updates the viewValues) for the whole component, i.e., every containing node will be re-executed. If a specific node has triggered the re-execution process use &#39;trigger-reexecution/{resetNodeIdSuffix}&#39; to only re-execute that node together with every down-stream node of it.
      *
      * @param projectId ID of the workflow-project.
      * @param workflowId The ID of a workflow which has the same format as a node-id.
