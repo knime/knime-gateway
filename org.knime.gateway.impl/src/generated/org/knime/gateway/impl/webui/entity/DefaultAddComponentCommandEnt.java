@@ -46,6 +46,9 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
+import org.knime.gateway.api.webui.entity.AutoConnectOptionsEnt;
+import org.knime.gateway.api.webui.entity.InsertionOptionsEnt;
+import org.knime.gateway.api.webui.entity.ReplacementOptionsEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.webui.entity.DefaultWorkflowCommandEnt;
 
@@ -59,10 +62,10 @@ import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
  * @param spaceId
  * @param itemId
  * @param position
+ * @param insertionOptions
+ * @param replacementOptions
+ * @param autoConnectOptions
  * @param name
- * @param sourceNodeId
- * @param sourcePortIdx
- * @param nodeRelation
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -73,10 +76,10 @@ public record DefaultAddComponentCommandEnt(
     String spaceId,
     String itemId,
     XYEnt position,
-    String name,
-    org.knime.gateway.api.entity.NodeIDEnt sourceNodeId,
-    Integer sourcePortIdx,
-    NodeRelationEnum nodeRelation) implements AddComponentCommandEnt {
+    InsertionOptionsEnt insertionOptions,
+    ReplacementOptionsEnt replacementOptions,
+    AutoConnectOptionsEnt autoConnectOptions,
+    String name) implements AddComponentCommandEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
@@ -90,9 +93,6 @@ public record DefaultAddComponentCommandEnt(
         }
         if(itemId == null) {
             throw new IllegalArgumentException("<itemId> must not be null.");
-        }
-        if(position == null) {
-            throw new IllegalArgumentException("<position> must not be null.");
         }
         if(name == null) {
             throw new IllegalArgumentException("<name> must not be null.");
@@ -130,23 +130,23 @@ public record DefaultAddComponentCommandEnt(
     }
     
     @Override
+    public InsertionOptionsEnt getInsertionOptions() {
+        return insertionOptions;
+    }
+    
+    @Override
+    public ReplacementOptionsEnt getReplacementOptions() {
+        return replacementOptions;
+    }
+    
+    @Override
+    public AutoConnectOptionsEnt getAutoConnectOptions() {
+        return autoConnectOptions;
+    }
+    
+    @Override
     public String getName() {
         return name;
-    }
-    
-    @Override
-    public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId() {
-        return sourceNodeId;
-    }
-    
-    @Override
-    public Integer getSourcePortIdx() {
-        return sourcePortIdx;
-    }
-    
-    @Override
-    public NodeRelationEnum getNodeRelation() {
-        return nodeRelation;
     }
     
     /**
@@ -164,13 +164,13 @@ public record DefaultAddComponentCommandEnt(
 
         private XYEnt m_position;
 
+        private InsertionOptionsEnt m_insertionOptions;
+
+        private ReplacementOptionsEnt m_replacementOptions;
+
+        private AutoConnectOptionsEnt m_autoConnectOptions;
+
         private String m_name;
-
-        private org.knime.gateway.api.entity.NodeIDEnt m_sourceNodeId;
-
-        private Integer m_sourcePortIdx;
-
-        private NodeRelationEnum m_nodeRelation;
 
         @Override
         public DefaultAddComponentCommandEntBuilder setKind(KindEnum kind) {
@@ -207,10 +207,25 @@ public record DefaultAddComponentCommandEnt(
 
         @Override
         public DefaultAddComponentCommandEntBuilder setPosition(XYEnt position) {
-             if(position == null) {
-                 throw new IllegalArgumentException("<position> must not be null.");
-             }
              m_position = position;
+             return this;
+        }
+
+        @Override
+        public DefaultAddComponentCommandEntBuilder setInsertionOptions(InsertionOptionsEnt insertionOptions) {
+             m_insertionOptions = insertionOptions;
+             return this;
+        }
+
+        @Override
+        public DefaultAddComponentCommandEntBuilder setReplacementOptions(ReplacementOptionsEnt replacementOptions) {
+             m_replacementOptions = replacementOptions;
+             return this;
+        }
+
+        @Override
+        public DefaultAddComponentCommandEntBuilder setAutoConnectOptions(AutoConnectOptionsEnt autoConnectOptions) {
+             m_autoConnectOptions = autoConnectOptions;
              return this;
         }
 
@@ -224,24 +239,6 @@ public record DefaultAddComponentCommandEnt(
         }
 
         @Override
-        public DefaultAddComponentCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId) {
-             m_sourceNodeId = sourceNodeId;
-             return this;
-        }
-
-        @Override
-        public DefaultAddComponentCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx) {
-             m_sourcePortIdx = sourcePortIdx;
-             return this;
-        }
-
-        @Override
-        public DefaultAddComponentCommandEntBuilder setNodeRelation(NodeRelationEnum nodeRelation) {
-             m_nodeRelation = nodeRelation;
-             return this;
-        }
-
-        @Override
         public DefaultAddComponentCommandEnt build() {
             return new DefaultAddComponentCommandEnt(
                 immutable(m_kind),
@@ -249,10 +246,10 @@ public record DefaultAddComponentCommandEnt(
                 immutable(m_spaceId),
                 immutable(m_itemId),
                 immutable(m_position),
-                immutable(m_name),
-                immutable(m_sourceNodeId),
-                immutable(m_sourcePortIdx),
-                immutable(m_nodeRelation));
+                immutable(m_insertionOptions),
+                immutable(m_replacementOptions),
+                immutable(m_autoConnectOptions),
+                immutable(m_name));
         }
     
     }

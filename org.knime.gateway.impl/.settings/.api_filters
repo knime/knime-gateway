@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.impl" version="2">
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt"/>
+                <message_argument value="org.knime.gateway.impl_5.11.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.kai.CodeKaiHandler">
         <filter id="305324134">
             <message_arguments>
@@ -29,6 +37,34 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.service.util.WorkflowChangesListener"/>
                 <message_argument value="trigger()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/ComponentLoadJobManager.java" type="org.knime.gateway.impl.webui.ComponentLoadJobManager">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.ComponentLoadJobManager"/>
+                <message_argument value="cancelAndRemoveLoadJob(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.ComponentLoadJobManager"/>
+                <message_argument value="startLoadJob(AddComponentCommandEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/ComponentLoadJobManager.java" type="org.knime.gateway.impl.webui.ComponentLoadJobManager$LoadJob">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.ComponentLoadJobManager.LoadJob"/>
+                <message_argument value="LoadJob(String, CompletableFuture&lt;ComponentLoader.LoadResult&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.ComponentLoadJobManager.LoadJob"/>
+                <message_argument value="future()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -284,24 +320,24 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="DefaultAddComponentCommandEnt(WorkflowCommandEnt.KindEnum, String, String, String, XYEnt, String, NodeIDEnt, Integer, AddComponentCommandEnt.NodeRelationEnum)"/>
+                <message_argument value="DefaultAddComponentCommandEnt(WorkflowCommandEnt.KindEnum, String, String, String, XYEnt, InsertionOptionsEnt, ReplacementOptionsEnt, AutoConnectOptionsEnt, String)"/>
             </message_arguments>
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAddComponentCommandEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt$DefaultAddComponentCommandEntBuilder">
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="setNodeRelation(AddComponentCommandEnt.NodeRelationEnum)"/>
+                <message_argument value="setAutoConnectOptions(AutoConnectOptionsEnt)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="setSourceNodeId(NodeIDEnt)"/>
+                <message_argument value="setInsertionOptions(InsertionOptionsEnt)"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="setSourcePortIdx(Integer)"/>
+                <message_argument value="setReplacementOptions(ReplacementOptionsEnt)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -309,6 +345,13 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAncestorInfoEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultAutoConnectOptionsEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultAutoConnectOptionsEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultAutoConnectOptionsEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -355,6 +398,13 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultCurrentStateEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultInsertionOptionsEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultInsertionOptionsEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultInsertionOptionsEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -411,6 +461,13 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultNamedItemVersionEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultReplacementOptionsEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultReplacementOptionsEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultReplacementOptionsEnt"/>
             </message_arguments>
         </filter>
     </resource>

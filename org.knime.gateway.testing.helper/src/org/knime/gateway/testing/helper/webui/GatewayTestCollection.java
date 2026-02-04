@@ -98,10 +98,10 @@ public final class GatewayTestCollection {
         if (property == null || property.isEmpty() || property.isBlank()) {
             return s -> true;
         }
-        var filter = Arrays.stream(property.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toSet());
+        var filter = Arrays.stream(property.split(",")) //
+            .map(String::trim) //
+            .filter(s -> !s.isEmpty()) //
+            .collect(Collectors.toSet()); //
         return filter::contains;
     }
 

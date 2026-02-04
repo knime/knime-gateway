@@ -67,7 +67,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
 
   /**
-   * Optional parameter that describe the relation of the new node with the given node, either a Successor or a predecessor of the given node
+   * Optional parameter that describe the relation of the new node with the given node, either predecessors or successors of the given node
    */
   public enum NodeRelationEnum {
     PREDECESSORS("PREDECESSORS"),
@@ -125,7 +125,7 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
   public Integer getSourcePortIdx();
 
   /**
-   * Optional parameter that describe the relation of the new node with the given node, either a Successor or a predecessor of the given node
+   * Optional parameter that describe the relation of the new node with the given node, either predecessors or successors of the given node
    * @return nodeRelation 
    **/
   public NodeRelationEnum getNodeRelation();
@@ -207,7 +207,7 @@ public interface AddNodeCommandEnt extends GatewayEntity, WorkflowCommandEnt {
         AddNodeCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx);
         
         /**
-         * Optional parameter that describe the relation of the new node with the given node, either a Successor or a predecessor of the given node
+         * Optional parameter that describe the relation of the new node with the given node, either predecessors or successors of the given node
          * 
          * @param nodeRelation the property value,  
          * @return this entity builder for chaining

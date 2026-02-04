@@ -59,7 +59,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.knime.gateway.api.entity.NodeIDEnt;
-import org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
@@ -117,7 +117,7 @@ public class DeleteComponentPlaceholderCommandTestHelper extends WebUIGatewaySer
             new WorkflowMiddleware(ProjectManager.getInstance(), spaceProviderManager));
 
         final String projectId = loadWorkflow(TestWorkflowCollection.HOLLOW);
-        WorkflowCommandEnt command = builder(AddComponentCommandEntBuilder.class) //
+        WorkflowCommandEnt command = builder(AddComponentCommandEnt.AddComponentCommandEntBuilder.class) //
             .setKind(KindEnum.ADD_COMPONENT) //
             .setPosition(builder(XYEntBuilder.class).setX(10).setY(20).build()) //
             .setProviderId("local-testing") //

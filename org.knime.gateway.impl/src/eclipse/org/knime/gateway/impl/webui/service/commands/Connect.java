@@ -48,8 +48,12 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.Optional;
+
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
@@ -61,21 +65,47 @@ import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
  */
 final class Connect extends AbstractWorkflowCommand {
 
-    private final ConnectCommandEnt m_commandEnt;
-
     private ConnectionContainer m_newConnection;
 
     private ConnectionContainer m_oldConnection;
 
+    private final Parameters m_parameters;
+
+    private record Parameters( //
+            NodeIDEnt destinationNode, //
+            Integer destinationPortIdx, //
+            NodeIDEnt sourceNode, //
+            Integer sourcePortIdx //
+    ) {
+
+    }
+
+    Connect(final NodeID destinationNode, final Integer destinationPortIdx, final NodeID sourceNode,
+        final Integer sourcePortIdx) {
+        m_parameters = new Parameters( //
+            new NodeIDEnt(destinationNode), //
+            destinationPortIdx, //
+            new NodeIDEnt(sourceNode), //
+            sourcePortIdx //
+        );
+    }
+
     Connect(final ConnectCommandEnt commandEnt) {
-        m_commandEnt = commandEnt;
+        m_parameters = new Parameters( //
+            commandEnt.getDestinationNodeId(), //
+            commandEnt.getDestinationPortIdx(), //
+            commandEnt.getSourceNodeId(), //
+            commandEnt.getSourcePortIdx() //
+        );
     }
 
     @Override
     public boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
-        var destNodeId = m_commandEnt.getDestinationNodeId().toNodeID(wfm);
-        var destPortIdx = m_commandEnt.getDestinationPortIdx();
+        var destNodeId = Optional.ofNullable(m_parameters.destinationNode()) //
+            .map(id -> id.toNodeID(getWorkflowManager())) //
+            .orElse(null);
+        var destPortIdx = m_parameters.destinationPortIdx();
         try {
             m_oldConnection = wfm.getConnection(new ConnectionID(destNodeId, destPortIdx));
         } catch (IllegalArgumentException e) {
@@ -87,8 +117,10 @@ final class Connect extends AbstractWorkflowCommand {
                 .build();
         }
 
-        var sourceNodeId = m_commandEnt.getSourceNodeId().toNodeID(wfm);
-        var sourcePortIdx = m_commandEnt.getSourcePortIdx();
+        var sourceNodeId = Optional.ofNullable(m_parameters.sourceNode()) //
+            .map(id -> id.toNodeID(getWorkflowManager())) //
+            .orElse(null);
+        var sourcePortIdx = m_parameters.sourcePortIdx();
         if (m_oldConnection != null && m_oldConnection.getSource().equals(sourceNodeId)
             && m_oldConnection.getSourcePort() == sourcePortIdx) {
             // it's the very same connection -> no change
@@ -125,4 +157,3 @@ final class Connect extends AbstractWorkflowCommand {
     }
 
 }
-

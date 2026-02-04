@@ -44,11 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.AutoConnectOptionsEnt;
-import org.knime.gateway.api.webui.entity.InsertionOptionsEnt;
-import org.knime.gateway.api.webui.entity.ReplacementOptionsEnt;
-import org.knime.gateway.api.webui.entity.XYEnt;
-import org.knime.gateway.json.webui.entity.WorkflowCommandEntMixIn;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -56,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
-import org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt.DefaultAddComponentCommandEntBuilder;
+import org.knime.gateway.api.webui.entity.AutoConnectOptionsEnt;
+import org.knime.gateway.impl.webui.entity.DefaultAutoConnectOptionsEnt.DefaultAutoConnectOptionsEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -65,50 +60,26 @@ import org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt.Default
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultAddComponentCommandEntBuilder.class)
-@JsonSerialize(as=AddComponentCommandEnt.class)
+@JsonDeserialize(builder=DefaultAutoConnectOptionsEntBuilder.class)
+@JsonSerialize(as=AutoConnectOptionsEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface AddComponentCommandEntMixIn extends AddComponentCommandEnt {
+public interface AutoConnectOptionsEntMixIn extends AutoConnectOptionsEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("kind")
-    public KindEnum getKind();
+    @JsonProperty("targetNodeId")
+    public org.knime.gateway.api.entity.NodeIDEnt getTargetNodeId();
     
     @Override
-    @JsonProperty("providerId")
-    public String getProviderId();
+    @JsonProperty("targetNodePortIdx")
+    public Integer getTargetNodePortIdx();
     
     @Override
-    @JsonProperty("spaceId")
-    public String getSpaceId();
-    
-    @Override
-    @JsonProperty("itemId")
-    public String getItemId();
-    
-    @Override
-    @JsonProperty("position")
-    public XYEnt getPosition();
-    
-    @Override
-    @JsonProperty("insertionOptions")
-    public InsertionOptionsEnt getInsertionOptions();
-    
-    @Override
-    @JsonProperty("replacementOptions")
-    public ReplacementOptionsEnt getReplacementOptions();
-    
-    @Override
-    @JsonProperty("autoConnectOptions")
-    public AutoConnectOptionsEnt getAutoConnectOptions();
-    
-    @Override
-    @JsonProperty("name")
-    public String getName();
+    @JsonProperty("nodeRelation")
+    public NodeRelationEnum getNodeRelation();
     
 
     /**
@@ -118,46 +89,22 @@ public interface AddComponentCommandEntMixIn extends AddComponentCommandEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface AddComponentCommandEntMixInBuilder extends AddComponentCommandEntBuilder {
+    public static interface AutoConnectOptionsEntMixInBuilder extends AutoConnectOptionsEntBuilder {
     
         @Override
-        public AddComponentCommandEntMixIn build();
+        public AutoConnectOptionsEntMixIn build();
     
         @Override
-        @JsonProperty("kind")
-        public AddComponentCommandEntMixInBuilder setKind(final KindEnum kind);
+        @JsonProperty("targetNodeId")
+        public AutoConnectOptionsEntMixInBuilder setTargetNodeId(final org.knime.gateway.api.entity.NodeIDEnt targetNodeId);
         
         @Override
-        @JsonProperty("providerId")
-        public AddComponentCommandEntMixInBuilder setProviderId(final String providerId);
+        @JsonProperty("targetNodePortIdx")
+        public AutoConnectOptionsEntMixInBuilder setTargetNodePortIdx(final Integer targetNodePortIdx);
         
         @Override
-        @JsonProperty("spaceId")
-        public AddComponentCommandEntMixInBuilder setSpaceId(final String spaceId);
-        
-        @Override
-        @JsonProperty("itemId")
-        public AddComponentCommandEntMixInBuilder setItemId(final String itemId);
-        
-        @Override
-        @JsonProperty("position")
-        public AddComponentCommandEntMixInBuilder setPosition(final XYEnt position);
-        
-        @Override
-        @JsonProperty("insertionOptions")
-        public AddComponentCommandEntMixInBuilder setInsertionOptions(final InsertionOptionsEnt insertionOptions);
-        
-        @Override
-        @JsonProperty("replacementOptions")
-        public AddComponentCommandEntMixInBuilder setReplacementOptions(final ReplacementOptionsEnt replacementOptions);
-        
-        @Override
-        @JsonProperty("autoConnectOptions")
-        public AddComponentCommandEntMixInBuilder setAutoConnectOptions(final AutoConnectOptionsEnt autoConnectOptions);
-        
-        @Override
-        @JsonProperty("name")
-        public AddComponentCommandEntMixInBuilder setName(final String name);
+        @JsonProperty("nodeRelation")
+        public AutoConnectOptionsEntMixInBuilder setNodeRelation(final NodeRelationEnum nodeRelation);
         
     }
 

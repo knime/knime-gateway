@@ -101,7 +101,7 @@ public final class ComponentLoader {
     }
 
     /**
-     * Loads a component from a {@link AddComponentCommandEnt}.
+     * Loads a component from a command entity.
      *
      * @param commandEnt contains all information required to load the component
      * @param wfm the workflow to load the component into
@@ -126,10 +126,13 @@ public final class ComponentLoader {
                 ? downloadComponent(provider, commandEnt.getSpaceId(), commandEnt.getItemId(), exec) //
                 : downloadComponent(provider, commandEnt.getItemId(), exec);
         } catch (GatewayException ex) {
+            LOGGER.debug("Component download failed.", ex);
             throw new CompletionException(compileLoadingFailedErrorMessage(ex), ex);
         } catch (final MutableServiceCallException ex) {
+            LOGGER.debug("Failed to fetch component template.", ex);
             throw new CompletionException(ex.toGatewayException("Failed to fetch component template"));
         } catch (final CanceledExecutionException e) {
+            LOGGER.debug("Component download cancelled.", e);
             throw new CancellationException(e.getMessage());
         }
 
@@ -145,6 +148,7 @@ public final class ComponentLoader {
                 exec //
             );
         } catch (CanceledExecutionException e) {
+            LOGGER.debug("Component load cancelled.", e);
             throw new CancellationException(e.getMessage());
         } catch (Throwable t) { // NOSONAR
             var rootCause = ExceptionUtils.getRootCause(t);
@@ -169,9 +173,18 @@ public final class ComponentLoader {
     public static class ComponentLoadedWithWarningsException extends RuntimeException {
 
         private final String m_title;
+
         private final NodeID m_componentId;
 
-        public ComponentLoadedWithWarningsException(NodeID componentId, final String title, final String message) {
+        /**
+         * Creates an exception describing a component load with warnings or errors.
+         *
+         * @param componentId the loaded component id
+         * @param title the warning or error title
+         * @param message the warning or error details
+         */
+        public ComponentLoadedWithWarningsException(final NodeID componentId, final String title,
+            final String message) {
             super(message);
             m_title = title;
             m_componentId = componentId;
@@ -287,17 +300,16 @@ public final class ComponentLoader {
             return switch (loadResult.getType()) {
                 case DataLoadError -> treatDataLoadErrorsAsOK ? Status.OK : Status.ERROR;
                 case Error -> Status.ERROR;
-                case Warning -> {
-                    var nodeStateChanged = loadResult.getCause()
-                        .map(cause -> cause == LoadResultEntry.LoadResultEntryCause.NodeStateChanged).orElse(false);
-                    if (nodeStateChanged && treatStateChangeWarningsAsOK) {
-                        yield Status.OK;
-                    } else {
-                        yield Status.WARNING;
-                    }
-                }
+                case Warning -> mapWarningStatus(loadResult, treatStateChangeWarningsAsOK);
                 default -> Status.OK;
             };
+        }
+
+        private static Status mapWarningStatus(final LoadResultEntry loadResult,
+            final boolean treatStateChangeWarningsAsOK) {
+            var nodeStateChanged = loadResult.getCause()
+                .map(cause -> cause == LoadResultEntry.LoadResultEntryCause.NodeStateChanged).orElse(Boolean.FALSE);
+            return nodeStateChanged.booleanValue() && treatStateChangeWarningsAsOK ? Status.OK : Status.WARNING;
         }
 
         protected final Status aggregateStatus() {

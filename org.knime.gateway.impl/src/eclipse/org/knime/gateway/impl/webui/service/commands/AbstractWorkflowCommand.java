@@ -121,7 +121,7 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
         }
     }
 
-    private boolean executeWithWorkflowContextInternal() {
+    private boolean executeWithWorkflowContextInternal() throws ServiceCallException {
         NodeContext.pushContext(m_wfm);
         try {
             return executeWithWorkflowContext();
@@ -162,7 +162,7 @@ public abstract class AbstractWorkflowCommand implements WorkflowCommand {
      * @return <code>true</code> if the command changed the workflow, <code>false</code> if the successful execution of
      *         the command did not change the workflow
      */
-    protected boolean executeWithWorkflowContext() {
+    protected boolean executeWithWorkflowContext() throws ServiceCallException {
         throw new UnsupportedOperationException("Not implemented");
     }
 

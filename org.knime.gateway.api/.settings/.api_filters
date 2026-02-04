@@ -14,6 +14,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.api.webui.entity.AddComponentCommandEnt">
+        <filter id="305324134">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt"/>
+                <message_argument value="org.knime.gateway.api_5.11.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/api/entity/DataValueViewEnt.java" type="org.knime.gateway.api.entity.DataValueViewEnt">
         <filter id="643850349">
             <message_arguments>
@@ -269,13 +277,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="src/eclipse/org/knime/gateway/api/webui/util/TemplateLinkEntityFactory.java" type="org.knime.gateway.api.webui.util.TemplateLinkEntityFactory">
-        <filter id="1110441988">
-            <message_arguments>
-                <message_argument value="org.knime.gateway.api.webui.util.TemplateLinkEntityFactory"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="src/eclipse/org/knime/gateway/api/webui/util/WorkflowBuildContext.java" type="org.knime.gateway.api.webui.util.WorkflowBuildContext$WorkflowBuildContextBuilder">
         <filter id="1141899266">
             <message_arguments>
@@ -289,34 +290,34 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt"/>
-                <message_argument value="getNodeRelation()"/>
+                <message_argument value="getAutoConnectOptions()"/>
             </message_arguments>
         </filter>
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt"/>
-                <message_argument value="getSourceNodeId()"/>
+                <message_argument value="getInsertionOptions()"/>
             </message_arguments>
         </filter>
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt"/>
-                <message_argument value="getSourcePortIdx()"/>
+                <message_argument value="getReplacementOptions()"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
             <message_arguments>
-                <message_argument value="getNodeRelation()"/>
+                <message_argument value="getAutoConnectOptions()"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
             <message_arguments>
-                <message_argument value="getSourceNodeId()"/>
+                <message_argument value="getInsertionOptions()"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
             <message_arguments>
-                <message_argument value="getSourcePortIdx()"/>
+                <message_argument value="getReplacementOptions()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -324,41 +325,34 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder"/>
-                <message_argument value="setNodeRelation(AddComponentCommandEnt.NodeRelationEnum)"/>
+                <message_argument value="setAutoConnectOptions(AutoConnectOptionsEnt)"/>
             </message_arguments>
         </filter>
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder"/>
-                <message_argument value="setSourceNodeId(NodeIDEnt)"/>
+                <message_argument value="setInsertionOptions(InsertionOptionsEnt)"/>
             </message_arguments>
         </filter>
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.AddComponentCommandEnt.AddComponentCommandEntBuilder"/>
-                <message_argument value="setSourcePortIdx(Integer)"/>
+                <message_argument value="setReplacementOptions(ReplacementOptionsEnt)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
             <message_arguments>
-                <message_argument value="setNodeRelation(AddComponentCommandEnt.NodeRelationEnum)"/>
+                <message_argument value="setAutoConnectOptions(AutoConnectOptionsEnt)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
             <message_arguments>
-                <message_argument value="setSourceNodeId(NodeIDEnt)"/>
+                <message_argument value="setInsertionOptions(InsertionOptionsEnt)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
             <message_arguments>
-                <message_argument value="setSourcePortIdx(Integer)"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="src/generated/org/knime/gateway/api/webui/entity/AddComponentCommandEnt.java" type="org.knime.gateway.api.webui.entity.AddComponentCommandEnt$NodeRelationEnum">
-        <filter id="1211105284">
-            <message_arguments>
-                <message_argument value="NodeRelationEnum"/>
+                <message_argument value="setReplacementOptions(ReplacementOptionsEnt)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -366,6 +360,13 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.AncestorInfoEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/AutoConnectOptionsEnt.java" type="org.knime.gateway.api.webui.entity.AutoConnectOptionsEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.AutoConnectOptionsEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -517,6 +518,13 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setStatus(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/InsertionOptionsEnt.java" type="org.knime.gateway.api.webui.entity.InsertionOptionsEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.InsertionOptionsEnt"/>
             </message_arguments>
         </filter>
     </resource>
@@ -702,6 +710,13 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ReplacementOptionsEnt.java" type="org.knime.gateway.api.webui.entity.ReplacementOptionsEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ReplacementOptionsEnt"/>
             </message_arguments>
         </filter>
     </resource>
