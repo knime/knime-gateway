@@ -48,13 +48,19 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
+import java.util.Optional;
 import java.util.Set;
 
-import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.gateway.api.entity.ConnectionIDEnt;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.InsertionOptionsEnt;
+import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
+import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.service.util.DefaultServiceUtil;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry;
@@ -68,65 +74,90 @@ import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
  */
 final class InsertNode extends AbstractWorkflowCommand {
 
-    private final InsertNodeCommandEnt m_commandEnt;
-
-    private NodeID m_destNode;
-
-    private int m_destPort;
-
-    private NodeID m_srcNode;
-
-    private int m_srcPort;
-
     private NodeID m_insertedNode;
 
-    private ConnectionID m_connection;
+    private WorkflowPersistor m_copyOfExistingInsertedNode;
 
-    private WorkflowPersistor m_copy;
+    private Parameters m_parameters;
 
-    InsertNode(final InsertNodeCommandEnt commandEnt) {
-        m_commandEnt = commandEnt;
+    private Port m_source;
+
+    private Port m_destination;
+
+    private ConnectionContainer m_originalConnection;
+
+    public InsertNode(final NodeID nodeToInsert, final InsertionOptionsEnt insertionOptions, final XYEnt position) {
+        m_parameters = new Parameters( //
+            insertionOptions.getConnectionId(), //
+            Geometry.Point.of(position), //
+            new NodeIDEnt(nodeToInsert), //
+            null //
+        );
+    }
+
+    private record Parameters( //
+            ConnectionIDEnt connection, //
+            Geometry.Point position, //
+            NodeIDEnt nodeToInsert, //
+            NodeFactoryKeyEnt nodeToCreateAndInsert) {
+    }
+
+    private record Port(NodeID node, int port) {
 
     }
 
-    @Override
-    protected boolean executeWithWorkflowLockAndContext()
-        throws ServiceCallException {
-        var wfm = getWorkflowManager();
-        m_connection =
-            DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_commandEnt.getConnectionId());
+    InsertNode(final InsertNodeCommandEnt commandEnt) {
+        m_parameters = new Parameters( //
+            commandEnt.getConnectionId(), //
+            Geometry.Point.of(commandEnt.getPosition()), //
+            commandEnt.getNodeId(), //
+            commandEnt.getNodeFactory() //
+        );
+    }
 
-        // Save original source and destination
-        var connectionContainer = wfm.getConnection(m_connection);
-        m_destNode = connectionContainer.getDest();
-        m_destPort = connectionContainer.getDestPort();
-        m_srcNode = connectionContainer.getSource();
-        m_srcPort = connectionContainer.getSourcePort();
+    @Override
+    protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
+        var wfm = getWorkflowManager();
+        var connectionId =
+            DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_parameters.connection());
+        var nodeToInsert = Optional.ofNullable(m_parameters.nodeToInsert()) //
+            .map(id -> id.toNodeID(getWorkflowManager())) //
+            .orElse(null);
+        m_originalConnection = wfm.getConnection(connectionId);
+        m_source = new Port(this.m_originalConnection.getSource(), this.m_originalConnection.getSourcePort());
+        m_destination = new Port(this.m_originalConnection.getDest(), this.m_originalConnection.getDestPort());
 
         // Remove Connection
-        wfm.removeConnection(connectionContainer);
+        wfm.removeConnection(this.m_originalConnection);
 
         // Move previous node / Create new node
-        var targetPosition = m_commandEnt.getPosition();
-        var nodeEnt = m_commandEnt.getNodeId();
-        var nodeFactoryEnt = m_commandEnt.getNodeFactory();
-        if (nodeEnt != null) { // Move node
-            m_insertedNode = nodeEnt.toNodeID(wfm);
-            WorkflowCopyContent content = WorkflowCopyContent.builder().setNodeIDs(m_insertedNode).build();
-            m_copy = wfm.copy(true, content);
-
-            var nodeContainer = wfm.getNodeContainer(m_insertedNode);
-            var originalPosition = nodeContainer.getUIInformation().getBounds();
-            var delta = Geometry.Delta.of(Geometry.Point.of(targetPosition), Geometry.Point.of(originalPosition));
-            Translate.translateNodes(wfm, Set.of(nodeContainer), delta);
-            new NodeConnector(wfm, m_insertedNode).connectFrom(m_srcNode, m_srcPort).connectTo(m_destNode, m_destPort)
-                .trackCreation().connect();
-        } else if (nodeFactoryEnt != null) { // New node
-            m_insertedNode = new NodeCreator(wfm, nodeFactoryEnt, targetPosition) //
+        if (nodeToInsert != null) { // Move node
+            m_insertedNode = nodeToInsert;
+            m_copyOfExistingInsertedNode = wfm.copy( //
+                true, //
+                WorkflowCopyContent.builder().setNodeIDs(nodeToInsert).build() //
+            );
+            var nc = wfm.getNodeContainer(nodeToInsert);
+            Translate.translateNodes( //
+                wfm, //
+                Set.of(nc), //
+                Geometry.Delta.of( //
+                    m_parameters.position(), //
+                    Geometry.Point.of(nc.getUIInformation().getBounds()) //
+                ) //
+            );
+            new NodeConnector(wfm, nodeToInsert) //
+                .connectFrom(m_source.node(), m_source.port()) //
+                .connectTo(m_destination.node(), m_destination.port()) //
+                .trackCreation() //
+                .connect();
+        } else if (m_parameters.nodeToCreateAndInsert() != null) { // New node
+            m_insertedNode = new NodeCreator(wfm, m_parameters.nodeToCreateAndInsert(), m_parameters.position().toEnt()) //
                 .centerNode() //
                 .trackCreation() //
-                .connect(connector -> connector.connectFrom(m_srcNode, m_srcPort) //
-                    .connectTo(m_destNode, m_destPort) //
+                .connect(connector -> connector //
+                    .connectFrom(m_source.node(), m_source.port()) //
+                    .connectTo(m_destination.node(), m_destination.port()) //
                     .trackCreation()) //
                 .create();
         } else {
@@ -143,28 +174,27 @@ final class InsertNode extends AbstractWorkflowCommand {
     @Override
     public boolean canUndo() {
         var wfm = getWorkflowManager();
-        return wfm.canRemoveNode(m_insertedNode) && wfm.canAddConnection(m_srcNode, m_srcPort, m_destNode, m_destPort);
+        return wfm.canRemoveNode(m_insertedNode) //
+            && wfm.canAddConnection(m_source.node(), m_source.port(), m_destination.node(), m_destination.port());
     }
 
     @Override
     public boolean canRedo() {
         var wfm = getWorkflowManager();
-        return wfm.canRemoveConnection(wfm.getConnection(m_connection));
+        return wfm.canRemoveConnection(m_originalConnection);
     }
 
     @Override
     public void undo() throws ServiceCallException {
         var wfm = getWorkflowManager();
         wfm.removeNode(m_insertedNode);
-        if (m_copy != null) {
-            wfm.paste(m_copy);
+        if (m_copyOfExistingInsertedNode != null) {
+            wfm.paste(m_copyOfExistingInsertedNode);
         }
-        wfm.addConnection(m_srcNode, m_srcPort, m_destNode, m_destPort);
+        wfm.addConnection(m_source.node(), m_source.port(), m_destination.node(), m_destination.port());
         m_insertedNode = null;
-        m_srcNode = null;
-        m_srcPort = 0;
-        m_destNode = null;
-        m_destPort = 0;
+        m_source = null;
+        m_destination = null;
     }
 
 }

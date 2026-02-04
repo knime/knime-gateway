@@ -44,6 +44,9 @@
  */
 package org.knime.gateway.api.webui.entity;
 
+import org.knime.gateway.api.webui.entity.AutoConnectOptionsEnt;
+import org.knime.gateway.api.webui.entity.InsertionOptionsEnt;
+import org.knime.gateway.api.webui.entity.ReplacementOptionsEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt;
 import org.knime.gateway.api.webui.entity.XYEnt;
 
@@ -63,27 +66,6 @@ import org.knime.gateway.api.entity.GatewayEntity;
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
 public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEnt {
-
-  /**
-   * Optional parameter that describe the relation of the new node with the given node,  either a Successor or a predecessor of the given node
-   */
-  public enum NodeRelationEnum {
-    PREDECESSORS("PREDECESSORS"),
-    
-    SUCCESSORS("SUCCESSORS");
-
-    private String value;
-
-    NodeRelationEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
 
 
   /**
@@ -106,33 +88,33 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
 
   /**
    * Get position
-   * @return position , never <code>null</code>
+   * @return position 
    **/
   public XYEnt getPosition();
+
+  /**
+   * Get insertionOptions
+   * @return insertionOptions 
+   **/
+  public InsertionOptionsEnt getInsertionOptions();
+
+  /**
+   * Get replacementOptions
+   * @return replacementOptions 
+   **/
+  public ReplacementOptionsEnt getReplacementOptions();
+
+  /**
+   * Get autoConnectOptions
+   * @return autoConnectOptions 
+   **/
+  public AutoConnectOptionsEnt getAutoConnectOptions();
 
   /**
    * The name of the component to be added. Such that it can already be used for the loading placeholder before the component is loaded.
    * @return name , never <code>null</code>
    **/
   public String getName();
-
-  /**
-   * Optional parameter identifying the existing node to connect to
-   * @return sourceNodeId 
-   **/
-  public org.knime.gateway.api.entity.NodeIDEnt getSourceNodeId();
-
-  /**
-   * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
-   * @return sourcePortIdx 
-   **/
-  public Integer getSourcePortIdx();
-
-  /**
-   * Optional parameter that describe the relation of the new node with the given node,  either a Successor or a predecessor of the given node
-   * @return nodeRelation 
-   **/
-  public NodeRelationEnum getNodeRelation();
 
 
   @Override
@@ -144,10 +126,10 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
       valueConsumer.accept("spaceId", Pair.create(getSpaceId(), e.getSpaceId()));
       valueConsumer.accept("itemId", Pair.create(getItemId(), e.getItemId()));
       valueConsumer.accept("position", Pair.create(getPosition(), e.getPosition()));
+      valueConsumer.accept("insertionOptions", Pair.create(getInsertionOptions(), e.getInsertionOptions()));
+      valueConsumer.accept("replacementOptions", Pair.create(getReplacementOptions(), e.getReplacementOptions()));
+      valueConsumer.accept("autoConnectOptions", Pair.create(getAutoConnectOptions(), e.getAutoConnectOptions()));
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
-      valueConsumer.accept("sourceNodeId", Pair.create(getSourceNodeId(), e.getSourceNodeId()));
-      valueConsumer.accept("sourcePortIdx", Pair.create(getSourcePortIdx(), e.getSourcePortIdx()));
-      valueConsumer.accept("nodeRelation", Pair.create(getNodeRelation(), e.getNodeRelation()));
   }
 
     /**
@@ -190,10 +172,34 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
         /**
    		 * Set position
          * 
-         * @param position the property value, NOT <code>null</code>! 
+         * @param position the property value,  
          * @return this entity builder for chaining
          */
         AddComponentCommandEntBuilder setPosition(XYEnt position);
+        
+        /**
+   		 * Set insertionOptions
+         * 
+         * @param insertionOptions the property value,  
+         * @return this entity builder for chaining
+         */
+        AddComponentCommandEntBuilder setInsertionOptions(InsertionOptionsEnt insertionOptions);
+        
+        /**
+   		 * Set replacementOptions
+         * 
+         * @param replacementOptions the property value,  
+         * @return this entity builder for chaining
+         */
+        AddComponentCommandEntBuilder setReplacementOptions(ReplacementOptionsEnt replacementOptions);
+        
+        /**
+   		 * Set autoConnectOptions
+         * 
+         * @param autoConnectOptions the property value,  
+         * @return this entity builder for chaining
+         */
+        AddComponentCommandEntBuilder setAutoConnectOptions(AutoConnectOptionsEnt autoConnectOptions);
         
         /**
          * The name of the component to be added. Such that it can already be used for the loading placeholder before the component is loaded.
@@ -202,30 +208,6 @@ public interface AddComponentCommandEnt extends GatewayEntity, WorkflowCommandEn
          * @return this entity builder for chaining
          */
         AddComponentCommandEntBuilder setName(String name);
-        
-        /**
-         * Optional parameter identifying the existing node to connect to
-         * 
-         * @param sourceNodeId the property value,  
-         * @return this entity builder for chaining
-         */
-        AddComponentCommandEntBuilder setSourceNodeId(org.knime.gateway.api.entity.NodeIDEnt sourceNodeId);
-        
-        /**
-         * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
-         * 
-         * @param sourcePortIdx the property value,  
-         * @return this entity builder for chaining
-         */
-        AddComponentCommandEntBuilder setSourcePortIdx(Integer sourcePortIdx);
-        
-        /**
-         * Optional parameter that describe the relation of the new node with the given node,  either a Successor or a predecessor of the given node
-         * 
-         * @param nodeRelation the property value,  
-         * @return this entity builder for chaining
-         */
-        AddComponentCommandEntBuilder setNodeRelation(NodeRelationEnum nodeRelation);
         
         
         /**

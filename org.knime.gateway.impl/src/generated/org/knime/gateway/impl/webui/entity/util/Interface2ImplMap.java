@@ -86,6 +86,8 @@ import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAppStateEnt;
 import org.knime.gateway.api.webui.entity.AutoConnectCommandEnt.AutoConnectCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAutoConnectCommandEnt;
+import org.knime.gateway.api.webui.entity.AutoConnectOptionsEnt.AutoConnectOptionsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultAutoConnectOptionsEnt;
 import org.knime.gateway.api.webui.entity.AutoDisconnectCommandEnt.AutoDisconnectCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultAutoDisconnectCommandEnt;
 import org.knime.gateway.api.webui.entity.BoundsEnt.BoundsEntBuilder;
@@ -160,6 +162,8 @@ import org.knime.gateway.api.webui.entity.GatewayProblemDescriptionEnt.GatewayPr
 import org.knime.gateway.impl.webui.entity.DefaultGatewayProblemDescriptionEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt.InsertNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultInsertNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.InsertionOptionsEnt.InsertionOptionsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultInsertionOptionsEnt;
 import org.knime.gateway.api.webui.entity.ItemVersionEnt.ItemVersionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultItemVersionEnt;
 import org.knime.gateway.api.webui.entity.JobManagerEnt.JobManagerEntBuilder;
@@ -308,6 +312,8 @@ import org.knime.gateway.api.webui.entity.ReorderWorkflowAnnotationsCommandEnt.R
 import org.knime.gateway.impl.webui.entity.DefaultReorderWorkflowAnnotationsCommandEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt.ReplaceNodeCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultReplaceNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.ReplacementOptionsEnt.ReplacementOptionsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultReplacementOptionsEnt;
 import org.knime.gateway.api.webui.entity.SelectionEventEnt.SelectionEventEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultSelectionEventEnt;
 import org.knime.gateway.api.webui.entity.ShareComponentCommandEnt.ShareComponentCommandEntBuilder;
@@ -491,6 +497,9 @@ public class Interface2ImplMap {
         if(clazz == AutoConnectCommandEntBuilder.class) {
             return (B)new DefaultAutoConnectCommandEnt.DefaultAutoConnectCommandEntBuilder();
         }        
+        if(clazz == AutoConnectOptionsEntBuilder.class) {
+            return (B)new DefaultAutoConnectOptionsEnt.DefaultAutoConnectOptionsEntBuilder();
+        }        
         if(clazz == AutoDisconnectCommandEntBuilder.class) {
             return (B)new DefaultAutoDisconnectCommandEnt.DefaultAutoDisconnectCommandEntBuilder();
         }        
@@ -601,6 +610,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == InsertNodeCommandEntBuilder.class) {
             return (B)new DefaultInsertNodeCommandEnt.DefaultInsertNodeCommandEntBuilder();
+        }        
+        if(clazz == InsertionOptionsEntBuilder.class) {
+            return (B)new DefaultInsertionOptionsEnt.DefaultInsertionOptionsEntBuilder();
         }        
         if(clazz == ItemVersionEntBuilder.class) {
             return (B)new DefaultItemVersionEnt.DefaultItemVersionEntBuilder();
@@ -823,6 +835,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == ReplaceNodeCommandEntBuilder.class) {
             return (B)new DefaultReplaceNodeCommandEnt.DefaultReplaceNodeCommandEntBuilder();
+        }        
+        if(clazz == ReplacementOptionsEntBuilder.class) {
+            return (B)new DefaultReplacementOptionsEnt.DefaultReplacementOptionsEntBuilder();
         }        
         if(clazz == SelectionEventEntBuilder.class) {
             return (B)new DefaultSelectionEventEnt.DefaultSelectionEventEntBuilder();

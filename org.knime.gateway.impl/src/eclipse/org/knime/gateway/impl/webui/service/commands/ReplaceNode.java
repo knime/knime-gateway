@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
@@ -64,9 +65,11 @@ import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
 import org.knime.core.node.workflow.WorkflowCopyContent;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
 import org.knime.gateway.api.webui.entity.ReplaceNodeCommandEnt;
+import org.knime.gateway.api.webui.entity.ReplacementOptionsEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
 import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 import org.knime.gateway.impl.webui.service.commands.util.NodeCreator;
@@ -81,16 +84,29 @@ final class ReplaceNode extends AbstractWorkflowCommand {
 
     private InternalReplaceNodeResult m_result;
 
-    private final ReplaceNodeCommandEnt m_commandEnt;
+    private Parameters m_parameters;
+
+    private record Parameters(NodeIDEnt replacementNode, NodeIDEnt targetNode, NodeFactoryKeyEnt nodeFactoryKeyEnt) {
+
+    }
+
+    ReplaceNode(final NodeID replacementNode, final ReplacementOptionsEnt targetNode) {
+        m_parameters = new Parameters(new NodeIDEnt(replacementNode), targetNode.getTargetNodeId(), null);
+    }
 
     ReplaceNode(final ReplaceNodeCommandEnt commandEnt) {
-        m_commandEnt = commandEnt;
+        m_parameters = new Parameters( //
+            commandEnt.getReplacementNodeId(), //
+            commandEnt.getTargetNodeId(), //
+            commandEnt.getNodeFactory() //
+        );
     }
 
     @Override
     protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
-        var targetNodeId = m_commandEnt.getTargetNodeId().toNodeID(wfm);
+        var params = m_parameters;
+        var targetNodeId = params.targetNode().toNodeID(getWorkflowManager());
 
         if (!wfm.canRemoveNode(targetNodeId)) {
             throw ServiceCallException.builder() //
@@ -100,41 +116,48 @@ final class ReplaceNode extends AbstractWorkflowCommand {
                 .build();
         }
 
-        var nodeFactoryEnt = m_commandEnt.getNodeFactory();
-        var replacementNodeEnt = m_commandEnt.getReplacementNodeId();
-
-        if (nodeFactoryEnt == null ^ replacementNodeEnt == null) { // xor
-            var targetNodeContainer = wfm.getNodeContainer(targetNodeId);
-            if (nodeFactoryEnt != null && targetNodeContainer instanceof NativeNodeContainer) {
-                m_result = replaceNativeNodeWithNewNode(targetNodeId, nodeFactoryEnt, wfm);
-
-                // update global node timer (usage statistics): only tracked here (not below)
-                // since a new node is created, see `ReplaceNodeCommand` in CUI
-                NodeCreator.trackNodeCreation(wfm.getNodeContainer(targetNodeId), false);
-            } else {
-                var replacementNodeId = replacementNodeEnt == null ? null
-                    : replacementNodeEnt.toNodeID(wfm);
-                m_result = replaceNode(nodeFactoryEnt, replacementNodeId, targetNodeContainer, wfm);
-            }
-        } else {
+        var hasNodeFactory = params.nodeFactoryKeyEnt() != null;
+        var hasReplacementNode = params.replacementNode() != null;
+        // Exactly one replacement mechanism must be provided: either a node factory (create new) or an existing node id.
+        if (hasNodeFactory == hasReplacementNode) {
             throw new UnsupportedOperationException(
                 "Either a node-factory or a replacement-node-id needs to be provided. But never both or none.");
         }
+
+        var targetNodeContainer = wfm.getNodeContainer(targetNodeId);
+        if (params.nodeFactoryKeyEnt() != null && targetNodeContainer instanceof NativeNodeContainer) {
+            m_result = replaceNativeNodeWithNewNode(targetNodeId, params.nodeFactoryKeyEnt(), wfm);
+            // update global node timer (usage statistics): only tracked here (not below)
+            // since a new node is created, see `ReplaceNodeCommand` in CUI
+            NodeCreator.trackNodeCreation(wfm.getNodeContainer(targetNodeId), false);
+        } else {
+            var replacementNodeId = Optional.ofNullable(params.replacementNode()) //
+                .map(id -> id.toNodeID(getWorkflowManager())) //
+                .orElse(null);
+            m_result = replaceNode(params.nodeFactoryKeyEnt(), replacementNodeId, targetNodeContainer, wfm);
+        }
+
         return true;
     }
 
     private static InternalReplaceNodeResult replaceNode(final NodeFactoryKeyEnt nodeFactoryEntOrNull,
         final NodeID replacementNodeIdOrNull, final NodeContainer targetNodeContainer, final WorkflowManager wfm)
         throws ServiceCallException {
-
         final NodeContainer replacementNodeContainer;
         NodeID[] nodesToRestoreOnUndo;
         var targetNodeId = targetNodeContainer.getID();
         if (nodeFactoryEntOrNull != null) {
             try {
-                replacementNodeContainer = wfm.getNodeContainer(wfm.addNodeAndApplyContext(
-                    CoreUtil.getNodeFactory(nodeFactoryEntOrNull.getClassName(), nodeFactoryEntOrNull.getSettings()),
-                    null, -1));
+                replacementNodeContainer = wfm.getNodeContainer( //
+                    wfm.addNodeAndApplyContext( //
+                        CoreUtil.getNodeFactory( //
+                            nodeFactoryEntOrNull.getClassName(), //
+                            nodeFactoryEntOrNull.getSettings() //
+                        ), //
+                        null, //
+                        -1 //
+                    ) //
+                );
             } catch (NoSuchElementException | IOException ex) {
                 throw ServiceCallException.builder() //
                     .withTitle("Failed to replace node") //
@@ -153,8 +176,10 @@ final class ReplaceNode extends AbstractWorkflowCommand {
         previousConnections.addAll(wfm.getIncomingConnectionsFor(targetNodeId));
         previousConnections.addAll(wfm.getOutgoingConnectionsFor(targetNodeId));
 
-        final var previousNodesPersistor =
-            wfm.copy(true, WorkflowCopyContent.builder().setNodeIDs(nodesToRestoreOnUndo).build());
+        final var previousNodesPersistor = wfm.copy( //
+            true, //
+            WorkflowCopyContent.builder().setNodeIDs(nodesToRestoreOnUndo).build() //
+        );
         setUIInformation(targetNodeContainer.getUIInformation(), replacementNodeContainer);
         reconnect(targetNodeContainer, replacementNodeContainer, wfm);
         wfm.removeNode(targetNodeId);

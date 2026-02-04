@@ -50,25 +50,28 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.AddComponentPlaceholderResultEnt.AddComponentPlaceholderResultEntBuilder;
+import org.knime.gateway.api.webui.entity.AutoConnectOptionsEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt;
 import org.knime.gateway.api.webui.entity.CommandResultEnt.KindEnum;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.ComponentLoadJobManager.LoadJob;
+import org.knime.gateway.impl.webui.ComponentLoadJobManager.PostLoadAction;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
+import org.knime.gateway.impl.webui.service.commands.util.NodeConnector;
 
 /**
  * Command to (down-)load and add a component to a workflow from a given item-id.
- *
- * Parts of the loading logic 'inspired' by/copied from
- * org.knime.workbench.editor2.commands.CreateMetaNodeTemplateCommand.createMetaNodeTemplate and
- * org.knime.workbench.editor2.LoadMetaNodeTemplateRunnable.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -80,44 +83,136 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
 
     private LoadJob m_loadJob;
 
+    /**
+     * Attached via {@link #setAfterLoad(PostLoadAction)}.
+     */
+    private PostLoadAction m_postLoadAction;
+
     AddComponent(final AddComponentCommandEnt commandEnt, final WorkflowMiddleware workflowMiddleware) {
         super(false);
         m_commandEnt = commandEnt;
         m_workflowMiddleware = workflowMiddleware;
     }
 
+    /**
+     * Builds a command, optionally attaching post-add callbacks.
+     *
+     * @param commandEnt command entity with add-component options
+     * @param workflowMiddleware workflow middleware for command execution
+     * @return the created workflow command
+     */
+    static WorkflowCommand buildAddComponentCommand(final AddComponentCommandEnt commandEnt,
+        final WorkflowMiddleware workflowMiddleware) {
+        var moreThanOneSetOfOptions = Stream.of( //
+            commandEnt.getInsertionOptions() != null, //
+            commandEnt.getReplacementOptions() != null, //
+            commandEnt.getAutoConnectOptions() != null //
+        ).filter(Boolean::booleanValue).count() > 1;
+        if (moreThanOneSetOfOptions) {
+            throw new IllegalStateException(
+                "Expected exactly one set of insertion, replacement, connect options but received multiple.");
+        }
+
+        var add = new AddComponent(commandEnt, workflowMiddleware);
+        if (commandEnt.getInsertionOptions() != null) {
+            return add.afterLoad(id -> new InsertNode(id, commandEnt.getInsertionOptions(), commandEnt.getPosition()));
+        } else if (commandEnt.getReplacementOptions() != null) {
+            return add.afterLoad(id -> new ReplaceNode(id, commandEnt.getReplacementOptions()));
+        } else if (commandEnt.getAutoConnectOptions() != null) {
+            var options = commandEnt.getAutoConnectOptions();
+            if (options.getNodeRelation() == AutoConnectOptionsEnt.NodeRelationEnum.SUCCESSORS) {
+                // We do not need a workflow command for connection because no state needs to be restored on undo
+                //  (connections are removed automatically when the node is removed).
+                return add.afterLoadCallback((wfm, id) -> new NodeConnector(wfm, id) //
+                    .connectFrom(options.getTargetNodeId(), options.getTargetNodePortIdx()) //
+                    .connect() //
+                );
+            } else {
+                return add.afterLoadCallback((wfm, id) -> new NodeConnector(wfm, id) //
+                    .connectTo(options.getTargetNodeId().toNodeID(wfm), options.getTargetNodePortIdx()) //
+                    .connect() //
+                );
+            }
+        }
+        return add;
+    }
+
     @Override
     public boolean executeWithWorkflowContext() {
-        m_loadJob = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey()) //
-                .startLoadJob(m_commandEnt);
+        m_loadJob = m_workflowMiddleware //
+            .getComponentLoadJobManager(getWorkflowKey()) //
+            .startLoadJob(m_commandEnt, m_postLoadAction);
         return true;
     }
 
     @Override
     public boolean canUndo() {
-        var componentId = getComponentId();
-        return componentId == null || getWorkflowManager().canRemoveNode(componentId);
+        var canUndoOther = m_loadJob.runner().postLoadGetNow().map(WorkflowCommand::canUndo).orElse(true);
+        var canUndoAdd = m_loadJob.runner().loadGetNow().map(id -> getWorkflowManager().canRemoveNode(id)).orElse(true);
+        return canUndoOther && canUndoAdd;
     }
 
     @Override
     public void undo() throws ServiceExceptions.ServiceCallException {
-        if (!m_loadJob.future().isDone()) {
-            var workflowElementLoader = m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey());
-            workflowElementLoader.cancelAndRemoveLoadJob(m_loadJob.id());
+        var other = m_loadJob.runner().postLoadGetNow().orElse(null);
+        if (other != null) {
+            other.undo();
+        }
+        if (!m_loadJob.runner().isLoadDone()) {
+            m_workflowMiddleware.getComponentLoadJobManager(getWorkflowKey()) //
+                .cancelAndRemoveLoadJob(m_loadJob.id());
         } else {
-            getWorkflowManager().removeNode(getComponentId());
+            m_loadJob.runner().loadGetNow().ifPresent(componentId -> getWorkflowManager().removeNode(componentId));
         }
         m_loadJob = null;
     }
 
-    private NodeID getComponentId() {
-        var future = m_loadJob.future();
-        try {
-            return future.getNow(null);
-        } catch (CompletionException | CancellationException e) { // NOSONAR
-            //
+    private AddComponent setAfterLoad(final PostLoadAction action) {
+        if (m_postLoadAction != null) {
+            throw new IllegalStateException("post load action already configured");
         }
-        return null;
+        m_postLoadAction = action;
+        return this;
+    }
+
+    /**
+     * Attaches the given command to run after this command has completed. This does not block completion of this
+     * command.
+     *
+     * @implNote This does not configure whether the given command runs under a workflow lock. This is still specified
+     *           by the command implementation.
+     * @param createCommand factory for the follow-up workflow command
+     * @return this command, for fluent chains
+     */
+    AddComponent afterLoad(final Function<NodeID, WorkflowCommand> createCommand) {
+        return setAfterLoad((wfm, componentId) -> CompletableFuture.completedFuture(componentId)//
+            .thenApplyAsync(createCommand::apply) //
+            .thenApplyAsync(cmd -> {
+                if (cmd == null) {
+                    return null;
+                }
+                try {
+                    cmd.execute(getWorkflowKey());
+                } catch (ServiceExceptions.ServiceCallException e) {
+                    throw new CompletionException(e);
+                }
+                return cmd;
+            }) //
+        );
+    }
+
+    /**
+     * Attaches the given callback to run after this command has completed. This does not block completion of this
+     * command.
+     *
+     * @param consumer callback invoked with the workflow manager and component id
+     * @return this command, for fluent chains
+     */
+    AddComponent afterLoadCallback(final BiConsumer<WorkflowManager, NodeID> consumer) {
+        return setAfterLoad((wfm, componentId) -> CompletableFuture //
+            .runAsync(() -> consumer.accept(wfm, componentId)) //
+            .thenApply(ignored -> null) //
+        );
     }
 
     @Override

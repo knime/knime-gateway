@@ -109,7 +109,8 @@ public final class ChangeComponentLink extends AbstractWorkflowCommand {
         return true;
     }
 
-    private static URI transformUri(URI previousLink, ItemVersionEnt requestedItemVersion) throws ServiceCallException {
+    private static URI transformUri(final URI previousLink, final ItemVersionEnt requestedItemVersion)
+        throws ServiceCallException {
         URI newLink;
         try {
             newLink = URLResolverUtil.applyTo( //
