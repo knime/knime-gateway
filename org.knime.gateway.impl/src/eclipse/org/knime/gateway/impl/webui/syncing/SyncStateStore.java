@@ -172,7 +172,7 @@ final class SyncStateStore {
 
         Error(final Exception e) {
             this( //
-                e.getClass().getName(), //
+                e.getClass().getSimpleName(), //
                 e.getMessage(), //
                 Arrays.stream(e.getStackTrace()) //
                     .map(StackTraceElement::toString) //
