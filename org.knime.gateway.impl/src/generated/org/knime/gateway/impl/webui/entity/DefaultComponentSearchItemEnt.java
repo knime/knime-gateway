@@ -57,6 +57,7 @@ import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
  * @param name
  * @param description
  * @param icon
+ * @param isOwnedByAnotherIdentity
  * @param type
  * @param inPorts
  * @param outPorts
@@ -69,6 +70,7 @@ public record DefaultComponentSearchItemEnt(
     String name,
     String description,
     String icon,
+    Boolean isOwnedByAnotherIdentity,
     TypeEnum type,
     java.util.List<ComponentSearchItemPortEnt> inPorts,
     java.util.List<ComponentSearchItemPortEnt> outPorts) implements ComponentSearchItemEnt {
@@ -111,6 +113,11 @@ public record DefaultComponentSearchItemEnt(
     }
     
     @Override
+    public Boolean isOwnedByAnotherIdentity() {
+        return isOwnedByAnotherIdentity;
+    }
+    
+    @Override
     public TypeEnum getType() {
         return type;
     }
@@ -137,6 +144,8 @@ public record DefaultComponentSearchItemEnt(
         private String m_description;
 
         private String m_icon;
+
+        private Boolean m_isOwnedByAnotherIdentity;
 
         private TypeEnum m_type;
 
@@ -175,6 +184,12 @@ public record DefaultComponentSearchItemEnt(
         }
 
         @Override
+        public DefaultComponentSearchItemEntBuilder setIsOwnedByAnotherIdentity(Boolean isOwnedByAnotherIdentity) {
+             m_isOwnedByAnotherIdentity = isOwnedByAnotherIdentity;
+             return this;
+        }
+
+        @Override
         public DefaultComponentSearchItemEntBuilder setType(TypeEnum type) {
              m_type = type;
              return this;
@@ -199,6 +214,7 @@ public record DefaultComponentSearchItemEnt(
                 immutable(m_name),
                 immutable(m_description),
                 immutable(m_icon),
+                immutable(m_isOwnedByAnotherIdentity),
                 immutable(m_type),
                 immutable(m_inPorts),
                 immutable(m_outPorts));

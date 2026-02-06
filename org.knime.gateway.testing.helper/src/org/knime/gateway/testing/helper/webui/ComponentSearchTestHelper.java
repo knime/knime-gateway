@@ -102,13 +102,6 @@ public class ComponentSearchTestHelper extends WebUIGatewayServiceTestHelper {
         var spaceProvider = spy(SpaceProviderUtilities.createSpaceProvider(SpaceProviderEnt.TypeEnum.HUB, space));
         ServiceDependencies.setServiceDependency(SpaceProvidersManager.class,
             createSpaceProvidersManager(spaceProvider));
-        ServiceDependencies.setServiceDependency(FeatureFlags.class, new FeatureFlags() {
-            @Override
-            public Map<String, Object> getFeatureFlags() {
-                return Map.of();
-            }
-
-        });
 
         var queriedComponentType = NativeNodeInvariantsEnt.TypeEnum.LEARNER;
 

@@ -87,6 +87,10 @@ public interface ComponentSearchItemEntMixIn extends ComponentSearchItemEnt {
     public String getIcon();
     
     @Override
+    @JsonProperty("isOwnedByAnotherIdentity")
+    public Boolean isOwnedByAnotherIdentity();
+    
+    @Override
     @JsonProperty("type")
     public TypeEnum getType();
     
@@ -126,6 +130,10 @@ public interface ComponentSearchItemEntMixIn extends ComponentSearchItemEnt {
         @Override
         @JsonProperty("icon")
         public ComponentSearchItemEntMixInBuilder setIcon(final String icon);
+        
+        @Override
+        @JsonProperty("isOwnedByAnotherIdentity")
+        public ComponentSearchItemEntMixInBuilder setIsOwnedByAnotherIdentity(final Boolean isOwnedByAnotherIdentity);
         
         @Override
         @JsonProperty("type")
