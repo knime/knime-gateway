@@ -120,6 +120,12 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
   public String getIcon();
 
   /**
+   * True if the item is owned by an AccountIdentity (e.g. user or team) other than the currently authenticated user.
+   * @return isOwnedByAnotherIdentity 
+   **/
+  public Boolean isOwnedByAnotherIdentity();
+
+  /**
    * The type (a.k.a. \&quot;kind\&quot;) of the component
    * @return type 
    **/
@@ -146,6 +152,7 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
+      valueConsumer.accept("isOwnedByAnotherIdentity", Pair.create(isOwnedByAnotherIdentity(), e.isOwnedByAnotherIdentity()));
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
       valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
@@ -187,6 +194,14 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         ComponentSearchItemEntBuilder setIcon(String icon);
+        
+        /**
+         * True if the item is owned by an AccountIdentity (e.g. user or team) other than the currently authenticated user.
+         * 
+         * @param isOwnedByAnotherIdentity the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentSearchItemEntBuilder setIsOwnedByAnotherIdentity(Boolean isOwnedByAnotherIdentity);
         
         /**
          * The type (a.k.a. \&quot;kind\&quot;) of the component

@@ -412,9 +412,33 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentSearchItemEnt.java" type="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt"/>
+                <message_argument value="isOwnedByAnotherIdentity()"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="isOwnedByAnotherIdentity()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ComponentSearchItemEnt.java" type="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt$ComponentSearchItemEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt.ComponentSearchItemEntBuilder"/>
+                <message_argument value="setIsOwnedByAnotherIdentity(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setIsOwnedByAnotherIdentity(Boolean)"/>
             </message_arguments>
         </filter>
     </resource>

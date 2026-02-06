@@ -363,9 +363,27 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentSearchItemEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt"/>
+                <message_argument value="DefaultComponentSearchItemEnt(String, String, String, String, ComponentSearchItemEnt.TypeEnum, List&lt;ComponentSearchItemPortEnt&gt;, List&lt;ComponentSearchItemPortEnt&gt;)"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultComponentSearchItemEnt(String, String, String, String, Boolean, ComponentSearchItemEnt.TypeEnum, List&lt;ComponentSearchItemPortEnt&gt;, List&lt;ComponentSearchItemPortEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentSearchItemEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt$DefaultComponentSearchItemEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setIsOwnedByAnotherIdentity(Boolean)"/>
             </message_arguments>
         </filter>
     </resource>
