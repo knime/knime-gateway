@@ -307,7 +307,6 @@ public interface WorkflowSyncer extends WorkflowResource {
 
             @Override
             public void workflowChanged() {
-                LOGGER.info("Workflow changed event received, notifying syncer.");
                 m_onChange.run();
             }
         }
