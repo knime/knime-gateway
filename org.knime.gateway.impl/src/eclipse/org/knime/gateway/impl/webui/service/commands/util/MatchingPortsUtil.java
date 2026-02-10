@@ -65,6 +65,7 @@ import org.knime.core.node.context.ports.ExtendablePortGroup;
 import org.knime.core.node.context.ports.PortGroupConfiguration;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.util.ClassUtils;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -224,12 +225,11 @@ final class MatchingPortsUtil {
         }
 
         // Determine which port group and port type to use
-        var preferredGroupAndType = portGroups.stream()//
-            .filter(ConfigurablePortGroup.class::isInstance) //
-            .map(ConfigurablePortGroup.class::cast) //
-            .map(cpg -> ImmutablePair.of(cpg, getPreferredCompatiblePortType(cpg, portType))) //
-            .filter(pair -> pair.getValue().isPresent()) //
-            .map(pair -> ImmutablePair.of(pair.getKey(), pair.getValue().orElseThrow())) //
+        var preferredGroupAndType = portGroups.stream() //
+            .flatMap(pg -> ClassUtils.castStream(ConfigurablePortGroup.class, pg)) //
+            .flatMap(cpg -> getPreferredCompatiblePortType(cpg, portType) //
+                .map(preferredType -> ImmutablePair.of(cpg, preferredType)) //
+                .stream()) //
             .findFirst();
 
         var portGroup =
@@ -244,13 +244,17 @@ final class MatchingPortsUtil {
     }
 
     /**
-     * Work item NXT-2611: De-duplicate port matching logic.
+     * Determine the preferred compatible port type for a configurable port group. Exposed for testing only.
+     * <p>
+     * Exchangeable groups use the currently selected type if it is compatible. Extendable groups prefer the first
+     * configured type if compatible, otherwise the first supported type.
+     * </p>
      *
-     * @param portGroup -
-     * @param portType -
-     * @return -
+     * @param portGroup configurable port group to inspect
+     * @param portType port type to match against
+     * @return preferred compatible port type, or {@link Optional#empty()} if none is compatible
      */
-    private static Optional<PortType> getPreferredCompatiblePortType(final ConfigurablePortGroup portGroup,
+    static Optional<PortType> getPreferredCompatiblePortType(final ConfigurablePortGroup portGroup,
         final PortType portType) {
         if (portGroup instanceof ExchangeablePortGroup exchangeablePortGroup) {
             // Exchangeable groups always have a selected type.
@@ -325,8 +329,10 @@ final class MatchingPortsUtil {
     static Optional<PlannedConnection> findFirstMatchingPairOfPorts(final Source source, final Destination destination,
         final Predicate<Connectable.SourcePort<?>> sourcePortUsable,
         final Predicate<Connectable.DestinationPort<?>> destinationPortUsable) {
-        return source.getSourcePorts().stream().filter(sourcePortUsable)
-            .map(sp -> findFirstMatchingPairOfPorts(sp, destination, destinationPortUsable)).flatMap(Optional::stream)
+        return source.getSourcePorts().stream() //
+            .filter(sourcePortUsable) //
+            .map(sp -> findFirstMatchingPairOfPorts(sp, destination, destinationPortUsable)) //
+            .flatMap(Optional::stream) //
             .findFirst();
     }
 
@@ -334,7 +340,8 @@ final class MatchingPortsUtil {
         final Destination destination, final Predicate<Connectable.DestinationPort<?>> destinationPortUsable) {
         return destination.getDestinationPorts().stream() //
             .filter(destinationPortUsable) //
-            .filter(sourcePort::isCompatibleWith).map(destPort -> new PlannedConnection(sourcePort, destPort)) //
+            .filter(sourcePort::isCompatibleWith) //
+            .map(destPort -> new PlannedConnection(sourcePort, destPort)) //
             .findFirst(); //
     }
 

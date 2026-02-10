@@ -45,6 +45,16 @@
  */
 package org.knime.gateway.impl.webui.service.commands.util;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.knime.core.node.BufferedDataTable;
@@ -60,6 +70,8 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.context.NodeCreationConfiguration;
+import org.knime.core.node.context.ports.ExchangeablePortGroup;
+import org.knime.core.node.context.ports.ExtendablePortGroup;
 import org.knime.core.node.context.ports.PortsConfiguration;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
@@ -69,14 +81,6 @@ import org.knime.core.node.port.image.ImagePortObject;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.testing.util.WorkflowManagerUtil;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings("javadoc")
 public class MatchingPortsUtilTest {
@@ -96,7 +100,7 @@ public class MatchingPortsUtilTest {
         var destination = createOptionalInputNode(PortObject.TYPE, PortObject.TYPE, BufferedDataTable.TYPE);
 
         var matching = MatchingPortsUtil.getMatchingPorts(source, destination, 1, null, m_wfm);
-        destination = (NodeContainer) m_wfm.getNodeContainer(destination.getID());
+        destination = (NodeContainer)m_wfm.getNodeContainer(destination.getID());
 
         assertEquals(1, matching.get(1).intValue());
         assertThat(destination.getInPort(1).getPortType(), is(PortObject.TYPE));
@@ -113,16 +117,37 @@ public class MatchingPortsUtilTest {
     }
 
     @Test
-    public void testOptionalPortPrefersFirstSupportedType() throws Exception {
+    public void testExtendableInputPrefersFirstSupportedType() throws Exception {
         var source = createSourceNode(ImagePortObject.TYPE);
         var destination = createExtendableInputNode(PortObject.TYPE, ImagePortObject.TYPE);
 
         var matching = MatchingPortsUtil.getMatchingPorts(source, destination, 1, null, m_wfm);
         var destPortIdx = matching.get(1);
-        destination = (NodeContainer) m_wfm.getNodeContainer(destination.getID());
+        destination = (NodeContainer)m_wfm.getNodeContainer(destination.getID());
 
         assertEquals(1, destPortIdx.intValue());
         assertThat(destination.getInPort(destPortIdx).getPortType(), is(PortObject.TYPE));
+    }
+
+    @Test
+    public void testExchangeableInputPrefersSelectedType() throws Exception {
+        var exchangeableGroup = mock(ExchangeablePortGroup.class);
+        when(exchangeableGroup.getSelectedPortType()).thenReturn(BufferedDataTable.TYPE);
+
+        var preferred = MatchingPortsUtil.getPreferredCompatiblePortType(exchangeableGroup, BufferedDataTable.TYPE);
+
+        assertThat(preferred, is(Optional.of(BufferedDataTable.TYPE)));
+    }
+
+    @Test
+    public void testExtendableInputPrefersConfiguredType() throws Exception {
+        var extendableGroup = mock(ExtendablePortGroup.class);
+        when(extendableGroup.getConfiguredPorts()).thenReturn(new PortType[]{ImagePortObject.TYPE});
+        when(extendableGroup.getSupportedPortTypes()).thenReturn(new PortType[]{PortObject.TYPE, ImagePortObject.TYPE});
+
+        var preferred = MatchingPortsUtil.getPreferredCompatiblePortType(extendableGroup, ImagePortObject.TYPE);
+
+        assertThat(preferred, is(Optional.of(ImagePortObject.TYPE)));
     }
 
     private NodeContainer createSourceNode(final PortType outputType) throws Exception {
@@ -131,7 +156,7 @@ public class MatchingPortsUtilTest {
     }
 
     private NodeContainer createOptionalInputNode(final PortType defaultType, final PortType... supportedTypes)
-            throws Exception {
+        throws Exception {
         var factory = new OptionalInputNodeFactory(defaultType, supportedTypes);
         return WorkflowManagerUtil.createAndAddNode(m_wfm, factory);
     }
@@ -144,6 +169,7 @@ public class MatchingPortsUtilTest {
     private static final class FixedPortsNodeFactory extends NodeFactory<SimpleNodeModel> {
 
         private final PortType[] m_inPorts;
+
         private final PortType[] m_outPorts;
 
         private FixedPortsNodeFactory(final PortType[] inPorts, final PortType[] outPorts) {
@@ -180,6 +206,7 @@ public class MatchingPortsUtilTest {
     private static final class OptionalInputNodeFactory extends ConfigurableNodeFactory<SimpleNodeModel> {
 
         private final PortType[] m_supportedTypes;
+
         private final PortType m_defaultType;
 
         private OptionalInputNodeFactory(final PortType defaultType, final PortType... supportedTypes) {
@@ -201,8 +228,7 @@ public class MatchingPortsUtilTest {
 
         @Override
         protected SimpleNodeModel createNodeModel(final NodeCreationConfiguration creationConfig) {
-            var inPorts = creationConfig.getPortConfig().map(PortsConfiguration::getInputPorts)
-                    .orElse(new PortType[0]);
+            var inPorts = creationConfig.getPortConfig().map(PortsConfiguration::getInputPorts).orElse(new PortType[0]);
             var outPorts = new PortType[0];
             return new SimpleNodeModel(inPorts, outPorts);
         }
@@ -246,8 +272,7 @@ public class MatchingPortsUtilTest {
 
         @Override
         protected SimpleNodeModel createNodeModel(final NodeCreationConfiguration creationConfig) {
-            var inPorts = creationConfig.getPortConfig().map(PortsConfiguration::getInputPorts)
-                    .orElse(new PortType[0]);
+            var inPorts = creationConfig.getPortConfig().map(PortsConfiguration::getInputPorts).orElse(new PortType[0]);
             var outPorts = new PortType[0];
             return new SimpleNodeModel(inPorts, outPorts);
         }
@@ -291,12 +316,12 @@ public class MatchingPortsUtilTest {
 
         @Override
         protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
-                throws IOException, CanceledExecutionException {
+            throws IOException, CanceledExecutionException {
         }
 
         @Override
         protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
-                throws IOException, CanceledExecutionException {
+            throws IOException, CanceledExecutionException {
         }
 
         @Override
