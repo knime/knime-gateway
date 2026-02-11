@@ -50,6 +50,7 @@ package org.knime.gateway.impl.webui.service;
 
 import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -61,6 +62,7 @@ import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentNodeDescriptionEnt;
+import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
 import org.knime.gateway.api.webui.entity.NamedItemVersionEnt;
 import org.knime.gateway.api.webui.service.ComponentService;
@@ -70,6 +72,7 @@ import org.knime.gateway.api.webui.util.EntityFactory;
 import org.knime.gateway.impl.webui.WorkflowKey;
 import org.knime.gateway.impl.webui.WorkflowMiddleware;
 import org.knime.gateway.impl.webui.spaces.LinkVariants;
+import org.knime.gateway.impl.webui.spaces.SpaceProvidersManager;
 
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -146,8 +149,8 @@ public class DefaultComponentService implements ComponentService {
         var nodeContainer = ServiceUtilities.assertProjectIdAndGetNodeContainer(projectId, workflowId,
             VersionId.currentState(), nodeId);
         if (!(nodeContainer instanceof SubNodeContainer snc)) {
-            throw new IllegalStateException("Node " + nodeId + " is not a component (type: "
-                + nodeContainer.getClass().getSimpleName() + ").");
+            throw new IllegalStateException(
+                "Node " + nodeId + " is not a component (type: " + nodeContainer.getClass().getSimpleName() + ").");
         }
 
         try {
@@ -172,13 +175,29 @@ public class DefaultComponentService implements ComponentService {
         var nodeContainer = ServiceUtilities.assertProjectIdAndGetNodeContainer(projectId, workflowId,
             VersionId.currentState(), nodeId);
         if (!(nodeContainer instanceof SubNodeContainer snc)) {
-            throw new IllegalStateException("Node " + nodeId + " is not a component (type: "
-                + nodeContainer.getClass().getSimpleName() + ").");
+            throw new IllegalStateException(
+                "Node " + nodeId + " is not a component (type: " + nodeContainer.getClass().getSimpleName() + ").");
         }
         var uri = snc.getTemplateInformation().getSourceURI();
         try {
+            var isIdBased = ServiceDependencies.getServiceDependency(LinkVariants.class, true) //
+                .getLinkVariant(uri) //
+                    == LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID;
+            if (isIdBased) {
+                return ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, true) //
+                    .getSpaceProviders(SpaceProvidersManager.Key.of(projectId)) //
+                    .getSpaceProvider(uri.getAuthority()) //
+                    .getItemVersions(extractHubItemId(uri)) //
+                    .stream().map(v -> namedItemVersionToEntity(v)) //
+                    .toList(); //
+            }
+            // else assume path-based, below call only supports path-based urls
+            var path = uri.getPath();
+            if (path == null || path.isEmpty()) {
+                throw new IllegalArgumentException("Expected path-based URI but URI has no path component; is " + path);
+            }
             return ResolverUtil.getHubItemVersionList(uri).stream() //
-                    .map(DefaultComponentService::namedItemVersionToEntity).toList();
+                .map(DefaultComponentService::namedItemVersionToEntity).toList();
         } catch (ResourceAccessException e) {
             throw ServiceCallException.builder() //
                 .withTitle("Failed to resolve component URL") //
@@ -187,6 +206,19 @@ public class DefaultComponentService implements ComponentService {
                 .withCause(e) //
                 .build();
         }
+    }
+
+    private static String extractHubItemId(final URI uri) {
+        var path = uri.getPath();
+        if (path == null || path.isEmpty()) {
+            throw new IllegalArgumentException("Cannot extract hub item id: URI has no path: " + uri);
+        }
+        var trimmed = path.startsWith("/") ? path.substring(1) : path;
+        var lastSegment = trimmed.contains("/") ? trimmed.substring(trimmed.lastIndexOf('/') + 1) : trimmed;
+        if (lastSegment.startsWith("*") && lastSegment.length() > 1) {
+            return lastSegment.substring(1);
+        }
+        throw new IllegalArgumentException("Cannot extract hub item id from URI: " + uri);
     }
 
     private static NamedItemVersionEnt namedItemVersionToEntity(final NamedItemVersion namedItemVersion) {
