@@ -130,6 +130,8 @@ public final class ComponentLoadJobManager {
     public LoadJob startLoadJob(final AddComponentCommandEnt commandEnt, final PostLoadAction postLoadAction) {
         var placeholderId = UUID.randomUUID().toString();
 
+        // TODO fix position
+
         var loadJobRunner = createLoadJobRunner(placeholderId, commandEnt, postLoadAction);
         loadJobRunner.run();
 
