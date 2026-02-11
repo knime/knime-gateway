@@ -50,7 +50,6 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -185,20 +184,18 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
      * @return this command, for fluent chains
      */
     AddComponent afterLoad(final Function<NodeID, WorkflowCommand> createCommand) {
-        return setAfterLoad((wfm, componentId) -> CompletableFuture.completedFuture(componentId)//
-            .thenApplyAsync(createCommand::apply) //
-            .thenApplyAsync(cmd -> {
-                if (cmd == null) {
-                    return null;
-                }
-                try {
-                    cmd.execute(getWorkflowKey());
-                } catch (ServiceExceptions.ServiceCallException e) {
-                    throw new CompletionException(e);
-                }
-                return cmd;
-            }) //
-        );
+        return setAfterLoad((wfm, componentId) -> {
+            var cmd = createCommand.apply(componentId);
+            if (cmd == null) {
+                return null;
+            }
+            try {
+                cmd.execute(getWorkflowKey());
+            } catch (ServiceExceptions.ServiceCallException e) {
+                throw new CompletionException(e);
+            }
+            return cmd;
+        });
     }
 
     /**
@@ -209,10 +206,10 @@ final class AddComponent extends AbstractWorkflowCommand implements WithResult {
      * @return this command, for fluent chains
      */
     AddComponent afterLoadCallback(final BiConsumer<WorkflowManager, NodeID> consumer) {
-        return setAfterLoad((wfm, componentId) -> CompletableFuture //
-            .runAsync(() -> consumer.accept(wfm, componentId)) //
-            .thenApply(ignored -> null) //
-        );
+        return setAfterLoad((wfm, componentId) -> {
+            consumer.accept(wfm, componentId);
+            return null;
+        });
     }
 
     @Override
