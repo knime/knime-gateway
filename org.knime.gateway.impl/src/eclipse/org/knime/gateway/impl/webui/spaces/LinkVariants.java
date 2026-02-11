@@ -96,6 +96,16 @@ public interface LinkVariants {
         throws ResourceAccessException;
 
     /**
+     * Determines the link variant encoded in a KNIME URL.
+     *
+     * @param uri KNIME URL
+     * @return detected link variant
+     */
+    default LinkVariantEnt.VariantEnum getLinkVariant(final URI uri) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Map {@link this#toLinkVariantInfoEnt(LinkVariantEnt.VariantEnum)} over {@link this#getVariants(URI,
      * WorkflowContextV2)}
      *
@@ -157,6 +167,11 @@ public interface LinkVariants {
             } else {
                 return m_cache.get(key);
             }
+        }
+
+        @Override
+        public LinkVariantEnt.VariantEnum getLinkVariant(URI uri) {
+            return KnimeUrls.getLinkVariant(uri).getVariant();
         }
 
         /**
