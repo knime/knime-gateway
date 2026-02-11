@@ -50,9 +50,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -97,7 +96,7 @@ public class LoadJobRunnerTest {
             postLoadWfm.set(workflow);
             postLoadComponentId.set(componentId);
             postLoadTime.set(System.nanoTime());
-            return CompletableFuture.completedFuture(command);
+            return command;
         };
 
         LoadJobRunner runner = manager.new LoadJobRunner(
@@ -331,7 +330,7 @@ public class LoadJobRunnerTest {
                 }
                 return nodeId;
             },
-            (workflow, componentId) -> CompletableFuture.completedFuture(command),
+            (workflow, componentId) -> command,
             createProgressListener(),
             id -> {
             },
