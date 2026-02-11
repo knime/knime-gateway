@@ -208,6 +208,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/util/CoreUtil.java" type="org.knime.gateway.api.util.CoreUtil">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.util.CoreUtil"/>
+                <message_argument value="getSourceNodes(WorkflowManager)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/eclipse/org/knime/gateway/api/util/DataSize.java" type="org.knime.gateway.api.util.DataSize">
         <filter id="1108344834">
             <message_arguments>

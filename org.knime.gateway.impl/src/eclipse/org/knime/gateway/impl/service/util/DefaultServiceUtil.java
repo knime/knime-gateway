@@ -303,19 +303,39 @@ public final class DefaultServiceUtil {
     }
 
     private static void reset(final WorkflowManager wfm, final NodeID... nodeIDs) {
-        Stream<NodeID> toReset;
         if (nodeIDs != null && nodeIDs.length != 0) {
             // Reset given nodes
-            toReset = Arrays.stream(nodeIDs);
+            var toReset = Arrays.stream(nodeIDs);
             toReset.forEach(wfm::resetAndConfigureNode);
         } else {
             // Reset all nodes that can be reset.
             // Only need to call on source nodes since `resetAndConfigure` will reset and configure all successors, too.
-            toReset = CoreUtil.getSourceNodes(wfm).stream().map(NodeContainer::getID).filter(wfm::canResetNode);
+            // But: make sure to always explicitly reset metanodes because they can contain nodes that aren't connected
+            // to the inner metanode inports (NXT-4489)
+            var toReset = getSourceNodesAndMetanodes(wfm).map(NodeContainer::getID).filter(wfm::canResetNode);
             toReset.forEach(id -> wfm.resetAndConfigureNode(id, true));
             // In case a selection is given, we do not need to filter because if not all nodes can be reset, the
             //    action is not available in the frontend.
         }
+    }
+
+    /**
+     * @param wfm The workflow manager to search in
+     * @return The set of nodes in the given {@code wfm} that satisfy at least one of these conditions:
+     *         <ul>
+     *         <li>The node is a metanode</li>
+     *         <li>The node does not have any incoming connections</li>
+     *         <li>All incoming connections are from a metanode inport</li>
+     *         </ul>
+     */
+    private static Stream<NodeContainer> getSourceNodesAndMetanodes(final WorkflowManager wfm) {
+        return wfm.getNodeContainers().stream().filter(nc -> {
+            if (nc instanceof WorkflowManager) {
+                return true;
+            }
+            var incoming = wfm.getIncomingConnectionsFor(nc.getID());
+            return incoming.isEmpty() || incoming.stream().allMatch(cc -> cc.getSource().equals(wfm.getID()));
+        });
     }
 
     private static void cancel(final WorkflowManager wfm, final NodeID... nodeIDs) {
