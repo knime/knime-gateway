@@ -448,10 +448,7 @@ public final class ComponentLoadJobManager {
             if (postLoadAction == null) {
                 return null;
             }
-            return loadFuture.thenComposeAsync(componentId -> {
-                var future = postLoadAction.apply(m_wfm, componentId);
-                return future != null ? future : CompletableFuture.completedFuture(null);
-            });
+            return loadFuture.thenApplyAsync(componentId -> postLoadAction.apply(m_wfm, componentId));
         }
 
         void cancel() {
@@ -548,9 +545,9 @@ public final class ComponentLoadJobManager {
          *
          * @param wfm the workflow manager owning the loaded component
          * @param componentId the id of the loaded component
-         * @return a future representing the post-load workflow command, or null for no command
+         * @return the post-load workflow command, or null for no command
          */
-        CompletableFuture<WorkflowCommand> apply(WorkflowManager wfm, NodeID componentId);
+        WorkflowCommand apply(WorkflowManager wfm, NodeID componentId);
     }
 
     /**
