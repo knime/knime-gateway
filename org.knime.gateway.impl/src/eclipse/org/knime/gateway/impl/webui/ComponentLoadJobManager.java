@@ -76,11 +76,11 @@ import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.ComponentPlaceholderEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
-import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommand;
 import org.knime.gateway.impl.webui.service.commands.util.ComponentLoader;
+import org.knime.gateway.impl.webui.service.commands.util.Geometry;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
 /**
@@ -130,46 +130,63 @@ public final class ComponentLoadJobManager {
     public LoadJob startLoadJob(final AddComponentCommandEnt commandEnt, final PostLoadAction postLoadAction) {
         var placeholderId = UUID.randomUUID().toString();
 
-        var loadJobRunner = createLoadJobRunner(placeholderId, commandEnt, postLoadAction);
-        loadJobRunner.run();
+        // the position at which the component and its loading placeholder should appear
+        var insertPosition = getPosition(commandEnt, m_wfm);
 
-        var loadJob = new LoadJob(placeholderId, loadJobRunner);
+        var componentLoadParameters = new ComponentLoader.ComponentLoadParameters( //
+            commandEnt.getProviderId(), //
+            commandEnt.getSpaceId(), //
+            commandEnt.getItemId(), //
+            commandEnt.getName(), //
+            insertPosition //
+        );
+
+        var loadJobRunner = createLoadJobRunner(placeholderId, componentLoadParameters, postLoadAction);
+
         var placeholder = builder(ComponentPlaceholderEntBuilder.class) //
             .setId(placeholderId) //
             .setState(StateEnum.LOADING) //
             .setName(commandEnt.getName()) //
-            .setPosition(getPosition(commandEnt, m_wfm)) //
+            .setPosition(insertPosition.toEnt()) //
             .build();
-        var loadJobInternal = new LoadJobInternal(loadJob, placeholder, commandEnt);
+
+
+        var loadJobInternal = new LoadJobInternal( //
+            new LoadJob(placeholderId, loadJobRunner), //
+            placeholder, //
+            commandEnt //
+        );
         m_trackedLoadJobs.put(placeholderId, loadJobInternal);
         m_workflowChangesListener.trigger(WorkflowChange.COMPONENT_PLACEHOLDER_ADDED);
+
+        loadJobRunner.run();
+
         return loadJobInternal.loadJob();
     }
 
-    private static XYEnt getPosition(final AddComponentCommandEnt commandEnt, final WorkflowManager wfm) {
+    private static Geometry.Point getPosition(final AddComponentCommandEnt commandEnt, final WorkflowManager wfm) {
         var replacementOptions = commandEnt.getReplacementOptions();
         if (replacementOptions != null) {
             // In API for native nodes, a position is not required for replacement. We follow the pattern here.
             return Optional.ofNullable(wfm.getNodeContainer(replacementOptions.getTargetNodeId().toNodeID(wfm))) //
                 .map(nc -> nc.getUIInformation().getBounds()) //
-                .map(bounds -> builder(XYEnt.XYEntBuilder.class) //
-                    .setX(bounds[0]).setY(bounds[1]).build() //
-                ).orElseThrow(() -> new IllegalStateException("Cannot determine placeholder position from target node") //
+                .map(bounds -> Geometry.Point.of(bounds)) //
+                .orElseThrow(() -> new IllegalStateException("Cannot determine placeholder position from target node") //
                 ); //
         }
         var givenPosition = commandEnt.getPosition();
         if (givenPosition == null) {
             throw new IllegalArgumentException("Expected to receive position for placeholder from frontend");
         }
-        return givenPosition;
+        return Geometry.Point.of(commandEnt.getPosition());
     }
 
     /**
      * @since 5.11
      */
-    private LoadJobRunner createLoadJobRunner(final String placeholderId, final AddComponentCommandEnt commandEnt,
+    private LoadJobRunner createLoadJobRunner(final String placeholderId, final ComponentLoader.ComponentLoadParameters params,
         final PostLoadAction postLoadAction) {
-        return new LoadJobRunner(placeholderId, commandEnt, postLoadAction);
+        return new LoadJobRunner(placeholderId, params, postLoadAction);
     }
 
     /**
@@ -333,12 +350,12 @@ public final class ComponentLoadJobManager {
          * @param postLoadAction optional follow-up action executed after component load completes
          */
         public LoadJobRunner( //
-            final String placeholderId, //
-            final AddComponentCommandEnt commandEnt, //
-            final PostLoadAction postLoadAction //
+                              final String placeholderId, //
+                              final ComponentLoader.ComponentLoadParameters params, //
+                              final PostLoadAction postLoadAction //
         ) {
             this( //
-                monitor -> m_componentLoader.loadComponent(commandEnt, m_wfm, m_spaceProviders, monitor), //
+                monitor -> m_componentLoader.loadComponent(params, m_wfm, m_spaceProviders, monitor), //
                 postLoadAction, //
                 () -> progressEvent -> updatePlaceholderWithMessageAndProgress( //
                     placeholderId, //
@@ -567,8 +584,9 @@ public final class ComponentLoadJobManager {
          * @param executionMonitor execution monitor for progress and cancellation
          * @return the id of the loaded component
          */
-        NodeID loadComponent(AddComponentCommandEnt ent, WorkflowManager wfm, SpaceProviders spaceProviders,
-            ExecutionMonitor executionMonitor);
+        NodeID loadComponent(ComponentLoader.ComponentLoadParameters params, WorkflowManager wfm, SpaceProviders spaceProviders,
+                             ExecutionMonitor executionMonitor);
+
     }
 
     private record LoadJobInternal( //

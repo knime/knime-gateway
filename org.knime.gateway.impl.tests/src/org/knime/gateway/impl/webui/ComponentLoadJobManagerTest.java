@@ -58,6 +58,7 @@ import static org.mockito.Mockito.verify;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.knime.core.node.workflow.NodeID;
@@ -70,6 +71,7 @@ import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
 import org.knime.gateway.api.webui.entity.ReplacementOptionsEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
+import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
@@ -143,12 +145,14 @@ public class ComponentLoadJobManagerTest {
         var workflowChangesListener = mock(WorkflowChangesListener.class);
         var nodeId = new NodeID(2);
         var loadGate = new CountDownLatch(1);
+        var receivedInsertPosition = new AtomicReference<XYEnt>();
 
         var targetNode = WorkflowManagerUtil.createAndAddNode(wfm, new SourceNodeTestFactory());
         targetNode.setUIInformation(NodeUIInformation.builder().setNodeLocation(5, 7, 0, 0).build());
         var expectedPosition = builder(XYEntBuilder.class).setX(5).setY(7).build();
 
         IComponentLoader loader = (ent, workflow, spaces, monitor) -> {
+            receivedInsertPosition.set(ent.insertPosition().toEnt());
             awaitLatch(loadGate);
             return nodeId;
         };
@@ -163,11 +167,13 @@ public class ComponentLoadJobManagerTest {
                 .setTargetNodeId(new NodeIDEnt(targetNode.getID())) //
                 .build() //
             ) //
+            .setPosition(builder(XYEntBuilder.class).setX(10).setY(20).build()) //
             .setName("replace") //
             .build();
 
         manager.startLoadJob(command);
 
+        await().untilAsserted(() -> assertThat(receivedInsertPosition.get(), is(expectedPosition)));
         await().untilAsserted(() -> {
             var placeholder = getSinglePlaceholder(manager);
             assertThat(placeholder.getState(), is(StateEnum.LOADING));
