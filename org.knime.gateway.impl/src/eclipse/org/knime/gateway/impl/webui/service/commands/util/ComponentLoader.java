@@ -69,6 +69,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.KNIMEComponentInformation;
 import org.knime.core.node.NodeAndBundleInformationPersistor;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.Credentials;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeUIInformation;
@@ -81,7 +82,6 @@ import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.VersionId;
-import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
@@ -113,18 +113,15 @@ public final class ComponentLoader {
      * @throws CancellationException if loading is canceled
      * @throws CompletionException if loading fails due to download or workflow errors
      */
-    public static NodeID loadComponent(final AddComponentCommandEnt commandEnt, final WorkflowManager wfm,
+    public static NodeID loadComponent(final ComponentLoadParameters params, final WorkflowManager wfm,
         final SpaceProviders spaceProviders, final ExecutionMonitor exec) {
-
-        var isSpaceIdProvided = commandEnt.getSpaceId() != null && !commandEnt.getSpaceId().isBlank();
-        var provider = spaceProviders.getSpaceProvider(commandEnt.getProviderId());
-
         final DownloadedItem downloadedItem;
         try {
             exec.setMessage("Downloading...");
-            downloadedItem = isSpaceIdProvided //
-                ? downloadComponent(provider, commandEnt.getSpaceId(), commandEnt.getItemId(), exec) //
-                : downloadComponent(provider, commandEnt.getItemId(), exec);
+            var provider = spaceProviders.getSpaceProvider(params.providerId());
+            downloadedItem = params.spaceId() != null //
+                ? downloadComponent(provider, params.spaceId(), params.itemId(), exec) //
+                : downloadComponent(provider, params.itemId(), exec);
         } catch (GatewayException ex) {
             LOGGER.debug("Component download failed.", ex);
             throw new CompletionException(compileLoadingFailedErrorMessage(ex), ex);
@@ -136,7 +133,7 @@ public final class ComponentLoader {
             throw new CancellationException(e.getMessage());
         }
 
-        var componentName = commandEnt.getName();
+        var componentName = params.name();
         LoadResultInternalRoot loadResult;
         try (var lock = wfm.lock()) {
             exec.setMessage("Loading component...");
@@ -144,7 +141,7 @@ public final class ComponentLoader {
                 wfm, //
                 downloadedItem, //
                 componentName, //
-                Geometry.Point.of(commandEnt.getPosition()), //
+                params.insertPosition(), //
                 exec //
             );
         } catch (CanceledExecutionException e) {
@@ -412,4 +409,27 @@ public final class ComponentLoader {
 
     }
 
+    /**
+     * Parameters for
+     * {@link #loadComponent(ComponentLoadParameters, WorkflowManager, SpaceProviders, ExecutionMonitor)}.
+     *
+     * @param providerId the space provider identifier
+     * @param spaceId the space identifier, nullable
+     * @param itemId the component item identifier
+     * @param name the component name used for the placeholder node
+     * @param insertPosition the workflow canvas position for the placeholder
+     *
+     * @since 5.11
+     */
+    public static final record ComponentLoadParameters(String providerId, String spaceId, String itemId, String name,
+            Geometry.Point insertPosition) {
+        public ComponentLoadParameters {
+            CheckUtils.checkArgumentNotNull(providerId);
+            // space id is nullable
+            CheckUtils.checkArgumentNotNull(itemId);
+            CheckUtils.checkArgumentNotNull(name);
+            CheckUtils.checkArgumentNotNull(insertPosition);
+
+        }
+    }
 }
