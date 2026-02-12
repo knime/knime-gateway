@@ -54,9 +54,11 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 import static org.knime.gateway.testing.helper.webui.SpaceProviderUtilities.createSpaceProvidersManager;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -64,6 +66,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
+import org.knime.gateway.api.util.Side;
 import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.NativeNodeInvariantsEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt;
@@ -114,9 +117,12 @@ public class ComponentSearchTestHelper extends WebUIGatewayServiceTestHelper {
             .setOutPorts(List.of()) //
             .build());
         doReturn(expectedEntities) //
-            .when(spaceProvider).searchComponents(anyString(), any(), any());
+            .when(spaceProvider).searchComponents(anyString(), any(), any(), any(), any());
 
-        var returnedEntities = ss().searchComponents(queriedComponentType.toString(), 0, 0);
+        var returnedEntities = ss().searchComponents(queriedComponentType.toString(), 0, 0, "input", "foo");
+
+        verify(spaceProvider).searchComponents(eq(queriedComponentType.toString()), eq(Side.INPUT), eq("foo"), eq(0),
+            eq(0));
 
         assertFalse(returnedEntities.isEmpty());
         assertEquals(returnedEntities.size(), expectedEntities.size());
