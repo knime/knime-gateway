@@ -60,6 +60,7 @@ import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats;
 import org.knime.core.node.workflow.NodeTimer.GlobalNodeStats.WorkflowType;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.exception.ResourceAccessException;
+import org.knime.gateway.api.util.Side;
 import org.knime.gateway.api.webui.entity.AncestorInfoEnt;
 import org.knime.gateway.api.webui.entity.AncestorInfoEnt.AncestorInfoEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
@@ -342,8 +343,8 @@ public class DefaultSpaceService implements SpaceService {
     }
 
     @Override
-    public List<ComponentSearchItemEnt> searchComponents(final String query, final Integer limit, final Integer offset)
-        throws ServiceCallException, LoggedOutException, NetworkException {
+    public List<ComponentSearchItemEnt> searchComponents(final String query, final Integer limit, final Integer offset,
+        String side, String portTypeId) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
             final var hubProvider = m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
                 .getAllSpaceProviders().stream() //
@@ -357,7 +358,7 @@ public class DefaultSpaceService implements SpaceService {
                     .withDetails("No Hub space provider is configured.") //
                     .canCopy(true) //
                     .build());
-            return hubProvider.searchComponents(query, limit, offset).stream().toList();
+            return hubProvider.searchComponents(query, Side.of(side), portTypeId, limit, offset).stream().toList();
         } catch (MutableServiceCallException e) {
             throw e.toGatewayException("Component search not available");
         }

@@ -294,12 +294,14 @@ public interface SpaceService extends GatewayService {
      * @param query Search term used to filter components by name, tags, or description.
      * @param limit Controls the maximum number of search results returned.
      * @param offset Controls the starting position for pagination of search results.
+     * @param side Whether to check for compatible input ports or output ports
+     * @param portTypeId The ID of the port type to be added.
      *
      * @return the result
      * @throws ServiceExceptions.ServiceCallException If a Gateway service call failed for some reason.
      * @throws ServiceExceptions.LoggedOutException If a web request could not be authorized because the space provider isn&#39;t logged in
      * @throws ServiceExceptions.NetworkException If a Gateway service call failed due to a network error.
      */
-    java.util.List<ComponentSearchItemEnt> searchComponents(String query, Integer limit, Integer offset)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
+    java.util.List<ComponentSearchItemEnt> searchComponents(String query, Integer limit, Integer offset, String side, String portTypeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException;
         
 }
