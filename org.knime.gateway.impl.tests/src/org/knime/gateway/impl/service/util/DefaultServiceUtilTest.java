@@ -61,6 +61,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -68,6 +70,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -125,6 +128,7 @@ public class DefaultServiceUtilTest {
 
     /**
      * Tests {@link DefaultServiceUtil#changeNodeStates(String, NodeIDEnt, String, NodeIDEnt...)}
+     * 
      * @throws Exception -
      */
     @Test
@@ -181,7 +185,38 @@ public class DefaultServiceUtilTest {
     }
 
     /**
+     * Tests that reset all explicitly includes metanodes (NXT-4489).
+     * 
+     * @throws Exception -
+     */
+    @Test
+    public void testResetAllIncludesMetanodes() throws Exception {
+        WorkflowManager metanodeWfm = createWorkflowManagerMock();
+        NodeID metanodeId = NodeID.fromString("0:2");
+        doReturn(metanodeId).when(metanodeWfm).getID();
+
+        NodeContainer sourceNode = mock(NodeContainer.class);
+        NodeID sourceId = NodeID.fromString("0:3");
+        doReturn(sourceId).when(sourceNode).getID();
+
+        ConnectionContainer incomingConnection = mock(ConnectionContainer.class);
+        doReturn(NodeID.fromString("0:4")).when(incomingConnection).getSource();
+
+        doReturn(Arrays.asList(metanodeWfm, sourceNode)).when(m_wfm).getNodeContainers();
+        doReturn(Collections.singleton(incomingConnection)).when(m_wfm).getIncomingConnectionsFor(metanodeId);
+        doReturn(Collections.emptySet()).when(m_wfm).getIncomingConnectionsFor(sourceId);
+        doReturn(true).when(m_wfm).canResetNode(metanodeId);
+        doReturn(true).when(m_wfm).canResetNode(sourceId);
+
+        DefaultServiceUtil.changeNodeStates(m_wfId, getRootID(), "reset");
+
+        verify(m_wfm).resetAndConfigureNode(metanodeId, true);
+        verify(m_wfm).resetAndConfigureNode(sourceId, true);
+    }
+
+    /**
      * Tests {@link DefaultServiceUtil#changeNodeState(String, NodeIDEnt, String)}.
+     * 
      * @throws Exception -
      */
     public void testChangeNodeState() throws Exception {
@@ -221,6 +256,7 @@ public class DefaultServiceUtilTest {
 
     /**
      * Remove workflow projects.
+     * 
      * @throws Exception
      */
     @After
