@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -93,8 +94,7 @@ public final class SelectionEventBus {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(SelectionEventBus.class);
 
-
-    private Set<Consumer<SelectionEventEnt>> m_eventListeners = Collections.synchronizedSet(new HashSet<>());
+    private Set<Object> m_eventListeners = Collections.synchronizedSet(new HashSet<>());
 
     private final Map<NodeID, PerNodeWrapperEventEmitter> m_eventEmitters = new HashMap<>();
 
@@ -214,6 +214,17 @@ public final class SelectionEventBus {
     }
 
     /**
+     * Adds a selection event listener.
+     *
+     * @param listener
+     * @since 5.11
+     */
+    public void addSelectionEventListener(final BiConsumer<String, SelectionEventEnt> listener) {
+        m_eventListeners.add(listener);
+        LOGGER.debug("Selection event listener added. Num listeners: " + m_eventListeners.size());
+    }
+
+    /**
      * Removes a selection event listener.
      *
      * @param listener
@@ -316,7 +327,13 @@ public final class SelectionEventBus {
         }
 
         private void notifyListeners(final SelectionEventEnt event) {
-            m_eventListeners.forEach(l -> l.accept(event));
+            m_eventListeners.forEach(l -> {
+                if (l instanceof BiConsumer b) {
+                    b.accept(m_projectId, event);
+                } else if (l instanceof Consumer c) {
+                    c.accept(event);
+                }
+            });
         }
 
         private SelectionEventEnt createSelectionEvent(final SelectionEventEnt.ModeEnum mode, final Set<RowKey> keys) {
