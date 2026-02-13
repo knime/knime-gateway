@@ -47,7 +47,9 @@ package org.knime.gateway.api.entity;
 
 import java.util.Objects;
 
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
+import org.knime.core.node.workflow.WorkflowManager;
 
 /**
  * Represents a (workflow) annotation id as used by gateway entities and services. Equivalent to the core's
@@ -76,9 +78,23 @@ public final class AnnotationIDEnt {
      * Creates a new annotation id entity from a {@link WorkflowAnnotationID}.
      *
      * @param id
+     * @deprecated use {@link #AnnotationIDEnt(WorkflowAnnotationID, WorkflowManager)} instead
      */
+    @Deprecated
     public AnnotationIDEnt(final WorkflowAnnotationID id) {
         this(new NodeIDEnt(id.getNodeID()), id.getIndex());
+    }
+
+    /**
+     * Creates a new annotation id entity from a {@link WorkflowAnnotationID}.
+     *
+     * @param id
+     * @param wfm the workflow the annotation with the given id is part of. It's used to determined whether there is a
+     *            'superfluous' parent (see {@link NodeIDEnt#NodeIDEnt(NodeID, boolean)}).
+     * @since 5.11
+     */
+    public AnnotationIDEnt(final WorkflowAnnotationID id, final WorkflowManager wfm) {
+        this(new NodeIDEnt(id.getNodeID(), wfm), id.getIndex());
     }
 
     /**

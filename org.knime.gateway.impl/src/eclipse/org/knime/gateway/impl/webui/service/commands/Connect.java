@@ -52,7 +52,6 @@ import java.util.Optional;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.ConnectionID;
-import org.knime.core.node.workflow.NodeID;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.ConnectCommandEnt;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.ServiceCallException;
@@ -72,22 +71,12 @@ final class Connect extends AbstractWorkflowCommand {
     private final Parameters m_parameters;
 
     private record Parameters( //
-            NodeIDEnt destinationNode, //
-            Integer destinationPortIdx, //
-            NodeIDEnt sourceNode, //
-            Integer sourcePortIdx //
+        NodeIDEnt destinationNode, //
+        Integer destinationPortIdx, //
+        NodeIDEnt sourceNode, //
+        Integer sourcePortIdx //
     ) {
 
-    }
-
-    Connect(final NodeID destinationNode, final Integer destinationPortIdx, final NodeID sourceNode,
-        final Integer sourcePortIdx) {
-        m_parameters = new Parameters( //
-            new NodeIDEnt(destinationNode), //
-            destinationPortIdx, //
-            new NodeIDEnt(sourceNode), //
-            sourcePortIdx //
-        );
     }
 
     Connect(final ConnectCommandEnt commandEnt) {

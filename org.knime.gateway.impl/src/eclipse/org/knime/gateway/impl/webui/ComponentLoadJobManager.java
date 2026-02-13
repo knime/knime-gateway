@@ -346,7 +346,7 @@ public final class ComponentLoadJobManager {
          * Creates a load job runner with default wiring for production usage.
          *
          * @param placeholderId the placeholder id used for progress and completion updates
-         * @param commandEnt the command entity used to load the component
+         * @param params the command entity etc. used to load the component
          * @param postLoadAction optional follow-up action executed after component load completes
          */
         public LoadJobRunner( //
@@ -364,13 +364,13 @@ public final class ComponentLoadJobManager {
                 ), //
                 componentId -> updatePlaceholderWithSuccess( //
                     placeholderId, //
-                    new NodeIDEnt(componentId).toString(), //
+                    new NodeIDEnt(componentId, m_wfm).toString(), //
                     null, //
                     null //
                 ), //
                 ex -> updatePlaceholderWithSuccess( //
                     placeholderId, //
-                    new NodeIDEnt(ex.getComponentId()).toString(), //
+                    new NodeIDEnt(ex.getComponentId(), m_wfm).toString(), //
                     ex.getTitle(), //
                     ex.getMessage() //
                 ), //

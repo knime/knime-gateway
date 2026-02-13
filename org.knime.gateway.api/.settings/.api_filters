@@ -294,6 +294,13 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/eclipse/org/knime/gateway/api/webui/util/WorkflowEntityFactory.java" type="org.knime.gateway.api.webui.util.WorkflowEntityFactory">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="buildNodeIdAndIsExecutedEnt(NodeID, NodeContainerState, WorkflowManager)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/AddComponentCommandEnt.java" type="org.knime.gateway.api.webui.entity.AddComponentCommandEnt">
         <filter id="403804204">
             <message_arguments>

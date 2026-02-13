@@ -285,8 +285,8 @@ public final class SelectionEventBus {
             var directNCParent = parent.getDirectNCParent();
             NodeID ncParentId =
                 directNCParent instanceof SubNodeContainer directSNCParent ? directSNCParent.getID() : parent.getID();
-            m_workflowId = new NodeIDEnt(ncParentId);
-            m_nodeIdEnt = new NodeIDEnt(snc.getID());
+            m_workflowId = new NodeIDEnt(ncParentId, parent);
+            m_nodeIdEnt = new NodeIDEnt(snc.getID(), parent);
             m_portIndex = nw instanceof NodePortWrapper npw ? npw.getPortIdx() : null;
             m_hiLiteHandler.addHiLiteListener(this); // NOSONAR
         }
