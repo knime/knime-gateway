@@ -177,7 +177,7 @@ public final class DefaultWorkflowService implements WorkflowService {
                 .map(NodeContainer::getID)//
                 .map(nodeId -> {
                     final var ncState = linkedComponentsToStateMap.get(nodeId);
-                    return EntityFactory.Workflow.buildNodeIdAndIsExecutedEnt(nodeId, ncState);
+                    return EntityFactory.Workflow.buildNodeIdAndIsExecutedEnt(nodeId, ncState, wfm);
                 })//
                 .toList();
         } catch (IllegalStateException | InterruptedException e) { // NOSONAR

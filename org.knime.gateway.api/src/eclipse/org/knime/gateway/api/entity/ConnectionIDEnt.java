@@ -48,6 +48,8 @@ package org.knime.gateway.api.entity;
 import java.util.Objects;
 
 import org.knime.core.node.workflow.ConnectionID;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowManager;
 
 /**
  * Represents a connection id as used by gateway entities and services. Equivalent to the core's
@@ -73,9 +75,23 @@ public final class ConnectionIDEnt {
      * Creates a new connection id entity from a {@link ConnectionID}.
      *
      * @param connectionId
+     * @deprecated use {@link #ConnectionIDEnt(ConnectionID, WorkflowManager)} instead
      */
+    @Deprecated
     public ConnectionIDEnt(final ConnectionID connectionId) {
         this(new NodeIDEnt(connectionId.getDestinationNode()), connectionId.getDestinationPort());
+    }
+
+    /**
+     * Creates a new connection id entity from a {@link ConnectionID}.
+     *
+     * @param connectionId
+     * @param wfm the workflow the connection with the given id is part of. It's used to determined whether there is a
+     *            'superfluous' parent (see {@link NodeIDEnt#NodeIDEnt(NodeID, boolean)}).
+     * @since 5.11
+     */
+    public ConnectionIDEnt(final ConnectionID connectionId, final WorkflowManager wfm) {
+        this(new NodeIDEnt(connectionId.getDestinationNode(), wfm), connectionId.getDestinationPort());
     }
 
     /**

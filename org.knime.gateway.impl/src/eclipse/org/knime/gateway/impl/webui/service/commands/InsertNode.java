@@ -48,15 +48,15 @@
  */
 package org.knime.gateway.impl.webui.service.commands;
 
-import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.knime.core.node.workflow.ConnectionContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowCopyContent;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.gateway.api.entity.ConnectionIDEnt;
-import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.webui.entity.InsertNodeCommandEnt;
 import org.knime.gateway.api.webui.entity.InsertionOptionsEnt;
 import org.knime.gateway.api.webui.entity.NodeFactoryKeyEnt;
@@ -90,16 +90,16 @@ final class InsertNode extends AbstractWorkflowCommand {
         m_parameters = new Parameters( //
             insertionOptions.getConnectionId(), //
             Geometry.Point.of(position), //
-            new NodeIDEnt(nodeToInsert), //
+            wfm -> nodeToInsert, //
             null //
         );
     }
 
     private record Parameters( //
-            ConnectionIDEnt connection, //
-            Geometry.Point position, //
-            NodeIDEnt nodeToInsert, //
-            NodeFactoryKeyEnt nodeToCreateAndInsert) {
+        ConnectionIDEnt connection, //
+        Geometry.Point position, //
+        Function<WorkflowManager, NodeID> nodeToInsertGetter, //
+        NodeFactoryKeyEnt nodeToCreateAndInsert) {
     }
 
     private record Port(NodeID node, int port) {
@@ -110,7 +110,7 @@ final class InsertNode extends AbstractWorkflowCommand {
         m_parameters = new Parameters( //
             commandEnt.getConnectionId(), //
             Geometry.Point.of(commandEnt.getPosition()), //
-            commandEnt.getNodeId(), //
+            wfm -> commandEnt.getNodeId().toNodeID(wfm), //
             commandEnt.getNodeFactory() //
         );
     }
@@ -118,11 +118,10 @@ final class InsertNode extends AbstractWorkflowCommand {
     @Override
     protected boolean executeWithWorkflowLockAndContext() throws ServiceCallException {
         var wfm = getWorkflowManager();
+        var nodeToInsert =
+            m_parameters.nodeToInsertGetter == null ? null : m_parameters.nodeToInsertGetter().apply(wfm);
         var connectionId =
             DefaultServiceUtil.entityToConnectionID(getWorkflowKey().getProjectId(), m_parameters.connection());
-        var nodeToInsert = Optional.ofNullable(m_parameters.nodeToInsert()) //
-            .map(id -> id.toNodeID(getWorkflowManager())) //
-            .orElse(null);
         m_originalConnection = wfm.getConnection(connectionId);
         m_source = new Port(this.m_originalConnection.getSource(), this.m_originalConnection.getSourcePort());
         m_destination = new Port(this.m_originalConnection.getDest(), this.m_originalConnection.getDestPort());

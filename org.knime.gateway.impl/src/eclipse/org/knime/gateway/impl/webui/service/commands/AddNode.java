@@ -205,7 +205,7 @@ final class AddNode extends AbstractWorkflowCommand implements WithResult {
     public AddNodeResultEnt buildEntity(final String snapshotId) {
         return builder(AddNodeResultEntBuilder.class)//
             .setKind(KindEnum.ADD_NODE_RESULT)//
-            .setNewNodeId(new NodeIDEnt(m_addedNode))//
+            .setNewNodeId(new NodeIDEnt(m_addedNode, getWorkflowManager()))//
             .setSnapshotId(snapshotId)//
             .build();
     }
