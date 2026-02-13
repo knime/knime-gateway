@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -93,8 +94,9 @@ public final class SelectionEventBus {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(SelectionEventBus.class);
 
+    private Set<Consumer<SelectionEventEnt>> m_eventListeners1 = Collections.synchronizedSet(new HashSet<>());
 
-    private Set<Consumer<SelectionEventEnt>> m_eventListeners = Collections.synchronizedSet(new HashSet<>());
+    private Set<BiConsumer<String, SelectionEventEnt>> m_eventListeners2 = Collections.synchronizedSet(new HashSet<>());
 
     private final Map<NodeID, PerNodeWrapperEventEmitter> m_eventEmitters = new HashMap<>();
 
@@ -209,8 +211,21 @@ public final class SelectionEventBus {
      * @param listener
      */
     public void addSelectionEventListener(final Consumer<SelectionEventEnt> listener) {
-        m_eventListeners.add(listener);
-        LOGGER.debug("Selection event listener added. Num listeners: " + m_eventListeners.size());
+        m_eventListeners1.add(listener);
+        LOGGER.debug(
+            "Selection event listener added. Num listeners: " + numEventListeners());
+    }
+
+    /**
+     * Adds a selection event listener.
+     *
+     * @param listener
+     * @since 5.11
+     */
+    public void addSelectionEventListener(final BiConsumer<String, SelectionEventEnt> listener) {
+        m_eventListeners2.add(listener);
+        LOGGER.debug(
+            "Selection event listener added. Num listeners: " + numEventListeners());
     }
 
     /**
@@ -219,17 +234,22 @@ public final class SelectionEventBus {
      * @param listener
      */
     public void removeSelectionEventListener(final Consumer<SelectionEventEnt> listener) {
-        m_eventListeners.remove(listener);
-        LOGGER.debug("Selection event listener removed. Num listeners: " + m_eventListeners.size());
+        m_eventListeners1.remove(listener);
+        LOGGER.debug("Selection event listener removed. Num listeners: " + numEventListeners());
     }
 
     /**
      * Removes all selection event listeners and emitters and everything else that is required in the process.
      */
     public void clear() {
-        m_eventListeners.clear();
+        m_eventListeners1.clear();
+        m_eventListeners2.clear();
         m_eventEmitters.values().forEach(PerNodeWrapperEventEmitter::removeHiLiteListenerFromHandler);
         m_eventEmitters.clear();
+    }
+
+    private int numEventListeners() {
+        return m_eventListeners1.size() + m_eventListeners2.size();
     }
 
     /**
@@ -316,7 +336,12 @@ public final class SelectionEventBus {
         }
 
         private void notifyListeners(final SelectionEventEnt event) {
-            m_eventListeners.forEach(l -> l.accept(event));
+            synchronized (m_eventListeners1) {
+                m_eventListeners1.forEach(l -> l.accept(event));
+            }
+            synchronized (m_eventListeners2) {
+                m_eventListeners2.forEach(l -> l.accept(m_projectId, event));
+            }
         }
 
         private SelectionEventEnt createSelectionEvent(final SelectionEventEnt.ModeEnum mode, final Set<RowKey> keys) {
