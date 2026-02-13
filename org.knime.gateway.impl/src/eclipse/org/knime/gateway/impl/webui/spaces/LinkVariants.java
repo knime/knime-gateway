@@ -100,6 +100,7 @@ public interface LinkVariants {
      *
      * @param uri KNIME URL
      * @return detected link variant
+     * @since 5.11
      */
     default LinkVariantEnt.VariantEnum getLinkVariant(final URI uri) {
         throw new UnsupportedOperationException();

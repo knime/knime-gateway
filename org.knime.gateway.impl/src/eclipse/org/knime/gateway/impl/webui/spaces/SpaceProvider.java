@@ -369,7 +369,7 @@ public interface SpaceProvider {
      * @param itemId item ID
      * @return item versions ordered as provided by the space provider
      * @throws ServiceExceptions.ServiceCallException if the space provider cannot fetch item versions
-     * @since 5.10
+     * @since 5.11
      */
     default List<NamedItemVersion> getItemVersions(final String itemId) throws ServiceExceptions.ServiceCallException {
         throw new UnsupportedOperationException();
