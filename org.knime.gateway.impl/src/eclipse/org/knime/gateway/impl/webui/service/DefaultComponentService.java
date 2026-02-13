@@ -182,7 +182,7 @@ public class DefaultComponentService implements ComponentService {
         try {
             var isIdBased = ServiceDependencies.getServiceDependency(LinkVariants.class, true) //
                 .getLinkVariant(uri) //
-                == LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID;
+                    == LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID;
             if (isIdBased) {
                 return ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, true) //
                     .getSpaceProviders(SpaceProvidersManager.Key.of(projectId)) //
@@ -192,6 +192,10 @@ public class DefaultComponentService implements ComponentService {
                     .toList(); //
             }
             // else assume path-based, below call only supports path-based urls
+            var path = uri.getPath();
+            if (path == null || path.isEmpty()) {
+                throw new IllegalArgumentException("Expected path-based URI but URI has no path component; is " + path);
+            }
             return ResolverUtil.getHubItemVersionList(uri).stream() //
                 .map(DefaultComponentService::namedItemVersionToEntity).toList();
         } catch (ResourceAccessException e) {
