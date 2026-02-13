@@ -1312,14 +1312,17 @@ public final class WorkflowEntityFactory {
      *
      * @param nodeId The node ID to build the entity for
      * @param ncState The node container state
+     * @param wfm required for {@link NodeID} to {@link NodeIDEnt} conversion - see
+     *            {@link NodeIDEnt#NodeIDEnt(NodeID, WorkflowManager)}
      * @return Combination of node ID and execution state
      */
-    public NodeIdAndIsExecutedEnt buildNodeIdAndIsExecutedEnt(final NodeID nodeId, final NodeContainerState ncState) {
+    public NodeIdAndIsExecutedEnt buildNodeIdAndIsExecutedEnt(final NodeID nodeId, final NodeContainerState ncState,
+        final WorkflowManager wfm) {
         final var ncStateEnum = getNodeExecutionStateEnum(ncState);
         final var isExecuted =
             ncStateEnum == ExecutionStateEnum.EXECUTED || ncStateEnum == ExecutionStateEnum.EXECUTING;
         return builder(NodeIdAndIsExecutedEntBuilder.class)//
-            .setId(new NodeIDEnt(nodeId))//
+            .setId(new NodeIDEnt(nodeId, wfm))//
             .setIsExecuted(isExecuted)//
             .build();
     }

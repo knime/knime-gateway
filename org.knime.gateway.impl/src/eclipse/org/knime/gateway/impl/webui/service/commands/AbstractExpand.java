@@ -173,9 +173,9 @@ class AbstractExpand extends AbstractWorkflowCommand implements WithResult {
         return builder(ExpandResultEnt.ExpandResultEntBuilder.class) //
             .setKind(CommandResultEnt.KindEnum.EXPAND_RESULT) //
             .setSnapshotId(snapshotId) //
-            .setExpandedNodeIds(getExpandedNodes().stream().map(NodeIDEnt::new).toList()) //
+            .setExpandedNodeIds(getExpandedNodes().stream().map(id -> new NodeIDEnt(id, getWorkflowManager())).toList()) //
             .setExpandedAnnotationIds(
-                getExpandedAnnotations().stream().map(AnnotationIDEnt::new).toList()) //
+                getExpandedAnnotations().stream().map(id -> new AnnotationIDEnt(id, getWorkflowManager())).toList()) //
             .build();
     }
 

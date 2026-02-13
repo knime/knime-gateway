@@ -55,7 +55,57 @@ import org.knime.gateway.api.util.CoreUtil;
 
 /**
  * Represents a node id as used by gateway entities and services (and the UI in general). Equivalent to the core's
- * {@link org.knime.core.node.workflow.NodeID}.
+ * {@link org.knime.core.node.workflow.NodeID}.<br>
+ * <br>
+ *
+ * NOTE: transforming a NodeID into a NodeIDEnt the is NOT one to one because the NodeIDEnt ‘canonizes' the original
+ * NodeID.
+ *
+ * <h4>Structure of the NodeID</h4>
+ *
+ * {@code <root id>:<optional ‘superfluous’ id>:<project root id>:<rest>}<br>
+ *
+ * where
+ *
+ * <ul>
+ * <li>{@code <root id>} is a constant ID (0) of the top-most WorkflowManager (i.e. WorkflowManager.ROOT), just serving
+ * as a container of other WorkflowManagers</li>
+ * <li>{@code <optional ‘superfluous’ id>} is another level in the hierarchy in case
+ * <ul>
+ * <li>the actual ‘project’ WorkflowManager is registered at an ‘intermediate’ WorkflowManager (e.g. the
+ * JobPool.jobRoot)</li>
+ * <li>or it represents the ‘component’ in case of a node-id that is part of a ‘component project’ (i.e. a directly
+ * opened component that isn’t part of a workflow)</li>
+ * </ul>
+ *
+ * <li>{@code <project root id>} is the id of the actual project WorkflowManager, i.e. the root-level of the workflow a
+ * user is looking at</li>
+ *
+ * <li>{@code <rest>} are ids referencing the actual (nested) node</li>
+ * </ul>
+ *
+ * <h4>Structure of the NodeIDEnt</h4>
+ *
+ * The structure of a NodeIDEnt is much simpler and reduced:<br>
+ *
+ * {@code root:<rest>}<br>
+ *
+ * As a result, when turning a NodeID into a NodeIDEnt, we
+ * <ul>
+ * <li>strip away the {@code <project root id>} and replace it with just {@code root} - we can do this because we
+ * reference the ‘project’ workflow though a separate ‘project id’ independent from node-ids</li>
+ * <li>strip away the {@code <optional ‘superfluous’ id>} entirely</li>
+ * </ul>
+ *
+ * <h4>Examples</h4>
+ *
+ * <ul>
+ * <li>0:6:0:4:5 e.g. represents the nested node 4:5 within a component project, which is turned into root:4:5 <br>
+ * </li>
+ *
+ * <li>0:1:4:4:5 e.g. represents a nested node 4:5 within a job workflow (i.e. 1 is the id of the ‘jobRoot’), which is
+ * turned into root:4:5</li>
+ * </ul>
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -97,7 +147,9 @@ public final class NodeIDEnt {
 
     /**
      * @param nodeID the node id to create the entity from
+     * @deprecated use {@link #NodeIDEnt(NodeID, boolean)} or #NodeIDEnt(NodeID, WorkflowManager) instead
      */
+    @Deprecated
     public NodeIDEnt(final NodeID nodeID) {
         this(extractNodeIDs(nodeID, 0));
     }
@@ -110,6 +162,16 @@ public final class NodeIDEnt {
      */
     public NodeIDEnt(final NodeID nodeID, final boolean hasSuperfluousParent) {
         this(extractNodeIDs(nodeID, hasSuperfluousParent ? 1 : 0));
+    }
+
+    /**
+     * @param nodeID the node id to create the entity from
+     * @param wfm the workflow the node with the given id is part of. It's used to determined whether there is a
+     *            'superfluous' parent (see {@link #NodeIDEnt(NodeID, boolean)}).
+     * @since 5.11
+     */
+    public NodeIDEnt(final NodeID nodeID, final WorkflowManager wfm) {
+        this(nodeID, hasSuperfluousParent(wfm));
     }
 
     /**

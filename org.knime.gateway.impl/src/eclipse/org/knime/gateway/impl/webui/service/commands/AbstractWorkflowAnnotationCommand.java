@@ -132,7 +132,7 @@ abstract class AbstractWorkflowAnnotationCommand extends AbstractWorkflowCommand
         if (workflowAnnotation == null) {
             throw ServiceCallException.builder() //
                 .withTitle("Annotation not found") //
-                .withDetails("No workflow annotation found for id " + (new AnnotationIDEnt(annotationId))) //
+                .withDetails("No workflow annotation found for id " + (new AnnotationIDEnt(annotationId, wfm))) //
                 .canCopy(false) //
                 .build();
         }

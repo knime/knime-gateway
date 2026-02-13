@@ -114,7 +114,7 @@ class ConvertMetanodeToComponent extends AbstractWorkflowCommand implements With
         return builder(ConvertContainerResultEnt.ConvertContainerResultEntBuilder.class) //
             .setKind(CommandResultEnt.KindEnum.CONVERT_CONTAINER_RESULT) //
             .setSnapshotId(snapshotId) //
-            .setConvertedNodeId(new NodeIDEnt(m_metaNodeToSubNodeResult.getConvertedNodeID())) //
+            .setConvertedNodeId(new NodeIDEnt(m_metaNodeToSubNodeResult.getConvertedNodeID(), getWorkflowManager())) //
             .build();
     }
 
