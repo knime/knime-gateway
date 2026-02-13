@@ -60,12 +60,14 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
+import org.knime.core.util.hub.NamedItemVersion;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.ResetOnUploadEnum;
 import org.knime.gateway.api.webui.entity.SpaceProviderEnt.TypeEnum;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
+import org.knime.gateway.api.webui.service.util.ServiceExceptions;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.LoggedOutException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions.NetworkException;
 
@@ -358,6 +360,18 @@ public interface SpaceProvider {
      * @since 5.10
      */
     default URI toKnimeUrl(final String itemId) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Lists the available versions for the given space item.
+     *
+     * @param itemId item ID
+     * @return item versions ordered as provided by the space provider
+     * @throws ServiceExceptions.ServiceCallException if the space provider cannot fetch item versions
+     * @since 5.11
+     */
+    default List<NamedItemVersion> getItemVersions(final String itemId) throws ServiceExceptions.ServiceCallException {
         throw new UnsupportedOperationException();
     }
 
