@@ -182,7 +182,7 @@ public class DefaultComponentService implements ComponentService {
         try {
             var isIdBased = ServiceDependencies.getServiceDependency(LinkVariants.class, true) //
                 .getLinkVariant(uri) //
-                .equals(LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID);
+                == LinkVariantEnt.VariantEnum.MOUNTPOINT_ABSOLUTE_ID;
             if (isIdBased) {
                 return ServiceDependencies.getServiceDependency(SpaceProvidersManager.class, true) //
                     .getSpaceProviders(SpaceProvidersManager.Key.of(projectId)) //
@@ -206,9 +206,15 @@ public class DefaultComponentService implements ComponentService {
 
     private static String extractHubItemId(final URI uri) {
         var path = uri.getPath();
+        if (path == null || path.isEmpty()) {
+            throw new IllegalArgumentException("Cannot extract hub item id: URI has no path: " + uri);
+        }
         var trimmed = path.startsWith("/") ? path.substring(1) : path;
         var lastSegment = trimmed.contains("/") ? trimmed.substring(trimmed.lastIndexOf('/') + 1) : trimmed;
-        return lastSegment.startsWith("*") && lastSegment.length() > 1 ? lastSegment : null;
+        if (lastSegment.startsWith("*") && lastSegment.length() > 1) {
+            return lastSegment.substring(1);
+        }
+        throw new IllegalArgumentException("Cannot extract hub item id from URI: " + uri);
     }
 
     private static NamedItemVersionEnt namedItemVersionToEntity(final NamedItemVersion namedItemVersion) {
