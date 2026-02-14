@@ -53,6 +53,11 @@ import java.util.Optional;
 
 import org.knime.core.customization.APCustomization;
 import org.knime.core.customization.APCustomizationProviderService;
+import org.knime.core.webui.node.dialog.NodeDialogManager;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.dialog.defaultdialog.components.VirtualSubNodeInputParameters;
+import org.knime.core.webui.node.dialog.defaultdialog.components.VirtualSubNodeOutputParameters;
 import org.knime.core.webui.node.port.PortViewManager;
 import org.knime.core.webui.node.port.PortViewManager.PortViewDescriptor;
 import org.knime.gateway.impl.node.port.DirectAccessTablePortViewFactory;
@@ -110,6 +115,14 @@ public class GatewayImplPlugin implements BundleActivator {
 
         PortViewManager.registerPortViews("org.knime.core.data.DirectAccessTable", //
             List.of(new PortViewDescriptor("Table", new DirectAccessTablePortViewFactory())), List.of(), List.of(0));
+
+        // WebUI dialogs for Component Input/Output nodes (factories live in knime-core, can't depend on knime-core-ui)
+        NodeDialogManager.registerNodeDialogFactory(
+            "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory",
+            () -> new DefaultNodeDialog(SettingsType.MODEL, VirtualSubNodeInputParameters.class));
+        NodeDialogManager.registerNodeDialogFactory(
+            "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeOutputNodeFactory",
+            () -> new DefaultNodeDialog(SettingsType.MODEL, VirtualSubNodeOutputParameters.class));
 
         m_customizationServiceTracker = new ServiceTracker<>(context, APCustomizationProviderService.class, null);
         m_customizationServiceTracker.open();
