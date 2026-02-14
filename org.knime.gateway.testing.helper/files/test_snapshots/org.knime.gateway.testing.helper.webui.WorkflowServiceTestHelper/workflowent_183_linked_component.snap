@@ -112,7 +112,7 @@
       "templateId" : "org.knime.base.node.flowvariable.extractvariables.ExtractVariablesNodeFactory"
     },
     "root:183:0:17" : {
-      "dialogType" : "swing",
+      "dialogType" : "web",
       "executionInfo" : {
         "streamable" : true
       },
@@ -156,7 +156,7 @@
       "templateId" : "org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory#Component Input"
     },
     "root:183:0:18" : {
-      "dialogType" : "swing",
+      "dialogType" : "web",
       "executionInfo" : {
         "streamable" : true
       },
