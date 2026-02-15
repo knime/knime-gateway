@@ -60,6 +60,7 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Version;
 import org.knime.core.util.auth.CouldNotAuthorizeException;
+import org.knime.gateway.api.util.Side;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 import org.knime.gateway.api.webui.entity.SpaceGroupEnt;
@@ -138,6 +139,8 @@ public interface SpaceProvider {
      * @param tags optional tags filter
      * @param owner optional owner filter
      * @param query searchComponents text
+     * @param side optional port side filter ({@code input} or {@code output})
+     * @param portTypeId optional port type id filter
      * @param limit optional result limit
      * @param offset optional offset
      * @since 5.10
@@ -146,7 +149,8 @@ public interface SpaceProvider {
      * @throws LoggedOutException
      * @throws UnsupportedOperationException if not supported
      */
-    default List<ComponentSearchItemEnt> searchComponents(final String query, final Integer limit, final Integer offset)
+    default List<ComponentSearchItemEnt> searchComponents(final String query, final Side side, final String portTypeId,
+        final Integer limit, final Integer offset)
         throws NetworkException, LoggedOutException, MutableServiceCallException {
         throw new UnsupportedOperationException();
     }

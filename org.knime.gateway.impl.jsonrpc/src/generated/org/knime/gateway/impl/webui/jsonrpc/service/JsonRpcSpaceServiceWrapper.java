@@ -361,8 +361,8 @@ public class JsonRpcSpaceServiceWrapper implements SpaceService {
         @JsonRpcError(exception = ServiceExceptions.NetworkException.class, code = -32600,
             data = "NetworkException" /*per convention the data property contains the exception name*/)
     })
-    public java.util.List<ComponentSearchItemEnt> searchComponents(@JsonRpcParam(value="query") String query, @JsonRpcParam(value="limit") Integer limit, @JsonRpcParam(value="offset") Integer offset)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
-        return m_service.get().searchComponents(query, limit, offset);    
+    public java.util.List<ComponentSearchItemEnt> searchComponents(@JsonRpcParam(value="query") String query, @JsonRpcParam(value="limit") Integer limit, @JsonRpcParam(value="offset") Integer offset, @JsonRpcParam(value="side") String side, @JsonRpcParam(value="portTypeId") String portTypeId)  throws ServiceExceptions.ServiceCallException, ServiceExceptions.LoggedOutException, ServiceExceptions.NetworkException {
+        return m_service.get().searchComponents(query, limit, offset, side, portTypeId);    
     }
 
 }
