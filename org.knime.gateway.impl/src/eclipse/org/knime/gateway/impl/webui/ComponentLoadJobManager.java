@@ -76,6 +76,7 @@ import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.ComponentPlaceholderEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
+import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommand;
@@ -170,7 +171,7 @@ public final class ComponentLoadJobManager {
             // In API for native nodes, a position is not required for replacement. We follow the pattern here.
             return Optional.ofNullable(wfm.getNodeContainer(replacementOptions.getTargetNodeId().toNodeID(wfm))) //
                 .map(nc -> nc.getUIInformation().getBounds()) //
-                .map(bounds -> Geometry.Point.of(bounds)) //
+                .map(bounds -> Geometry.Point.of(bounds[0], bounds[1] + WorkflowEntityFactory.NODE_Y_POS_CORRECTION)) //
                 .orElseThrow(() -> new IllegalStateException("Cannot determine placeholder position from target node") //
                 ); //
         }
@@ -575,7 +576,7 @@ public final class ComponentLoadJobManager {
         /**
          * Loads the component represented by the given command entity.
          *
-         * @param ent the command entity with component metadata and position
+         * @param params component metadata and position
          * @param wfm the workflow manager receiving the component
          * @param spaceProviders space providers used for component resolution
          * @param executionMonitor execution monitor for progress and cancellation

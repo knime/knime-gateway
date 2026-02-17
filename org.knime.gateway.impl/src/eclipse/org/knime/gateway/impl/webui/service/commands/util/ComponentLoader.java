@@ -84,6 +84,7 @@ import org.knime.gateway.api.service.GatewayException;
 import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.service.util.MutableServiceCallException;
 import org.knime.gateway.api.webui.service.util.ServiceExceptions;
+import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
 
@@ -103,7 +104,7 @@ public final class ComponentLoader {
     /**
      * Loads a component from a command entity.
      *
-     * @param commandEnt contains all information required to load the component
+     * @param params contains all information required to load the component
      * @param wfm the workflow to load the component into
      * @param spaceProviders provides access to the space for downloading the component
      * @param exec progress and cancellation
@@ -257,7 +258,8 @@ public final class ComponentLoader {
         if (snc == null) {
             throw new IllegalStateException("No component returned by load routine, see log for details");
         }
-        var info = NodeUIInformation.builder().setNodeLocation(position.x(), position.y(), -1, -1)
+        var info = NodeUIInformation.builder()
+            .setNodeLocation(position.x(), position.y() - WorkflowEntityFactory.NODE_Y_POS_CORRECTION, -1, -1)
             .setHasAbsoluteCoordinates(false).setSnapToGrid(false).setIsDropLocation(true).build();
         snc.setUIInformation(info);
         return new LoadResultInternalRoot(loadResult);
