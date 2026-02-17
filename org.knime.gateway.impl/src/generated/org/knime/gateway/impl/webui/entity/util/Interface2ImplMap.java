@@ -274,6 +274,8 @@ import org.knime.gateway.api.webui.entity.NodeTemplateEnt.NodeTemplateEntBuilder
 import org.knime.gateway.impl.webui.entity.DefaultNodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultNodeViewDescriptionEnt;
+import org.knime.gateway.api.webui.entity.OwnerEnt.OwnerEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultOwnerEnt;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt.PartBasedCommandEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultPartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt.PasteCommandEntBuilder;
@@ -778,6 +780,9 @@ public class Interface2ImplMap {
         }        
         if(clazz == NodeViewDescriptionEntBuilder.class) {
             return (B)new DefaultNodeViewDescriptionEnt.DefaultNodeViewDescriptionEntBuilder();
+        }        
+        if(clazz == OwnerEntBuilder.class) {
+            return (B)new DefaultOwnerEnt.DefaultOwnerEntBuilder();
         }        
         if(clazz == PartBasedCommandEntBuilder.class) {
             return (B)new DefaultPartBasedCommandEnt.DefaultPartBasedCommandEntBuilder();

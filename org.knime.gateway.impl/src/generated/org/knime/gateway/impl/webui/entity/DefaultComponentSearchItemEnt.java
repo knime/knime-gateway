@@ -47,6 +47,7 @@ package org.knime.gateway.impl.webui.entity;
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
 import org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt;
+import org.knime.gateway.api.webui.entity.OwnerEnt;
 
 import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
 
@@ -57,8 +58,9 @@ import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
  * @param name
  * @param description
  * @param icon
- * @param isOwnedByAnotherIdentity
  * @param type
+ * @param containingSpace
+ * @param owner
  * @param inPorts
  * @param outPorts
  *
@@ -70,8 +72,9 @@ public record DefaultComponentSearchItemEnt(
     String name,
     String description,
     String icon,
-    Boolean isOwnedByAnotherIdentity,
     TypeEnum type,
+    String containingSpace,
+    OwnerEnt owner,
     java.util.List<ComponentSearchItemPortEnt> inPorts,
     java.util.List<ComponentSearchItemPortEnt> outPorts) implements ComponentSearchItemEnt {
 
@@ -113,13 +116,18 @@ public record DefaultComponentSearchItemEnt(
     }
     
     @Override
-    public Boolean isOwnedByAnotherIdentity() {
-        return isOwnedByAnotherIdentity;
+    public TypeEnum getType() {
+        return type;
     }
     
     @Override
-    public TypeEnum getType() {
-        return type;
+    public String getContainingSpace() {
+        return containingSpace;
+    }
+    
+    @Override
+    public OwnerEnt getOwner() {
+        return owner;
     }
     
     @Override
@@ -145,9 +153,11 @@ public record DefaultComponentSearchItemEnt(
 
         private String m_icon;
 
-        private Boolean m_isOwnedByAnotherIdentity;
-
         private TypeEnum m_type;
+
+        private String m_containingSpace;
+
+        private OwnerEnt m_owner;
 
         private java.util.List<ComponentSearchItemPortEnt> m_inPorts;
 
@@ -184,14 +194,20 @@ public record DefaultComponentSearchItemEnt(
         }
 
         @Override
-        public DefaultComponentSearchItemEntBuilder setIsOwnedByAnotherIdentity(Boolean isOwnedByAnotherIdentity) {
-             m_isOwnedByAnotherIdentity = isOwnedByAnotherIdentity;
+        public DefaultComponentSearchItemEntBuilder setType(TypeEnum type) {
+             m_type = type;
              return this;
         }
 
         @Override
-        public DefaultComponentSearchItemEntBuilder setType(TypeEnum type) {
-             m_type = type;
+        public DefaultComponentSearchItemEntBuilder setContainingSpace(String containingSpace) {
+             m_containingSpace = containingSpace;
+             return this;
+        }
+
+        @Override
+        public DefaultComponentSearchItemEntBuilder setOwner(OwnerEnt owner) {
+             m_owner = owner;
              return this;
         }
 
@@ -214,8 +230,9 @@ public record DefaultComponentSearchItemEnt(
                 immutable(m_name),
                 immutable(m_description),
                 immutable(m_icon),
-                immutable(m_isOwnedByAnotherIdentity),
                 immutable(m_type),
+                immutable(m_containingSpace),
+                immutable(m_owner),
                 immutable(m_inPorts),
                 immutable(m_outPorts));
         }

@@ -55,91 +55,70 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * AutoConnectOptionsEnt
+ * Owner information for an item in a space.
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface AutoConnectOptionsEnt extends GatewayEntity {
-
-  /**
-   * Relation of the new node with the given node, either a successor or a predecessor of the given node.
-   */
-  public enum NodeRelationEnum {
-    PREDECESSORS("PREDECESSORS"),
-    
-    SUCCESSORS("SUCCESSORS");
-
-    private String value;
-
-    NodeRelationEnum(String value) {
-      this.value = value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-  }
+public interface OwnerEnt extends GatewayEntity {
 
 
   /**
-   * Existing node to connect to
-   * @return targetNodeId , never <code>null</code>
+   * Owner account identity ID.
+   * @return id 
    **/
-  public org.knime.gateway.api.entity.NodeIDEnt getTargetNodeId();
+  public String getId();
 
   /**
-   * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
-   * @return targetNodePortIdx 
+   * Human readable owner name.
+   * @return name 
    **/
-  public Integer getTargetNodePortIdx();
+  public String getName();
 
   /**
-   * Relation of the new node with the given node, either a successor or a predecessor of the given node.
-   * @return nodeRelation , never <code>null</code>
+   * True if the owner is a team.
+   * @return isTeam 
    **/
-  public NodeRelationEnum getNodeRelation();
+  public Boolean isTeam();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (AutoConnectOptionsEnt)other;
-      valueConsumer.accept("targetNodeId", Pair.create(getTargetNodeId(), e.getTargetNodeId()));
-      valueConsumer.accept("targetNodePortIdx", Pair.create(getTargetNodePortIdx(), e.getTargetNodePortIdx()));
-      valueConsumer.accept("nodeRelation", Pair.create(getNodeRelation(), e.getNodeRelation()));
+      var e = (OwnerEnt)other;
+      valueConsumer.accept("id", Pair.create(getId(), e.getId()));
+      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
+      valueConsumer.accept("isTeam", Pair.create(isTeam(), e.isTeam()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface AutoConnectOptionsEntBuilder extends GatewayEntityBuilder<AutoConnectOptionsEnt> {
+    public interface OwnerEntBuilder extends GatewayEntityBuilder<OwnerEnt> {
 
         /**
-         * Existing node to connect to
+         * Owner account identity ID.
          * 
-         * @param targetNodeId the property value, NOT <code>null</code>! 
+         * @param id the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectOptionsEntBuilder setTargetNodeId(org.knime.gateway.api.entity.NodeIDEnt targetNodeId);
+        OwnerEntBuilder setId(String id);
         
         /**
-         * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
+         * Human readable owner name.
          * 
-         * @param targetNodePortIdx the property value,  
+         * @param name the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectOptionsEntBuilder setTargetNodePortIdx(Integer targetNodePortIdx);
+        OwnerEntBuilder setName(String name);
         
         /**
-         * Relation of the new node with the given node, either a successor or a predecessor of the given node.
+         * True if the owner is a team.
          * 
-         * @param nodeRelation the property value, NOT <code>null</code>! 
+         * @param isTeam the property value,  
          * @return this entity builder for chaining
          */
-        AutoConnectOptionsEntBuilder setNodeRelation(NodeRelationEnum nodeRelation);
+        OwnerEntBuilder setIsTeam(Boolean isTeam);
         
         
         /**
@@ -149,7 +128,7 @@ public interface AutoConnectOptionsEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        AutoConnectOptionsEnt build();
+        OwnerEnt build();
     
     }
 

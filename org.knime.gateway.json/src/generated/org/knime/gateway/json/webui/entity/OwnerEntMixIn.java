@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt;
-import org.knime.gateway.api.webui.entity.OwnerEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.ComponentSearchItemEnt;
-import org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt.DefaultComponentSearchItemEntBuilder;
+import org.knime.gateway.api.webui.entity.OwnerEnt;
+import org.knime.gateway.impl.webui.entity.DefaultOwnerEnt.DefaultOwnerEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,10 +60,10 @@ import org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt.Default
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultComponentSearchItemEntBuilder.class)
-@JsonSerialize(as=ComponentSearchItemEnt.class)
+@JsonDeserialize(builder=DefaultOwnerEntBuilder.class)
+@JsonSerialize(as=OwnerEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ComponentSearchItemEntMixIn extends ComponentSearchItemEnt {
+public interface OwnerEntMixIn extends OwnerEnt {
 
     @Override
     @JsonIgnore
@@ -80,32 +78,8 @@ public interface ComponentSearchItemEntMixIn extends ComponentSearchItemEnt {
     public String getName();
     
     @Override
-    @JsonProperty("description")
-    public String getDescription();
-    
-    @Override
-    @JsonProperty("icon")
-    public String getIcon();
-    
-    @Override
-    @JsonProperty("type")
-    public TypeEnum getType();
-    
-    @Override
-    @JsonProperty("containingSpace")
-    public String getContainingSpace();
-    
-    @Override
-    @JsonProperty("owner")
-    public OwnerEnt getOwner();
-    
-    @Override
-    @JsonProperty("inPorts")
-    public java.util.List<ComponentSearchItemPortEnt> getInPorts();
-    
-    @Override
-    @JsonProperty("outPorts")
-    public java.util.List<ComponentSearchItemPortEnt> getOutPorts();
+    @JsonProperty("isTeam")
+    public Boolean isTeam();
     
 
     /**
@@ -115,46 +89,22 @@ public interface ComponentSearchItemEntMixIn extends ComponentSearchItemEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ComponentSearchItemEntMixInBuilder extends ComponentSearchItemEntBuilder {
+    public static interface OwnerEntMixInBuilder extends OwnerEntBuilder {
     
         @Override
-        public ComponentSearchItemEntMixIn build();
+        public OwnerEntMixIn build();
     
         @Override
         @JsonProperty("id")
-        public ComponentSearchItemEntMixInBuilder setId(final String id);
+        public OwnerEntMixInBuilder setId(final String id);
         
         @Override
         @JsonProperty("name")
-        public ComponentSearchItemEntMixInBuilder setName(final String name);
+        public OwnerEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("description")
-        public ComponentSearchItemEntMixInBuilder setDescription(final String description);
-        
-        @Override
-        @JsonProperty("icon")
-        public ComponentSearchItemEntMixInBuilder setIcon(final String icon);
-        
-        @Override
-        @JsonProperty("type")
-        public ComponentSearchItemEntMixInBuilder setType(final TypeEnum type);
-        
-        @Override
-        @JsonProperty("containingSpace")
-        public ComponentSearchItemEntMixInBuilder setContainingSpace(final String containingSpace);
-        
-        @Override
-        @JsonProperty("owner")
-        public ComponentSearchItemEntMixInBuilder setOwner(final OwnerEnt owner);
-        
-        @Override
-        @JsonProperty("inPorts")
-        public ComponentSearchItemEntMixInBuilder setInPorts(final java.util.List<ComponentSearchItemPortEnt> inPorts);
-        
-        @Override
-        @JsonProperty("outPorts")
-        public ComponentSearchItemEntMixInBuilder setOutPorts(final java.util.List<ComponentSearchItemPortEnt> outPorts);
+        @JsonProperty("isTeam")
+        public OwnerEntMixInBuilder setIsTeam(final Boolean isTeam);
         
     }
 

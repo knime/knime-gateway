@@ -45,6 +45,7 @@
 package org.knime.gateway.api.webui.entity;
 
 import org.knime.gateway.api.webui.entity.ComponentSearchItemPortEnt;
+import org.knime.gateway.api.webui.entity.OwnerEnt;
 
 import java.util.function.BiConsumer;
 
@@ -120,16 +121,22 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
   public String getIcon();
 
   /**
-   * True if the item is owned by an AccountIdentity (e.g. user or team) other than the currently authenticated user.
-   * @return isOwnedByAnotherIdentity 
-   **/
-  public Boolean isOwnedByAnotherIdentity();
-
-  /**
    * The type (a.k.a. \&quot;kind\&quot;) of the component
    * @return type 
    **/
   public TypeEnum getType();
+
+  /**
+   * Space name containing the component.
+   * @return containingSpace 
+   **/
+  public String getContainingSpace();
+
+  /**
+   * Get owner
+   * @return owner 
+   **/
+  public OwnerEnt getOwner();
 
   /**
    * The component&#39;s input ports.
@@ -152,8 +159,9 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
       valueConsumer.accept("description", Pair.create(getDescription(), e.getDescription()));
       valueConsumer.accept("icon", Pair.create(getIcon(), e.getIcon()));
-      valueConsumer.accept("isOwnedByAnotherIdentity", Pair.create(isOwnedByAnotherIdentity(), e.isOwnedByAnotherIdentity()));
       valueConsumer.accept("type", Pair.create(getType(), e.getType()));
+      valueConsumer.accept("containingSpace", Pair.create(getContainingSpace(), e.getContainingSpace()));
+      valueConsumer.accept("owner", Pair.create(getOwner(), e.getOwner()));
       valueConsumer.accept("inPorts", Pair.create(getInPorts(), e.getInPorts()));
       valueConsumer.accept("outPorts", Pair.create(getOutPorts(), e.getOutPorts()));
   }
@@ -196,20 +204,28 @@ public interface ComponentSearchItemEnt extends GatewayEntity {
         ComponentSearchItemEntBuilder setIcon(String icon);
         
         /**
-         * True if the item is owned by an AccountIdentity (e.g. user or team) other than the currently authenticated user.
-         * 
-         * @param isOwnedByAnotherIdentity the property value,  
-         * @return this entity builder for chaining
-         */
-        ComponentSearchItemEntBuilder setIsOwnedByAnotherIdentity(Boolean isOwnedByAnotherIdentity);
-        
-        /**
          * The type (a.k.a. \&quot;kind\&quot;) of the component
          * 
          * @param type the property value,  
          * @return this entity builder for chaining
          */
         ComponentSearchItemEntBuilder setType(TypeEnum type);
+        
+        /**
+         * Space name containing the component.
+         * 
+         * @param containingSpace the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentSearchItemEntBuilder setContainingSpace(String containingSpace);
+        
+        /**
+   		 * Set owner
+         * 
+         * @param owner the property value,  
+         * @return this entity builder for chaining
+         */
+        ComponentSearchItemEntBuilder setOwner(OwnerEnt owner);
         
         /**
          * The component&#39;s input ports.

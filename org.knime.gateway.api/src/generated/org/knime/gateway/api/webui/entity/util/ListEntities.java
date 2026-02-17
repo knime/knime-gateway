@@ -159,6 +159,7 @@ import org.knime.gateway.api.webui.entity.NodeSearchResultEnt;
 import org.knime.gateway.api.webui.entity.NodeStateEnt;
 import org.knime.gateway.api.webui.entity.NodeTemplateEnt;
 import org.knime.gateway.api.webui.entity.NodeViewDescriptionEnt;
+import org.knime.gateway.api.webui.entity.OwnerEnt;
 import org.knime.gateway.api.webui.entity.PartBasedCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteCommandEnt;
 import org.knime.gateway.api.webui.entity.PasteResultEnt;
@@ -367,6 +368,7 @@ public class ListEntities {
         res.add(NodeStateEnt.class);
         res.add(NodeTemplateEnt.class);
         res.add(NodeViewDescriptionEnt.class);
+        res.add(OwnerEnt.class);
         res.add(PartBasedCommandEnt.class);
         res.add(PasteCommandEnt.class);
         res.add(PasteResultEnt.class);
@@ -560,6 +562,7 @@ public class ListEntities {
         res.add(NodeStateEnt.NodeStateEntBuilder.class);
         res.add(NodeTemplateEnt.NodeTemplateEntBuilder.class);
         res.add(NodeViewDescriptionEnt.NodeViewDescriptionEntBuilder.class);
+        res.add(OwnerEnt.OwnerEntBuilder.class);
         res.add(PartBasedCommandEnt.PartBasedCommandEntBuilder.class);
         res.add(PasteCommandEnt.PasteCommandEntBuilder.class);
         res.add(PasteResultEnt.PasteResultEntBuilder.class);

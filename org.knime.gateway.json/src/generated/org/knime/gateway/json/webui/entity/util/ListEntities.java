@@ -159,6 +159,7 @@ import org.knime.gateway.json.webui.entity.NodeSearchResultEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeStateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeTemplateEntMixIn;
 import org.knime.gateway.json.webui.entity.NodeViewDescriptionEntMixIn;
+import org.knime.gateway.json.webui.entity.OwnerEntMixIn;
 import org.knime.gateway.json.webui.entity.PartBasedCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.PasteCommandEntMixIn;
 import org.knime.gateway.json.webui.entity.PasteResultEntMixIn;
@@ -366,6 +367,7 @@ public class ListEntities {
         res.add(NodeStateEntMixIn.class);
         res.add(NodeTemplateEntMixIn.class);
         res.add(NodeViewDescriptionEntMixIn.class);
+        res.add(OwnerEntMixIn.class);
         res.add(PartBasedCommandEntMixIn.class);
         res.add(PasteCommandEntMixIn.class);
         res.add(PasteResultEntMixIn.class);
@@ -559,6 +561,7 @@ public class ListEntities {
         res.add(NodeStateEntMixIn.NodeStateEntMixInBuilder.class);
         res.add(NodeTemplateEntMixIn.NodeTemplateEntMixInBuilder.class);
         res.add(NodeViewDescriptionEntMixIn.NodeViewDescriptionEntMixInBuilder.class);
+        res.add(OwnerEntMixIn.OwnerEntMixInBuilder.class);
         res.add(PartBasedCommandEntMixIn.PartBasedCommandEntMixInBuilder.class);
         res.add(PasteCommandEntMixIn.PasteCommandEntMixInBuilder.class);
         res.add(PasteResultEntMixIn.PasteResultEntMixInBuilder.class);
