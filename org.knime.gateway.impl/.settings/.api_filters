@@ -379,11 +379,26 @@
                 <message_argument value="DefaultComponentSearchItemEnt(String, String, String, String, Boolean, ComponentSearchItemEnt.TypeEnum, List&lt;ComponentSearchItemPortEnt&gt;, List&lt;ComponentSearchItemPortEnt&gt;)"/>
             </message_arguments>
         </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultComponentSearchItemEnt(String, String, String, String, ComponentSearchItemEnt.TypeEnum, String, OwnerEnt, List&lt;ComponentSearchItemPortEnt&gt;, List&lt;ComponentSearchItemPortEnt&gt;)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultComponentSearchItemEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultComponentSearchItemEnt$DefaultComponentSearchItemEntBuilder">
         <filter id="1143996420">
             <message_arguments>
+                <message_argument value="setContainingSpace(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
                 <message_argument value="setIsOwnedByAnotherIdentity(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setOwner(OwnerEnt)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -479,6 +494,13 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultNamedItemVersionEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultOwnerEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultOwnerEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultOwnerEnt"/>
             </message_arguments>
         </filter>
     </resource>

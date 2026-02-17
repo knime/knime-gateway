@@ -436,12 +436,34 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt"/>
+                <message_argument value="getContainingSpace()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt"/>
+                <message_argument value="getOwner()"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt"/>
                 <message_argument value="isOwnedByAnotherIdentity()"/>
             </message_arguments>
         </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getContainingSpace()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getOwner()"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
@@ -454,12 +476,34 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt.ComponentSearchItemEntBuilder"/>
+                <message_argument value="setContainingSpace(String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt.ComponentSearchItemEntBuilder"/>
                 <message_argument value="setIsOwnedByAnotherIdentity(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ComponentSearchItemEnt.ComponentSearchItemEntBuilder"/>
+                <message_argument value="setOwner(OwnerEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setContainingSpace(String)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setIsOwnedByAnotherIdentity(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setOwner(OwnerEnt)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -755,6 +799,13 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="setModelSettingsContentVersion(Integer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/OwnerEnt.java" type="org.knime.gateway.api.webui.entity.OwnerEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.OwnerEnt"/>
             </message_arguments>
         </filter>
     </resource>
