@@ -73,6 +73,7 @@ import org.knime.gateway.api.webui.entity.ReplacementOptionsEnt;
 import org.knime.gateway.api.webui.entity.WorkflowCommandEnt.KindEnum;
 import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.entity.XYEnt.XYEntBuilder;
+import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
 import org.knime.gateway.impl.webui.ComponentLoadJobManager.IComponentLoader;
@@ -149,7 +150,8 @@ public class ComponentLoadJobManagerTest {
 
         var targetNode = WorkflowManagerUtil.createAndAddNode(wfm, new SourceNodeTestFactory());
         targetNode.setUIInformation(NodeUIInformation.builder().setNodeLocation(5, 7, 0, 0).build());
-        var expectedPosition = builder(XYEntBuilder.class).setX(5).setY(7).build();
+        var expectedPosition =
+            builder(XYEntBuilder.class).setX(5).setY(7 + WorkflowEntityFactory.NODE_Y_POS_CORRECTION).build();
 
         IComponentLoader loader = (ent, workflow, spaces, monitor) -> {
             receivedInsertPosition.set(ent.insertPosition().toEnt());
