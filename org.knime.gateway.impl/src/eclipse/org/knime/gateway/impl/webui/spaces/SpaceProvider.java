@@ -141,8 +141,8 @@ public interface SpaceProvider {
      * @param tags optional tags filter
      * @param owner optional owner filter
      * @param query searchComponents text
-     * @param side optional port side filter ({@code input} or {@code output})
-     * @param portTypeId optional port type id filter
+     * @param portSide optional port side filter ({@code input} or {@code output})
+     * @param portId optional port type id filter
      * @param limit optional result limit
      * @param offset optional offset
      * @since 5.10
@@ -151,7 +151,7 @@ public interface SpaceProvider {
      * @throws LoggedOutException
      * @throws UnsupportedOperationException if not supported
      */
-    default List<ComponentSearchItemEnt> searchComponents(final String query, final Side side, final String portTypeId,
+    default List<ComponentSearchItemEnt> searchComponents(final String query, final Side portSide, final String portId,
         final Integer limit, final Integer offset)
         throws NetworkException, LoggedOutException, MutableServiceCallException {
         throw new UnsupportedOperationException();

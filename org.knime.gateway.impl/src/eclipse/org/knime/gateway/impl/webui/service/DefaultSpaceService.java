@@ -344,7 +344,7 @@ public class DefaultSpaceService implements SpaceService {
 
     @Override
     public List<ComponentSearchItemEnt> searchComponents(final String query, final Integer limit, final Integer offset,
-        String side, String portTypeId) throws ServiceCallException, LoggedOutException, NetworkException {
+        final String portSide, final String portId) throws ServiceCallException, LoggedOutException, NetworkException {
         try {
             final var hubProvider = m_spaceProvidersManager.getSpaceProviders(getSpaceProvidersKey()) //
                 .getAllSpaceProviders().stream() //
@@ -358,7 +358,7 @@ public class DefaultSpaceService implements SpaceService {
                     .withDetails("No Hub space provider is configured.") //
                     .canCopy(true) //
                     .build());
-            return hubProvider.searchComponents(query, Side.of(side), portTypeId, limit, offset).stream().toList();
+            return hubProvider.searchComponents(query, Side.of(portSide), portId, limit, offset).stream().toList();
         } catch (MutableServiceCallException e) {
             throw e.toGatewayException("Component search not available");
         }
