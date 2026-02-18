@@ -63,7 +63,7 @@ import org.knime.gateway.api.entity.GatewayEntity;
 public interface AutoConnectOptionsEnt extends GatewayEntity {
 
   /**
-   * Relation of the new component with the given node, either predecessors or successors of the given node.
+   * Relation of the new node with the given node, either a successor or a predecessor of the given node.
    */
   public enum NodeRelationEnum {
     PREDECESSORS("PREDECESSORS"),
@@ -91,13 +91,13 @@ public interface AutoConnectOptionsEnt extends GatewayEntity {
   public org.knime.gateway.api.entity.NodeIDEnt getTargetNodeId();
 
   /**
-   * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a target node id is provided.
+   * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
    * @return targetNodePortIdx 
    **/
   public Integer getTargetNodePortIdx();
 
   /**
-   * Relation of the new component with the given node, either predecessors or successors of the given node.
+   * Relation of the new node with the given node, either a successor or a predecessor of the given node.
    * @return nodeRelation , never <code>null</code>
    **/
   public NodeRelationEnum getNodeRelation();
@@ -126,7 +126,7 @@ public interface AutoConnectOptionsEnt extends GatewayEntity {
         AutoConnectOptionsEntBuilder setTargetNodeId(org.knime.gateway.api.entity.NodeIDEnt targetNodeId);
         
         /**
-         * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a target node id is provided.
+         * Optional parameter identifying the port index of the existing node to connect to. This will be determined automatically if only a source node id is provided.
          * 
          * @param targetNodePortIdx the property value,  
          * @return this entity builder for chaining
@@ -134,7 +134,7 @@ public interface AutoConnectOptionsEnt extends GatewayEntity {
         AutoConnectOptionsEntBuilder setTargetNodePortIdx(Integer targetNodePortIdx);
         
         /**
-         * Relation of the new component with the given node, either predecessors or successors of the given node.
+         * Relation of the new node with the given node, either a successor or a predecessor of the given node.
          * 
          * @param nodeRelation the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining

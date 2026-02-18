@@ -1194,6 +1194,18 @@
                 <message_argument value="searchComponents(String, Integer, Integer)"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="searchComponents(String, Integer, Integer, String, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.service.SpaceService"/>
+                <message_argument value="searchComponents(String, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getAncestorInfo(String, String, String)"/>
@@ -1207,6 +1219,11 @@
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="searchComponents(String, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="searchComponents(String, Integer, Integer, String, String)"/>
             </message_arguments>
         </filter>
     </resource>
