@@ -95,7 +95,6 @@ import org.knime.gateway.impl.webui.repo.NodeCollections;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider;
 import org.knime.gateway.impl.webui.spaces.SpaceProvider.SpaceProviderConnection;
 import org.knime.gateway.impl.webui.spaces.SpaceProviders;
-import org.knime.gateway.impl.webui.spaces.local.LocalSpace;
 
 /**
  * Utility methods to build {@link AppStateEnt}-instances. Usually it would be part of the {@link EntityFactory}.
@@ -374,23 +373,22 @@ public final class AppStateEntityFactory {
     }
 
     private static List<String> getAncestorItemIds(final Origin origin, final SpaceProviders spaceProviders) {
+        // TODO update
         // ancestor item ids are only required for local projects because it's used to
         // * mark folders that contain open projects
         // * disallow folders to be moved if they contain opened local projects
         //   (because they can't be moved while open)
         // ... in the space explorer.
         // Open hub-projects, e.g., aren't associated with space-items because they are considered a copy.
-        if (origin.isLocal()) {
-            try {
-                var localSpace = (LocalSpace)spaceProviders.getSpace(origin.providerId(), origin.spaceId());
-                return localSpace.getAncestorItemIds(origin.itemId());
-            } catch (final NetworkException | LoggedOutException e) {
-                throw new IllegalStateException(e);
-            } catch (final MutableServiceCallException e) { // NOSONAR
-                throw new IllegalStateException(e.toGatewayException("Failed to determine ancestor item IDs"));
-            }
-        } else {
-            return null; // NOSONAR null return value is reasonable (want to set entity property to null)
+
+        // TODO maybe still don't pass it in case of hub-projects opened in the desktop AP?
+        try {
+            var space = spaceProviders.getSpace(origin.providerId(), origin.spaceId());
+            return space.getAncestorItemIds(origin.itemId());
+        } catch (final NetworkException | LoggedOutException e) {
+            throw new IllegalStateException(e);
+        } catch (final MutableServiceCallException e) { // NOSONAR
+            throw new IllegalStateException(e.toGatewayException("Failed to determine ancestor item IDs"));
         }
     }
 
