@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.impl" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.11.0"/>
+                <message_argument value="5.10.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt">
         <filter id="305324134">
             <message_arguments>
@@ -65,6 +73,15 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.ComponentLoadJobManager.LoadJob"/>
                 <message_argument value="future()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/ComponentLoadJobManager.java" type="org.knime.gateway.impl.webui.ComponentLoadJobManager$LoadJobRunner">
+        <filter id="643850349">
+            <message_arguments>
+                <message_argument value="ComponentLoadParameters"/>
+                <message_argument value="LoadJobRunner"/>
+                <message_argument value="LoadJobRunner(ComponentLoadJobManager, String, ComponentLoaderComponentLoadParameters, ComponentLoadJobManagerPostLoadAction)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -146,6 +163,19 @@
                 <message_argument value="CodeKaiHandler"/>
                 <message_argument value="KaiHandlerFactory"/>
                 <message_argument value="createCodeKaiHandler(KaiHandlerFactoryAuthTokenProvider)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/service/DefaultSpaceService.java" type="org.knime.gateway.impl.webui.service.DefaultSpaceService">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.service.DefaultSpaceService"/>
+                <message_argument value="searchComponents(String, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="..." id="1143996420">
+            <message_arguments>
+                <message_argument value="searchComponents(String, Integer, Integer, String, String)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -247,6 +277,12 @@
         </filter>
     </resource>
     <resource path="src/eclipse/org/knime/gateway/impl/webui/spaces/SpaceProvider.java" type="org.knime.gateway.impl.webui.spaces.SpaceProvider">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.spaces.SpaceProvider"/>
+                <message_argument value="searchComponents(String, Integer, Integer)"/>
+            </message_arguments>
+        </filter>
         <filter id="1209008130">
             <message_arguments>
                 <message_argument value="5.10"/>
@@ -377,6 +413,11 @@
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultComponentSearchItemEnt(String, String, String, String, Boolean, ComponentSearchItemEnt.TypeEnum, List&lt;ComponentSearchItemPortEnt&gt;, List&lt;ComponentSearchItemPortEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="isOwnedByAnotherIdentity()"/>
             </message_arguments>
         </filter>
     </resource>

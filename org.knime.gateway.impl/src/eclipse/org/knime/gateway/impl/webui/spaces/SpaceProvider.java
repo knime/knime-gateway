@@ -145,7 +145,7 @@ public interface SpaceProvider {
      * @param portId optional port type id filter
      * @param limit optional result limit
      * @param offset optional offset
-     * @since 5.10
+     * @since 5.11
      * @return searchComponents results
      * @throws NetworkException
      * @throws LoggedOutException
