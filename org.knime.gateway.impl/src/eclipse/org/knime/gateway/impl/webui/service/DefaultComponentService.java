@@ -216,7 +216,7 @@ public class DefaultComponentService implements ComponentService {
         var trimmed = path.startsWith("/") ? path.substring(1) : path;
         var lastSegment = trimmed.contains("/") ? trimmed.substring(trimmed.lastIndexOf('/') + 1) : trimmed;
         if (lastSegment.startsWith("*") && lastSegment.length() > 1) {
-            return lastSegment.substring(1);
+            return lastSegment;  // preserve leading `*`
         }
         throw new IllegalArgumentException("Cannot extract hub item id from URI: " + uri);
     }
