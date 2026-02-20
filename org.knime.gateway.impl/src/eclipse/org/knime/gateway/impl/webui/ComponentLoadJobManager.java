@@ -64,7 +64,6 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.NodeID;
@@ -76,9 +75,11 @@ import org.knime.gateway.api.webui.entity.AddComponentCommandEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.ComponentPlaceholderEntBuilder;
 import org.knime.gateway.api.webui.entity.ComponentPlaceholderEnt.StateEnum;
+import org.knime.gateway.api.webui.entity.XYEnt;
 import org.knime.gateway.api.webui.util.WorkflowEntityFactory;
 import org.knime.gateway.impl.service.util.WorkflowChangesListener;
 import org.knime.gateway.impl.service.util.WorkflowChangesTracker.WorkflowChange;
+import org.knime.gateway.impl.util.NonThrowing;
 import org.knime.gateway.impl.webui.service.commands.WorkflowCommand;
 import org.knime.gateway.impl.webui.service.commands.util.ComponentLoader;
 import org.knime.gateway.impl.webui.service.commands.util.Geometry;
@@ -92,6 +93,7 @@ import org.knime.gateway.impl.webui.spaces.SpaceProviders;
  */
 public final class ComponentLoadJobManager {
 
+    // synchronised map is essential here
     private final Map<String, LoadJobInternal> m_trackedLoadJobs = Collections.synchronizedMap(new LinkedHashMap<>());
 
     private final WorkflowManager m_wfm;
@@ -129,7 +131,7 @@ public final class ComponentLoadJobManager {
      * @since 5.11
      */
     public LoadJob startLoadJob(final AddComponentCommandEnt commandEnt, final PostLoadAction postLoadAction) {
-        var placeholderId = UUID.randomUUID().toString();
+        var jobId = UUID.randomUUID().toString();
 
         // the position at which the component and its loading placeholder should appear
         var insertPosition = getPosition(commandEnt, m_wfm);
@@ -142,22 +144,15 @@ public final class ComponentLoadJobManager {
             insertPosition //
         );
 
-        var loadJobRunner = createLoadJobRunner(placeholderId, componentLoadParameters, postLoadAction);
-
-        var placeholder = builder(ComponentPlaceholderEntBuilder.class) //
-            .setId(placeholderId) //
-            .setState(StateEnum.LOADING) //
-            .setName(commandEnt.getName()) //
-            .setPosition(insertPosition.toEnt()) //
-            .build();
-
+        var placeholder = createLoadingPlaceholder(jobId, commandEnt.getName(), insertPosition.toEnt());
+        var loadJobRunner = createLoadJobRunner(jobId, componentLoadParameters, postLoadAction);
 
         var loadJobInternal = new LoadJobInternal( //
-            new LoadJob(placeholderId, loadJobRunner), //
+            new LoadJob(jobId, loadJobRunner), //
             placeholder, //
             commandEnt //
         );
-        m_trackedLoadJobs.put(placeholderId, loadJobInternal);
+        m_trackedLoadJobs.put(jobId, loadJobInternal);
         m_workflowChangesListener.trigger(WorkflowChange.COMPONENT_PLACEHOLDER_ADDED);
 
         loadJobRunner.run();
@@ -185,9 +180,54 @@ public final class ComponentLoadJobManager {
     /**
      * @since 5.11
      */
-    private LoadJobRunner createLoadJobRunner(final String placeholderId, final ComponentLoader.ComponentLoadParameters params,
+    private LoadJobRunner createLoadJobRunner(final String jobId, final ComponentLoader.ComponentLoadParameters params,
         final PostLoadAction postLoadAction) {
-        return new LoadJobRunner(placeholderId, params, postLoadAction);
+        return new LoadJobRunner(//
+
+            // loadComponent
+            monitor -> m_componentLoader.loadComponent( //
+                params, //
+                m_wfm, //
+                m_spaceProviders, //
+                monitor //
+            ), //
+
+            postLoadAction, //
+
+            // progressListener
+            () -> progressEvent -> updatePlaceholder(jobId, current -> updateWithMessageAndProgress( //
+                current, //
+                progressEvent.getNodeProgress().getMessage(), //
+                progressEvent.getNodeProgress().getProgress() //
+            )), //
+
+            // onLoadSuccess
+            componentId -> updatePlaceholder(jobId,
+                current -> updateWithSuccess(current, new NodeIDEnt(componentId, m_wfm).toString())), //
+
+            // onLoadWithWarnings
+            ex -> updatePlaceholder(jobId, current -> updateWithSuccessAndWarning( //
+                current, //
+                new NodeIDEnt(ex.getComponentId(), m_wfm).toString(), //
+                ex.getTitle(), //
+                ex.getMessage() //
+            )), //
+
+            // onCancelled
+            ex -> updatePlaceholder(jobId, current -> updateWithError( //
+                current, //
+                "Component loading cancelled", //
+                null //
+            )), //
+
+            // onError
+            ex -> updatePlaceholder(jobId, current -> updateWithError( //
+                current, //
+                "Component could not be loaded", //
+                ex != null ? ex.getMessage() : null //
+            )) //
+
+        );
     }
 
     /**
@@ -216,57 +256,6 @@ public final class ComponentLoadJobManager {
         } else {
             return Optional.empty();
         }
-    }
-
-    private void updatePlaceholderWithMessageAndProgress(final String id, final String message, final Double progress) {
-        replacePlaceholderEnt(id,
-            previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
-                .setState(StateEnum.LOADING) //
-                .setName(previousEnt.getName()) //
-                .setPosition(previousEnt.getPosition()) //
-                .setMessage(message) //
-                .setProgress(progress == null ? null : BigDecimal.valueOf(progress)) //
-                .build() //
-        );
-    }
-
-    private void updatePlaceholderWithSuccess(final String id, final String replacementId, final String warningMessage,
-        final String details) {
-        replacePlaceholderEnt(id,
-            previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
-                .setState(warningMessage == null ? StateEnum.SUCCESS : StateEnum.SUCCESS_WITH_WARNING) //
-                .setName(previousEnt.getName()) //
-                .setPosition(previousEnt.getPosition()) //
-                .setComponentId(replacementId) //
-                .setMessage(warningMessage) //
-                .setDetails(details) //
-                .build() //
-        );
-    }
-
-    private void updatePlaceholderWithError(final String id, final String message, final String details) {
-        replacePlaceholderEnt(id,
-            previousEnt -> builder(ComponentPlaceholderEntBuilder.class).setId(previousEnt.getId()) //
-                .setState(StateEnum.ERROR) //
-                .setName(previousEnt.getName()) //
-                .setPosition(previousEnt.getPosition()) //
-                .setMessage(message) //
-                .setDetails(details) //
-                .build() //
-        );
-    }
-
-    private void replacePlaceholderEnt(final String id, final UnaryOperator<ComponentPlaceholderEnt> replacer) {
-        var originalJob = m_trackedLoadJobs.get(id);
-        if (originalJob == null) {
-            return;
-        }
-        m_trackedLoadJobs.put(id, new LoadJobInternal( //
-            originalJob.loadJob(), //
-            replacer.apply(originalJob.placeholder()), //
-            originalJob.commandEnt()) //
-        );
-        m_workflowChangesListener.trigger(null);
     }
 
     /**
@@ -314,7 +303,8 @@ public final class ComponentLoadJobManager {
     }
 
     /**
-     * Wires together the component load, optional post-load action, and callbacks.
+     * Wires together the component load, optional post-load action, and callbacks. It is essential that the listeners
+     * run synchronously, i.e. do not do an async dispatch.
      *
      * <p>
      * A single instance manages one load execution at a time. It exposes helpers to check completion and access
@@ -327,66 +317,21 @@ public final class ComponentLoadJobManager {
 
         private final PostLoadAction m_postLoadAction;
 
-        private final Supplier<NodeProgressListener> m_progressListener;
+        private final Supplier<NonThrowing.NodeProgressListener> m_progressListener;
 
-        private final Consumer<NodeID> m_onLoadSuccess;
+        private final NonThrowing.Consumer<NodeID> m_onLoadSuccess;
 
-        private final Consumer<ComponentLoader.ComponentLoadedWithWarningsException> m_onLoadWithWarnings;
+        private final NonThrowing.Consumer<ComponentLoader.ComponentLoadedWithWarningsException> m_onLoadWithWarnings;
 
-        private final Consumer<CancellationException> m_onCancelled;
+        private final NonThrowing.Consumer<CancellationException> m_onCancelled;
 
-        private final Consumer<Throwable> m_onError;
+        private final NonThrowing.Consumer<Throwable> m_onError;
 
         private CompletableFuture<NodeID> m_currentLoadFuture;
 
         private CompletableFuture<WorkflowCommand> m_currentPostLoadFuture;
 
         private volatile ExecutionMonitor m_monitor;
-
-        /**
-         * Creates a load job runner with default wiring for production usage.
-         *
-         * @param placeholderId the placeholder id used for progress and completion updates
-         * @param params the command entity etc. used to load the component
-         * @param postLoadAction optional follow-up action executed after component load completes
-         */
-        public LoadJobRunner( //
-                              final String placeholderId, //
-                              final ComponentLoader.ComponentLoadParameters params, //
-                              final PostLoadAction postLoadAction //
-        ) {
-            this( //
-                monitor -> m_componentLoader.loadComponent(params, m_wfm, m_spaceProviders, monitor), //
-                postLoadAction, //
-                () -> progressEvent -> updatePlaceholderWithMessageAndProgress( //
-                    placeholderId, //
-                    progressEvent.getNodeProgress().getMessage(), //
-                    progressEvent.getNodeProgress().getProgress() //
-                ), //
-                componentId -> updatePlaceholderWithSuccess( //
-                    placeholderId, //
-                    new NodeIDEnt(componentId, m_wfm).toString(), //
-                    null, //
-                    null //
-                ), //
-                ex -> updatePlaceholderWithSuccess( //
-                    placeholderId, //
-                    new NodeIDEnt(ex.getComponentId(), m_wfm).toString(), //
-                    ex.getTitle(), //
-                    ex.getMessage() //
-                ), //
-                ex -> updatePlaceholderWithError( //
-                    placeholderId, //
-                    "Component loading cancelled", //
-                    null //
-                ), //
-                ex -> updatePlaceholderWithError( //
-                    placeholderId, //
-                    "Component could not be loaded", //
-                    ex != null ? ex.getMessage() : null //
-                ) //
-            );
-        }
 
         /**
          * Creates a fully configurable load job runner, primarily intended for tests.
@@ -410,11 +355,11 @@ public final class ComponentLoadJobManager {
         ) {
             m_loadComponent = loadComponent;
             m_postLoadAction = postLoadAction;
-            m_progressListener = progressListener;
-            m_onLoadSuccess = onLoadSuccess;
-            m_onLoadWithWarnings = onLoadWithWarnings;
-            m_onCancelled = onCancelled;
-            m_onError = onError;
+            m_progressListener = () -> new NonThrowing.NodeProgressListener(progressListener.get());
+            m_onLoadSuccess = new NonThrowing.Consumer<>(onLoadSuccess);
+            m_onLoadWithWarnings = new NonThrowing.Consumer<>(onLoadWithWarnings);
+            m_onCancelled = new NonThrowing.Consumer<>(onCancelled);
+            m_onError = new NonThrowing.Consumer<>(onError);
         }
 
         void run() {
@@ -432,6 +377,7 @@ public final class ComponentLoadJobManager {
             rawLoadFuture.whenComplete((res, ex) -> monitor.getProgressMonitor().removeProgressListener(listener));
 
             var handledLoadFuture = rawLoadFuture.handle(this::delegateComponentLoadResult);
+            // note: there are no guarantees on when or in what order the #whenComplete and #handle callbacks are run.
             var postLoadFuture = composePostLoadFuture(handledLoadFuture, m_postLoadAction);
             // keep futures in fields to access results
             m_currentLoadFuture = handledLoadFuture;
@@ -440,7 +386,7 @@ public final class ComponentLoadJobManager {
 
         private NodeID delegateComponentLoadResult(final NodeID result, final Throwable exception) {
             if (result != null) { // previous stage completed successfully
-                Optional.ofNullable(m_onLoadSuccess).ifPresent(f -> f.accept(result));
+                m_onLoadSuccess.accept(result);
                 return result;
             }
             // reaching this implies exception != null
@@ -482,7 +428,7 @@ public final class ComponentLoadJobManager {
          * @return whether component loading is done, either successfully, with failure, or cancellation
          */
         public boolean isLoadDone() {
-            return Optional.ofNullable(m_currentLoadFuture).map(Future::isDone).orElse(true);
+            return Optional.ofNullable(m_currentLoadFuture).map(Future::isDone).orElse(false);
         }
 
         /**
@@ -515,27 +461,31 @@ public final class ComponentLoadJobManager {
     /**
      * Reruns the load job for the given id (provided the job is done).
      *
-     * @param id the id of the load job to restart
+     * @param jobId the id of the load job to restart
      */
-    public void rerunLoadJob(final String id) {
-        var job = m_trackedLoadJobs.get(id);
-        if (job == null || !job.loadJob().runner().isLoadDone()) {
-            return;
-        }
-        job.loadJob().runner().run();
-        m_trackedLoadJobs.put( //
-            id, //
-            new LoadJobInternal( //
+    public void rerunLoadJob(final String jobId) {
+        // atomic query-and-update
+        m_trackedLoadJobs.computeIfPresent(jobId, (id, job) -> {
+            if (!job.loadJob().runner().isLoadDone()) {
+                return job; // no-op
+            }
+            job.loadJob().runner().run();
+            return new LoadJobInternal( //
                 job.loadJob(), //
-                job.placeholder(), //
+                createLoadingPlaceholder( //
+                    jobId, //
+                    job.commandEnt().getName(), //
+                    getPosition(job.commandEnt(), m_wfm).toEnt()), //
                 job.commandEnt() //
-            )//
-        ); //
+            );
+        });
     }
 
     /**
-     * Returns the currently present placeholders and removes all the ones that aren't visible anymore (e.g. the ones
-     * with state {@link StateEnum#SUCCESS}).
+     * Returns the currently present placeholders and <i>then</i> removes all the ones that aren't visible anymore (e.g.
+     * the ones with state {@link StateEnum#SUCCESS}). The ordering is important for the frontend to observe the success
+     * state at least once (else a placeholder might immediately switch to "success" and be cleaned up before ever
+     * reaching the frontend).
      *
      * @return the currently present placeholders or an empty list if none
      */
@@ -582,8 +532,8 @@ public final class ComponentLoadJobManager {
          * @param executionMonitor execution monitor for progress and cancellation
          * @return the id of the loaded component
          */
-        NodeID loadComponent(ComponentLoader.ComponentLoadParameters params, WorkflowManager wfm, SpaceProviders spaceProviders,
-                             ExecutionMonitor executionMonitor);
+        NodeID loadComponent(ComponentLoader.ComponentLoadParameters params, WorkflowManager wfm,
+            SpaceProviders spaceProviders, ExecutionMonitor executionMonitor);
 
     }
 
@@ -605,6 +555,107 @@ public final class ComponentLoadJobManager {
      */
     public record LoadJob(String id, LoadJobRunner runner) {
 
+    }
+
+    private void updatePlaceholder(final String jobId,
+        final Function<ComponentPlaceholderEnt, ComponentPlaceholderEnt> updater) {
+        // atomic query-and-update
+        m_trackedLoadJobs.compute(jobId, (key, job) -> {
+            if (job == null) {
+                return null;
+            }
+            var updated = updater.apply(job.placeholder());
+            m_workflowChangesListener.trigger(null);
+            return updated == null || updated.equals(job.placeholder()) ? job
+                : new LoadJobInternal(job.loadJob(), updated, job.commandEnt());
+        });
+    }
+
+    /**
+     * Expose for testing
+     * 
+     * @param id -
+     * @param message -
+     * @param progress -
+     */
+    void updatePlaceholderWithMessageAndProgress(final String id, final String message, final Double progress) {
+        updatePlaceholder(id, current -> updateWithMessageAndProgress(current, message, progress));
+    }
+
+    /**
+     * Expose for testing
+     * 
+     * @param id -
+     * @return -
+     */
+    ComponentPlaceholderEnt getPlaceholder(final String id) {
+        var job = m_trackedLoadJobs.get(id);
+        return job == null ? null : job.placeholder();
+    }
+
+    ComponentPlaceholderEnt createLoadingPlaceholder(final String jobId, final String name, final XYEnt position) {
+        return builder(ComponentPlaceholderEntBuilder.class) //
+            .setId(jobId) //
+            .setName(name) //
+            .setPosition(position) //
+            .setState(StateEnum.LOADING) //
+            .build();
+    }
+
+    ComponentPlaceholderEnt updateWithMessageAndProgress(final ComponentPlaceholderEnt current, final String message,
+        final Double progress) {
+        if (current.getState() != StateEnum.LOADING) {
+            // drop trailing progress updates once we've completed
+            return current;
+        }
+        return builder(ComponentPlaceholderEntBuilder.class) //
+            .setId(current.getId()) //
+            .setName(current.getName()) //
+            .setPosition(current.getPosition()) //
+            .setState(StateEnum.LOADING) //
+            .setMessage(message) //
+            .setProgress(progress == null ? null : BigDecimal.valueOf(progress)) //
+            .build();
+    }
+
+    ComponentPlaceholderEnt updateWithSuccess(final ComponentPlaceholderEnt current, final String replacementId) {
+        return builder(ComponentPlaceholderEntBuilder.class) //
+            .setId(current.getId()) //
+            .setName(current.getName()) //
+            .setPosition(current.getPosition()) //
+            .setState(StateEnum.SUCCESS) //
+            .setComponentId(replacementId) //
+            .build();
+    }
+
+    ComponentPlaceholderEnt updateWithSuccessAndWarning(final ComponentPlaceholderEnt current,
+        final String replacementId, final String message, final String details) {
+        return builder(ComponentPlaceholderEntBuilder.class) //
+            .setId(current.getId()) //
+            .setName(current.getName()) //
+            .setPosition(current.getPosition()) //
+            .setState(StateEnum.SUCCESS_WITH_WARNING) //
+            .setMessage(message) //
+            .setComponentId(replacementId) //
+            .setDetails(details) //
+            .build();
+    }
+
+    ComponentPlaceholderEnt updateWithError(final ComponentPlaceholderEnt current, final String message,
+        final String details) {
+        return builder(ComponentPlaceholderEntBuilder.class) //
+            .setId(current.getId()) //
+            .setName(current.getName()) //
+            .setPosition(current.getPosition()) //
+            .setState(StateEnum.ERROR) //
+            .setMessage(message) //
+            .setDetails(details) //
+            .build();
+    }
+
+    boolean isVisible(final ComponentPlaceholderEnt placeholder) {
+        var state = placeholder.getState();
+        return state == StateEnum.LOADING || state == StateEnum.ERROR;
     }
 
 }

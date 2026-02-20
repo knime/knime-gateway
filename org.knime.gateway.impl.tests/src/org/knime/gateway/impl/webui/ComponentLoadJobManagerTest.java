@@ -58,6 +58,7 @@ import static org.mockito.Mockito.verify;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -141,6 +142,28 @@ public class ComponentLoadJobManagerTest {
     }
 
     @Test
+    public void testCleanUpReturnsSuccessBeforeRemoval() throws Exception {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var workflowChangesListener = mock(WorkflowChangesListener.class);
+        var nodeId = new NodeID(4);
+
+        IComponentLoader loader = (ent, workflow, spaces, monitor) -> nodeId;
+
+        var manager = createLoadJobManager(wfm, workflowChangesListener, loader);
+        var loadJob = manager.startLoadJob(createCommand("success"));
+
+        await().untilAsserted(() -> assertThat(loadJob.runner().isLoadDone(), is(true)));
+
+        var placeholders = manager.getComponentPlaceholdersAndCleanUp();
+        assertThat(placeholders.size(), is(1));
+        var placeholder = placeholders.iterator().next();
+        assertThat(placeholder.getState(), is(StateEnum.SUCCESS));
+        assertThat(placeholder.getComponentId(), is(new NodeIDEnt(nodeId).toString()));
+
+        assertThat(manager.getComponentPlaceholdersAndCleanUp().isEmpty(), is(true));
+    }
+
+    @Test
     public void testSuccessReplaceCommandUsesTargetNodePosition() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var workflowChangesListener = mock(WorkflowChangesListener.class);
@@ -190,6 +213,116 @@ public class ComponentLoadJobManagerTest {
         });
 
         assertThat(manager.getComponentPlaceholdersAndCleanUp().isEmpty(), is(true));
+    }
+
+    @Test
+    public void testRerunLoadJobUsesTargetNodePosition() throws Exception {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var workflowChangesListener = mock(WorkflowChangesListener.class);
+        var nodeId = new NodeID(4);
+        var runCounter = new AtomicInteger(0);
+        var startedLatch = new CountDownLatch(1);
+        var releaseLatch = new CountDownLatch(1);
+
+        var targetNode = WorkflowManagerUtil.createAndAddNode(wfm, new SourceNodeTestFactory());
+        targetNode.setUIInformation(NodeUIInformation.builder().setNodeLocation(5, 7, 0, 0).build());
+        var expectedPosition =
+            builder(XYEntBuilder.class).setX(5).setY(7 + WorkflowEntityFactory.NODE_Y_POS_CORRECTION).build();
+
+        IComponentLoader loader = (ent, workflow, spaces, monitor) -> {
+            // - First call (startLoadJob) sets runCounter 0 → 1: returns immediately.
+            if (runCounter.getAndIncrement() == 0) {
+                return nodeId;
+            }
+            // - Second call (rerunLoadJob) sets runCounter 1 → 2:
+            startedLatch.countDown(); // we wait for this happen below
+            awaitLatch(releaseLatch); // block until released from outside
+            // This is to enable us to poll the placeholder state after the second load job has started
+            // and before it has finished
+            return nodeId;
+        };
+
+        var manager = createLoadJobManager(wfm, workflowChangesListener, loader);
+        var command = builder(AddComponentCommandEntBuilder.class) //
+            .setKind(KindEnum.ADD_COMPONENT) //
+            .setProviderId("provider") //
+            .setSpaceId("space") //
+            .setItemId("item") //
+            .setReplacementOptions(builder(ReplacementOptionsEnt.ReplacementOptionsEntBuilder.class) //
+                .setTargetNodeId(new NodeIDEnt(targetNode.getID())) //
+                .build() //
+            ) //
+            .setPosition(builder(XYEntBuilder.class).setX(10000).setY(200000).build()) // ignored
+            .setName("replace") //
+            .build();
+
+        var loadJob = manager.startLoadJob(command);
+        await().untilAsserted(() -> assertThat(loadJob.runner().isLoadDone(), is(true)));
+
+        manager.rerunLoadJob(loadJob.id());
+
+        // wait until the second job has started
+        await().untilAsserted(() -> assertThat(startedLatch.getCount(), is(0L)));
+
+        await().untilAsserted(() -> {
+            var placeholder = getSinglePlaceholder(manager);
+            assertThat(placeholder.getState(), is(StateEnum.LOADING));
+            assertThat(placeholder.getPosition(), is(expectedPosition));
+        });
+
+        // let the second job finish
+        releaseLatch.countDown();
+        await().untilAsserted(() -> assertThat(loadJob.runner().isLoadDone(), is(true)));
+    }
+
+    @Test
+    public void testRerunLoadJobDoesNotStartWhileRunning() throws Exception {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var workflowChangesListener = mock(WorkflowChangesListener.class);
+        var nodeId = new NodeID(5);
+        var runCounter = new AtomicInteger(0);
+        var startedLatch = new CountDownLatch(1);
+        var releaseLatch = new CountDownLatch(1);
+
+        IComponentLoader loader = (ent, workflow, spaces, monitor) -> {
+            runCounter.incrementAndGet();
+            startedLatch.countDown();
+            awaitLatch(releaseLatch);
+            return nodeId;
+        };
+
+        var manager = createLoadJobManager(wfm, workflowChangesListener, loader);
+        var loadJob = manager.startLoadJob(createCommand("in-progress"));
+
+        await().untilAsserted(() -> assertThat(startedLatch.getCount(), is(0L)));
+
+        manager.rerunLoadJob(loadJob.id());
+        await().untilAsserted(() -> assertThat(runCounter.get(), is(1)));
+
+        releaseLatch.countDown();
+        await().untilAsserted(() -> assertThat(loadJob.runner().isLoadDone(), is(true)));
+    }
+
+    @Test
+    public void testTrailingProgressDoesNotResetSuccessState() throws Exception {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var workflowChangesListener = mock(WorkflowChangesListener.class);
+        var nodeId = new NodeID(6);
+
+        IComponentLoader loader = (ent, workflow, spaces, monitor) -> nodeId;
+
+        var manager = createLoadJobManager(wfm, workflowChangesListener, loader);
+        var loadJob = manager.startLoadJob(createCommand("success"));
+
+        await().untilAsserted(() -> assertThat(loadJob.runner().isLoadDone(), is(true)));
+
+        var placeholder = getPlaceholder(manager, loadJob.id());
+        assertThat(placeholder.getState(), is(StateEnum.SUCCESS));
+
+        manager.updatePlaceholderWithMessageAndProgress(loadJob.id(), "late progress", 1.0);
+
+        var updated = getPlaceholder(manager, loadJob.id());
+        assertThat(updated.getState(), is(StateEnum.SUCCESS));
     }
 
     @Test
@@ -277,6 +410,14 @@ public class ComponentLoadJobManagerTest {
         var placeholders = manager.getComponentPlaceholdersAndCleanUp();
         assertThat(placeholders.size(), is(1));
         return placeholders.iterator().next();
+    }
+
+    private static ComponentPlaceholderEnt getPlaceholder(final ComponentLoadJobManager manager, final String id) {
+        var placeholder = manager.getPlaceholder(id);
+        if (placeholder == null) {
+            throw new AssertionError("Missing placeholder for id " + id);
+        }
+        return placeholder;
     }
 
     private static void awaitLatch(final CountDownLatch latch) {

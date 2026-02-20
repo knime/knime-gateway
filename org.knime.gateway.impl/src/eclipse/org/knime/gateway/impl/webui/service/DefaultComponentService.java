@@ -99,14 +99,14 @@ public class DefaultComponentService implements ComponentService {
 
     @Override
     public void cancelOrRetryComponentLoadJob(final String projectId, final NodeIDEnt workflowId,
-        final String placeholderId, final String action) throws ServiceCallException {
+        final String jobId, final String action) throws ServiceCallException {
 
         DefaultServiceContext.assertWorkflowProjectId(projectId);
         var componentLoader = m_workflowMiddleware.getComponentLoadJobManager(new WorkflowKey(projectId, workflowId));
         if ("cancel".equals(action)) {
-            componentLoader.cancelLoadJob(placeholderId);
+            componentLoader.cancelLoadJob(jobId);
         } else if ("retry".equals(action)) {
-            componentLoader.rerunLoadJob(placeholderId);
+            componentLoader.rerunLoadJob(jobId);
         } else {
             throw ServiceCallException.builder() //
                 .withTitle("Unknown action") //
