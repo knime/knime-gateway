@@ -52,6 +52,7 @@ import static org.knime.gateway.api.entity.EntityBuilderManager.builder;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -65,6 +66,9 @@ import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.extension.NodeSpecCollectionProvider;
 import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.workflow.ComponentMetadata;
+import org.knime.core.node.workflow.WorkflowPersistor.LoadResultEntry;
+import org.knime.core.node.workflow.WorkflowPersistor.LoadResultEntry.LoadResultEntryType;
+import org.knime.core.node.workflow.WorkflowPersistor.WorkflowLoadResult;
 import org.knime.core.webui.WebUIUtil;
 import org.knime.gateway.api.entity.NodeIDEnt;
 import org.knime.gateway.api.util.CoreUtil;
@@ -72,6 +76,9 @@ import org.knime.gateway.api.util.VersionId;
 import org.knime.gateway.api.webui.entity.AppStateEnt;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppModeEnum;
 import org.knime.gateway.api.webui.entity.AppStateEnt.AppStateEntBuilder;
+import org.knime.gateway.api.webui.entity.LoadErrorMissingExtensionEnt;
+import org.knime.gateway.api.webui.entity.LoadErrorMissingExtensionEnt.LoadErrorMissingExtensionEntBuilder;
+import org.knime.gateway.api.webui.entity.LoadErrorsEnt.LoadErrorsEntBuilder;
 import org.knime.gateway.api.webui.entity.PortTypeEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt;
 import org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder;
@@ -133,13 +140,13 @@ public final class AppStateEntityFactory {
      */
     @SuppressWarnings("javadoc")
     public record ServiceDependencies( //
-            ProjectManager projectManager, //
-            PreferencesProvider preferencesProvider, //
-            SpaceProviders spaceProviders, //
-            NodeFactoryProvider nodeFactoryProvider, //
-            NodeCollections nodeCollections, //
-            KaiHandler kaiHandler, //
-           FeatureFlags featureFlags //
+        ProjectManager projectManager, //
+        PreferencesProvider preferencesProvider, //
+        SpaceProviders spaceProviders, //
+        NodeFactoryProvider nodeFactoryProvider, //
+        NodeCollections nodeCollections, //
+        KaiHandler kaiHandler, //
+        FeatureFlags featureFlags //
     ) {
     }
 
@@ -166,8 +173,8 @@ public final class AppStateEntityFactory {
         var kaiHandler = dependencies.kaiHandler();
         var appMode = getAppModeEnum();
         var featureFlags = Optional.ofNullable(dependencies.featureFlags()) //
-                .map(FeatureFlags::getFeatureFlags) //
-                .orElse(Map.of());
+            .map(FeatureFlags::getFeatureFlags) //
+            .orElse(Map.of());
         return builder(AppStateEntBuilder.class) //
             .setAppMode(appMode) //
             .setOpenProjects(projects) //
@@ -197,9 +204,8 @@ public final class AppStateEntityFactory {
             .setAnalyticsPlatformDownloadURL(getAnalyticsPlatformDownloadURL()) //
             .setIsSubnodeLockingEnabled(getIsSubnodeLockingEnabled()) //
             // TODO HUB-9598 only include when not read-only connection?
-            .setSpaceProviders(appMode == AppModeEnum.DEFAULT
-                ? buildSpaceProviderEnts(dependencies.spaceProviders(), false)
-                : null) //
+            .setSpaceProviders(
+                appMode == AppModeEnum.DEFAULT ? buildSpaceProviderEnts(dependencies.spaceProviders(), false) : null) //
             .build();
     }
 
@@ -357,7 +363,70 @@ public final class AppStateEntityFactory {
             var originEnt = buildSpaceItemReferenceEnt(origin, spaceProviders, activeVersion);
             projectEntBuilder.setOrigin(originEnt);
         });
+        project.getWorkflowManagerIfLoaded()
+            .flatMap(wfm -> CoreUtil.WorkflowLoadResult.getWorkflowLoadResult(wfm)) //
+            .ifPresent(loadResult -> {
+                if (!hasErrors(loadResult)) {
+                    return;
+                }
+                List<LoadErrorMissingExtensionEnt> missingExtensions = null;
+                if (!loadResult.getMissingNodes().isEmpty()) {
+                    missingExtensions = parseMissingExtensions(loadResult);
+                }
+                var loadErrors = builder(LoadErrorsEntBuilder.class) //
+                    .setCopyToClipboardContent(loadResultEntryToString(loadResult, "")) //
+                    .setMissingExtensions(missingExtensions) //
+                    .build();
+                projectEntBuilder.setLoadErrors(loadErrors);
+            });
         return projectEntBuilder.build();
+    }
+
+    private static boolean hasErrors(final LoadResultEntry entry) {
+        if (entry.getType().ordinal() >= LoadResultEntryType.Error.ordinal()) {
+            return true;
+        }
+        for (LoadResultEntry c : entry.getChildren()) {
+            if (hasErrors(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static List<LoadErrorMissingExtensionEnt> parseMissingExtensions(final WorkflowLoadResult loadResult) {
+        var featureToInfos = loadResult.getMissingNodes().stream() //
+            .collect(Collectors.groupingBy( //
+                info -> info.getFeatureName().orElse("unnamed " + info.hashCode()), //
+                LinkedHashMap::new, //
+                Collectors.toList() //
+            ));
+        return featureToInfos.entrySet().stream().map(e -> {
+            var nodeNames = e.getValue().stream() //
+                .filter(v -> v.getNodeName().isPresent()) //
+                .map(v -> v.getNodeName().get()) //
+                .distinct().toList();
+            var vendor = e.getValue().stream().findFirst() //
+                .flatMap(i -> i.getBundleVendor()) //
+                .orElse("unknown");
+            return builder(LoadErrorMissingExtensionEntBuilder.class) //
+                .setName(e.getKey()) //
+                .setNodeNames(nodeNames) //
+                .setVendor(vendor) //
+                .build();
+        }).toList();
+    }
+
+    private static String loadResultEntryToString(final LoadResultEntry entry, final String indent) {
+        StringBuilder b = new StringBuilder(indent);
+        b.append(entry.getMessage());
+        for (LoadResultEntry c : entry.getChildren()) {
+            if (c.getType().ordinal() >= LoadResultEntryType.Error.ordinal()) {
+                b.append("\n");
+                b.append(loadResultEntryToString(c, indent + "  "));
+            }
+        }
+        return b.toString();
     }
 
     private static SpaceItemReferenceEnt buildSpaceItemReferenceEnt(final Origin origin,

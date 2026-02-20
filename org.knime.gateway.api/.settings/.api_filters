@@ -13,6 +13,12 @@
                 <message_argument value="5.10.0"/>
             </message_arguments>
         </filter>
+        <filter id="924844039">
+            <message_arguments>
+                <message_argument value="5.11.0"/>
+                <message_argument value="5.11.0"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.api.webui.entity.AddComponentCommandEnt">
         <filter id="305324134">
@@ -736,6 +742,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/LoadErrorMissingExtensionEnt.java" type="org.knime.gateway.api.webui.entity.LoadErrorMissingExtensionEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.LoadErrorMissingExtensionEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/LoadErrorsEnt.java" type="org.knime.gateway.api.webui.entity.LoadErrorsEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.LoadErrorsEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/MetaNodeEnt.java" type="org.knime.gateway.api.webui.entity.MetaNodeEnt$MetaNodeEntBuilder">
         <filter id="403804204">
             <message_arguments>
@@ -806,6 +826,32 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.OwnerEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ProjectEnt.java" type="org.knime.gateway.api.webui.entity.ProjectEnt">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ProjectEnt"/>
+                <message_argument value="getLoadErrors()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getLoadErrors()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/ProjectEnt.java" type="org.knime.gateway.api.webui.entity.ProjectEnt$ProjectEntBuilder">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.ProjectEnt.ProjectEntBuilder"/>
+                <message_argument value="setLoadErrors(LoadErrorsEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setLoadErrors(LoadErrorsEnt)"/>
             </message_arguments>
         </filter>
     </resource>

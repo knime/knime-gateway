@@ -46,104 +46,72 @@ package org.knime.gateway.impl.webui.entity;
 
 import static org.knime.gateway.api.util.EntityUtil.immutable;
 
-import org.knime.gateway.api.webui.entity.LoadErrorsEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
-import org.knime.gateway.api.webui.entity.ProjectEnt;
+import org.knime.gateway.api.webui.entity.LoadErrorMissingExtensionEnt;
 
 /**
- * Represents an entire workflow project.
+ * DefaultLoadErrorMissingExtensionEnt
  *
- * @param projectId
- * @param origin
  * @param name
- * @param activeWorkflowId
- * @param loadErrors
+ * @param nodeNames
+ * @param vendor
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
-public record DefaultProjectEnt(
-    String projectId,
-    SpaceItemReferenceEnt origin,
+public record DefaultLoadErrorMissingExtensionEnt(
     String name,
-    org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId,
-    LoadErrorsEnt loadErrors) implements ProjectEnt {
+    java.util.List<String> nodeNames,
+    String vendor) implements LoadErrorMissingExtensionEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
-    public DefaultProjectEnt {
-        if(projectId == null) {
-            throw new IllegalArgumentException("<projectId> must not be null.");
-        }
+    public DefaultLoadErrorMissingExtensionEnt {
         if(name == null) {
             throw new IllegalArgumentException("<name> must not be null.");
+        }
+        if(nodeNames == null) {
+            throw new IllegalArgumentException("<nodeNames> must not be null.");
+        }
+        if(vendor == null) {
+            throw new IllegalArgumentException("<vendor> must not be null.");
         }
     }
 
     @Override
     public String getTypeID() {
-        return "Project";
+        return "LoadErrorMissingExtension";
     }
   
-    @Override
-    public String getProjectId() {
-        return projectId;
-    }
-    
-    @Override
-    public SpaceItemReferenceEnt getOrigin() {
-        return origin;
-    }
-    
     @Override
     public String getName() {
         return name;
     }
     
     @Override
-    public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId() {
-        return activeWorkflowId;
+    public java.util.List<String> getNodeNames() {
+        return nodeNames;
     }
     
     @Override
-    public LoadErrorsEnt getLoadErrors() {
-        return loadErrors;
+    public String getVendor() {
+        return vendor;
     }
     
     /**
-     * A builder for {@link DefaultProjectEnt}.
+     * A builder for {@link DefaultLoadErrorMissingExtensionEnt}.
      */
-    public static class DefaultProjectEntBuilder implements ProjectEntBuilder {
-
-        private String m_projectId;
-
-        private SpaceItemReferenceEnt m_origin;
+    public static class DefaultLoadErrorMissingExtensionEntBuilder implements LoadErrorMissingExtensionEntBuilder {
 
         private String m_name;
 
-        private org.knime.gateway.api.entity.NodeIDEnt m_activeWorkflowId;
+        private java.util.List<String> m_nodeNames = new java.util.ArrayList<>();
 
-        private LoadErrorsEnt m_loadErrors;
-
-        @Override
-        public DefaultProjectEntBuilder setProjectId(String projectId) {
-             if(projectId == null) {
-                 throw new IllegalArgumentException("<projectId> must not be null.");
-             }
-             m_projectId = projectId;
-             return this;
-        }
+        private String m_vendor;
 
         @Override
-        public DefaultProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin) {
-             m_origin = origin;
-             return this;
-        }
-
-        @Override
-        public DefaultProjectEntBuilder setName(String name) {
+        public DefaultLoadErrorMissingExtensionEntBuilder setName(String name) {
              if(name == null) {
                  throw new IllegalArgumentException("<name> must not be null.");
              }
@@ -152,25 +120,29 @@ public record DefaultProjectEnt(
         }
 
         @Override
-        public DefaultProjectEntBuilder setActiveWorkflowId(org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId) {
-             m_activeWorkflowId = activeWorkflowId;
+        public DefaultLoadErrorMissingExtensionEntBuilder setNodeNames(java.util.List<String> nodeNames) {
+             if(nodeNames == null) {
+                 throw new IllegalArgumentException("<nodeNames> must not be null.");
+             }
+             m_nodeNames = nodeNames;
              return this;
         }
 
         @Override
-        public DefaultProjectEntBuilder setLoadErrors(LoadErrorsEnt loadErrors) {
-             m_loadErrors = loadErrors;
+        public DefaultLoadErrorMissingExtensionEntBuilder setVendor(String vendor) {
+             if(vendor == null) {
+                 throw new IllegalArgumentException("<vendor> must not be null.");
+             }
+             m_vendor = vendor;
              return this;
         }
 
         @Override
-        public DefaultProjectEnt build() {
-            return new DefaultProjectEnt(
-                immutable(m_projectId),
-                immutable(m_origin),
+        public DefaultLoadErrorMissingExtensionEnt build() {
+            return new DefaultLoadErrorMissingExtensionEnt(
                 immutable(m_name),
-                immutable(m_activeWorkflowId),
-                immutable(m_loadErrors));
+                immutable(m_nodeNames),
+                immutable(m_vendor));
         }
     
     }

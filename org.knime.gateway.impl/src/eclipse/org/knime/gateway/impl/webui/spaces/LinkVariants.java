@@ -171,7 +171,7 @@ public interface LinkVariants {
         }
 
         @Override
-        public LinkVariantEnt.VariantEnum getLinkVariant(URI uri) {
+        public LinkVariantEnt.VariantEnum getLinkVariant(final URI uri) {
             return KnimeUrls.getLinkVariant(uri).getVariant();
         }
 

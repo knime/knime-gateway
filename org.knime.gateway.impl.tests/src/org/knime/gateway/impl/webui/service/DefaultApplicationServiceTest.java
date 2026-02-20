@@ -213,6 +213,20 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         System.clearProperty(modeSysProp);
     }
 
+    /**
+     * Makes sure that load errors are supplied with the app state as expected.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetAppStateWithLoadErrors() throws Exception {
+        loadWorkflow(TestWorkflowCollection.GENERAL_WEB_UI, "project_id");
+        setSpaceProvidersDepencency();
+
+        var appState = DefaultApplicationService.getInstance().getState();
+        cr(appState.getOpenProjects().get(0).getLoadErrors(), "load_errors");
+    }
+
     private static AppStateEnt stripAppState(final AppStateEnt appStateEnt) {
         var availablePortTypes = appStateEnt.getAvailablePortTypes().entrySet().stream().filter(e -> {
             var k = e.getKey();

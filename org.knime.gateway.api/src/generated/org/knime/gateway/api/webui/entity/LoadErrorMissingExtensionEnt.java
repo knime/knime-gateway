@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.LoadErrorsEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 import java.util.function.BiConsumer;
 
@@ -57,100 +55,70 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents an entire workflow project.
+ * LoadErrorMissingExtensionEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ProjectEnt extends GatewayEntity {
+public interface LoadErrorMissingExtensionEnt extends GatewayEntity {
 
 
   /**
-   * Get projectId
-   * @return projectId , never <code>null</code>
-   **/
-  public String getProjectId();
-
-  /**
-   * Get origin
-   * @return origin 
-   **/
-  public SpaceItemReferenceEnt getOrigin();
-
-  /**
-   * Get name
+   * The extension the missing node(s) belongs to.
    * @return name , never <code>null</code>
    **/
   public String getName();
 
   /**
-   * If this workflow project is active, it provides the node id of the active workflow (e.g. the root workflow or a sub-workflow (component/metanode)).
-   * @return activeWorkflowId 
+   * A list of missing node names.
+   * @return nodeNames , never <code>null</code>
    **/
-  public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId();
+  public java.util.List<String> getNodeNames();
 
   /**
-   * Get loadErrors
-   * @return loadErrors 
+   * The vendor of the extension the missing node(s) belongs to.
+   * @return vendor , never <code>null</code>
    **/
-  public LoadErrorsEnt getLoadErrors();
+  public String getVendor();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ProjectEnt)other;
-      valueConsumer.accept("projectId", Pair.create(getProjectId(), e.getProjectId()));
-      valueConsumer.accept("origin", Pair.create(getOrigin(), e.getOrigin()));
+      var e = (LoadErrorMissingExtensionEnt)other;
       valueConsumer.accept("name", Pair.create(getName(), e.getName()));
-      valueConsumer.accept("activeWorkflowId", Pair.create(getActiveWorkflowId(), e.getActiveWorkflowId()));
-      valueConsumer.accept("loadErrors", Pair.create(getLoadErrors(), e.getLoadErrors()));
+      valueConsumer.accept("nodeNames", Pair.create(getNodeNames(), e.getNodeNames()));
+      valueConsumer.accept("vendor", Pair.create(getVendor(), e.getVendor()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface ProjectEntBuilder extends GatewayEntityBuilder<ProjectEnt> {
+    public interface LoadErrorMissingExtensionEntBuilder extends GatewayEntityBuilder<LoadErrorMissingExtensionEnt> {
 
         /**
-   		 * Set projectId
-         * 
-         * @param projectId the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ProjectEntBuilder setProjectId(String projectId);
-        
-        /**
-   		 * Set origin
-         * 
-         * @param origin the property value,  
-         * @return this entity builder for chaining
-         */
-        ProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin);
-        
-        /**
-   		 * Set name
+         * The extension the missing node(s) belongs to.
          * 
          * @param name the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectEntBuilder setName(String name);
+        LoadErrorMissingExtensionEntBuilder setName(String name);
         
         /**
-         * If this workflow project is active, it provides the node id of the active workflow (e.g. the root workflow or a sub-workflow (component/metanode)).
+         * A list of missing node names.
          * 
-         * @param activeWorkflowId the property value,  
+         * @param nodeNames the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectEntBuilder setActiveWorkflowId(org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId);
+        LoadErrorMissingExtensionEntBuilder setNodeNames(java.util.List<String> nodeNames);
         
         /**
-   		 * Set loadErrors
+         * The vendor of the extension the missing node(s) belongs to.
          * 
-         * @param loadErrors the property value,  
+         * @param vendor the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectEntBuilder setLoadErrors(LoadErrorsEnt loadErrors);
+        LoadErrorMissingExtensionEntBuilder setVendor(String vendor);
         
         
         /**
@@ -160,7 +128,7 @@ public interface ProjectEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ProjectEnt build();
+        LoadErrorMissingExtensionEnt build();
     
     }
 

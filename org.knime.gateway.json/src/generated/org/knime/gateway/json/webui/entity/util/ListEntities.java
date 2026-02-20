@@ -129,6 +129,8 @@ import org.knime.gateway.json.webui.entity.LegacyViewNodeConfigEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkVariantEntMixIn;
 import org.knime.gateway.json.webui.entity.LinkVariantInfoEntMixIn;
+import org.knime.gateway.json.webui.entity.LoadErrorMissingExtensionEntMixIn;
+import org.knime.gateway.json.webui.entity.LoadErrorsEntMixIn;
 import org.knime.gateway.json.webui.entity.LoopInfoEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodeEntMixIn;
 import org.knime.gateway.json.webui.entity.MetaNodePortEntMixIn;
@@ -337,6 +339,8 @@ public class ListEntities {
         res.add(LinkEntMixIn.class);
         res.add(LinkVariantEntMixIn.class);
         res.add(LinkVariantInfoEntMixIn.class);
+        res.add(LoadErrorMissingExtensionEntMixIn.class);
+        res.add(LoadErrorsEntMixIn.class);
         res.add(LoopInfoEntMixIn.class);
         res.add(MetaNodeEntMixIn.class);
         res.add(MetaNodePortEntMixIn.class);
@@ -531,6 +535,8 @@ public class ListEntities {
         res.add(LinkEntMixIn.LinkEntMixInBuilder.class);
         res.add(LinkVariantEntMixIn.LinkVariantEntMixInBuilder.class);
         res.add(LinkVariantInfoEntMixIn.LinkVariantInfoEntMixInBuilder.class);
+        res.add(LoadErrorMissingExtensionEntMixIn.LoadErrorMissingExtensionEntMixInBuilder.class);
+        res.add(LoadErrorsEntMixIn.LoadErrorsEntMixInBuilder.class);
         res.add(LoopInfoEntMixIn.LoopInfoEntMixInBuilder.class);
         res.add(MetaNodeEntMixIn.MetaNodeEntMixInBuilder.class);
         res.add(MetaNodePortEntMixIn.MetaNodePortEntMixInBuilder.class);
