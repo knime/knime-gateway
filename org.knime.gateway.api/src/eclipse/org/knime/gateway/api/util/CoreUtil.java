@@ -101,6 +101,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerMetadata;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContainerState;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeExecutionJobManager;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeStateChangeListener;
@@ -110,6 +111,8 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowPersistor;
+import org.knime.core.node.workflow.WorkflowResourceCache;
 import org.knime.core.util.FileUtil;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.webui.entity.TypedTextEnt;
@@ -173,8 +176,7 @@ public final class CoreUtil {
         var nodeFactory = getNodeFactory(factoryClassName, factorySettings);
         NodeID nodeID;
         if (nodeFactory instanceof ConfigurableNodeFactory configurableNodeFactory && url != null) {
-            final ModifiableNodeCreationConfiguration config =
-                configurableNodeFactory.createNodeCreationConfig();
+            final ModifiableNodeCreationConfiguration config = configurableNodeFactory.createNodeCreationConfig();
             config.setURLConfiguration(url);
             nodeID = wfm.addNodeAndApplyContext(configurableNodeFactory, config, -1);
         } else {
@@ -800,6 +802,80 @@ public final class CoreUtil {
     public static PortObject[] getExampleInputData(final SubNodeContainer snc) throws InterruptedException {
         snc.getParent().executePredecessorsAndWait(snc.getID());
         return snc.fetchInputDataFromParent();
+    }
+
+    /**
+     * Attaches a workflow-scoped resource to the cache of the given workflow.
+     *
+     * @param wfm the workflow manager whose context should own the resource
+     * @param resourceClass the resource class used as cache key
+     * @param resource the resource instance to attach if absent
+     * @param <T> the resource type
+     * @since 5.12
+     */
+    public static <T extends WorkflowResourceCache.WorkflowResource> void
+        attachWorkflowResource(final WorkflowManager wfm, final Class<T> resourceClass, final T resource) {
+        NodeContext.pushContext(wfm);
+        try {
+            WorkflowResourceCache.computeIfAbsent(resourceClass, () -> resource);
+        } finally {
+            NodeContext.removeLastContext();
+        }
+    }
+
+    /**
+     * Retrieves a workflow-scoped resource from the cache of the given workflow.
+     *
+     * @param wfm the workflow manager whose context should be used to look up the resource
+     * @param resourceClass the resource class used as cache key
+     * @return the cached resource, if present
+     * @param <T> the resource type
+     * @since 5.12
+     */
+    public static <T extends WorkflowResourceCache.WorkflowResource> Optional<T>
+        getWorkflowResource(final WorkflowManager wfm, final Class<T> resourceClass) {
+        NodeContext.pushContext(wfm);
+        try {
+            return WorkflowResourceCache.get(resourceClass);
+        } finally {
+            NodeContext.removeLastContext();
+        }
+    }
+
+    /**
+     * Wrapper resource for storing a workflow load result in the workflow cache. This makes it later accessible via
+     * a the corresponding {@code WorkflowManager} reference.
+     *
+     * @since 5.12
+     * @param result the workflow load result to cache
+     */
+    public final record WorkflowLoadResult(
+            WorkflowPersistor.WorkflowLoadResult result) implements WorkflowResourceCache.WorkflowResource {
+
+        /**
+         * Attach the given result to the given {@code WorkflowManager}.
+         * @param wfm -
+         * @param loadResult -
+         */
+        public static void attachWorkflowLoadResult(final WorkflowManager wfm, final WorkflowPersistor.WorkflowLoadResult loadResult) {
+            attachWorkflowResource(wfm, WorkflowLoadResult.class, new WorkflowLoadResult(loadResult));
+        }
+
+        /**
+         * Query a result previously attached to a {@code WorkflowManager}.
+         * @param wfm -
+         * @return -
+         */
+        public static Optional<WorkflowPersistor.WorkflowLoadResult> getWorkflowLoadResult(final WorkflowManager wfm) {
+            return getWorkflowResource(wfm, WorkflowLoadResult.class)
+                    .map(wrapper -> wrapper.result());
+
+        }
+
+        @Override
+        public void dispose() {
+
+        }
     }
 
     /**

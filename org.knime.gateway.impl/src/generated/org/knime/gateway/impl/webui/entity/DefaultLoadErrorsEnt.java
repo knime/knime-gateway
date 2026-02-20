@@ -42,90 +42,82 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ------------------------------------------------------------------------
  */
-package org.knime.gateway.json.webui.entity;
+package org.knime.gateway.impl.webui.entity;
+
+import static org.knime.gateway.api.util.EntityUtil.immutable;
+
+import org.knime.gateway.api.webui.entity.LoadErrorMissingExtensionEnt;
 
 import org.knime.gateway.api.webui.entity.LoadErrorsEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
-
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import org.knime.gateway.api.webui.entity.ProjectEnt;
-import org.knime.gateway.impl.webui.entity.DefaultProjectEnt.DefaultProjectEntBuilder;
 
 /**
- * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
+ * DefaultLoadErrorsEnt
+ *
+ * @param missingExtensions
+ * @param copyToClipboardContent
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-
-@JsonDeserialize(builder=DefaultProjectEntBuilder.class)
-@JsonSerialize(as=ProjectEnt.class)
-@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ProjectEntMixIn extends ProjectEnt {
-
-    @Override
-    @JsonIgnore
-    public String getTypeID();
-
-    @Override
-    @JsonProperty("projectId")
-    public String getProjectId();
-    
-    @Override
-    @JsonProperty("origin")
-    public SpaceItemReferenceEnt getOrigin();
-    
-    @Override
-    @JsonProperty("name")
-    public String getName();
-    
-    @Override
-    @JsonProperty("activeWorkflowId")
-    public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId();
-    
-    @Override
-    @JsonProperty("loadErrors")
-    public LoadErrorsEnt getLoadErrors();
-    
+@jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
+public record DefaultLoadErrorsEnt(
+    java.util.List<LoadErrorMissingExtensionEnt> missingExtensions,
+    String copyToClipboardContent) implements LoadErrorsEnt {
 
     /**
-     * MixIn class for entity builder implementations that adds jackson annotations for the de-/serialization.
-     *
-     * @author Martin Horn, University of Konstanz
+     * Validation for required parameters not being {@code null}.
      */
-
-    // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ProjectEntMixInBuilder extends ProjectEntBuilder {
-    
-        @Override
-        public ProjectEntMixIn build();
-    
-        @Override
-        @JsonProperty("projectId")
-        public ProjectEntMixInBuilder setProjectId(final String projectId);
-        
-        @Override
-        @JsonProperty("origin")
-        public ProjectEntMixInBuilder setOrigin(final SpaceItemReferenceEnt origin);
-        
-        @Override
-        @JsonProperty("name")
-        public ProjectEntMixInBuilder setName(final String name);
-        
-        @Override
-        @JsonProperty("activeWorkflowId")
-        public ProjectEntMixInBuilder setActiveWorkflowId(final org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId);
-        
-        @Override
-        @JsonProperty("loadErrors")
-        public ProjectEntMixInBuilder setLoadErrors(final LoadErrorsEnt loadErrors);
-        
+    public DefaultLoadErrorsEnt {
+        if(copyToClipboardContent == null) {
+            throw new IllegalArgumentException("<copyToClipboardContent> must not be null.");
+        }
     }
 
+    @Override
+    public String getTypeID() {
+        return "LoadErrors";
+    }
+  
+    @Override
+    public java.util.List<LoadErrorMissingExtensionEnt> getMissingExtensions() {
+        return missingExtensions;
+    }
+    
+    @Override
+    public String getCopyToClipboardContent() {
+        return copyToClipboardContent;
+    }
+    
+    /**
+     * A builder for {@link DefaultLoadErrorsEnt}.
+     */
+    public static class DefaultLoadErrorsEntBuilder implements LoadErrorsEntBuilder {
+
+        private java.util.List<LoadErrorMissingExtensionEnt> m_missingExtensions;
+
+        private String m_copyToClipboardContent;
+
+        @Override
+        public DefaultLoadErrorsEntBuilder setMissingExtensions(java.util.List<LoadErrorMissingExtensionEnt> missingExtensions) {
+             m_missingExtensions = missingExtensions;
+             return this;
+        }
+
+        @Override
+        public DefaultLoadErrorsEntBuilder setCopyToClipboardContent(String copyToClipboardContent) {
+             if(copyToClipboardContent == null) {
+                 throw new IllegalArgumentException("<copyToClipboardContent> must not be null.");
+             }
+             m_copyToClipboardContent = copyToClipboardContent;
+             return this;
+        }
+
+        @Override
+        public DefaultLoadErrorsEnt build() {
+            return new DefaultLoadErrorsEnt(
+                immutable(m_missingExtensions),
+                immutable(m_copyToClipboardContent));
+        }
+    
+    }
 
 }
-

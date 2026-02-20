@@ -8,6 +8,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.11.0"/>
+                <message_argument value="5.10.0"/>
+            </message_arguments>
+        </filter>
+        <filter id="924844039">
+            <message_arguments>
+                <message_argument value="5.11.0"/>
+                <message_argument value="5.11.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt">
         <filter id="305324134">
             <message_arguments>
@@ -29,6 +43,14 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.project.Project"/>
                 <message_argument value="setWfmLoader(WorkflowManagerLoader)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/project/Project.java" type="org.knime.gateway.impl.project.Project$BuilderStage$Optionals">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.Project.BuilderStage.Optionals"/>
+                <message_argument value="setLoadResult(WorkflowPersistor.WorkflowLoadResult)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -491,6 +513,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultLoadErrorMissingExtensionEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultLoadErrorMissingExtensionEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultLoadErrorMissingExtensionEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultLoadErrorsEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultLoadErrorsEnt">
+        <filter id="1110441988">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultLoadErrorsEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultMostRecentEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultMostRecentEnt">
         <filter id="1110441988">
             <message_arguments>
@@ -509,6 +545,26 @@
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultOwnerEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultProjectEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultProjectEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultProjectEnt"/>
+                <message_argument value="DefaultProjectEnt(String, SpaceItemReferenceEnt, String, NodeIDEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultProjectEnt(String, SpaceItemReferenceEnt, String, NodeIDEnt, LoadErrorsEnt)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultProjectEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultProjectEnt$DefaultProjectEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setLoadErrors(LoadErrorsEnt)"/>
             </message_arguments>
         </filter>
     </resource>

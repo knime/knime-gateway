@@ -44,8 +44,6 @@
  */
 package org.knime.gateway.json.webui.entity;
 
-import org.knime.gateway.api.webui.entity.LoadErrorsEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,8 +51,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import org.knime.gateway.api.webui.entity.ProjectEnt;
-import org.knime.gateway.impl.webui.entity.DefaultProjectEnt.DefaultProjectEntBuilder;
+import org.knime.gateway.api.webui.entity.LoadErrorMissingExtensionEnt;
+import org.knime.gateway.impl.webui.entity.DefaultLoadErrorMissingExtensionEnt.DefaultLoadErrorMissingExtensionEntBuilder;
 
 /**
  * MixIn class for entity implementations that adds jackson annotations for de-/serialization.
@@ -62,34 +60,26 @@ import org.knime.gateway.impl.webui.entity.DefaultProjectEnt.DefaultProjectEntBu
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 
-@JsonDeserialize(builder=DefaultProjectEntBuilder.class)
-@JsonSerialize(as=ProjectEnt.class)
+@JsonDeserialize(builder=DefaultLoadErrorMissingExtensionEntBuilder.class)
+@JsonSerialize(as=LoadErrorMissingExtensionEnt.class)
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.json-config.json"})
-public interface ProjectEntMixIn extends ProjectEnt {
+public interface LoadErrorMissingExtensionEntMixIn extends LoadErrorMissingExtensionEnt {
 
     @Override
     @JsonIgnore
     public String getTypeID();
 
     @Override
-    @JsonProperty("projectId")
-    public String getProjectId();
-    
-    @Override
-    @JsonProperty("origin")
-    public SpaceItemReferenceEnt getOrigin();
-    
-    @Override
     @JsonProperty("name")
     public String getName();
     
     @Override
-    @JsonProperty("activeWorkflowId")
-    public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId();
+    @JsonProperty("nodeNames")
+    public java.util.List<String> getNodeNames();
     
     @Override
-    @JsonProperty("loadErrors")
-    public LoadErrorsEnt getLoadErrors();
+    @JsonProperty("vendor")
+    public String getVendor();
     
 
     /**
@@ -99,30 +89,22 @@ public interface ProjectEntMixIn extends ProjectEnt {
      */
 
     // AUTO-GENERATED CODE; DO NOT MODIFY
-    public static interface ProjectEntMixInBuilder extends ProjectEntBuilder {
+    public static interface LoadErrorMissingExtensionEntMixInBuilder extends LoadErrorMissingExtensionEntBuilder {
     
         @Override
-        public ProjectEntMixIn build();
+        public LoadErrorMissingExtensionEntMixIn build();
     
-        @Override
-        @JsonProperty("projectId")
-        public ProjectEntMixInBuilder setProjectId(final String projectId);
-        
-        @Override
-        @JsonProperty("origin")
-        public ProjectEntMixInBuilder setOrigin(final SpaceItemReferenceEnt origin);
-        
         @Override
         @JsonProperty("name")
-        public ProjectEntMixInBuilder setName(final String name);
+        public LoadErrorMissingExtensionEntMixInBuilder setName(final String name);
         
         @Override
-        @JsonProperty("activeWorkflowId")
-        public ProjectEntMixInBuilder setActiveWorkflowId(final org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId);
+        @JsonProperty("nodeNames")
+        public LoadErrorMissingExtensionEntMixInBuilder setNodeNames(final java.util.List<String> nodeNames);
         
         @Override
-        @JsonProperty("loadErrors")
-        public ProjectEntMixInBuilder setLoadErrors(final LoadErrorsEnt loadErrors);
+        @JsonProperty("vendor")
+        public LoadErrorMissingExtensionEntMixInBuilder setVendor(final String vendor);
         
     }
 

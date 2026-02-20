@@ -57,9 +57,11 @@ import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowLoadHelper;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.WorkflowPersistor;
 import org.knime.core.node.workflow.WorkflowPersistor.MetaNodeLinkUpdateResult;
 import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.util.Pair;
+import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt.ProjectTypeEnum;
 import org.knime.gateway.impl.project.Origin;
 import org.knime.gateway.impl.project.Project;
@@ -105,7 +107,9 @@ public class LocalWorkflowLoader implements WorkflowLoader {
                     var workflowDirToLoad = version.isCurrentState() ? //
                         workflow.getWorkflowDir() //
                         : withVersion.getVersionWorkflowDir();
-                    return loadWorkflowInWorkspace(workflowDirToLoad);
+                    var loadResult = loadWorkflowInWorkspace(workflowDirToLoad);
+                    CoreUtil.WorkflowLoadResult.attachWorkflowLoadResult(loadResult.getWorkflowManager(), loadResult);
+                    return loadResult.getWorkflowManager();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -116,18 +120,17 @@ public class LocalWorkflowLoader implements WorkflowLoader {
                     throw new IllegalArgumentException("VersionId.Fixed is not supported");
                 }
                 try {
-                    return loadWorkflowInWorkspace(workflow.getWorkflowDir());
+                    var loadResult = loadWorkflowInWorkspace(workflow.getWorkflowDir());
+                    CoreUtil.WorkflowLoadResult.attachWorkflowLoadResult(loadResult.getWorkflowManager(), loadResult);
+                    return loadResult.getWorkflowManager();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             };
         }
-        var project = Project.builder()
-            .setWfmLoader(wfmLoader)
-            .setName(workflow.getName())//
+        var project = Project.builder().setWfmLoader(wfmLoader).setName(workflow.getName())//
             .setId(projectId)//
-            .setOrigin(createOriginForTesting())
-            .build();
+            .setOrigin(createOriginForTesting()).build();
         var loadedWfm = project.getFromCacheOrLoadWorkflowManager().orElseThrow();
         addToProjectManager(loadedWfm, workflow.getName(), projectId, project);
     }
@@ -142,8 +145,12 @@ public class LocalWorkflowLoader implements WorkflowLoader {
         return new Pair<>(projectId, wfm);
     }
 
-    private static WorkflowManager loadWorkflowInWorkspace(final File workflowDir) throws Exception {
-        return WorkflowManagerUtil.loadWorkflowInWorkspace(workflowDir.toPath(), workflowDir.getParentFile().toPath());
+    private static WorkflowPersistor.WorkflowLoadResult loadWorkflowInWorkspace(final File workflowDir)
+        throws Exception {
+        return WorkflowManagerUtil.loadWorkflowInWorkspaceAndReturnLoadResult( //
+            workflowDir.toPath(), //
+            workflowDir.getParentFile().toPath() //
+        );
     }
 
     private void addToProjectManager(final WorkflowManager wfm, final String name, final String projectId,

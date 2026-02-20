@@ -44,8 +44,7 @@
  */
 package org.knime.gateway.api.webui.entity;
 
-import org.knime.gateway.api.webui.entity.LoadErrorsEnt;
-import org.knime.gateway.api.webui.entity.SpaceItemReferenceEnt;
+import org.knime.gateway.api.webui.entity.LoadErrorMissingExtensionEnt;
 
 import java.util.function.BiConsumer;
 
@@ -57,100 +56,55 @@ import org.knime.gateway.api.entity.GatewayEntityBuilder;
 import org.knime.gateway.api.entity.GatewayEntity;
 
 /**
- * Represents an entire workflow project.
+ * LoadErrorsEnt
  * 
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.api-config.json"})
-public interface ProjectEnt extends GatewayEntity {
+public interface LoadErrorsEnt extends GatewayEntity {
 
 
   /**
-   * Get projectId
-   * @return projectId , never <code>null</code>
+   * A list of missing nodes.
+   * @return missingExtensions 
    **/
-  public String getProjectId();
+  public java.util.List<LoadErrorMissingExtensionEnt> getMissingExtensions();
 
   /**
-   * Get origin
-   * @return origin 
+   * A textual representation of the load errors that can be copied to the clipboard by the user for error reporting.
+   * @return copyToClipboardContent , never <code>null</code>
    **/
-  public SpaceItemReferenceEnt getOrigin();
-
-  /**
-   * Get name
-   * @return name , never <code>null</code>
-   **/
-  public String getName();
-
-  /**
-   * If this workflow project is active, it provides the node id of the active workflow (e.g. the root workflow or a sub-workflow (component/metanode)).
-   * @return activeWorkflowId 
-   **/
-  public org.knime.gateway.api.entity.NodeIDEnt getActiveWorkflowId();
-
-  /**
-   * Get loadErrors
-   * @return loadErrors 
-   **/
-  public LoadErrorsEnt getLoadErrors();
+  public String getCopyToClipboardContent();
 
 
   @Override
   default void forEachPropertyValue(final GatewayEntity other,
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
-      var e = (ProjectEnt)other;
-      valueConsumer.accept("projectId", Pair.create(getProjectId(), e.getProjectId()));
-      valueConsumer.accept("origin", Pair.create(getOrigin(), e.getOrigin()));
-      valueConsumer.accept("name", Pair.create(getName(), e.getName()));
-      valueConsumer.accept("activeWorkflowId", Pair.create(getActiveWorkflowId(), e.getActiveWorkflowId()));
-      valueConsumer.accept("loadErrors", Pair.create(getLoadErrors(), e.getLoadErrors()));
+      var e = (LoadErrorsEnt)other;
+      valueConsumer.accept("missingExtensions", Pair.create(getMissingExtensions(), e.getMissingExtensions()));
+      valueConsumer.accept("copyToClipboardContent", Pair.create(getCopyToClipboardContent(), e.getCopyToClipboardContent()));
   }
 
     /**
      * The builder for the entity.
      */
-    public interface ProjectEntBuilder extends GatewayEntityBuilder<ProjectEnt> {
+    public interface LoadErrorsEntBuilder extends GatewayEntityBuilder<LoadErrorsEnt> {
 
         /**
-   		 * Set projectId
+         * A list of missing nodes.
          * 
-         * @param projectId the property value, NOT <code>null</code>! 
+         * @param missingExtensions the property value,  
          * @return this entity builder for chaining
          */
-        ProjectEntBuilder setProjectId(String projectId);
+        LoadErrorsEntBuilder setMissingExtensions(java.util.List<LoadErrorMissingExtensionEnt> missingExtensions);
         
         /**
-   		 * Set origin
+         * A textual representation of the load errors that can be copied to the clipboard by the user for error reporting.
          * 
-         * @param origin the property value,  
+         * @param copyToClipboardContent the property value, NOT <code>null</code>! 
          * @return this entity builder for chaining
          */
-        ProjectEntBuilder setOrigin(SpaceItemReferenceEnt origin);
-        
-        /**
-   		 * Set name
-         * 
-         * @param name the property value, NOT <code>null</code>! 
-         * @return this entity builder for chaining
-         */
-        ProjectEntBuilder setName(String name);
-        
-        /**
-         * If this workflow project is active, it provides the node id of the active workflow (e.g. the root workflow or a sub-workflow (component/metanode)).
-         * 
-         * @param activeWorkflowId the property value,  
-         * @return this entity builder for chaining
-         */
-        ProjectEntBuilder setActiveWorkflowId(org.knime.gateway.api.entity.NodeIDEnt activeWorkflowId);
-        
-        /**
-   		 * Set loadErrors
-         * 
-         * @param loadErrors the property value,  
-         * @return this entity builder for chaining
-         */
-        ProjectEntBuilder setLoadErrors(LoadErrorsEnt loadErrors);
+        LoadErrorsEntBuilder setCopyToClipboardContent(String copyToClipboardContent);
         
         
         /**
@@ -160,7 +114,7 @@ public interface ProjectEnt extends GatewayEntity {
         * @throws IllegalArgumentException most likely in case when a required property hasn't been set
         */
         @Override
-        ProjectEnt build();
+        LoadErrorsEnt build();
     
     }
 

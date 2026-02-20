@@ -60,14 +60,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowEvent;
 import org.knime.core.node.workflow.WorkflowListener;
 import org.knime.core.node.workflow.WorkflowLock;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.node.workflow.WorkflowResourceCache;
-import org.knime.core.node.workflow.WorkflowResourceCache.WorkflowResource;
 import org.knime.core.util.Pair;
 import org.knime.gateway.api.util.CoreUtil;
 import org.knime.gateway.api.util.DependentNodeProperties;
@@ -515,7 +512,7 @@ public final class WorkflowMiddleware {
         }
 
         WorkflowSyncer workflowSyncer() {
-            var syncer = getWorkflowResource(WorkflowSyncer.class, m_wfm).orElse(null);
+            var syncer = CoreUtil.getWorkflowResource(m_wfm, WorkflowSyncer.class).orElse(null);
             if (syncer != null) {
                 syncer.addOnStateChangeListener(changesListener());
                 return syncer;
@@ -523,7 +520,7 @@ public final class WorkflowMiddleware {
             var workflowSyncer = createWorkflowSyncer(m_wfm, m_spaceProviders, changesListener());
             // Note: the workflow-syncer resource is attached to the project workflow,
             // not necessarily to the instance that is passed here (if it's a sub-workflow)
-            attachWorkflowResource(m_wfm, WorkflowSyncer.class, workflowSyncer);
+            CoreUtil.attachWorkflowResource(m_wfm, WorkflowSyncer.class, workflowSyncer);
             return workflowSyncer;
         }
 
@@ -553,26 +550,6 @@ public final class WorkflowMiddleware {
             }
             if (m_componentLoadJobManager != null) {
                 m_componentLoadJobManager.cancelAndRemoveAllLoadJobs();
-            }
-        }
-
-        private static <T extends WorkflowResource> void attachWorkflowResource(final WorkflowManager wfm,
-            final Class<T> resourceClass, final T resource) {
-            NodeContext.pushContext(wfm);
-            try {
-                WorkflowResourceCache.computeIfAbsent(resourceClass, () -> resource);
-            } finally {
-                NodeContext.removeLastContext();
-            }
-        }
-
-        private static <T extends WorkflowResource> Optional<T>
-            getWorkflowResource(final Class<T> workflowResourceClass, final WorkflowManager wfm) {
-            NodeContext.pushContext(wfm);
-            try {
-                return WorkflowResourceCache.get(workflowResourceClass);
-            } finally {
-                NodeContext.removeLastContext();
             }
         }
 

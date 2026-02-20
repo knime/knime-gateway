@@ -214,6 +214,10 @@ import org.knime.gateway.api.webui.entity.LinkVariantEnt.LinkVariantEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLinkVariantEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt.LinkVariantInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLinkVariantInfoEnt;
+import org.knime.gateway.api.webui.entity.LoadErrorMissingExtensionEnt.LoadErrorMissingExtensionEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultLoadErrorMissingExtensionEnt;
+import org.knime.gateway.api.webui.entity.LoadErrorsEnt.LoadErrorsEntBuilder;
+import org.knime.gateway.impl.webui.entity.DefaultLoadErrorsEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt.LoopInfoEntBuilder;
 import org.knime.gateway.impl.webui.entity.DefaultLoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt.MetaNodeEntBuilder;
@@ -690,6 +694,12 @@ public class Interface2ImplMap {
         }        
         if(clazz == LinkVariantInfoEntBuilder.class) {
             return (B)new DefaultLinkVariantInfoEnt.DefaultLinkVariantInfoEntBuilder();
+        }        
+        if(clazz == LoadErrorMissingExtensionEntBuilder.class) {
+            return (B)new DefaultLoadErrorMissingExtensionEnt.DefaultLoadErrorMissingExtensionEntBuilder();
+        }        
+        if(clazz == LoadErrorsEntBuilder.class) {
+            return (B)new DefaultLoadErrorsEnt.DefaultLoadErrorsEntBuilder();
         }        
         if(clazz == LoopInfoEntBuilder.class) {
             return (B)new DefaultLoopInfoEnt.DefaultLoopInfoEntBuilder();

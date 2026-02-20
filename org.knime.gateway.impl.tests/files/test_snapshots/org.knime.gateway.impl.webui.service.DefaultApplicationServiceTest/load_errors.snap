@@ -1,0 +1,12 @@
+{
+  "copyToClipboardContent" : "general_web_ui 3 loaded with errors\n  Test Gateway Workflow 3\n    Node \"Input File\" not available from extension \"Generic Workflow Nodes for KNIME\" (provided by \"Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team\"; plugin \"missing.genericworkflownodes.knime\" is not installed)\n    Node \"Variants2Proteins\" not available from extension \"ImmunoNodes\" (provided by \"Freie Universitaet Berlin, Universitaet Tuebingen, and the ImmunoNodes Team\"; plugin \"de.immunonodes\" is not installed)",
+  "missingExtensions" : [ {
+    "name" : "ImmunoNodes",
+    "nodeNames" : [ "Variants2Proteins" ],
+    "vendor" : "Freie Universitaet Berlin, Universitaet Tuebingen, and the ImmunoNodes Team"
+  }, {
+    "name" : "Generic Workflow Nodes for KNIME",
+    "nodeNames" : [ "Input File" ],
+    "vendor" : "Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team"
+  } ]
+}

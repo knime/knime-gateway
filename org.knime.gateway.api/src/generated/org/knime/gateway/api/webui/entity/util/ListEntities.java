@@ -129,6 +129,8 @@ import org.knime.gateway.api.webui.entity.LegacyViewNodeConfigEnt;
 import org.knime.gateway.api.webui.entity.LinkEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantEnt;
 import org.knime.gateway.api.webui.entity.LinkVariantInfoEnt;
+import org.knime.gateway.api.webui.entity.LoadErrorMissingExtensionEnt;
+import org.knime.gateway.api.webui.entity.LoadErrorsEnt;
 import org.knime.gateway.api.webui.entity.LoopInfoEnt;
 import org.knime.gateway.api.webui.entity.MetaNodeEnt;
 import org.knime.gateway.api.webui.entity.MetaNodePortEnt;
@@ -338,6 +340,8 @@ public class ListEntities {
         res.add(LinkEnt.class);
         res.add(LinkVariantEnt.class);
         res.add(LinkVariantInfoEnt.class);
+        res.add(LoadErrorMissingExtensionEnt.class);
+        res.add(LoadErrorsEnt.class);
         res.add(LoopInfoEnt.class);
         res.add(MetaNodeEnt.class);
         res.add(MetaNodePortEnt.class);
@@ -532,6 +536,8 @@ public class ListEntities {
         res.add(LinkEnt.LinkEntBuilder.class);
         res.add(LinkVariantEnt.LinkVariantEntBuilder.class);
         res.add(LinkVariantInfoEnt.LinkVariantInfoEntBuilder.class);
+        res.add(LoadErrorMissingExtensionEnt.LoadErrorMissingExtensionEntBuilder.class);
+        res.add(LoadErrorsEnt.LoadErrorsEntBuilder.class);
         res.add(LoopInfoEnt.LoopInfoEntBuilder.class);
         res.add(MetaNodeEnt.MetaNodeEntBuilder.class);
         res.add(MetaNodePortEnt.MetaNodePortEntBuilder.class);
