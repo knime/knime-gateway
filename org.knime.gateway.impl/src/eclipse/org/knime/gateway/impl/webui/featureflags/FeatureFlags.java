@@ -69,7 +69,6 @@ public interface FeatureFlags {
     @SuppressWarnings({"MissingJavadoc", "java:S1176"})
     class FromSystemProperties implements FeatureFlags {
 
-        @SuppressWarnings("unused")
         private static final String FEATURE_FLAGS_PREFIX = "org.knime.ui.feature.";
 
         private static final Map<String, Object> DEFAULT_FEATURE_FLAGS = Map.of( //
