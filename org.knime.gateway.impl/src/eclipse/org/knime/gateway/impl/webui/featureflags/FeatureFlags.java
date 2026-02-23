@@ -48,6 +48,8 @@
  */
 package org.knime.gateway.impl.webui.featureflags;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -70,13 +72,36 @@ public interface FeatureFlags {
         @SuppressWarnings("unused")
         private static final String FEATURE_FLAGS_PREFIX = "org.knime.ui.feature.";
 
+        private static final Map<String, Object> DEFAULT_FEATURE_FLAGS = Map.of( //
+            FEATURE_FLAGS_PREFIX + "component_search_quick_add", //
+            Boolean.FALSE, //
+            FEATURE_FLAGS_PREFIX + "component_drag_replace_insert", //
+            Boolean.FALSE //
+        );
+
+        private final Map<String, Object> m_featureFlags;
+
         public FromSystemProperties() {
             // read configuration once, we do not support changing values during runtime.
+            m_featureFlags = loadFeatureFlags();
         }
 
         @Override
         public Map<String, Object> getFeatureFlags() {
-            return Map.of();
+            return m_featureFlags;
+        }
+
+        private static Map<String, Object> loadFeatureFlags() {
+            var featureFlags = new HashMap<String, Object>(DEFAULT_FEATURE_FLAGS.size());
+            DEFAULT_FEATURE_FLAGS.forEach((flagName, defaultValue) -> {
+                var propertyValue = System.getProperty(flagName);
+                if (propertyValue == null) {
+                    featureFlags.put(flagName, defaultValue);
+                } else {
+                    featureFlags.put(flagName, Boolean.parseBoolean(propertyValue));
+                }
+            });
+            return Collections.unmodifiableMap(featureFlags);
         }
 
     }
