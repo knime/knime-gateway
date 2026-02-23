@@ -57,6 +57,7 @@
     "name" : "component project",
     "providerType" : "LOCAL"
   },
+  "isProjectExecuting" : false,
   "metadata" : {
     "description" : {
       "contentType" : "text/plain",

@@ -126,6 +126,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
     public SyncStateEnt getSyncState();
     
     @Override
+    @JsonProperty("isProjectExecuting")
+    public Boolean isProjectExecuting();
+    
+    @Override
     @JsonProperty("componentPlaceholders")
     public java.util.List<ComponentPlaceholderEnt> getComponentPlaceholders();
     
@@ -189,6 +193,10 @@ public interface WorkflowEntMixIn extends WorkflowEnt {
         @Override
         @JsonProperty("syncState")
         public WorkflowEntMixInBuilder setSyncState(final SyncStateEnt syncState);
+        
+        @Override
+        @JsonProperty("isProjectExecuting")
+        public WorkflowEntMixInBuilder setIsProjectExecuting(final Boolean isProjectExecuting);
         
         @Override
         @JsonProperty("componentPlaceholders")

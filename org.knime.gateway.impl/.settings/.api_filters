@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.knime.gateway.impl" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.11.0"/>
+                <message_argument value="5.10.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="META-INF/MANIFEST.MF" type="org.knime.gateway.impl.webui.entity.DefaultAddComponentCommandEnt">
         <filter id="305324134">
             <message_arguments>
@@ -683,6 +691,17 @@
                 <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, EditableMetadataEnt, Boolean, List&lt;ComponentPlaceholderEnt&gt;)"/>
             </message_arguments>
         </filter>
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt"/>
+                <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, EditableMetadataEnt, Boolean, SyncStateEnt, List&lt;ComponentPlaceholderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, EditableMetadataEnt, Boolean, SyncStateEnt, Boolean, List&lt;ComponentPlaceholderEnt&gt;)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="DefaultWorkflowEnt(WorkflowInfoEnt, Map&lt;String,NodeEnt&gt;, Map&lt;String,NativeNodeInvariantsEnt&gt;, Map&lt;String,ConnectionEnt&gt;, List&lt;WorkflowAnnotationEnt&gt;, List&lt;WorkflowInfoEnt&gt;, MetaPortsEnt, MetaPortsEnt, AllowedWorkflowActionsEnt, EditableMetadataEnt, Boolean, SyncStateEnt, List&lt;ComponentPlaceholderEnt&gt;)"/>
@@ -690,6 +709,11 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultWorkflowEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultWorkflowEnt$DefaultWorkflowEntBuilder">
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="setIsProjectExecuting(Boolean)"/>
+            </message_arguments>
+        </filter>
         <filter id="1143996420">
             <message_arguments>
                 <message_argument value="setSyncState(SyncStateEnt)"/>

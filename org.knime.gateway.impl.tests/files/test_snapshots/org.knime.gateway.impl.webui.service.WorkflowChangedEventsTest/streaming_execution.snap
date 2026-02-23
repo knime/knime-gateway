@@ -79,6 +79,10 @@
   "value" : true
 }, {
   "op" : "replace",
+  "path" : "/isProjectExecuting",
+  "value" : true
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:3:0:3/allowedActions/canCollapse",
   "value" : "resetRequired"
 }, {

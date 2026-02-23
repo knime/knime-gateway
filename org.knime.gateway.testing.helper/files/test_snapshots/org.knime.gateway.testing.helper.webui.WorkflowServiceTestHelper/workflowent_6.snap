@@ -45,6 +45,7 @@
     "name" : "Metanode",
     "providerType" : "LOCAL"
   },
+  "isProjectExecuting" : false,
   "metaInPorts" : {
     "ports" : [ {
       "canRemove" : false,

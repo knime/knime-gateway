@@ -382,6 +382,7 @@ public final class WorkflowEntityFactory {
                 wfm.getWorkflowAnnotations().stream().map(wa -> buildWorkflowAnnotationEnt(wa, buildContext)).toList();
             var metadata = getMetadata(wfm);
             var componentPlaceholders = buildContext.getComponentPlaceholders().stream().toList();
+            var isProjectExecuting = wfm.getProjectWFM().getNodeContainerState().isExecutionInProgress();
             return builder(WorkflowEntBuilder.class) //
                 .setInfo(buildWorkflowInfoEnt(wfm, buildContext))//
                 .setNodes(nodes)//
@@ -397,6 +398,7 @@ public final class WorkflowEntityFactory {
                 .setComponentPlaceholders(componentPlaceholders.isEmpty() ? null : componentPlaceholders)//
                 .setDirty(CoreUtil.isWorkflowDirtyOrHasDirtyParent(wfm)) //
                 .setSyncState(buildContext.getSyncStateEnt()) //
+                .setIsProjectExecuting(isProjectExecuting) //
                 .build();
         }
     }

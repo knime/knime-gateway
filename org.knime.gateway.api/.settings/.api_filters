@@ -1088,9 +1088,20 @@
                 <message_argument value="getSyncState()"/>
             </message_arguments>
         </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.WorkflowEnt"/>
+                <message_argument value="isProjectExecuting()"/>
+            </message_arguments>
+        </filter>
         <filter id="1211105284">
             <message_arguments>
                 <message_argument value="getSyncState()"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="isProjectExecuting()"/>
             </message_arguments>
         </filter>
     </resource>
@@ -1098,7 +1109,18 @@
         <filter id="403804204">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder"/>
+                <message_argument value="setIsProjectExecuting(Boolean)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.WorkflowEnt.WorkflowEntBuilder"/>
                 <message_argument value="setSyncState(SyncStateEnt)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="setIsProjectExecuting(Boolean)"/>
             </message_arguments>
         </filter>
         <filter id="1211105284">
