@@ -72,6 +72,7 @@ import org.knime.gateway.api.webui.entity.WorkflowEnt;
  * @param metadata
  * @param dirty
  * @param syncState
+ * @param isProjectExecuting
  * @param componentPlaceholders
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -90,6 +91,7 @@ public record DefaultWorkflowEnt(
     org.knime.gateway.api.webui.entity.EditableMetadataEnt metadata,
     Boolean dirty,
     SyncStateEnt syncState,
+    Boolean isProjectExecuting,
     java.util.List<ComponentPlaceholderEnt> componentPlaceholders) implements WorkflowEnt {
 
     /**
@@ -116,6 +118,9 @@ public record DefaultWorkflowEnt(
         }
         if(dirty == null) {
             throw new IllegalArgumentException("<dirty> must not be null.");
+        }
+        if(isProjectExecuting == null) {
+            throw new IllegalArgumentException("<isProjectExecuting> must not be null.");
         }
     }
 
@@ -185,6 +190,11 @@ public record DefaultWorkflowEnt(
     }
     
     @Override
+    public Boolean isProjectExecuting() {
+        return isProjectExecuting;
+    }
+    
+    @Override
     public java.util.List<ComponentPlaceholderEnt> getComponentPlaceholders() {
         return componentPlaceholders;
     }
@@ -217,6 +227,8 @@ public record DefaultWorkflowEnt(
         private Boolean m_dirty;
 
         private SyncStateEnt m_syncState;
+
+        private Boolean m_isProjectExecuting;
 
         private java.util.List<ComponentPlaceholderEnt> m_componentPlaceholders;
 
@@ -314,6 +326,15 @@ public record DefaultWorkflowEnt(
         }
 
         @Override
+        public DefaultWorkflowEntBuilder setIsProjectExecuting(Boolean isProjectExecuting) {
+             if(isProjectExecuting == null) {
+                 throw new IllegalArgumentException("<isProjectExecuting> must not be null.");
+             }
+             m_isProjectExecuting = isProjectExecuting;
+             return this;
+        }
+
+        @Override
         public DefaultWorkflowEntBuilder setComponentPlaceholders(java.util.List<ComponentPlaceholderEnt> componentPlaceholders) {
              m_componentPlaceholders = componentPlaceholders;
              return this;
@@ -334,6 +355,7 @@ public record DefaultWorkflowEnt(
                 immutable(m_metadata),
                 immutable(m_dirty),
                 immutable(m_syncState),
+                immutable(m_isProjectExecuting),
                 immutable(m_componentPlaceholders));
         }
     

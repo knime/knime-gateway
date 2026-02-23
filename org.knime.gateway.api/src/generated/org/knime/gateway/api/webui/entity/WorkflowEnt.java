@@ -144,6 +144,12 @@ public interface WorkflowEnt extends GatewayEntity {
   public SyncStateEnt getSyncState();
 
   /**
+   * Indicates whether the project workflow in its entirety is currently executing.
+   * @return isProjectExecuting , never <code>null</code>
+   **/
+  public Boolean isProjectExecuting();
+
+  /**
    * List of placeholders or absent if there are none.
    * @return componentPlaceholders 
    **/
@@ -166,6 +172,7 @@ public interface WorkflowEnt extends GatewayEntity {
       valueConsumer.accept("metadata", Pair.create(getMetadata(), e.getMetadata()));
       valueConsumer.accept("dirty", Pair.create(isDirty(), e.isDirty()));
       valueConsumer.accept("syncState", Pair.create(getSyncState(), e.getSyncState()));
+      valueConsumer.accept("isProjectExecuting", Pair.create(isProjectExecuting(), e.isProjectExecuting()));
       valueConsumer.accept("componentPlaceholders", Pair.create(getComponentPlaceholders(), e.getComponentPlaceholders()));
   }
 
@@ -269,6 +276,14 @@ public interface WorkflowEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         WorkflowEntBuilder setSyncState(SyncStateEnt syncState);
+        
+        /**
+         * Indicates whether the project workflow in its entirety is currently executing.
+         * 
+         * @param isProjectExecuting the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        WorkflowEntBuilder setIsProjectExecuting(Boolean isProjectExecuting);
         
         /**
          * List of placeholders or absent if there are none.

@@ -315,6 +315,7 @@
     "name" : "general_web_ui",
     "providerType" : "LOCAL"
   },
+  "isProjectExecuting" : false,
   "metadata" : {
     "description" : {
       "contentType" : "text/plain",

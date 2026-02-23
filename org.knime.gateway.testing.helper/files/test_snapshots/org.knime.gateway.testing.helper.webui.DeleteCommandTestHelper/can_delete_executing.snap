@@ -48,6 +48,7 @@
     "name" : "execution states",
     "providerType" : "LOCAL"
   },
+  "isProjectExecuting" : true,
   "metadata" : {
     "description" : {
       "contentType" : "text/plain",

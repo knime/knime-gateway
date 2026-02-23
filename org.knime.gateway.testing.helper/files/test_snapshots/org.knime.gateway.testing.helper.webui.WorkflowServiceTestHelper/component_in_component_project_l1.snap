@@ -14,6 +14,7 @@
     "name" : "Component L1",
     "providerType" : "LOCAL"
   },
+  "isProjectExecuting" : false,
   "metadata" : {
     "description" : {
       "contentType" : "text/plain",

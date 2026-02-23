@@ -108,9 +108,10 @@ public class PatchChangeProcessorTest {
                 .build()) //
             .setMetadata(builder(ProjectMetadataEntBuilder.class).setMetadataType(MetadataTypeEnum.PROJECT).build());
 
-        WorkflowEnt workflow1 = workflowBuilder.setNodes(Collections.emptyMap()).setDirty(false).build();
-        WorkflowEnt workflow2 =
-            workflowBuilder.setNodes(Map.of("root:1", node1, "root:11", node2)).setDirty(true).build();
+        WorkflowEnt workflow1 = workflowBuilder.setNodes(Collections.emptyMap()).setDirty(false)
+            .setIsProjectExecuting(Boolean.FALSE).build();
+        WorkflowEnt workflow2 = workflowBuilder.setNodes(Map.of("root:1", node1, "root:11", node2)).setDirty(true)
+            .setIsProjectExecuting(Boolean.FALSE).build();
 
         PatchCreator<Object> patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
 
@@ -156,7 +157,8 @@ public class PatchChangeProcessorTest {
         var anno2 = workflowAnnoBuilder.setText(EntityUtil.toTypedTextEnt("anno2", ContentTypeEnum.PLAIN)).build();
         var anno3 = workflowAnnoBuilder.setText(EntityUtil.toTypedTextEnt("anno3", ContentTypeEnum.PLAIN)).build();
 
-        WorkflowEnt workflow1 = workflowBuilder.setWorkflowAnnotations(List.of(anno1, anno2, anno3)).build();
+        WorkflowEnt workflow1 = workflowBuilder.setWorkflowAnnotations(List.of(anno1, anno2, anno3))
+            .setIsProjectExecuting(Boolean.FALSE).build();
         // remove all wf annotations
         WorkflowEnt workflow2 = workflowBuilder.setWorkflowAnnotations(Collections.emptyList()).build();
         var patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
@@ -196,8 +198,10 @@ public class PatchChangeProcessorTest {
                 .build())
             .setMetadata(builder(ProjectMetadataEntBuilder.class).setMetadataType(MetadataTypeEnum.PROJECT).build())//
             .setDirty(true);
-       WorkflowEnt workflow1 = workflowBuilder.setNodes(Map.of("root:1", node1)).build();
-       WorkflowEnt workflow2 = workflowBuilder.setNodes(Map.of("root:1", node2)).build();
+        WorkflowEnt workflow1 =
+            workflowBuilder.setNodes(Map.of("root:1", node1)).setIsProjectExecuting(Boolean.FALSE).build();
+        WorkflowEnt workflow2 =
+            workflowBuilder.setNodes(Map.of("root:1", node2)).setIsProjectExecuting(Boolean.FALSE).build();
 
        PatchCreator<Object> patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
 
@@ -220,13 +224,14 @@ public class PatchChangeProcessorTest {
             .setDirty(true) //
             .setNodes(Map.of());
 
-        var workflow1 = workflowBuilder.setMetadata(builder(ComponentNodeDescriptionEntBuilder.class)
-            .setName("blub").setMetadataType(MetadataTypeEnum.COMPONENT).build()).build();
+        var workflow1 = workflowBuilder.setMetadata(builder(ComponentNodeDescriptionEntBuilder.class).setName("blub")
+            .setMetadataType(MetadataTypeEnum.COMPONENT).build()).setIsProjectExecuting(Boolean.FALSE).build();
         var option = builder(NodeDialogOptionGroupEntBuilder.class).setSectionName("test").build();
-        var workflow2 = workflowBuilder
-            .setMetadata(builder(ComponentNodeDescriptionEntBuilder.class).setName("blub").setOptions(List.of(option))
-                .setMetadataType(MetadataTypeEnum.COMPONENT).build())
-            .build();
+        var workflow2 =
+            workflowBuilder
+                .setMetadata(builder(ComponentNodeDescriptionEntBuilder.class).setName("blub")
+                    .setOptions(List.of(option)).setMetadataType(MetadataTypeEnum.COMPONENT).build())
+                .setIsProjectExecuting(Boolean.FALSE).build();
 
         var patchCreator = createDiffAndPatchCreatorMock(workflow1, workflow2);
         verify(patchCreator).added("/metadata/options", List.of(option));
