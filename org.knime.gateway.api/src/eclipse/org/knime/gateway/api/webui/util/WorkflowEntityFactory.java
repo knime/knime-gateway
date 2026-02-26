@@ -382,7 +382,7 @@ public final class WorkflowEntityFactory {
                 wfm.getWorkflowAnnotations().stream().map(wa -> buildWorkflowAnnotationEnt(wa, buildContext)).toList();
             var metadata = getMetadata(wfm);
             var componentPlaceholders = buildContext.getComponentPlaceholders().stream().toList();
-            var isProjectExecuting = wfm.getProjectWFM().getNodeContainerState().isExecutionInProgress();
+            var isProjectExecuting = CoreUtil.getProjectWorkflow(wfm).getNodeContainerState().isExecutionInProgress();
             return builder(WorkflowEntBuilder.class) //
                 .setInfo(buildWorkflowInfoEnt(wfm, buildContext))//
                 .setNodes(nodes)//
