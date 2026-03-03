@@ -7,14 +7,6 @@
                 <message_argument value="5.10.0"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="META-INF/MANIFEST.MF">
-        <filter id="923795461">
-            <message_arguments>
-                <message_argument value="5.11.0"/>
-                <message_argument value="5.10.0"/>
-            </message_arguments>
-        </filter>
         <filter id="924844039">
             <message_arguments>
                 <message_argument value="5.11.0"/>
@@ -51,6 +43,12 @@
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.project.Project.BuilderStage.Optionals"/>
                 <message_argument value="setLoadResult(WorkflowPersistor.WorkflowLoadResult)"/>
+            </message_arguments>
+        </filter>
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.project.Project.BuilderStage.Optionals"/>
+                <message_argument value="setWebUIMode(WebUIMode)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -176,6 +174,14 @@
                 <message_argument value="CodeKaiHandler"/>
                 <message_argument value="KaiHandlerFactory"/>
                 <message_argument value="createCodeKaiHandler(KaiHandlerFactoryAuthTokenProvider)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/eclipse/org/knime/gateway/impl/webui/modes/WebUIMode.java" type="org.knime.gateway.impl.webui.modes.WebUIMode">
+        <filter id="372346978">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.modes.WebUIMode"/>
+                <message_argument value="getMode()"/>
             </message_arguments>
         </filter>
     </resource>

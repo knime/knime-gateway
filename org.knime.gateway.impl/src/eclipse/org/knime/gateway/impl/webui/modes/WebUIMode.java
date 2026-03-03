@@ -48,8 +48,6 @@
  */
 package org.knime.gateway.impl.webui.modes;
 
-import java.util.Arrays;
-
 /**
  * Modes the Modern UI of the AP can be launched in
  *
@@ -76,8 +74,6 @@ public enum WebUIMode {
 
     private final boolean m_needsToLoadNodeRepository;
 
-    private static final String SYSTEM_PROPERTY_KEY = "org.knime.ui.mode";
-
     WebUIMode(final String name, final boolean needsToLoadNodeRepository) {
         m_name = name;
         m_needsToLoadNodeRepository = needsToLoadNodeRepository;
@@ -90,24 +86,15 @@ public enum WebUIMode {
         return m_needsToLoadNodeRepository;
     }
 
+    // TODO
+    // hasWorkflowSyncerEnabled
+
     /**
-     * Reads the {@link WebUIMode} from the system properties
-     *
-     * @return The {@link WebUIMode} if one was set, {@code Mode.DEFAULT} otherwise
-     * @throws IllegalStateException if no legal mode was set
+     * @return the name of the mode
+     * @since 5.12
      */
-    public static WebUIMode getMode() {
-        final var prop = System.getProperty(SYSTEM_PROPERTY_KEY);
-
-        if (prop == null) {
-            return DEFAULT;
-        }
-
-        return Arrays.stream(values())//
-            .filter(mode -> mode.m_name.equals(prop)) //
-            .findFirst() //
-            .orElseThrow(() -> new IllegalStateException(
-                "The given <%s> system property contains a not supported value!".formatted(SYSTEM_PROPERTY_KEY)));
+    public String getName() {
+        return m_name;
     }
 
 }

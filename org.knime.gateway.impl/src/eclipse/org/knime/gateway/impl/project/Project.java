@@ -54,6 +54,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.gateway.api.util.VersionId;
+import org.knime.gateway.impl.project.Project.BuilderStage.Optionals;
+import org.knime.gateway.impl.webui.modes.WebUIMode;
 
 /**
  * A workflow or component project.
@@ -76,6 +78,8 @@ public final class Project {
 
     private ProjectWfmCache m_projectWfmCache;
 
+    private final WebUIMode m_webUIMode;
+
     private Project(final Builder builder) {
         this( //
             builder.m_id, //
@@ -84,18 +88,20 @@ public final class Project {
             builder.m_wfmCache, //
             Optional.ofNullable(builder.m_clearReport).orElse(() -> {
             }), //
-            builder.m_generateReport //
+            builder.m_generateReport, //
+            builder.m_webUIMode //
         );
     }
 
     private Project(final String projectId, final String name, final Origin origin, final ProjectWfmCache cache,
-        final Runnable clearReport, final Function<String, byte[]> generateReport) {
-        this.m_id = projectId;
-        this.m_name = name;
-        this.m_origin = origin;
-        this.m_projectWfmCache = cache;
-        this.m_clearReport = clearReport;
-        this.m_generateReport = generateReport;
+        final Runnable clearReport, final Function<String, byte[]> generateReport, final WebUIMode webUIMode) {
+        m_id = projectId;
+        m_name = name;
+        m_origin = origin;
+        m_projectWfmCache = cache;
+        m_clearReport = clearReport;
+        m_generateReport = generateReport;
+        m_webUIMode = webUIMode;
     }
 
     /**
@@ -113,7 +119,8 @@ public final class Project {
             originalProject.m_projectWfmCache, //
             Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {
             }), //
-            originalProject.m_generateReport //
+            originalProject.m_generateReport, //
+            WebUIMode.DEFAULT //
         );
     }
 
@@ -133,7 +140,8 @@ public final class Project {
             originalProject.m_projectWfmCache, //
             Optional.ofNullable(originalProject.m_clearReport).orElse(() -> {
             }), //
-            originalProject.m_generateReport //
+            originalProject.m_generateReport, //
+            WebUIMode.DEFAULT //
         );
     }
 
@@ -187,7 +195,7 @@ public final class Project {
      *         yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded() {
-        return this.m_projectWfmCache.getWorkflowManagerIfLoaded(VersionId.currentState());
+        return m_projectWfmCache.getWorkflowManagerIfLoaded(VersionId.currentState());
     }
 
     /**
@@ -198,7 +206,7 @@ public final class Project {
      *         is not yet loaded.
      */
     public Optional<WorkflowManager> getWorkflowManagerIfLoaded(final VersionId version) {
-        return this.m_projectWfmCache.getWorkflowManagerIfLoaded(version);
+        return m_projectWfmCache.getWorkflowManagerIfLoaded(version);
     }
 
     /**
@@ -227,7 +235,7 @@ public final class Project {
      * @param version version whose cached workflow manager should be disposed
      */
     public void disposeCachedWfm(final VersionId version) {
-        this.m_projectWfmCache.dispose(version);
+        m_projectWfmCache.dispose(version);
     }
 
     /**
@@ -248,9 +256,16 @@ public final class Project {
     public byte[] generateReport(final String format) {
         if (m_generateReport == null) {
             throw new UnsupportedOperationException(
-                "No report generation function set for project '" + this.m_name + "'");
+                "No report generation function set for project '" + m_name + "'");
         }
-        return this.m_generateReport.apply(format);
+        return m_generateReport.apply(format);
+    }
+
+    /**
+     * @return the mode in which the web UI should be launched for this project
+     */
+    public WebUIMode getWebUIMode() {
+        return m_webUIMode;
     }
 
     /**
@@ -363,6 +378,11 @@ public final class Project {
 
             Optionals generateReport(Function<String, byte[]> generateReport);
 
+            /**
+             * @since 5.12
+             */
+            Optionals setWebUIMode(WebUIMode webUIMode);
+
             Project build();
         }
     }
@@ -390,6 +410,8 @@ public final class Project {
         private Function<String, byte[]> m_generateReport;
 
         private ProjectWfmCache m_wfmCache;
+
+        private WebUIMode m_webUIMode = WebUIMode.DEFAULT;
 
         private Builder() {
             //
@@ -460,6 +482,15 @@ public final class Project {
         @Override
         public Builder generateReport(final Function<String, byte[]> generateReport) {
             m_generateReport = generateReport;
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Optionals setWebUIMode(final WebUIMode webUIMode) {
+            m_webUIMode = webUIMode;
             return this;
         }
 
