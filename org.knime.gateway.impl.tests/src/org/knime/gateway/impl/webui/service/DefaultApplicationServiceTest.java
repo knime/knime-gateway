@@ -47,7 +47,9 @@
 package org.knime.gateway.impl.webui.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -224,7 +226,29 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         setSpaceProvidersDepencency();
 
         var appState = DefaultApplicationService.getInstance().getState();
-        cr(appState.getOpenProjects().get(0).getLoadErrors(), "load_errors");
+        var loadErrors = appState.getOpenProjects().get(0).getLoadErrors();
+
+        assertThat(loadErrors, not(is(nullValue())));
+
+        var clipboardContent = loadErrors.getCopyToClipboardContent();
+        assertThat(clipboardContent, containsString("loaded with errors"));
+        assertThat(clipboardContent, containsString("Node \"Input File\" not available from extension \"Generic Workflow Nodes for KNIME\""));
+        assertThat(clipboardContent, containsString("Node \"Variants2Proteins\" not available from extension \"ImmunoNodes\""));
+
+        var missingExtensions = loadErrors.getMissingExtensions();
+        assertThat(missingExtensions, hasSize(2));
+
+        var immunoNodes = missingExtensions.stream()
+            .filter(e -> e.getName().equals("ImmunoNodes"))
+            .findFirst().orElseThrow();
+        assertThat(immunoNodes.getVendor(), is("Freie Universitaet Berlin, Universitaet Tuebingen, and the ImmunoNodes Team"));
+        assertThat(immunoNodes.getNodeNames(), hasItems("Variants2Proteins"));
+
+        var genericWorkflowNodes = missingExtensions.stream()
+            .filter(e -> e.getName().equals("Generic Workflow Nodes for KNIME"))
+            .findFirst().orElseThrow();
+        assertThat(genericWorkflowNodes.getVendor(), is("Freie Universitaet Berlin, Universitaet Tuebingen, and the GenericWorkflowNodes Team"));
+        assertThat(genericWorkflowNodes.getNodeNames(), hasItems("Input File"));
     }
 
     private static AppStateEnt stripAppState(final AppStateEnt appStateEnt) {

@@ -54,7 +54,7 @@
   },
   "state" : {
     "executionState" : "IDLE",
-    "issue" : "File Reader #3: Please specify a file",
+    "issue" : "CSV Reader #3: Please specify a file",
     "resolutions" : [ ],
     "warning" : "PLACEHOLDER_FOR_WARNING_MESSAGE"
   }
