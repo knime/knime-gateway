@@ -7,10 +7,10 @@ Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Fragment-Host: org.knime.gateway.impl;bundle-version="[5.12.0,6.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.knime.gateway.impl.tests
-Require-Bundle: org.knime.testing;bundle-version="[5.10.0,6.0.0)",
+Require-Bundle: org.knime.testing;bundle-version="[5.12.0,6.0.0)",
  org.knime.gateway.testing.helper;bundle-version="[5.12.0,6.0.0)",
  org.knime.ext.weka_3.7;bundle-version="[5.9.0,6.0.0)",
- org.knime.distmatrix;bundle-version="[5.11.0,6.0.0)",
+ org.knime.distmatrix;bundle-version="[5.12.0,6.0.0)",
  org.knime.stats;bundle-version="[5.9.0,6.0.0)",
  org.mockito.mockito-core;bundle-version="[5.18.0,6.0.0)",
  org.awaitility;bundle-version="[3.0.0,4.0.0)",
@@ -19,7 +19,7 @@ Require-Bundle: org.knime.testing;bundle-version="[5.10.0,6.0.0)",
  org.knime.core.streaming;bundle-version="[5.9.0,6.0.0)",
  org.knime.core.ui;bundle-version="[5.12.0,6.0.0)",
  org.knime.core.ui.testing;bundle-version="[5.11.0,6.0.0)",
- org.knime.base.views;bundle-version="[5.11.0,6.0.0)",
+ org.knime.base.views;bundle-version="[5.12.0,6.0.0)",
  assertj-core;bundle-version="[3.27.3,4.0.0)",
  junit-jupiter-api;bundle-version="[5.9.2,6.0.0)",
  junit-jupiter-params;bundle-version="[5.9.2,6.0.0)",
