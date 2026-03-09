@@ -71,6 +71,12 @@ public interface LoadErrorsEnt extends GatewayEntity {
   public java.util.List<LoadErrorMissingExtensionEnt> getMissingExtensions();
 
   /**
+   * The total number of load errors that occurred during loading the workflow project.
+   * @return numLoadErrors , never <code>null</code>
+   **/
+  public Integer getNumLoadErrors();
+
+  /**
    * A textual representation of the load errors that can be copied to the clipboard by the user for error reporting.
    * @return copyToClipboardContent , never <code>null</code>
    **/
@@ -82,6 +88,7 @@ public interface LoadErrorsEnt extends GatewayEntity {
       final BiConsumer<String, Pair<Object, Object>> valueConsumer) {
       var e = (LoadErrorsEnt)other;
       valueConsumer.accept("missingExtensions", Pair.create(getMissingExtensions(), e.getMissingExtensions()));
+      valueConsumer.accept("numLoadErrors", Pair.create(getNumLoadErrors(), e.getNumLoadErrors()));
       valueConsumer.accept("copyToClipboardContent", Pair.create(getCopyToClipboardContent(), e.getCopyToClipboardContent()));
   }
 
@@ -97,6 +104,14 @@ public interface LoadErrorsEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         LoadErrorsEntBuilder setMissingExtensions(java.util.List<LoadErrorMissingExtensionEnt> missingExtensions);
+        
+        /**
+         * The total number of load errors that occurred during loading the workflow project.
+         * 
+         * @param numLoadErrors the property value, NOT <code>null</code>! 
+         * @return this entity builder for chaining
+         */
+        LoadErrorsEntBuilder setNumLoadErrors(Integer numLoadErrors);
         
         /**
          * A textual representation of the load errors that can be copied to the clipboard by the user for error reporting.

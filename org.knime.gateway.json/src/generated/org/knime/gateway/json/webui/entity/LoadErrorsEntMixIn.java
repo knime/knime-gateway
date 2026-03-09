@@ -75,6 +75,10 @@ public interface LoadErrorsEntMixIn extends LoadErrorsEnt {
     public java.util.List<LoadErrorMissingExtensionEnt> getMissingExtensions();
     
     @Override
+    @JsonProperty("numLoadErrors")
+    public Integer getNumLoadErrors();
+    
+    @Override
     @JsonProperty("copyToClipboardContent")
     public String getCopyToClipboardContent();
     
@@ -94,6 +98,10 @@ public interface LoadErrorsEntMixIn extends LoadErrorsEnt {
         @Override
         @JsonProperty("missingExtensions")
         public LoadErrorsEntMixInBuilder setMissingExtensions(final java.util.List<LoadErrorMissingExtensionEnt> missingExtensions);
+        
+        @Override
+        @JsonProperty("numLoadErrors")
+        public LoadErrorsEntMixInBuilder setNumLoadErrors(final Integer numLoadErrors);
         
         @Override
         @JsonProperty("copyToClipboardContent")

@@ -229,6 +229,7 @@ public class DefaultApplicationServiceTest extends GatewayServiceTest {
         var loadErrors = appState.getOpenProjects().get(0).getLoadErrors();
 
         assertThat(loadErrors, not(is(nullValue())));
+        assertThat(loadErrors.getNumLoadErrors(), is(2));
 
         var clipboardContent = loadErrors.getCopyToClipboardContent();
         assertThat(clipboardContent, containsString("loaded with errors"));

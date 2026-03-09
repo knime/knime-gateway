@@ -54,6 +54,7 @@ import org.knime.gateway.api.webui.entity.LoadErrorsEnt;
  * DefaultLoadErrorsEnt
  *
  * @param missingExtensions
+ * @param numLoadErrors
  * @param copyToClipboardContent
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -61,12 +62,16 @@ import org.knime.gateway.api.webui.entity.LoadErrorsEnt;
 @jakarta.annotation.Generated(value = {"com.knime.gateway.codegen.GatewayCodegen", "src-gen/api/web-ui/configs/org.knime.gateway.impl-config.json"})
 public record DefaultLoadErrorsEnt(
     java.util.List<LoadErrorMissingExtensionEnt> missingExtensions,
+    Integer numLoadErrors,
     String copyToClipboardContent) implements LoadErrorsEnt {
 
     /**
      * Validation for required parameters not being {@code null}.
      */
     public DefaultLoadErrorsEnt {
+        if(numLoadErrors == null) {
+            throw new IllegalArgumentException("<numLoadErrors> must not be null.");
+        }
         if(copyToClipboardContent == null) {
             throw new IllegalArgumentException("<copyToClipboardContent> must not be null.");
         }
@@ -83,6 +88,11 @@ public record DefaultLoadErrorsEnt(
     }
     
     @Override
+    public Integer getNumLoadErrors() {
+        return numLoadErrors;
+    }
+    
+    @Override
     public String getCopyToClipboardContent() {
         return copyToClipboardContent;
     }
@@ -94,11 +104,22 @@ public record DefaultLoadErrorsEnt(
 
         private java.util.List<LoadErrorMissingExtensionEnt> m_missingExtensions;
 
+        private Integer m_numLoadErrors;
+
         private String m_copyToClipboardContent;
 
         @Override
         public DefaultLoadErrorsEntBuilder setMissingExtensions(java.util.List<LoadErrorMissingExtensionEnt> missingExtensions) {
              m_missingExtensions = missingExtensions;
+             return this;
+        }
+
+        @Override
+        public DefaultLoadErrorsEntBuilder setNumLoadErrors(Integer numLoadErrors) {
+             if(numLoadErrors == null) {
+                 throw new IllegalArgumentException("<numLoadErrors> must not be null.");
+             }
+             m_numLoadErrors = numLoadErrors;
              return this;
         }
 
@@ -115,6 +136,7 @@ public record DefaultLoadErrorsEnt(
         public DefaultLoadErrorsEnt build() {
             return new DefaultLoadErrorsEnt(
                 immutable(m_missingExtensions),
+                immutable(m_numLoadErrors),
                 immutable(m_copyToClipboardContent));
         }
     
