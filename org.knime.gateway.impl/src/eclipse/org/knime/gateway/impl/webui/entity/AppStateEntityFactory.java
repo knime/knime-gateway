@@ -366,7 +366,8 @@ public final class AppStateEntityFactory {
         project.getWorkflowManagerIfLoaded()
             .flatMap(wfm -> CoreUtil.WorkflowLoadResult.getWorkflowLoadResult(wfm)) //
             .ifPresent(loadResult -> {
-                if (!hasErrors(loadResult)) {
+                var numLoadErrors = getNumTotalErrors(loadResult);
+                if (numLoadErrors == 0) {
                     return;
                 }
                 List<LoadErrorMissingExtensionEnt> missingExtensions = null;
@@ -376,22 +377,23 @@ public final class AppStateEntityFactory {
                 var loadErrors = builder(LoadErrorsEntBuilder.class) //
                     .setCopyToClipboardContent(loadResultEntryToString(loadResult, "")) //
                     .setMissingExtensions(missingExtensions) //
+                    .setNumLoadErrors(numLoadErrors) //
                     .build();
                 projectEntBuilder.setLoadErrors(loadErrors);
             });
         return projectEntBuilder.build();
     }
 
-    private static boolean hasErrors(final LoadResultEntry entry) {
-        if (entry.getType().ordinal() >= LoadResultEntryType.Error.ordinal()) {
-            return true;
+    private static int getNumTotalErrors(final LoadResultEntry entry) {
+        var children = entry.getChildren();
+        if (children.length == 0 && entry.getType().ordinal() >= LoadResultEntryType.Error.ordinal()) {
+            return 1;
         }
-        for (LoadResultEntry c : entry.getChildren()) {
-            if (hasErrors(c)) {
-                return true;
-            }
+        int sum = 0;
+        for (LoadResultEntry c : children) {
+            sum = sum + getNumTotalErrors(c);
         }
-        return false;
+        return sum;
     }
 
     private static List<LoadErrorMissingExtensionEnt> parseMissingExtensions(final WorkflowLoadResult loadResult) {
