@@ -86,10 +86,6 @@ public interface SyncStateErrorEntMixIn extends SyncStateErrorEnt {
     public Boolean isCanCopy();
     
     @Override
-    @JsonProperty("status")
-    public Integer getStatus();
-    
-    @Override
     @JsonProperty("stackTrace")
     public String getStackTrace();
     
@@ -121,10 +117,6 @@ public interface SyncStateErrorEntMixIn extends SyncStateErrorEnt {
         @Override
         @JsonProperty("canCopy")
         public SyncStateErrorEntMixInBuilder setCanCopy(final Boolean canCopy);
-        
-        @Override
-        @JsonProperty("status")
-        public SyncStateErrorEntMixInBuilder setStatus(final Integer status);
         
         @Override
         @JsonProperty("stackTrace")

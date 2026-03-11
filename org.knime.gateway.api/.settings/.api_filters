@@ -13,6 +13,12 @@
                 <message_argument value="5.10.0"/>
             </message_arguments>
         </filter>
+        <filter id="923795461">
+            <message_arguments>
+                <message_argument value="5.12.0"/>
+                <message_argument value="5.11.0"/>
+            </message_arguments>
+        </filter>
         <filter id="924844039">
             <message_arguments>
                 <message_argument value="5.11.0"/>
@@ -989,9 +995,23 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/api/webui/entity/SyncStateErrorEnt.java" type="org.knime.gateway.api.webui.entity.SyncStateErrorEnt">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SyncStateErrorEnt"/>
+                <message_argument value="getStatus()"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.api.webui.entity.SyncStateErrorEnt"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/api/webui/entity/SyncStateErrorEnt.java" type="org.knime.gateway.api.webui.entity.SyncStateErrorEnt$SyncStateErrorEntBuilder">
+        <filter id="405901410">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.api.webui.entity.SyncStateErrorEnt.SyncStateErrorEntBuilder"/>
+                <message_argument value="setStatus(Integer)"/>
             </message_arguments>
         </filter>
     </resource>

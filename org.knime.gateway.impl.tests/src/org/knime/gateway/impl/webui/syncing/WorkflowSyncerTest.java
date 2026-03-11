@@ -180,6 +180,23 @@ public class WorkflowSyncerTest {
     }
 
     /**
+     * Sync now should surface errors from upload failures.
+     *
+     * @throws Exception when sync invocation fails unexpectedly
+     */
+    @Test
+    public void testSyncProjectNowSetsErrorOnUploadFailure() throws Exception {
+        doThrow(ServiceCallException.builder().withTitle("upload failed").withDetails("foo").canCopy(true).build())
+            .when(m_hubUploader).uploadProject(m_wfm);
+
+        assertThatThrownBy(() -> m_syncer.syncProjectNow()).isInstanceOf(ServiceCallException.class);
+
+        assertThat(m_syncer.getSyncState().getState()).isEqualTo(SyncStateEnt.StateEnum.ERROR);
+        // WRITING -> UPLOAD -> ERROR
+        assertThat(m_stateChangesCount.get()).isEqualTo(3);
+    }
+
+    /**
      * Auto-sync should apply deferred DIRTY state after upload completes.
      *
      * @throws Exception when sync invocation fails unexpectedly
@@ -200,6 +217,25 @@ public class WorkflowSyncerTest {
         assertThat(m_syncer.getSyncState().getState()).isEqualTo(SyncStateEnt.StateEnum.DIRTY);
         // WRITING -> UPLOAD -> SYNCED -> DIRTY (deferred)
         assertThat(m_stateChangesCount.get()).isEqualTo(4);
+    }
+
+    /**
+     * Auto-sync should transition to ERROR on non-threshold upload failures.
+     *
+     * @throws Exception when sync invocation fails unexpectedly
+     */
+    @Test
+    public void testAutoSyncSetsErrorOnUploadFailure() throws Exception {
+        doThrow(new IOException("upload failed")).when(m_hubUploader).uploadProjectWithThreshold(any(), any());
+
+        m_syncer.syncProjectAutomatically(SOME_SIZE);
+
+        var state = m_syncer.getSyncState();
+        assertThat(state.getState()).isEqualTo(SyncStateEnt.StateEnum.ERROR);
+        assertThat(state.getError().getCode()).isEqualTo(IOException.class.getSimpleName());
+        assertThat(state.getError().getCode()).isNotEqualTo(SyncThresholdException.class.getSimpleName());
+        // WRITING -> UPLOAD -> ERROR
+        assertThat(m_stateChangesCount.get()).isEqualTo(3);
     }
 
     /**

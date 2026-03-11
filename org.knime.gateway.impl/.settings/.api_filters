@@ -7,12 +7,10 @@
                 <message_argument value="5.10.0"/>
             </message_arguments>
         </filter>
-    </resource>
-    <resource path="META-INF/MANIFEST.MF">
         <filter id="923795461">
             <message_arguments>
+                <message_argument value="5.12.0"/>
                 <message_argument value="5.11.0"/>
-                <message_argument value="5.10.0"/>
             </message_arguments>
         </filter>
         <filter id="924844039">
@@ -648,9 +646,40 @@
         </filter>
     </resource>
     <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSyncStateErrorEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSyncStateErrorEnt">
+        <filter id="338722907">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSyncStateErrorEnt"/>
+                <message_argument value="DefaultSyncStateErrorEnt(String, String, List&lt;String&gt;, Boolean, Integer, String)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSyncStateErrorEnt"/>
+                <message_argument value="getStatus()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSyncStateErrorEnt"/>
+                <message_argument value="status()"/>
+            </message_arguments>
+        </filter>
         <filter id="1110441988">
             <message_arguments>
                 <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSyncStateErrorEnt"/>
+            </message_arguments>
+        </filter>
+        <filter id="1143996420">
+            <message_arguments>
+                <message_argument value="DefaultSyncStateErrorEnt(String, String, List&lt;String&gt;, Boolean, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/generated/org/knime/gateway/impl/webui/entity/DefaultSyncStateErrorEnt.java" type="org.knime.gateway.impl.webui.entity.DefaultSyncStateErrorEnt$DefaultSyncStateErrorEntBuilder">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.knime.gateway.impl.webui.entity.DefaultSyncStateErrorEnt.DefaultSyncStateErrorEntBuilder"/>
+                <message_argument value="setStatus(Integer)"/>
             </message_arguments>
         </filter>
     </resource>

@@ -213,12 +213,14 @@ public interface WorkflowSyncer extends WorkflowResource {
             } catch (IOException e) {
                 m_syncStateStore.changeState( //
                     SyncStateEnt.StateEnum.ERROR, //
-                    new SyncStateStore.Error(e));
+                    new SyncStateStore.Error(e) //
+                );
             } catch (SyncThresholdException e) {
                 m_syncStateStore.changeState( //
                     SyncStateEnt.StateEnum.DIRTY, //
                     new SyncStateStore.Error(e), //
-                    false);
+                    false //
+                );
                 m_debouncedProjectSync.shutdown();
             } finally {
                 m_syncStateStore.allowStateChanges(); // apply deferred state change

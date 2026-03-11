@@ -56,7 +56,6 @@ import org.knime.gateway.api.webui.entity.SyncStateErrorEnt;
  * @param title
  * @param details
  * @param canCopy
- * @param status
  * @param stackTrace
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -67,7 +66,6 @@ public record DefaultSyncStateErrorEnt(
     String title,
     java.util.List<String> details,
     Boolean canCopy,
-    Integer status,
     String stackTrace) implements SyncStateErrorEnt {
 
     /**
@@ -114,11 +112,6 @@ public record DefaultSyncStateErrorEnt(
     }
     
     @Override
-    public Integer getStatus() {
-        return status;
-    }
-    
-    @Override
     public String getStackTrace() {
         return stackTrace;
     }
@@ -135,8 +128,6 @@ public record DefaultSyncStateErrorEnt(
         private java.util.List<String> m_details = new java.util.ArrayList<>();
 
         private Boolean m_canCopy;
-
-        private Integer m_status;
 
         private String m_stackTrace;
 
@@ -177,12 +168,6 @@ public record DefaultSyncStateErrorEnt(
         }
 
         @Override
-        public DefaultSyncStateErrorEntBuilder setStatus(Integer status) {
-             m_status = status;
-             return this;
-        }
-
-        @Override
         public DefaultSyncStateErrorEntBuilder setStackTrace(String stackTrace) {
              m_stackTrace = stackTrace;
              return this;
@@ -195,7 +180,6 @@ public record DefaultSyncStateErrorEnt(
                 immutable(m_title),
                 immutable(m_details),
                 immutable(m_canCopy),
-                immutable(m_status),
                 immutable(m_stackTrace));
         }
     

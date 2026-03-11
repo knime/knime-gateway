@@ -88,12 +88,6 @@ public interface SyncStateErrorEnt extends GatewayEntity {
   public Boolean isCanCopy();
 
   /**
-   * Get status
-   * @return status 
-   **/
-  public Integer getStatus();
-
-  /**
    * Get stackTrace
    * @return stackTrace 
    **/
@@ -108,7 +102,6 @@ public interface SyncStateErrorEnt extends GatewayEntity {
       valueConsumer.accept("title", Pair.create(getTitle(), e.getTitle()));
       valueConsumer.accept("details", Pair.create(getDetails(), e.getDetails()));
       valueConsumer.accept("canCopy", Pair.create(isCanCopy(), e.isCanCopy()));
-      valueConsumer.accept("status", Pair.create(getStatus(), e.getStatus()));
       valueConsumer.accept("stackTrace", Pair.create(getStackTrace(), e.getStackTrace()));
   }
 
@@ -148,14 +141,6 @@ public interface SyncStateErrorEnt extends GatewayEntity {
          * @return this entity builder for chaining
          */
         SyncStateErrorEntBuilder setCanCopy(Boolean canCopy);
-        
-        /**
-   		 * Set status
-         * 
-         * @param status the property value,  
-         * @return this entity builder for chaining
-         */
-        SyncStateErrorEntBuilder setStatus(Integer status);
         
         /**
    		 * Set stackTrace
