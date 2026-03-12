@@ -100,6 +100,10 @@
   "value" : "CONFIGURED"
 }, {
   "op" : "replace",
+  "path" : "/nodes/root:19/inputContentVersion",
+  "value" : "PLACEHOLDER_FOR_VERSION"
+}, {
+  "op" : "replace",
   "path" : "/nodes/root:19/outPorts/1/portContentVersion",
   "value" : "PLACEHOLDER_FOR_VERSION"
 }, {
